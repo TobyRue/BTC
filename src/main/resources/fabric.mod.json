@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "btc",
+  "version": "${version}",
+  "name": "BTC",
+  "description": "",
+  "authors": [
+    "TobinOakenshield"
+  ],
+  "contact": {
+    "repo": "https://github.com/TobyRue/BTC"
+  },
+  "license": "MIT",
+  "icon": "assets/btc/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.tobyrue.btc.client.BTCClient"
+    ],
+    "main": [
+      "io.github.tobyrue.btc.BTC"
+    ]
+  },
+  "mixins": [
+    "btc.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

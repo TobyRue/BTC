@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "btc:block/ominous_beacon",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "btc:block/ominous_beacon",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "btc:block/ominous_beacon",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "btc:block/ominous_beacon",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "btc:block/ominous_beacon"
+    },
+    "facing=west": {
+      "model": "btc:block/ominous_beacon",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

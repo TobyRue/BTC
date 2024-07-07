@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "pedestal_state=active": { "model": "btc:block/staff_pedestal_with_staff" },
+    "pedestal_state=dispensing": { "model": "btc:block/staff_pedestal" },
+    "pedestal_state=inactive": { "model": "btc:block/staff_pedestal" }
+  }
+}
