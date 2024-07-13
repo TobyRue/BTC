@@ -21,6 +21,10 @@ public class ModItems {
             new Item(new Item.Settings()),
             "ruby_trial_key"
     );
+    public static final Item STAFF = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "staff"
+    );
 
     public static void initialize() {
     }

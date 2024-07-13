@@ -1,7 +1,15 @@
 {
   "variants": {
-    "pedestal_state=active": { "model": "btc:block/staff_pedestal_with_staff" },
-    "pedestal_state=dispensing": { "model": "btc:block/staff_pedestal" },
-    "pedestal_state=inactive": { "model": "btc:block/staff_pedestal" }
+    "pedestal_state=inactive,keys=0": { "model": "btc:block/staff_pedestal" },
+    "pedestal_state=inactive,keys=1": { "model": "btc:block/staff_pedestal" },
+    "pedestal_state=inactive,keys=2": { "model": "btc:block/staff_pedestal" },
+    "pedestal_state=inactive,keys=3": { "model": "btc:block/staff_pedestal" },
+    "pedestal_state=inactive,keys=4": { "model": "btc:block/staff_pedestal" },
+
+    "pedestal_state=active,keys=0": { "model": "btc:block/staff_pedestal_with_staff" },
+    "pedestal_state=active,keys=1": { "model": "btc:block/staff_pedestal_with_staff" },
+    "pedestal_state=active,keys=2": { "model": "btc:block/staff_pedestal_with_staff" },
+    "pedestal_state=active,keys=3": { "model": "btc:block/staff_pedestal_with_staff" },
+    "pedestal_state=active,keys=4": { "model": "btc:block/staff_pedestal_with_staff" }
   }
 }

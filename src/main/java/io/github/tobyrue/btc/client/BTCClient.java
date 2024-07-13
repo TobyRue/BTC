@@ -15,6 +15,6 @@ public class BTCClient implements ClientModInitializer {
    @Override
    public void onInitializeClient() {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_BEACON, RenderLayer.getTranslucent());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STAFF_ALTAR, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.STAFF_PEDESTAL, RenderLayer.getCutoutMipped());
        }
 }
