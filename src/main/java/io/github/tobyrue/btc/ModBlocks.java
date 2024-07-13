@@ -30,8 +30,8 @@ public class ModBlocks {
             "ominous_beacon",
             true
     );
-    public static final StaffPedestalBlock STAFF_PEDESTAL = (StaffPedestalBlock) register(
-            new StaffPedestalBlock(AbstractBlock.Settings.create().nonOpaque()),
+    public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
+            new PedestalBlock(AbstractBlock.Settings.create().nonOpaque()),
             "staff_pedestal",
             true
     );

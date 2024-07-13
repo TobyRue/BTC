@@ -1,38 +1,24 @@
 package io.github.tobyrue.btc;
 
-import com.sun.jna.platform.win32.Variant;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.vault.VaultServerData;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class StaffPedestalBlock extends Block implements BlockEntityProvider{
+public class PedestalBlock extends Block implements BlockEntityProvider{
 
     public static final EnumProperty<StateVariant> VARIANT = EnumProperty.of("pedestal_state", StateVariant.class);
     public static final IntProperty KEYS = IntProperty.of("keys", 0, 4); // Range from 0 to 4
 
-    public StaffPedestalBlock(AbstractBlock.Settings settings) {
+    public PedestalBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(VARIANT, StateVariant.ACTIVE));
         this.setDefaultState(this.stateManager.getDefaultState().with(KEYS, 0));
@@ -92,13 +78,13 @@ public class StaffPedestalBlock extends Block implements BlockEntityProvider{
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit); */
 
-        return world.getBlockEntity(pos, ModBlockEntities.STAFF_PEDESTAL_BLOCK_ENTITY).get().onUseWithItem(stack, state, world, pos, player, hand, hit);
+        return world.getBlockEntity(pos, ModBlockEntities.PEDESTAL_BLOCK_ENTITY).get().onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new StaffPedestalBlockEntity(pos, state);
+        return new PedestalBlockEntity(pos, state);
     }
 
 
