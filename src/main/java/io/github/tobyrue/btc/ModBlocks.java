@@ -32,7 +32,7 @@ public class ModBlocks {
     );
     public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
             new PedestalBlock(AbstractBlock.Settings.create().nonOpaque()),
-            "staff_pedestal",
+            "pedestal",
             true
     );
 

@@ -3,7 +3,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "minecraft:block/polished_tuff",
-		"1": "btc:block/staff_pedestal_middle",
+		"1": "btc:block/pedestal_middle",
 		"particle": "minecraft:block/polished_tuff"
 	},
 	"elements": [

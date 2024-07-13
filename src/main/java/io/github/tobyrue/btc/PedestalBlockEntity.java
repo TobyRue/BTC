@@ -34,7 +34,7 @@ public class PedestalBlockEntity extends BlockEntity implements BlockEntityTicke
 
         var uuid = player.getUuid().toString();
 
-        if(!HASH_SET.contains(uuid)) {
+        if(!HASH_SET.contains(uuid) && stack.getItem() == ModItems.RUBY_TRIAL_KEY) {
             HASH_SET.add(uuid);
             this.markDirty();
             world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
