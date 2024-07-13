@@ -30,40 +30,50 @@ public class PedestalBlockRenderer implements BlockEntityRenderer<PedestalBlockE
     @Override
     public void render(PedestalBlockEntity blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
-        // Move the item
-        renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay);
-        matrices.translate(0.5, 1.25, 0.5);
+        var c = blockEntity.HASH_MAP.getOrDefault(MinecraftClient.getInstance().player.getUuid().toString(),0);
+        if(c != -1) {
+            // Move the item
+            renderKeys(blockEntity, tickDelta, matrices, vertexConsumers, light, overlay, c);
+            matrices.translate(0.5, 1.25, 0.5);
 
-        // Rotate the item
-        int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
-        MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.HEAD, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, blockEntity.getWorld(), 0);
+            // Rotate the item
+            int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
+            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.HEAD, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, blockEntity.getWorld(), 0);
+        }
+
         // Mandatory call after GL calls
         matrices.pop();
     }
     public void renderItem(PedestalBlockEntity blockEntity, ItemStack stack, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        renderItem(blockEntity, stack, tickDelta, matrices, vertexConsumers, light, overlay, 0.5, 0.5);
+        renderItem(blockEntity, stack, tickDelta, matrices, vertexConsumers, light, overlay, 0.5, 0.5, 0);
     }
 
-    public void renderItem(PedestalBlockEntity blockEntity, ItemStack stack, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, double x, double z) {
+    public void renderItem(PedestalBlockEntity blockEntity, ItemStack stack, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, double x, double z, float dTheta) {
         matrices.push();
         double offset = Math.sin((blockEntity.getWorld().getTime() + tickDelta) / 8.0) / 8.0;
         // Move the item
-        matrices.translate(x, 1.5 + offset, z);
+        matrices.translate(x, 1.3 + offset, z);
 
         // Rotate the item
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((blockEntity.getWorld().getTime() + tickDelta) * 4));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((blockEntity.getWorld().getTime() + tickDelta) * 4 + (dTheta * 360)));
         int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
         MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, blockEntity.getWorld(), 0);
         // Mandatory call after GL calls
         matrices.pop();
     }
 
-    public void renderKeys(PedestalBlockEntity blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void renderKeys(PedestalBlockEntity blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, int c) {
         matrices.push();
-        renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.2);
-        renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.8);
-        renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.8, 0.8);
-        renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.8, 0.2);
+        switch(c) {
+            case 4:
+                renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.2, 0.25f);
+            case 3:
+                renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.8, 0.5f);
+            case 2:
+                renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.8, 0.8, 0.75f);
+            case 1:
+                renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.8, 0.2, 0f);
+        }
         matrices.pop();
     }
 }

@@ -20,11 +20,13 @@ import net.minecraft.world.World;
 
 import static io.github.tobyrue.btc.BTC.println;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 
 public class PedestalBlockEntity extends BlockEntity implements BlockEntityTicker<PedestalBlockEntity> {
 
+    public final HashMap<String, Integer> HASH_MAP = new HashMap<>();
     public final HashSet<String> HASH_SET = new HashSet<>();
 
     public PedestalBlockEntity(BlockPos pos, BlockState state) {
@@ -33,15 +35,32 @@ public class PedestalBlockEntity extends BlockEntity implements BlockEntityTicke
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         var uuid = player.getUuid().toString();
+        var c = HASH_MAP.getOrDefault(uuid, 0);
 
-        if(!HASH_SET.contains(uuid) && stack.getItem() == ModItems.RUBY_TRIAL_KEY) {
+        if(stack.getItem() == ModItems.RUBY_TRIAL_KEY) {
+            if(c >= 0 && c < 4) {
+                HASH_MAP.put(uuid, c+1);
+                if(!player.isCreative()) {
+                    stack.decrement(1);
+                }
+                return ItemActionResult.SUCCESS;
+            }
+        }
+        if(c == 4) {
+            HASH_MAP.put(uuid, -1);
+            println("give staff here");
+            return ItemActionResult.SUCCESS;
+        }
+
+        return ItemActionResult.FAIL;
+        /*if(!HASH_SET.contains(uuid) && stack.getItem() == ModItems.RUBY_TRIAL_KEY) {
             HASH_SET.add(uuid);
             this.markDirty();
             world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
             System.out.println("clicked once");
             return ItemActionResult.SUCCESS;
         }
-        return ItemActionResult.FAIL;
+        return ItemActionResult.FAIL;*/
     }
 
 
