@@ -31,7 +31,9 @@ public class ModBlocks {
             true
     );
     public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
-            new PedestalBlock(AbstractBlock.Settings.create().nonOpaque()),
+            new PedestalBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
+                return 12;
+            })),
             "pedestal",
             true
     );

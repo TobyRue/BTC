@@ -27,6 +27,6 @@ public class BTC implements ModInitializer {
 
     }
     public static void println(Object... args) {
-        System.out.println(args);
+        System.out.println(String.join(" ", java.util.Arrays.stream(args).map(Object::toString).toArray(String[]::new)));
     }
 }
