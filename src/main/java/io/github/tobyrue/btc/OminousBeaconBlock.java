@@ -3,6 +3,7 @@ package io.github.tobyrue.btc;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class OminousBeaconBlock extends Block implements BlockEntityProvider{
+public class OminousBeaconBlock extends Block implements ModBlockEntityProvider<OminousBeaconBlockEntity>, ModTickBlockEntityProvider<OminousBeaconBlockEntity>{
     public OminousBeaconBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.UP)));
@@ -59,10 +60,9 @@ public class OminousBeaconBlock extends Block implements BlockEntityProvider{
         builder.add(new Property[]{FACING});
     }
 
-    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new OminousBeaconBlockEntity(pos, state);
+    public BlockEntityType<OminousBeaconBlockEntity> getBlockEntityType() {
+        return ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY;
     }
 
 }

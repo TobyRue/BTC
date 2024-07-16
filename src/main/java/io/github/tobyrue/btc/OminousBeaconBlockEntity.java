@@ -1,28 +1,75 @@
 package io.github.tobyrue.btc;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
+import net.minecraft.block.FireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.ComponentMap;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.LavaFluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntityTicker {
+import static io.github.tobyrue.btc.BTC.println;
+
+public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntityTicker<OminousBeaconBlockEntity> {
+    static final int MAX_LENGTH = 16;
     public OminousBeaconBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, pos, state);
     }
-    @Override
-    public void tick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-
+    public void onWalkedIn(World world, BlockPos pos, BlockState state, Entity entity) {
+            entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f);
     }
+    private int beamLength = 0;
+
+    public int getBeamLength() {
+        return this.beamLength;
+    }
+
+    private void updateBeam(World world, BlockPos pos, BlockState state) {
+        var direction = state.get(OminousBeaconBlock.FACING);
+        if(direction == Direction.UP || direction == Direction.NORTH || direction == Direction.EAST) {
+            for(int l = 1; l < MAX_LENGTH + 2; l++) {
+                var offsetPos = pos.offset(direction, l);
+                var offsetState = world.getBlockState(offsetPos);
+                if(offsetState.getBlock() == ModBlocks.OMINOUS_BEACON && offsetState.get(OminousBeaconBlock.FACING) == direction.getOpposite()) {
+                    this.beamLength = l - 1;
+                    break;
+                } else if(offsetState.isOf(Blocks.BEDROCK) || offsetState.getOpacity(world, offsetPos) < 15) {
+                    continue;
+                } else {
+                    world.breakBlock(offsetPos, true);
+                }
+            }
+            world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f));
+        } else {
+            this.beamLength = 0;
+        }
+        //eventualy not every tick
+    }
+
+    @Override
+    public void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
+        updateBeam(world, pos, state);
+    }
+
+
+
+
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);

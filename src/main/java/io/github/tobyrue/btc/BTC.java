@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroups;
 
 public class BTC implements ModInitializer {
-    static String MOD_ID = "btc";
+    public static String MOD_ID = "btc";
     @Override
     public void onInitialize() {
 

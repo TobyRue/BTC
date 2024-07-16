@@ -4,5 +4,8 @@
 
   "item.btc.ruby_trial_key": "Ruby Trial Key",
   "item.btc.staff": "Staff",
-  "item.btc.wind_staff": "Wind Staff"
+  "item.btc.wind_staff": "Wind Staff",
+
+  "death.attack.beacon_burn": "%1$s was burnt alive"
+
 }
