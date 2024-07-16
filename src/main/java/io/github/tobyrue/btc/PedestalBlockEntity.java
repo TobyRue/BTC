@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.*;
 import net.minecraft.component.ComponentMap;
@@ -58,7 +59,7 @@ public class PedestalBlockEntity extends BlockEntity{
             HASH_MAP.put(uuid, -1);
             player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
             ItemStack dropStack = new ItemStack(ModItems.STAFF);
-            world.addParticle(ParticleTypes.FLASH, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+            world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
             if(!world.isClient) {
                 player.getInventory().offerOrDrop(dropStack);
             }
@@ -67,7 +68,7 @@ public class PedestalBlockEntity extends BlockEntity{
         }
         if(c == -1 || !(stack.getItem() == ModItems.RUBY_TRIAL_KEY)) {
             player.playSound(SoundEvents.BLOCK_VAULT_INSERT_ITEM_FAIL);
-            world.addParticle(ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+            world.addParticle(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
 
         }
 

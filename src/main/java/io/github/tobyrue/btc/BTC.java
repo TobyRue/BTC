@@ -24,6 +24,8 @@ public class BTC implements ModInitializer {
 
         //COMBAT
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register((itemGroup) -> itemGroup.add(ModItems.STAFF));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register((itemGroup) -> itemGroup.add(ModItems.WIND_STAFF));
+
 
     }
     public static void println(Object... args) {

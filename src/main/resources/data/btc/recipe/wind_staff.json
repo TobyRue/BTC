@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "minecraft:copper_ingot"
+    },
+    "S": {
+      "item": "btc:staff"
+    },
+    "C": {
+      "item": "minecraft:wind_charge"
+    },
+    "R": {
+      "item": "minecraft:breeze_rod"
+    }
+  },
+  "pattern": [
+    "RCR",
+    "#S#",
+    "R#R"
+  ],
+  "result": {
+    "id": "btc:wind_staff"
+  },
+  "show_notification": true
+}

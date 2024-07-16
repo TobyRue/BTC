@@ -1,9 +1,11 @@
 package io.github.tobyrue.btc;
 
 import com.mojang.serialization.MapCodec;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Property;
@@ -11,9 +13,12 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public class OminousBeaconBlock extends Block {
+import java.util.Objects;
+
+public class OminousBeaconBlock extends Block implements BlockEntityProvider{
     public OminousBeaconBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.UP)));
@@ -22,6 +27,7 @@ public class OminousBeaconBlock extends Block {
     public static final MapCodec<OminousBeaconBlock> CODEC = createCodec(OminousBeaconBlock::new);
 
     public static final DirectionProperty FACING = FacingBlock.FACING;
+
 
     @Override
     public MapCodec<? extends OminousBeaconBlock> getCodec() {
@@ -52,5 +58,12 @@ public class OminousBeaconBlock extends Block {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(new Property[]{FACING});
     }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new OminousBeaconBlockEntity(pos, state);
+    }
+
 }
 

@@ -33,7 +33,7 @@ public class ModBlocks {
     public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
             new PedestalBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
-            })),
+            }).strength(-1.0F, 3600000.0F)),
             "pedestal",
             true
     );
