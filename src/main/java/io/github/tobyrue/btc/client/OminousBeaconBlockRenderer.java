@@ -7,8 +7,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.entity.TridentEntityRenderer;
+import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.projectile.TridentEntity;
+import net.minecraft.item.Items;
+import net.minecraft.item.TridentItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -158,4 +163,5 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 
 
 }
+
 

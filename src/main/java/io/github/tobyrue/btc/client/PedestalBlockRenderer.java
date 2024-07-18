@@ -11,6 +11,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.block.entity.VaultBlockEntityRenderer;
+import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Scaling;
 import net.minecraft.client.util.math.MatrixStack;

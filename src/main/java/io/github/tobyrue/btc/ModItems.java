@@ -26,9 +26,10 @@ public class ModItems {
             "staff"
     );
     public static final Item WIND_STAFF = register(
-            new Item(new Item.Settings().maxCount(1)),
+        new WindStaffItem(new Item.Settings().maxCount(1)),
             "wind_staff"
     );
+
 
     public static void initialize() {
     }
