@@ -11,12 +11,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.util.Identifier;
 
 public class BTCClient implements ClientModInitializer {
 
-    public static final EntityModelLayer MODEL_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
+    public static EntityRendererFactory.Context Context;
 
     @Override
     public void onInitializeClient() {
