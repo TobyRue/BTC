@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.client;
 
+import com.ibm.icu.text.MessagePattern;
 import io.github.tobyrue.btc.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +11,8 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.WindChargeEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.TextureManager;
@@ -27,6 +30,9 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+
+import static jdk.jpackage.internal.Arguments.CLIOptions.context;
+import static net.minecraft.entity.EntityType.WIND_CHARGE;
 
 @Environment(EnvType.CLIENT)
 public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
@@ -59,7 +65,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
 
         var dummy = new DummyWindCharge();
 
-        new WindChargeEntityRenderer().render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
+        new WindChargeEntityRenderer(new EntityRendererFactory.Context()).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
 
         // Render the Wind Charge entity
         //WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, minecraft.world);
@@ -68,6 +74,8 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         // Mandatory call after GL calls
         matrices.pop();
     }
+
+
 
     @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -85,7 +93,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         int lightAbove = WorldRenderer.getLightmapCoordinates(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos().up());
 
         // Render the Wind Charge entity
-        WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, minecraft.world);
+        WindChargeEntity windChargeEntity = new WindChargeEntity(WIND_CHARGE, minecraft.world);
         minecraft.getEntityRenderDispatcher().render(windChargeEntity, 0, 0, 0, 0.0f, tickDelta, matrices, vertexConsumers, lightAbove);
 
         // Mandatory call after GL calls
