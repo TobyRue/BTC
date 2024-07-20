@@ -6,7 +6,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.AbstractWindChargeEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class DummyWindCharge extends AbstractWindChargeEntity {

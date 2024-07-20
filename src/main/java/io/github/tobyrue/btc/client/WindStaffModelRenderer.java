@@ -1,51 +1,43 @@
 package io.github.tobyrue.btc.client;
 
-import com.ibm.icu.text.MessagePattern;
 import io.github.tobyrue.btc.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.WindChargeEntityModel;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.model.ModelPartData;
-import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
-import static jdk.jpackage.internal.Arguments.CLIOptions.context;
-import static net.minecraft.entity.EntityType.WIND_CHARGE;
 
 @Environment(EnvType.CLIENT)
 public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
 
     public static final ItemStack HANDLE = new ItemStack(ModItems.STAFF, 1);
-    private static WindChargeEntity windChargeEntity = null;
+    private static final DummyWindCharge dummy = new DummyWindCharge(); // Static variable
+    private static int renderCounter = 0; // Counter to slow down age update
+
+    private void updateDummy() {
+        // Increment the age of the dummy entity every 10 render calls
+        if (renderCounter % 10 == 0) {
+            dummy.age++;
+        }
+        renderCounter++;
+    }
 
     public void renderWind(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
         var tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-        //double offset = Math.sin((MinecraftClient.getInstance().world.getTime() + tickDelta) / 8.0) / 8.0;
-        String name = stack.getName().getLiteralString();
+        EntityRendererFactory.Context context = new EntityRendererFactory.Context(minecraft.getEntityRenderDispatcher(), minecraft.getItemRenderer(), minecraft.getBlockRenderManager(), null, minecraft.getResourceManager(), minecraft.getEntityModelLoader(), minecraft.textRenderer
+        );
+
+        /*String name = stack.getName().getLiteralString();
         float x = 0, y = 0, z = 0;
         try {
             if(name.startsWith("@")) {
@@ -56,16 +48,15 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
             }
         } catch(Throwable e) {
             e.printStackTrace();
-        }
+        }*/
         // Move the item
-        matrices.translate(x, y, z);
+        matrices.translate(0.5, 1.5, 0.2);
 
         // Rotate the item
         int lightAbove = WorldRenderer.getLightmapCoordinates(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos().up());
 
-        var dummy = new DummyWindCharge();
-
-        new WindChargeEntityRenderer(new EntityRendererFactory.Context()).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
+        updateDummy();
+        new WindChargeEntityRenderer(context).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
 
         // Render the Wind Charge entity
         //WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, minecraft.world);
@@ -92,9 +83,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         // Rotate the item
         int lightAbove = WorldRenderer.getLightmapCoordinates(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos().up());
 
-        // Render the Wind Charge entity
-        WindChargeEntity windChargeEntity = new WindChargeEntity(WIND_CHARGE, minecraft.world);
-        minecraft.getEntityRenderDispatcher().render(windChargeEntity, 0, 0, 0, 0.0f, tickDelta, matrices, vertexConsumers, lightAbove);
 
         // Mandatory call after GL calls
 
