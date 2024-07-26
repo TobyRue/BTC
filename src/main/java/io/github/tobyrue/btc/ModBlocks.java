@@ -1,7 +1,8 @@
 package io.github.tobyrue.btc;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.*;
+import net.minecraft.block.enums.NoteBlockInstrument;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -37,6 +38,13 @@ public class ModBlocks {
             "pedestal",
             true
     );
+    public static final DungeonWireBlock DUNGEON_WIRE = (DungeonWireBlock) register(
+            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+
+            "dungeon_wire",
+            true
+    );
+
 
     public static void initialize() {
     }

@@ -10,7 +10,6 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RotationAxis;
 
@@ -53,7 +52,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.translate(0.5, 1.5, 0.2);
 
         // Rotate the item
-        int lightAbove = WorldRenderer.getLightmapCoordinates(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos().up());
 
         updateDummy();
         new WindChargeEntityRenderer(context).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
@@ -72,17 +70,12 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
-        var tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
         //double offset = Math.sin((MinecraftClient.getInstance().world.getTime() + tickDelta) / 8.0) / 8.0;
 
         renderWind(stack, mode, matrices, vertexConsumers, light, overlay);
 
         // Move the item
         matrices.translate(0.5, 1.3, 0.5);
-
-        // Rotate the item
-        int lightAbove = WorldRenderer.getLightmapCoordinates(MinecraftClient.getInstance().world, MinecraftClient.getInstance().player.getBlockPos().up());
-
 
         // Mandatory call after GL calls
 
