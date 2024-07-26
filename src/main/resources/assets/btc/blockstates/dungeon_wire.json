@@ -1,48 +1,191 @@
 {
   "variants": {
-    "facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
-    "facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
-    "facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
-    "facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal"},
+    "facing=north,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal" },
 
-    "facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
-    "facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
-    "facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
-    "facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal" },
 
-    "facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical" },
-    "facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical" },
-    "facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical" },
 
-    "facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_vertical" },
-    "facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical" },
-    "facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_vertical" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical" },
 
-    "facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_all" },
-    "facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_all" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_all" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_all" },
 
-    "facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom" },
-    "facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom" },
 
-    "facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom_right" },
-    "facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom_right" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom_right" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom_right" },
 
-    "facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top" },
-    "facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top" },
 
-    "facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_bottom" },
-    "facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_bottom" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_bottom" },
+    "facing=north,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_bottom" },
 
-    "facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_right" },
-    "facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_right" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_right" },
+    "facing=north,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_right" },
 
-    "facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_right_bottom" },
-    "facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_right_bottom" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_right_bottom" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_right_bottom" },
 
-    "facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top" },
-    "facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top" },
+    "facing=north,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top" },
 
-    "facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top_bottom" },
-    "facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top_bottom" }
+    "facing=north,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top_bottom" },
+    "facing=north,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top_bottom" },
+
+
+
+    "facing=east,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 90 },
+    "facing=east,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 90 },
+    "facing=east,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 90 },
+    "facing=east,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 90 },
+
+    "facing=east,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 90 },
+    "facing=east,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 90 },
+    "facing=east,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 90 },
+    "facing=east,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 90 },
+    "facing=east,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 90 },
+    "facing=east,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_vertical" , "y": 90},
+    "facing=east,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical", "y": 90 },
+    "facing=east,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_all", "y": 90 },
+    "facing=east,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_all", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom", "y": 90 },
+    "facing=east,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom_right", "y": 90 },
+    "facing=east,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom_right", "y": 90 },
+
+    "facing=east,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top", "y": 90 },
+    "facing=east,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top", "y": 90  },
+
+    "facing=east,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_bottom", "y": 90 },
+    "facing=east,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_bottom", "y": 90 },
+
+    "facing=east,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_right", "y": 90 },
+    "facing=east,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_right", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_right_bottom", "y": 90 },
+    "facing=east,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_right_bottom", "y": 90 },
+
+    "facing=east,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top", "y": 90 },
+    "facing=east,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top", "y": 90 },
+
+    "facing=east,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top_bottom", "y": 90 },
+    "facing=east,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top_bottom", "y": 90 },
+
+
+
+    "facing=south,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 180 },
+    "facing=south,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 180 },
+    "facing=south,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 180 },
+    "facing=south,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 180 },
+
+    "facing=south,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 180 },
+    "facing=south,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 180 },
+    "facing=south,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 180 },
+    "facing=south,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 180 },
+    "facing=south,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 180 },
+    "facing=south,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_vertical" , "y": 180},
+    "facing=south,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical", "y": 180 },
+    "facing=south,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_all", "y": 180 },
+    "facing=south,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_all", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom", "y": 180 },
+    "facing=south,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom_right", "y": 180 },
+    "facing=south,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom_right", "y": 180 },
+
+    "facing=south,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top", "y": 180 },
+    "facing=south,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_bottom", "y": 180 },
+    "facing=south,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_bottom", "y": 180 },
+
+    "facing=south,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_right", "y": 180 },
+    "facing=south,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_right", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_right_bottom", "y": 180 },
+    "facing=south,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_right_bottom", "y": 180 },
+
+    "facing=south,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top", "y": 180 },
+    "facing=south,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top", "y": 180 },
+
+    "facing=south,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top_bottom", "y": 180 },
+    "facing=south,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top_bottom", "y": 180 },
+
+
+
+    "facing=west,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 270 },
+    "facing=west,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 270 },
+    "facing=west,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 270 },
+    "facing=west,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_horizontal", "y": 270 },
+
+    "facing=west,facing_down=false,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 270 },
+    "facing=west,facing_down=false,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 270 },
+    "facing=west,facing_down=false,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 270 },
+    "facing=west,facing_down=false,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_horizontal", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 270 },
+    "facing=west,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 270 },
+    "facing=west,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_vertical", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=false,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_vertical" , "y": 270},
+    "facing=west,facing_down=false,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical", "y": 270 },
+    "facing=west,facing_down=true,facing_left=false,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_vertical", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_all", "y": 270 },
+    "facing=west,facing_down=true,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_all", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom", "y": 270 },
+    "facing=west,facing_down=true,facing_left=true,facing_right=false,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_left_bottom_right", "y": 270 },
+    "facing=west,facing_down=true,facing_left=true,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_left_bottom_right", "y": 270 },
+
+    "facing=west,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top", "y": 270 },
+    "facing=west,facing_down=false,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_bottom", "y": 270 },
+    "facing=west,facing_down=true,facing_left=true,facing_right=false,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_bottom", "y": 270 },
+
+    "facing=west,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_left_top_right", "y": 270 },
+    "facing=west,facing_down=false,facing_left=true,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_left_top_right", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=true": { "model": "btc:block/powered_dungeon_wire_right_bottom", "y": 270 },
+    "facing=west,facing_down=true,facing_left=false,facing_right=true,facing_up=false,powered=false": { "model": "btc:block/dungeon_wire_right_bottom", "y": 270 },
+
+    "facing=west,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top", "y": 270 },
+    "facing=west,facing_down=false,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top", "y": 270 },
+
+    "facing=west,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=true": { "model": "btc:block/powered_dungeon_wire_right_top_bottom", "y": 270 },
+    "facing=west,facing_down=true,facing_left=false,facing_right=true,facing_up=true,powered=false": { "model": "btc:block/dungeon_wire_right_top_bottom", "y": 270 }
+
+
   }
 }
