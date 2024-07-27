@@ -2,6 +2,7 @@ package io.github.tobyrue.btc;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.RailBlock;
 import net.minecraft.block.entity.*;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.entity.player.PlayerEntity;
