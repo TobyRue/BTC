@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -64,105 +65,20 @@ public class DungeonWireBlock extends Block {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING_DOWN, FACING_UP, FACING_LEFT, FACING_RIGHT, FACING, POWERED);
     }
-    /*@Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if(player.isCreative()){
-            System.out.println("click");
-            if(state.get(FACING_UP)) {
-                world.setBlockState(pos, state.with(FACING_UP, false));
-                world.setBlockState(pos, state.with(FACING_DOWN, true));
-            }
-            if(state.get(FACING_DOWN)) {
-                world.setBlockState(pos, state.with(FACING_UP, true));
-                world.setBlockState(pos, state.with(FACING_DOWN, false));
-            }
-        }
-        return ItemActionResult.FAIL;
-    }*/
 
-
-    /*@Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        super.neighborUpdate(state, world, pos, block, fromPos, notify);
-
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-
-            if (neighborState.getBlock() instanceof DungeonWireBlock) {
-                // Do something if the neighboring block is also a DungeonWireBlock
-                // For example, you could update the properties of this block based on the neighboring block
-                // Example:
-
-                if(state.get(FACING) == Direction.NORTH) {
-                    if (direction == Direction.UP) {
-                        world.setBlockState(pos, state.with(FACING_UP, true));
-                    } else if (direction == Direction.DOWN) {
-                        world.setBlockState(pos, state.with(FACING_DOWN, true));
-                    } else if (direction == Direction.EAST && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    } else if (direction == Direction.WEST && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    } else if (direction == Direction.EAST && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    } else if (direction == Direction.WEST && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    }
-                }
-                if(state.get(FACING) == Direction.EAST) {
-                    if (direction == Direction.UP) {
-                        world.setBlockState(pos, state.with(FACING_UP, true));
-                    } else if (direction == Direction.DOWN) {
-                        world.setBlockState(pos, state.with(FACING_DOWN, true));
-                    } else if (direction == Direction.NORTH && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    } else if (direction == Direction.SOUTH && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    } else if (direction == Direction.NORTH && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    } else if (direction == Direction.SOUTH && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    }
-                }
-                if(state.get(FACING) == Direction.SOUTH) {
-                    if (direction == Direction.UP) {
-                        world.setBlockState(pos, state.with(FACING_UP, true));
-                    } else if (direction == Direction.DOWN) {
-                        world.setBlockState(pos, state.with(FACING_DOWN, true));
-                    } else if (direction == Direction.EAST && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    } else if (direction == Direction.WEST && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    } else if (direction == Direction.EAST && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    } else if (direction == Direction.WEST && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    }
-                }
-                if(state.get(FACING) == Direction.WEST) {
-                    if (direction == Direction.UP) {
-                        world.setBlockState(pos, state.with(FACING_UP, true));
-                    } else if (direction == Direction.DOWN) {
-                        world.setBlockState(pos, state.with(FACING_DOWN, true));
-                    } else if (direction == Direction.NORTH && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    } else if (direction == Direction.SOUTH && state.get(FACING_UP)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    } else if (direction == Direction.NORTH && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_LEFT, true));
-                    } else if (direction == Direction.SOUTH && state.get(FACING_DOWN)) {
-                        world.setBlockState(pos, state.with(FACING_RIGHT, true));
-                    }
-                }
-            }
-        }
-    }*/
     static {
         FACING = HorizontalFacingBlock.FACING;
     }
+
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         super.neighborUpdate(state, world, pos, block, fromPos, notify);
+        updateStateBasedOnNeighbors(state, world, pos);
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
         updateStateBasedOnNeighbors(state, world, pos);
     }
 
@@ -171,12 +87,17 @@ public class DungeonWireBlock extends Block {
         boolean facingUp = false;
         boolean facingLeft = false;
         boolean facingRight = false;
+        boolean powered = false;
 
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
-
-
+            if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                if (direction == Direction.UP || direction == Direction.DOWN || direction == Direction.NORTH || direction == Direction.EAST || direction == Direction.SOUTH || direction == Direction.WEST && powered == true) {
+                    powered = true;
+                    System.out.println("Powering");
+                }
+            }
             if (state.get(FACING) == Direction.NORTH){
                 if (neighborState.getBlock() instanceof DungeonWireBlock) {
                     switch (direction) {
@@ -259,7 +180,8 @@ public class DungeonWireBlock extends Block {
                 .with(FACING_DOWN, facingDown)
                 .with(FACING_UP, facingUp)
                 .with(FACING_LEFT, facingLeft)
-                .with(FACING_RIGHT, facingRight);
+                .with(FACING_RIGHT, facingRight)
+                .with(POWERED, powered);
 
         world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS);
     }
