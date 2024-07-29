@@ -31,6 +31,13 @@ public class ModBlocks {
             "ominous_beacon",
             true
     );
+    //STONE_PRESSURE_PLATE = register((String)"stone_pressure_plate", new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).solid().instrument(NoteBlockInstrument.BASEDRUM).requiresTool().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY)));
+
+    public static final PressurePlateBlock DUNGEON_PRESSURE_PLATE = (PressurePlateBlock) register(
+            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().strength(-1.0F, 3600000.0F)),
+            "dungeon_pressure_plate",
+            true
+    );
     public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
             new PedestalBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
