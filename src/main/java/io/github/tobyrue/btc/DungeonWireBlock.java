@@ -107,8 +107,8 @@ public class DungeonWireBlock extends Block {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
 
-            if (!(neighborState.getBlock() instanceof DungeonWireBlock)) {
-                continue; // Skip to the next neighbor if this condition is true
+            if(neighborState.getBlock() instanceof PistonHeadBlock) {
+
             }
 
             if(state.get(ROOT)) {
