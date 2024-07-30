@@ -36,6 +36,7 @@ public class DungeonWireBlock extends Block {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final BooleanProperty ROOT = BooleanProperty.of("root");
     public static final BooleanProperty MAIN = BooleanProperty.of("main");
+    public static final BooleanProperty CONNECTED_MAIN = BooleanProperty.of("connected_main");
     public static DirectionProperty FACING;
 
     public DungeonWireBlock(Settings settings) {
@@ -48,6 +49,7 @@ public class DungeonWireBlock extends Block {
                 .with(FACING, Direction.NORTH)
                 .with(ROOT, false)
                 .with(MAIN, false)
+                .with(CONNECTED_MAIN, false)
                 .with(ROOT_WHERE, RootWhere.NONE)
                 .with(POWERED, false));
     }
@@ -68,13 +70,14 @@ public class DungeonWireBlock extends Block {
                 .with(FACING_RIGHT, false)
                 .with(ROOT, false)
                 .with(MAIN, false)
+                .with(CONNECTED_MAIN, false)
                 .with(ROOT_WHERE, RootWhere.NONE)
                 .with(POWERED, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos()))
                 .with(FACING, ctx.getSide().getOpposite().getOpposite());
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING_DOWN, FACING_UP, FACING_LEFT, FACING_RIGHT, ROOT, MAIN, FACING, ROOT_WHERE, POWERED);
+        builder.add(FACING_DOWN, FACING_UP, FACING_LEFT, FACING_RIGHT, ROOT, MAIN, CONNECTED_MAIN, FACING, ROOT_WHERE, POWERED);
     }
 
     static {
@@ -99,6 +102,7 @@ public class DungeonWireBlock extends Block {
         boolean facingLeft = false;
         boolean facingRight = false;
         boolean powered = false;
+        boolean connectedMain = false;
         RootWhere rootWhere = RootWhere.NONE; // Default or initial value
 
 
@@ -107,177 +111,198 @@ public class DungeonWireBlock extends Block {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
 
-            /*if(neighborState.getBlock() instanceof PistonHeadBlock) {
 
-            }*/
+            // If any neighbor is powered, set the flag to true
 
             if(state.get(ROOT)) {
-                world.setBlockState(pos, state.with(POWERED, true), NOTIFY_ALL_AND_REDRAW); // ROOT is true, so POWERED must be true
+                powered = true; // ROOT is true, so POWERED must be true
                 System.out.println("Root Powered," + state.get(POWERED));
                 world.updateNeighbors(pos, this);
             }
+
             /*if(!state.get(POWERED) && state.get(ROOT)) {
-                world.setBlockState(pos, state.with(POWERED, false), 11);
+                powered = false;
                 System.out.println("Root UnPowered");
             }*/
             if(neighborState.getBlock()  instanceof DungeonWireBlock) {
+                if (neighborState.get(MAIN) || neighborState.get(CONNECTED_MAIN)) {
+                    connectedMain = true;
+                    System.out.println("connected" + pos);
+
+                } else {
+                    connectedMain = false;
+                    System.out.println("disconnected" + pos);
+                }
+                if (!neighborState.get(CONNECTED_MAIN)) {
+                    powered = false;
+                }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.UP) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.UP), 11);
+                            rootWhere = RootWhere.UP;
                         }
                     }
                 }
+                if (state.get(CONNECTED_MAIN) && neighborState.get(POWERED)) {
+                    System.out.println("powering" + pos);
+                    powered = true;
+                }
+                if (state.get(CONNECTED_MAIN) && !neighborState.get(POWERED)) {
+                    System.out.println("unpowering" + pos);
+                    powered = false;
+                }
+                if (neighborState.get(ROOT) && state.get(MAIN)){
+                    powered = true;
+                } else if (!neighborState.get(ROOT) && state.get(MAIN)) {
+                    powered = false;
+                }
+
+//                if (state.get(CONNECTED_MAIN) && !state.get(MAIN) && neighborState.get(POWERED)){
+//                    System.out.println("powering" + pos);
+//                    powered = true;
+//                }
+//                if (!neighborState.get(POWERED)){
+//                    powered = false;
+//                }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.UP) {
                     if (direction == Direction.UP) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.UP), 11);
+                            rootWhere = RootWhere.UP;
                         }
                     }
                 }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.DOWN) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.DOWN), 11);
+                            rootWhere = RootWhere.DOWN;
                         }
                     }
                 }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.DOWN) {
                     if (direction == Direction.DOWN) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.DOWN), 11);
+                            rootWhere = RootWhere.DOWN;
                         }
                     }
                 }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.NORTH) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.NORTH), 11);
+                            rootWhere = RootWhere.NORTH;
                         }
                     }
                 }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.NORTH) {
                     if (direction == Direction.NORTH) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.NORTH), 11);
+                            rootWhere = RootWhere.NORTH;
                         }
                     }
                 }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.EAST) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.EAST), 11);
+                            rootWhere = RootWhere.EAST;
                         }
                     }
                 }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.EAST) {
                     if (direction == Direction.EAST) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.EAST), 11);
+                            rootWhere = RootWhere.EAST;
                         }
                     }
                 }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.SOUTH) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.SOUTH), 11);
+                            rootWhere = RootWhere.SOUTH;
                         }
                     }
                 }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.SOUTH) {
                     if (direction == Direction.SOUTH) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.SOUTH), 11);
+                            rootWhere = RootWhere.SOUTH;
                         }
                     }
                 }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.WEST) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.WEST), 11);
+                            rootWhere = RootWhere.WEST;
                         }
                     }
                 }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.WEST) {
                     if (direction == Direction.WEST) {
                         if (state.get(MAIN)) {
-                            world.setBlockState(pos, state.with(ROOT_WHERE, RootWhere.WEST), 11);
+                            rootWhere = RootWhere.WEST;
                         }
                     }
                 }
-                if (neighborState.get(ROOT) && state.get(MAIN)){
-                    world.setBlockState(pos, state.with(POWERED, true), 11);
-                } else if (!neighborState.get(ROOT) && state.get(MAIN)) {
-                    world.setBlockState(pos, state.with(POWERED, false), 11);
-                }
-                if (neighborState.get(POWERED)){
-                    world.setBlockState(pos, state.with(POWERED, true), 11);
-                } else if (!neighborState.get(POWERED)){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
-                }
-
             }
             if ((neighborState.getBlock() instanceof DungeonWireBlock)) {
                 if (direction == Direction.UP) {
                     if (state.get(ROOT_WHERE) == RootWhere.UP) {
-                        world.setBlockState(pos, state.with(POWERED, true), 11);
+                        powered = true;
                     }
                 }
                 if (direction == Direction.DOWN) {
                     if (state.get(ROOT_WHERE) == RootWhere.DOWN) {
-                        world.setBlockState(pos, state.with(POWERED, true), 11);
+                        powered = true;
                     }
                 }
                 if (direction == Direction.NORTH) {
                     if (state.get(ROOT_WHERE) == RootWhere.NORTH) {
-                        world.setBlockState(pos, state.with(POWERED, true), 11);
+                        powered = true;
                     }
                 }
                 if (direction == Direction.EAST) {
                     if (state.get(ROOT_WHERE) == RootWhere.EAST) {
-                        world.setBlockState(pos, state.with(POWERED, true), 11);
+                        powered = true;
                     }
                 }
                 if (direction == Direction.SOUTH) {
                     if (state.get(ROOT_WHERE) == RootWhere.SOUTH) {
-                        world.setBlockState(pos, state.with(POWERED, true), 11);
+                        powered = true;
                     }
                 }
                 if (direction == Direction.WEST) {
                     if (state.get(ROOT_WHERE) == RootWhere.WEST) {
-                        world.setBlockState(pos, state.with(POWERED, true), 11);
+                        powered = true;
                     }
                 }
             }
             if (!(neighborState.getBlock() instanceof DungeonWireBlock)) {
                 if(direction == Direction.UP) {
                     if(state.get(ROOT_WHERE) == RootWhere.UP){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
+                        powered = false;
                     }
                 }
                 if(direction == Direction.DOWN) {
                     if(state.get(ROOT_WHERE) == RootWhere.DOWN){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
+                        powered = false;
                     }
                 }
                 if(direction == Direction.NORTH) {
                     if(state.get(ROOT_WHERE) == RootWhere.NORTH){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
+                        powered = false;
                     }
                 }
                 if(direction == Direction.EAST) {
                     if(state.get(ROOT_WHERE) == RootWhere.EAST){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
+                        powered = false;
                     }
                 }
                 if(direction == Direction.SOUTH) {
                     if(state.get(ROOT_WHERE) == RootWhere.SOUTH){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
+                        powered = false;
                     }
                 }
                 if(direction == Direction.WEST) {
                     if(state.get(ROOT_WHERE) == RootWhere.WEST){
-                        world.setBlockState(pos, state.with(POWERED, false), 11);
+                        powered = false;
                     }
                 }
             }
@@ -403,8 +428,9 @@ public class DungeonWireBlock extends Block {
                 .with(FACING_LEFT, facingLeft)
                 .with(FACING_RIGHT, facingRight)
                 .with(ROOT_WHERE, rootWhere)
+                .with(CONNECTED_MAIN, connectedMain)
                 .with(POWERED, powered);
         //System.out.println("Updating state of block at " + pos + " to " + newState);
-        world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS);
+        world.setBlockState(pos, newState, NOTIFY_ALL_AND_REDRAW);
     }
 }
