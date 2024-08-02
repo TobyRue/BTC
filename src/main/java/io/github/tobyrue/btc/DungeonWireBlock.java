@@ -105,7 +105,7 @@ public class DungeonWireBlock extends Block {
         boolean powered = false;
         boolean connectedMain = false;
         RootWhere rootWhere = RootWhere.NONE; // Default or initial value
-
+        boolean tempPowered = false;
 
 
         for (Direction direction : Direction.values()) {
@@ -118,7 +118,7 @@ public class DungeonWireBlock extends Block {
             // If any neighbor is powered, set the flag to true
 
             if(state.get(ROOT)) {
-                powered = true; // ROOT is true, so POWERED must be true
+                tempPowered = true; // ROOT is true, so POWERED must be true
                 System.out.println("Root Powered," + state.get(POWERED));
                 world.updateNeighbors(pos, this);
             }
@@ -128,6 +128,7 @@ public class DungeonWireBlock extends Block {
                 System.out.println("Root UnPowered");
             }*/
             if(neighborState.getBlock()  instanceof DungeonWireBlock) {
+
                 if (neighborState.get(MAIN) || neighborState.get(CONNECTED_MAIN)) {
                     connectedMain = true;
                     System.out.println("connected" + pos);
@@ -137,7 +138,7 @@ public class DungeonWireBlock extends Block {
                     System.out.println("disconnected" + pos);
                 }
                 if (!neighborState.get(CONNECTED_MAIN)) {
-                    powered = false;
+                    tempPowered = false;
                 }
                 if (neighborState.get(ROOT)) {
                     if (direction == Direction.UP) {
@@ -148,24 +149,24 @@ public class DungeonWireBlock extends Block {
                 }
                 if (state.get(CONNECTED_MAIN) && neighborState.get(POWERED)) {
                     System.out.println("powering" + pos);
-                    powered = true;
+                    tempPowered = true;
                 }
                 if (state.get(CONNECTED_MAIN) && !neighborState.get(POWERED)) {
                     System.out.println("unpowering" + pos);
-                    powered = false;
+                    tempPowered = false;
                 }
                 if (neighborState.get(ROOT) && state.get(MAIN)){
-                    powered = true;
+                    tempPowered = true;
                 } else if (!neighborState.get(ROOT) && state.get(MAIN)) {
-                    powered = false;
+                    tempPowered = false;
                 }
 
 //                if (state.get(CONNECTED_MAIN) && !state.get(MAIN) && neighborState.get(POWERED)){
 //                    System.out.println("powering" + pos);
-//                    powered = true;
+//                    tempPowered = true;
 //                }
 //                if (!neighborState.get(POWERED)){
-//                    powered = false;
+//                    tempPowered = false;
 //                }
                 if (neighborState.get(ROOT_WHERE) == RootWhere.UP) {
                     if (direction == Direction.UP) {
@@ -248,64 +249,64 @@ public class DungeonWireBlock extends Block {
             if ((neighborState.getBlock() instanceof DungeonWireBlock)) {
                 if (direction == Direction.UP) {
                     if (state.get(ROOT_WHERE) == RootWhere.UP) {
-                        powered = true;
+                        tempPowered = true;
                     }
                 }
                 if (direction == Direction.DOWN) {
                     if (state.get(ROOT_WHERE) == RootWhere.DOWN) {
-                        powered = true;
+                        tempPowered = true;
                     }
                 }
                 if (direction == Direction.NORTH) {
                     if (state.get(ROOT_WHERE) == RootWhere.NORTH) {
-                        powered = true;
+                        tempPowered = true;
                     }
                 }
                 if (direction == Direction.EAST) {
                     if (state.get(ROOT_WHERE) == RootWhere.EAST) {
-                        powered = true;
+                        tempPowered = true;
                     }
                 }
                 if (direction == Direction.SOUTH) {
                     if (state.get(ROOT_WHERE) == RootWhere.SOUTH) {
-                        powered = true;
+                        tempPowered = true;
                     }
                 }
                 if (direction == Direction.WEST) {
                     if (state.get(ROOT_WHERE) == RootWhere.WEST) {
-                        powered = true;
+                        tempPowered = true;
                     }
                 }
             }
             if (!(neighborState.getBlock() instanceof DungeonWireBlock)) {
                 if(direction == Direction.UP) {
                     if(state.get(ROOT_WHERE) == RootWhere.UP){
-                        powered = false;
+                        tempPowered = false;
                     }
                 }
                 if(direction == Direction.DOWN) {
                     if(state.get(ROOT_WHERE) == RootWhere.DOWN){
-                        powered = false;
+                        tempPowered = false;
                     }
                 }
                 if(direction == Direction.NORTH) {
                     if(state.get(ROOT_WHERE) == RootWhere.NORTH){
-                        powered = false;
+                        tempPowered = false;
                     }
                 }
                 if(direction == Direction.EAST) {
                     if(state.get(ROOT_WHERE) == RootWhere.EAST){
-                        powered = false;
+                        tempPowered = false;
                     }
                 }
                 if(direction == Direction.SOUTH) {
                     if(state.get(ROOT_WHERE) == RootWhere.SOUTH){
-                        powered = false;
+                        tempPowered = false;
                     }
                 }
                 if(direction == Direction.WEST) {
                     if(state.get(ROOT_WHERE) == RootWhere.WEST){
-                        powered = false;
+                        tempPowered = false;
                     }
                 }
             }
@@ -424,6 +425,7 @@ public class DungeonWireBlock extends Block {
                 }
             }
         }
+        powered = tempPowered;
 
         BlockState newState = state
                 .with(FACING_DOWN, facingDown)
