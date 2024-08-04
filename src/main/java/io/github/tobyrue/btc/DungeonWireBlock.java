@@ -107,24 +107,40 @@ public class DungeonWireBlock extends Block {
         boolean wasPowered;
         RootWhere rootWhere = RootWhere.NONE; // Default or initial value
 
-        Direction[][] directionPairs = {
-                {Direction.DOWN, Direction.UP},
-                {Direction.UP, Direction.DOWN},
-                {Direction.NORTH, Direction.SOUTH},
-                {Direction.SOUTH, Direction.NORTH},
-                {Direction.EAST, Direction.WEST},
-                {Direction.WEST, Direction.EAST}
-        };
 
-        for (Direction[] pair : directionPairs) {
-            for (Direction direction : pair) {
-                BlockPos neighborPos = pos.offset(direction);
-                BlockState neighborState = world.getBlockState(neighborPos);
-                if(neighborState.getBlock()  instanceof DungeonWireBlock && !state.get(MAIN)) {
+        Direction[] customOrder = {Direction.UP, Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST};
+
+
+
+        for (Direction direction : customOrder) {
+            BlockPos neighborPos = pos.offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            if (direction == Direction.DOWN || direction == Direction.NORTH || direction == Direction.WEST) {
+                if(neighborState.getBlock()  instanceof DungeonWireBlock) {
                     if (neighborState.get(POWERED)) {
                         powered = true;
                     } else {
                         powered = false;
+                    }
+                    if (neighborState.get(ROOT)) {
+                        powered = true;
+                    }
+                }
+            }
+        }
+        for (Direction direction : Direction.values()) {
+            BlockPos neighborPos = pos.offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            if (direction == Direction.UP || direction == Direction.SOUTH || direction == Direction.EAST) {
+                if (neighborState.getBlock() instanceof DungeonWireBlock && !state.get(MAIN)) {
+
+                    if (neighborState.get(POWERED)) {
+                        powered = true;
+                    } else {
+                        powered = false;
+                    }
+                    if (neighborState.get(ROOT)) {
+                        powered = true;
                     }
                 }
             }
