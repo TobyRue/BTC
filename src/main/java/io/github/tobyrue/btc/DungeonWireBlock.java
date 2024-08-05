@@ -424,4 +424,4 @@ public class DungeonWireBlock extends Block {
         //System.out.println("Updating state of block at " + pos + " to " + newState);
         world.setBlockState(pos, newState, NOTIFY_ALL_AND_REDRAW);
     }
-}Blocks
+}
