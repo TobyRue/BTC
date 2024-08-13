@@ -51,6 +51,12 @@ public class ModBlocks {
             "dungeon_wire",
             true
     );
+    public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
+            new DungeonDoorBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+
+            "dungeon_door",
+            true
+    );
 
 
     public static void initialize() {
