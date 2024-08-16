@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DungeonWireBlock extends Block {
     public static final EnumProperty<RootWhere> ROOT_WHERE = EnumProperty.of("root_where", RootWhere.class);
+    public static final EnumProperty<PowerWhere> POWER_WHERE = EnumProperty.of("power_where", PowerWhere.class);
     public static final MapCodec<DungeonWireBlock> CODEC = createCodec(DungeonWireBlock::new);
     public static final BooleanProperty FACING_DOWN = BooleanProperty.of("facing_down");
     public static final BooleanProperty FACING_UP = BooleanProperty.of("facing_up");
@@ -39,6 +40,7 @@ public class DungeonWireBlock extends Block {
                 .with(ROOT, false)
                 .with(MAIN, false)
                 .with(ROOT_WHERE, RootWhere.NONE)
+                .with(POWER_WHERE, PowerWhere.NONE)
                 .with(POWERED, false));
     }
 
@@ -59,12 +61,13 @@ public class DungeonWireBlock extends Block {
                 .with(ROOT, false)
                 .with(MAIN, false)
                 .with(ROOT_WHERE, RootWhere.NONE)
+                .with(POWER_WHERE, PowerWhere.NONE)
                 .with(POWERED, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos()))
                 .with(FACING, ctx.getSide().getOpposite().getOpposite());
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING_DOWN, FACING_UP, FACING_LEFT, FACING_RIGHT, ROOT, MAIN, FACING, ROOT_WHERE, POWERED);
+        builder.add(FACING_DOWN, FACING_UP, FACING_LEFT, FACING_RIGHT, ROOT, MAIN, FACING, ROOT_WHERE, POWER_WHERE, POWERED);
     }
 
     static {
@@ -89,47 +92,117 @@ public class DungeonWireBlock extends Block {
         boolean facingLeft = false;
         boolean facingRight = false;
         boolean powered = false;
+        boolean wasPowered = false;
         RootWhere rootWhere = RootWhere.NONE; // Default or initial value
 
 
-        Direction[] customOrder = {Direction.UP, Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST};
-
-
-
-        for (Direction direction : customOrder) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            if (direction == Direction.DOWN || direction == Direction.NORTH || direction == Direction.WEST) {
-                if(neighborState.getBlock()  instanceof DungeonWireBlock) {
-                    if (neighborState.get(POWERED)) {
-                        powered = true;
-                        break;
-                    } else {
-                        powered = false;
-                    }
-                    if (neighborState.get(ROOT)) {
-                        powered = true;
-                    }
-                }
-            }
-        }
+//        Direction[] customOrder = {Direction.UP, Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST};
+//
+//
+//
+//        for (Direction direction : customOrder) {
+//            BlockPos neighborPos = pos.offset(direction);
+//            BlockState neighborState = world.getBlockState(neighborPos);
+//            if (direction == Direction.UP) {
+//                wasPowered = powered;
+//            }
+//            if (direction == Direction.DOWN || direction == Direction.NORTH || direction == Direction.WEST) {
+//                if(neighborState.getBlock()  instanceof DungeonWireBlock) {
+//                    if(wasPowered != powered) {
+//                        break;
+//                    }
+//                    if (neighborState.get(POWERED)) {
+//                        powered = true;
+//                        System.out.println("powered " + pos +  " " + direction);
+//                    } else {
+//                        powered = false;
+//                        System.out.println("unpowered " + pos +  " " + direction);
+//                    }
+//                    if (neighborState.get(ROOT)) {
+//                        powered = true;
+//                    }
+//                }
+//            }
+//        }
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
-            if (direction == Direction.UP || direction == Direction.SOUTH || direction == Direction.EAST) {
-                if (neighborState.getBlock() instanceof DungeonWireBlock && !state.get(MAIN)) {
-
-                    if (neighborState.get(POWERED)) {
-                        powered = true;
-                        break;
-                    } else {
-                        powered = false;
+            if(neighborState.getBlock() instanceof DungeonWireBlock && !state.get(MAIN)) {
+                if (state.get(POWER_WHERE) == PowerWhere.UP) {
+                    if (direction == Direction.UP) {
+                        if (neighborState.get(POWERED)) {
+                            powered = true;
+                        } else {
+                            powered = false;
+                        }
                     }
-                    if (neighborState.get(ROOT)) {
-                        powered = true;
+                }
+                if (state.get(POWER_WHERE) == PowerWhere.DOWN) {
+                    if (direction == Direction.DOWN) {
+                        if (neighborState.get(POWERED)) {
+                            powered = true;
+                        } else {
+                            powered = false;
+                        }
+                    }
+                }
+                if (state.get(POWER_WHERE) == PowerWhere.NORTH) {
+                    if (direction == Direction.NORTH) {
+                        if (neighborState.get(POWERED)) {
+                            powered = true;
+                        } else {
+                            powered = false;
+                        }
+                    }
+                }
+                if (state.get(POWER_WHERE) == PowerWhere.EAST) {
+                    if (direction == Direction.EAST) {
+                        if (neighborState.get(POWERED)) {
+                            powered = true;
+                        } else {
+                            powered = false;
+                        }
+                    }
+                }
+                if (state.get(POWER_WHERE) == PowerWhere.SOUTH) {
+                    if (direction == Direction.SOUTH) {
+                        if (neighborState.get(POWERED)) {
+                            powered = true;
+                        } else {
+                            powered = false;
+                        }
+                    }
+                }
+                if (state.get(POWER_WHERE) == PowerWhere.WEST) {
+                    if (direction == Direction.WEST) {
+                        if (neighborState.get(POWERED)) {
+                            powered = true;
+                        } else {
+                            powered = false;
+                        }
                     }
                 }
             }
+//            if (direction == Direction.DOWN) {
+//                wasPowered = powered;
+//            }
+//            if (direction == Direction.UP || direction == Direction.SOUTH || direction == Direction.EAST) {
+//                if (neighborState.getBlock() instanceof DungeonWireBlock && !state.get(MAIN)) {
+//                    if(wasPowered != powered) {
+//                        break;
+//                    }
+//                    if (neighborState.get(POWERED)) {
+//                        powered = true;
+//                        System.out.println("powered " + pos +  " " + direction);
+//                    } else {
+//                        powered = false;
+//                        System.out.println("unpowered " + pos +  " " + direction);
+//                    }
+//                    if (neighborState.get(ROOT)) {
+//                        powered = true;
+//                    }
+//                }
+//            }
         }
 
 
@@ -287,8 +360,8 @@ public class DungeonWireBlock extends Block {
                     }
                 }
             }
-            if (state.get(FACING) == Direction.UP){
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+            if (neighborState.getBlock() instanceof DungeonWireBlock || neighborState.getBlock() instanceof DungeonDoorBlock) {
+                if (state.get(FACING) == Direction.UP) {
                     switch (direction) {
                         case SOUTH:
                             facingUp = true;
@@ -305,9 +378,7 @@ public class DungeonWireBlock extends Block {
                         // Add more cases as needed
                     }
                 }
-            }
-            if (state.get(FACING) == Direction.DOWN){
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                if (state.get(FACING) == Direction.DOWN) {
                     switch (direction) {
                         case SOUTH:
                             facingDown = true;
@@ -324,9 +395,7 @@ public class DungeonWireBlock extends Block {
                         // Add more cases as needed
                     }
                 }
-            }
-            if (state.get(FACING) == Direction.NORTH){
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                if (state.get(FACING) == Direction.NORTH) {
                     switch (direction) {
                         case DOWN:
                             facingDown = true;
@@ -343,9 +412,7 @@ public class DungeonWireBlock extends Block {
                         // Add more cases as needed
                     }
                 }
-            }
-            if (state.get(FACING) == Direction.WEST){
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                if (state.get(FACING) == Direction.WEST) {
                     switch (direction) {
                         case DOWN:
                             facingDown = true;
@@ -362,9 +429,7 @@ public class DungeonWireBlock extends Block {
                         // Add more cases as needed
                     }
                 }
-            }
-            if (state.get(FACING) == Direction.SOUTH){
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                if (state.get(FACING) == Direction.SOUTH) {
                     switch (direction) {
                         case DOWN:
                             facingDown = true;
@@ -381,9 +446,7 @@ public class DungeonWireBlock extends Block {
                         // Add more cases as needed
                     }
                 }
-            }
-            if (state.get(FACING) == Direction.EAST){
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                if (state.get(FACING) == Direction.EAST) {
                     switch (direction) {
                         case DOWN:
                             facingDown = true;
@@ -397,7 +460,7 @@ public class DungeonWireBlock extends Block {
                         case NORTH:
                             facingRight = true;
                             break;
-                        // Add more cases as needed
+                            // Add more cases as needed
                     }
                 }
             }
