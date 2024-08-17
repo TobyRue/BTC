@@ -127,7 +127,7 @@ public class DungeonWireBlock extends Block {
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
-            if(neighborState.getBlock() instanceof DungeonWireBlock && !state.get(MAIN)) {
+            if(neighborState.getBlock() instanceof DungeonWireBlock && !state.get(MAIN) && !state.get(ROOT)) {
                 if (state.get(POWER_WHERE) == PowerWhere.UP) {
                     if (direction == Direction.UP) {
                         if (neighborState.get(POWERED)) {
