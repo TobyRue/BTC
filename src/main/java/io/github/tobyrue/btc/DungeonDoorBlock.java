@@ -6,9 +6,11 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -18,7 +20,15 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.tick.OrderedTick;
+import net.minecraft.world.tick.TickPriority;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.math.random.Random;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
@@ -30,6 +40,7 @@ public class DungeonDoorBlock extends Block {
     // Define the full block shape.
     private static final VoxelShape FULL_BLOCK_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
     boolean open = false;
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public DungeonDoorBlock(Settings settings) {
         super(settings);
@@ -56,14 +67,74 @@ public class DungeonDoorBlock extends Block {
     }
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+
         if (state.get(NORMAL)) {
-            // Toggle the OPEN state when clicked.
-            boolean isOpen = state.get(OPEN);
-            BlockState newState = state.with(OPEN, !isOpen);
-            world.setBlockState(pos, newState, NOTIFY_ALL_AND_REDRAW);
-            return ItemActionResult.SUCCESS;
+//            if (!state.get(OPEN)) {
+//                // Toggle the OPEN state to true (open the block)
+//                BlockState newState = state.with(OPEN, true);
+//                world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+//
+//                // Schedule the task to reset the OPEN state after 7 seconds
+//                scheduler.schedule(() -> {
+//                    world.getServer().execute(() -> {
+//                        BlockState updatedState = world.getBlockState(pos);
+//                        if (updatedState.get(OPEN)) {
+//                            world.setBlockState(pos, updatedState.with(OPEN, false), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+//                        }
+//                    });
+//                }, 4, TimeUnit.SECONDS);
+            if (!state.get(OPEN)) {
+                BlockState newState = state.with(OPEN, true);
+                world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+                scheduler.schedule(() -> {
+                    world.getServer().execute(() -> {
+                        BlockState updatedState = world.getBlockState(pos);
+                        if (updatedState.get(OPEN)) {
+                            world.setBlockState(pos, updatedState.with(OPEN, false), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+                        }
+                    });
+                }, 4, TimeUnit.SECONDS);
+
+                return ItemActionResult.SUCCESS;
+            } else {
+                return ItemActionResult.FAIL;
+            }
         }
         return ItemActionResult.FAIL;
+    }
+//    public ActionResult onUse(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+//        BlockState state = world.getBlockState(pos);
+//
+//        if (state.get(NORMAL)) {
+//            boolean isOpen = state.get(OPEN);
+//            BlockState newState = state.with(OPEN, !isOpen);
+//            world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+//
+//            // Schedule the task to reset the OPEN state after 7 seconds
+//            scheduler.schedule(() -> {
+//                world.getServer().execute(() -> {
+//                    BlockState updatedState = world.getBlockState(pos);
+//                    if (updatedState.get(OPEN)) {
+//                        world.setBlockState(pos, updatedState.with(OPEN, false), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+//                    }
+//                });
+//            }, 7, TimeUnit.SECONDS);
+//
+//            return ActionResult.SUCCESS;
+//        }
+//
+//        return ActionResult.FAIL;
+//    }
+
+
+
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        // Close the block when the scheduled tick happens.
+        if (state.get(OPEN)) {
+            world.setBlockState(pos, state.with(OPEN, false), NOTIFY_ALL_AND_REDRAW);
+        }
     }
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -93,6 +164,21 @@ public class DungeonDoorBlock extends Block {
                     } else {
                         open = false;
                     }
+                }
+            }
+        }
+        if (state.get(NORMAL)) {
+
+            for (Direction direction : Direction.values()) {
+                BlockPos neighborPos = pos.offset(direction);
+                BlockState neighborState = world.getBlockState(neighborPos);
+                if (neighborState.getBlock() instanceof DungeonDoorBlock) {
+                    if (neighborState.get(OPEN)) {
+                        open = true;
+                    } //else {
+//                        open = false;
+//                        System.out.println("trying to close");
+//                    }
                 }
             }
         }
