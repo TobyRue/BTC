@@ -7,8 +7,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -28,14 +32,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
 public class DungeonDoorBlock extends Block {
-    public static final BooleanProperty NORMAL = BooleanProperty.of("normal");
+    public static final BooleanProperty WIRED = BooleanProperty.of("wired");
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
 
     // Define the 4x4x4 cube shape.
     private static final VoxelShape CUBE_SHAPE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
     // Define the full block shape.
     private static final VoxelShape FULL_BLOCK_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-    boolean open = false;
+
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -43,19 +47,19 @@ public class DungeonDoorBlock extends Block {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OPEN, false)
-                .with(NORMAL, true));
+                .with(WIRED, false));
     }
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(OPEN, false)
-                .with(NORMAL, true);
+                .with(WIRED, false);
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
-        builder.add(NORMAL);
+        builder.add(WIRED);
     }
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
@@ -63,18 +67,25 @@ public class DungeonDoorBlock extends Block {
         updateStateBasedOnNeighbors(state, world, pos);
     }
 
+//    @Override
+//    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+//        if (state.get(WIRED) && !state.get(OPEN)) {
+//            BlockState newState = state.with(OPEN, true);
+//            world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+//            return ItemActionResult.SUCCESS;
+//        }
+//        return ItemActionResult.FAIL;
+//    }
+
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.get(NORMAL) && !state.get(OPEN)) {
-            BlockState newState = state.with(OPEN, true);
-            world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-            return ItemActionResult.SUCCESS;
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if(!state.get(WIRED)) {
+            return open(state, world, pos);
         }
-        return ItemActionResult.FAIL;
+        return super.onUse(state, world, pos, player, hit);
     }
 
-
-//    @Override
+    //    @Override
 //    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 //        if (state.get(OPEN)) {
 //            world.setBlockState(pos, state.with(OPEN, false), NOTIFY_ALL_AND_REDRAW);
@@ -83,7 +94,7 @@ public class DungeonDoorBlock extends Block {
 //    public ActionResult onUse(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 //        BlockState state = world.getBlockState(pos);
 //
-//        if (state.get(NORMAL)) {
+//        if (state.get(WIRED)) {
 //            boolean isOpen = state.get(OPEN);
 //            BlockState newState = state.with(OPEN, !isOpen);
 //            world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
@@ -114,6 +125,24 @@ public class DungeonDoorBlock extends Block {
 //            world.setBlockState(pos, state.with(OPEN, false), NOTIFY_ALL_AND_REDRAW);
 //        }
 //    }
+    private ActionResult open(BlockState state, World world, BlockPos pos) {
+        if(!state.get(OPEN)) {
+            world.setBlockState(pos, state.with(OPEN, true));
+            world.playSound(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f, true);
+            scheduler.schedule(() -> {
+                world.getServer().execute(() -> {
+                    BlockState currentState = world.getBlockState(pos);
+                    if(currentState.getBlock() == ModBlocks.DUNGEON_DOOR && currentState.get(OPEN)) {
+                        world.setBlockState(pos, currentState.with(OPEN, false));
+                    }
+                });
+            }, 4, TimeUnit.SECONDS);
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
+    }
+    
+    
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return state.get(OPEN) ? CUBE_SHAPE : FULL_BLOCK_SHAPE;
@@ -137,62 +166,36 @@ public class DungeonDoorBlock extends Block {
     private void updateStateBasedOnNeighbors(BlockState state, World world, BlockPos pos) {
 
 
-        if (!state.get(NORMAL)) {
+//        if (!state.get(WIRED)) {
+//            for (Direction direction : Direction.values()) {
+//                BlockPos neighborPos = pos.offset(direction);
+//                BlockState neighborState = world.getBlockState(neighborPos);
+//                if (neighborState.getBlock() instanceof DungeonWireBlock) {
+//                    if (neighborState.get(POWERED)) {
+//                        open = true;
+//                        break; // No need to check further, as we only need one powered neighbor.
+//                    } else {
+//                        open = false;
+//                    }
+//                }
+//            }
+//        }
+        if (state.get(WIRED)) {
+
+
+
             for (Direction direction : Direction.values()) {
                 BlockPos neighborPos = pos.offset(direction);
                 BlockState neighborState = world.getBlockState(neighborPos);
-                if (neighborState.getBlock() instanceof DungeonWireBlock) {
-                    if (neighborState.get(POWERED)) {
-                        open = true;
-                        break; // No need to check further, as we only need one powered neighbor.
-                    } else {
-                        open = false;
-                    }
-                }
-            }
-        }
-        if (state.get(NORMAL)) {
 
 
-
-            if (state.get(OPEN)) {
-                scheduler.schedule(() -> {
-                    world.getServer().execute(() -> {
-                        BlockState currentState = world.getBlockState(pos);
-                        if (currentState.get(OPEN)) {
-                        }
-
-                    });
-                }, 4, TimeUnit.SECONDS);
-            }
-            for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = pos.offset(direction);
-                BlockState neighborState = world.getBlockState(neighborPos);
-                if (neighborState.getBlock() instanceof DungeonDoorBlock) {
-                    if (neighborState.get(OPEN) && !state.get(OPEN)) {
-                        open = true;
-                    }
-                    if (neighborState.get(OPEN)) {
-                        scheduler.schedule(() -> {
-                            world.getServer().execute(() -> {
-                                BlockState currentState = world.getBlockState(pos);
-                                if (currentState.get(OPEN)) {
-                                    world.setBlockState(pos, currentState.with(OPEN, false), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-                                }
-
-                            });
-                        }, 4, TimeUnit.SECONDS);
-                    }
-                }
+                
             }
         }
 
         // Propagate the open state to adjacent blocks if it's being opened.
 
         // Update the current block's state.
-        BlockState newState = state
-        .with(OPEN, open);
-        world.setBlockState(pos, newState, NOTIFY_ALL_AND_REDRAW);
     }
 }
 
