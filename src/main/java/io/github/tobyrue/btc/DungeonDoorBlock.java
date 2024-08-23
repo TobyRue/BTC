@@ -15,6 +15,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -24,6 +25,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,7 @@ public class DungeonDoorBlock extends Block {
     // Define the full block shape.
     private static final VoxelShape FULL_BLOCK_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
+    public static final int MAX_DISTANCE = 7;
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -76,13 +79,47 @@ public class DungeonDoorBlock extends Block {
 //        }
 //        return ItemActionResult.FAIL;
 //    }
+    private Set<BlockPos> findDoors(World world, BlockPos originPos) {
+        HashSet<BlockPos> found = new HashSet<>();
+        Queue<Pair<BlockPos, Integer>> queue = new LinkedList<>();
+        BlockState originState = world.getBlockState(originPos);
+
+        queue.add(new Pair<>(originPos, 0));
+
+        while(!queue.isEmpty()) {
+            var entry = queue.poll();
+            var pos = entry.getLeft();
+            int distance = entry.getRight();
+
+            if(distance < MAX_DISTANCE) {
+
+                for(Direction direction : Direction.values()) {
+                    var neighborPos = pos.offset(direction);
+                    var neighborState = world.getBlockState(neighborPos);
+
+                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock && neighborState.get(WIRED) == originState.get(WIRED)) {
+                        queue.add(new Pair<>(neighborPos, distance + 1));
+                        found.add(neighborPos);
+                    }
+                }
+            }
+        }
+        return found;
+    }
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if(!state.get(WIRED)) {
-            return open(state, world, pos);
+//        if(!state.get(WIRED)) {
+            //return open(state, world, pos);
+//        }
+        if(!state.get(WIRED) && !state.get(OPEN)) {
+            for (BlockPos offsetPos : findDoors(world, pos)) {
+                open(world.getBlockState(offsetPos), world, offsetPos);
+            }
         }
-        return super.onUse(state, world, pos, player, hit);
+
+        return ActionResult.SUCCESS;
+                //super.onUse(state, world, pos, player, hit);
     }
 
     //    @Override
