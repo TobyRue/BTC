@@ -475,5 +475,12 @@ public class DungeonWireBlock extends Block {
                 .with(POWERED, powered);
         //System.out.println("Updating state of block at " + pos + " to " + newState);
         world.setBlockState(pos, newState, NOTIFY_ALL_AND_REDRAW);
+
+        BlockState pointedToState = world.getBlockState(pos.offset(Direction.DOWN));
+        if(pointedToState.getBlock() instanceof IDungeonWireAction action) {
+            action.onDungeonWireChange(pointedToState, world, pos.offset(Direction.DOWN), Direction.UP, powered);
+        }
+
     }
+
 }

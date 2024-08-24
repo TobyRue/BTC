@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
-public class DungeonDoorBlock extends Block {
+public class DungeonDoorBlock extends Block implements IDungeonWireAction{
     public static final BooleanProperty WIRED = BooleanProperty.of("wired");
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
 
@@ -92,7 +92,7 @@ public class DungeonDoorBlock extends Block {
             int distance = entry.getRight();
 
             if(distance < MAX_DISTANCE) {
-
+//single block on clicked does not change fix me
                 for(Direction direction : Direction.values()) {
                     var neighborPos = pos.offset(direction);
                     var neighborState = world.getBlockState(neighborPos);
@@ -114,7 +114,7 @@ public class DungeonDoorBlock extends Block {
 //        }
         if(!state.get(WIRED) && !state.get(OPEN)) {
             for (BlockPos offsetPos : findDoors(world, pos)) {
-                open(world.getBlockState(offsetPos), world, offsetPos);
+                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
             }
         }
 
@@ -162,24 +162,34 @@ public class DungeonDoorBlock extends Block {
 //            world.setBlockState(pos, state.with(OPEN, false), NOTIFY_ALL_AND_REDRAW);
 //        }
 //    }
-    private ActionResult open(BlockState state, World world, BlockPos pos) {
-        if(!state.get(OPEN)) {
-            world.setBlockState(pos, state.with(OPEN, true));
+
+    private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open) {
+        return setOpen(state, world, pos, open, null);
+    }
+
+    private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open, @Nullable Integer delay) {
+        if(state.get(OPEN) != open) {
+            world.setBlockState(pos, state.with(OPEN, open));
             world.playSound(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f, true);
-            scheduler.schedule(() -> {
-                world.getServer().execute(() -> {
-                    BlockState currentState = world.getBlockState(pos);
-                    if(currentState.getBlock() == ModBlocks.DUNGEON_DOOR && currentState.get(OPEN)) {
-                        world.setBlockState(pos, currentState.with(OPEN, false));
-                    }
-                });
-            }, 4, TimeUnit.SECONDS);
+
+            if(open && delay != null) {
+                // only executed on server so no sound played on client fix me
+                scheduler.schedule(() -> {
+                    world.getServer().execute(() -> {
+                        BlockState currentState = world.getBlockState(pos);
+                        if (currentState.getBlock() == ModBlocks.DUNGEON_DOOR && currentState.get(OPEN)) {
+                            setOpen(currentState, world, pos, false);
+                        }
+                    });
+                }, delay, TimeUnit.MILLISECONDS);
+            }
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
     
-    
+
+
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return state.get(OPEN) ? CUBE_SHAPE : FULL_BLOCK_SHAPE;
@@ -233,6 +243,15 @@ public class DungeonDoorBlock extends Block {
         // Propagate the open state to adjacent blocks if it's being opened.
 
         // Update the current block's state.
+    }
+
+    @Override
+    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, Direction from, boolean powered) {
+        if(state.get(WIRED)) {
+            for (BlockPos offsetPos : findDoors(world, pos)) {
+                setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
+            }
+        }
     }
 }
 
