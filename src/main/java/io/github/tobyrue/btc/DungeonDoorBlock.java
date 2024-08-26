@@ -85,6 +85,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
         BlockState originState = world.getBlockState(originPos);
 
         queue.add(new Pair<>(originPos, 0));
+        found.add(originPos);
 
         while(!queue.isEmpty()) {
             var entry = queue.poll();
@@ -92,7 +93,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
             int distance = entry.getRight();
 
             if(distance < MAX_DISTANCE) {
-//single block on clicked does not change fix me
                 for(Direction direction : Direction.values()) {
                     var neighborPos = pos.offset(direction);
                     var neighborState = world.getBlockState(neighborPos);
@@ -122,47 +122,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
                 //super.onUse(state, world, pos, player, hit);
     }
 
-    //    @Override
-//    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-//        if (state.get(OPEN)) {
-//            world.setBlockState(pos, state.with(OPEN, false), NOTIFY_ALL_AND_REDRAW);
-//        }
-//    }
-//    public ActionResult onUse(ItemStack stack, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-//        BlockState state = world.getBlockState(pos);
-//
-//        if (state.get(WIRED)) {
-//            boolean isOpen = state.get(OPEN);
-//            BlockState newState = state.with(OPEN, !isOpen);
-//            world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-//
-//            // Schedule the task to reset the OPEN state after 7 seconds
-//            scheduler.schedule(() -> {
-//                world.getServer().execute(() -> {
-//                    BlockState updatedState = world.getBlockState(pos);
-//                    if (updatedState.get(OPEN)) {
-//                        world.setBlockState(pos, updatedState.with(OPEN, false), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-//                    }
-//                });
-//            }, 7, TimeUnit.SECONDS);
-//
-//            return ActionResult.SUCCESS;
-//        }
-//
-//        return ActionResult.FAIL;
-//    }
-
-
-
-
-//    @Override
-//    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-//        // Close the block when the scheduled tick happens.
-//        if (state.get(OPEN)) {
-//            world.setBlockState(pos, state.with(OPEN, false), NOTIFY_ALL_AND_REDRAW);
-//        }
-//    }
-
     private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open) {
         return setOpen(state, world, pos, open, null);
     }
@@ -175,12 +134,12 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
             if(open && delay != null) {
                 // only executed on server so no sound played on client fix me
                 scheduler.schedule(() -> {
-                    world.getServer().execute(() -> {
+                   // world.getServer().execute(() -> {
                         BlockState currentState = world.getBlockState(pos);
                         if (currentState.getBlock() == ModBlocks.DUNGEON_DOOR && currentState.get(OPEN)) {
                             setOpen(currentState, world, pos, false);
                         }
-                    });
+                    //});
                 }, delay, TimeUnit.MILLISECONDS);
             }
             return ActionResult.SUCCESS;

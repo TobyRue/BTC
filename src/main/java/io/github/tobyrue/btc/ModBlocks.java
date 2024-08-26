@@ -24,6 +24,15 @@ public class ModBlocks {
 
     return Registry.register(Registries.BLOCK, id, block);
 }
+    public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
+            new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).luminance((state) -> {
+                return 15;
+            })),
+            "dungeon_fire",
+            true
+
+            );
+
     public static final OminousBeaconBlock OMINOUS_BEACON = (OminousBeaconBlock) register(
             new OminousBeaconBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).luminance((state) -> {
                 return 14;
@@ -38,6 +47,7 @@ public class ModBlocks {
             "dungeon_pressure_plate",
             true
     );
+
     public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
             new PedestalBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
