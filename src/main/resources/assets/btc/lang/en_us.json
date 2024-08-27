@@ -11,6 +11,6 @@
   "item.btc.staff": "Staff",
   "item.btc.wind_staff": "Wind Staff",
 
-  "death.attack.beacon_burn": "%1$s discovered that lasers burn"
-
+  "death.attack.beacon_burn": "%1$s discovered that lasers burn",
+  "death.attack.fire_burn": "%1$s discovered that stepping on hot coals is not a good idea"
 }
