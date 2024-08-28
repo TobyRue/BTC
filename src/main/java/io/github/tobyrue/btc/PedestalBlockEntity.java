@@ -49,7 +49,8 @@ public class PedestalBlockEntity extends BlockEntity{
                 player.playSound(SoundEvents.BLOCK_VAULT_ACTIVATE);
                 // Add redstone particle effects
                 DustParticleEffect dust = new DustParticleEffect(new Vector3f(1.0F, 0.0F, 0.0F), 2.0F); // Red color
-                world.addParticle(dust, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 0, 0.5, 0);                if(!player.isCreative()) {
+                world.addParticle(dust, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 0, 0.5, 0);
+                if(!player.isCreative()) {
                     stack.decrement(1);
                 }
                 this.markDirty();
