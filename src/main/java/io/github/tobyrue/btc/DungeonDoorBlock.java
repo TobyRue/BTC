@@ -213,4 +213,3 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
         }
     }
 }
-
