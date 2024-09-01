@@ -235,7 +235,7 @@ public class DungeonFireBlock extends Block {
                     stack.decrement(1);
                 }
                 return ItemActionResult.SUCCESS;
-            } else if (stack.getItem() == Items.END_CRYSTAL && state.get(DAMAGE) >= 8 && state.get(DAMAGE) < 31) {
+            } else if (stack.getItem() == Items.END_CRYSTAL && state.get(DAMAGE) >= 8 && state.get(DAMAGE) < 17) {
                 player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
                 incrementDamage(world, pos, state, 3);
                 if (!player.isCreative()) {
@@ -307,7 +307,7 @@ public class DungeonFireBlock extends Block {
         return SHAPE;
     }
 
-    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity, PlayerEntity player) {
+    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         if (!entity.bypassesSteppingEffects() && entity instanceof LivingEntity) {
             int fireTimeValue = state.get(FIRE_TIME);
             int damageValue = state.get(DAMAGE);
@@ -315,13 +315,10 @@ public class DungeonFireBlock extends Block {
             float fireTimeFloat = (float) fireTimeValue;
             float damageFloat = (float) damageValue;
             entity.damage(world.getDamageSources().hotFloor(), damageFloat);
-            if (!player.isCreative()) {
-                entity.setOnFireFor(fireTimeFloat);
-            }
+            entity.setOnFireFor(fireTimeFloat);
         }
         super.onSteppedOn(world, pos, state, entity);
     }
-
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (random.nextInt(8) == 0) {
@@ -329,20 +326,14 @@ public class DungeonFireBlock extends Block {
         }
 
         int i;
-        double d;
-        double e;
-        double f;
         double d2;
         double e2;
         double f2;
         for(i = 0; i < 3; ++i) {
-            d = (double)pos.getX() + random.nextDouble();
-            e = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
-            f = (double)pos.getZ() + random.nextDouble();
-            d2 = (double)pos.getX() + random.nextDouble() * 0.3 + 0.35;
+            d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
-            f2 = (double)pos.getZ() + random.nextDouble() * 0.3 + 0.35;
-            world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+            f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
+            world.addParticle(ParticleTypes.SMOKE, d2, e2, f2, 0.0, 0.0, 0.0);
             if(state.get(INFERNAL)) {
                 world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
             } else if(!state.get(INFERNAL)) {

@@ -79,6 +79,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
 //        }
 //        return ItemActionResult.FAIL;
 //    }
+
     private Set<BlockPos> findDoors(World world, BlockPos originPos) {
         HashSet<BlockPos> found = new HashSet<>();
         Queue<Pair<BlockPos, Integer>> queue = new LinkedList<>();
@@ -116,9 +117,10 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
             }
+            return ActionResult.SUCCESS;
         }
 
-        return ActionResult.SUCCESS;
+        return ActionResult.FAIL;
                 //super.onUse(state, world, pos, player, hit);
     }
 
@@ -186,18 +188,18 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
 //                }
 //            }
 //        }
-        if (state.get(WIRED)) {
-
-
-
-            for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = pos.offset(direction);
-                BlockState neighborState = world.getBlockState(neighborPos);
-
-
-                
-            }
-        }
+//        if (state.get(WIRED)) {
+//
+//
+//
+//            for (Direction direction : Direction.values()) {
+//                BlockPos neighborPos = pos.offset(direction);
+//                BlockState neighborState = world.getBlockState(neighborPos);
+//
+//
+//
+//            }
+//        }
 
         // Propagate the open state to adjacent blocks if it's being opened.
 
@@ -212,4 +214,5 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction{
             }
         }
     }
+
 }

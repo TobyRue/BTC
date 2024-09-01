@@ -47,6 +47,13 @@ public class ModBlocks {
             "dungeon_pressure_plate",
             true
     );
+    public static final AntiMine ANTI_MINE = (AntiMine) register(
+            new AntiMine(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
+                return 7;
+            }).strength(-1.0F, 3600000.0F)),
+            "anti_mine",
+            true
+    );
 
     public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
             new PedestalBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
