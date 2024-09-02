@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "antier_type=both": { "model": "btc:block/antier_both" },
+    "antier_type=no_build": { "model": "btc:block/antier_no_build" },
+    "antier_type=no_mine": { "model": "btc:block/antier_no_mine" }
+  }
+}

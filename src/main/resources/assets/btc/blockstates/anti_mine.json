@@ -1,7 +1,0 @@
-{
-  "variants": {
-    "": {
-      "model": "btc:block/anti_mine"
-    }
-  }
-}

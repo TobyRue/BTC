@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc;
 
 import net.minecraft.block.*;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -47,11 +45,11 @@ public class ModBlocks {
             "dungeon_pressure_plate",
             true
     );
-    public static final AntiMine ANTI_MINE = (AntiMine) register(
-            new AntiMine(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
+    public static final AntierBlock ANTIER = (AntierBlock) register(
+            new AntierBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 7;
             }).strength(-1.0F, 3600000.0F)),
-            "anti_mine",
+            "antier",
             true
     );
 
