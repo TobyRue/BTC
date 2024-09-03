@@ -2,25 +2,12 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.OminousBeaconBlockEntity;
 import io.github.tobyrue.btc.BTC;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.TridentEntityRenderer;
-import net.minecraft.client.render.entity.model.TridentEntityModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.item.Items;
-import net.minecraft.item.TridentItem;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.List;
 
 public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBeaconBlockEntity> {
 

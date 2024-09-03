@@ -1,9 +1,6 @@
 package io.github.tobyrue.btc;
 
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.render.entity.ItemEntityRenderer;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;

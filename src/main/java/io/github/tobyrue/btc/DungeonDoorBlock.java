@@ -27,9 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
-
-public class DungeonDoorBlock extends Block implements IDungeonWireAction{
+public class DungeonDoorBlock extends Block implements IDungeonWireAction {
     public static final BooleanProperty WIRED = BooleanProperty.of("wired");
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
 

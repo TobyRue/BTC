@@ -4,28 +4,28 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.tick.OrderedTick;
-import net.minecraft.world.tick.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class AntierBlock extends Block  implements ModBlockEntityProvider<AntierBlockEntity>, ModTickBlockEntityProvider<AntierBlockEntity>{
+public class AntierBlock extends Block  implements ModBlockEntityProvider<AntierBlockEntity>, ModTickBlockEntityProvider<AntierBlockEntity> {
     public static final EnumProperty<AntierType> ANTIER_TYPE = EnumProperty.of("antier_type", AntierType.class);
     private static final VoxelShape MIDDLE;
     private static final VoxelShape TOP;
@@ -76,4 +76,5 @@ public class AntierBlock extends Block  implements ModBlockEntityProvider<Antier
     public BlockEntityType<AntierBlockEntity> getBlockEntityType() {
         return ModBlockEntities.ANTIER_BLOCK_ENTITY;
     }
+
 }

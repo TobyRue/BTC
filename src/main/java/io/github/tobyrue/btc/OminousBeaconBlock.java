@@ -58,4 +58,3 @@ public class OminousBeaconBlock extends Block implements ModBlockEntityProvider<
     }
 
 }
-
