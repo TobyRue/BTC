@@ -13,5 +13,12 @@
   "item.btc.wind_staff": "Wind Staff",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
-  "death.attack.fire_burn": "%1$s discovered that stepping on hot coals is not a good idea"
+
+  "effect.btc.anti_place": "Anti Place",
+
+  "item.minecraft.potion.effect.anti_place": "Potion of Anti Placing",
+
+  "item.minecraft.splash_potion.effect.anti_place": "Splash Potion of Anti Placing",
+
+  "item.minecraft.lingering_potion.effect.anti_place": "Lingering Potion of Anti Placing"
 }
