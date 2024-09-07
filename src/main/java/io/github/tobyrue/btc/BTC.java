@@ -1,14 +1,22 @@
 package io.github.tobyrue.btc;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.RailBlock;
 import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 
 public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
@@ -25,6 +33,19 @@ public class BTC implements ModInitializer {
         ModItems.initialize();
         ModBlockEntities.initialize();
         ModPotions.initialize();
+//        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+//            if (player instanceof ServerPlayerEntity) {
+//                StatusEffectInstance effectInstance = player.getStatusEffect((RegistryEntry<StatusEffect>) ANTI_PLACE);
+//                if (effectInstance != null) {
+//                    if (hitResult instanceof BlockHitResult && !player.isCreative()) {
+//                        System.out.println("Block placement prevented due to effect");
+//                        return ActionResult.FAIL; // Cancel the placement
+//                    }
+//                }
+//            }
+//            return ActionResult.PASS; // Allow the placement
+//        });
+
         //INGREDIENTS
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.RUBY_TRIAL_KEY));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.STAFF));
