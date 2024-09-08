@@ -358,7 +358,7 @@ public class DungeonWireBlock extends Block
     @Override
     protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
     {
-        return state.get(POWERED) ? 15 : 0;
+        return state.get(ROOT) ? 15 : 0;
     }
 
     /**

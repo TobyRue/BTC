@@ -9,7 +9,9 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -25,7 +27,6 @@ public class AntierBlockEntity  extends BlockEntity implements BlockEntityTicker
         super(ModBlockEntities.ANTIER_BLOCK_ENTITY, pos, state);
     }
     private int tickCounter = 0; // Counter to track ticks
-
     public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
         // Iterate through all players in the world
         List<ServerPlayerEntity> players = world.getPlayers();
@@ -39,12 +40,7 @@ public class AntierBlockEntity  extends BlockEntity implements BlockEntityTicker
                 // Apply logic here
                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 200, 100));
-                    System.out.println("Mining fatigue");
                 }
-                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                    //logic here to stop block placing
-                }
-                System.out.println("Player " + player.getName().getString() + " is within range! " + "Block at " + blockPos);
             }
         }
     }

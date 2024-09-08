@@ -33,19 +33,22 @@ public class BTC implements ModInitializer {
         ModItems.initialize();
         ModBlockEntities.initialize();
         ModPotions.initialize();
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if(player instanceof PlayerEntity && player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE)) && !player.isCreative()) {
+                System.out.println("Cant place");
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
 //        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-//            if (player instanceof ServerPlayerEntity) {
-//                StatusEffectInstance effectInstance = player.getStatusEffect((RegistryEntry<StatusEffect>) ANTI_PLACE);
-//                if (effectInstance != null) {
-//                    if (hitResult instanceof BlockHitResult && !player.isCreative()) {
-//                        System.out.println("Block placement prevented due to effect");
-//                        return ActionResult.FAIL; // Cancel the placement
-//                    }
+//            if(player instanceof ServerPlayerEntity) {
+//                if(player.hasStatusEffect((RegistryEntry<StatusEffect>) BTC.ANTI_PLACE)) {
+//                    System.out.println("Block placement prevented due to effect");
+//                    return ActionResult.FAIL;
 //                }
 //            }
-//            return ActionResult.PASS; // Allow the placement
+//            return ActionResult.SUCCESS;
 //        });
-
         //INGREDIENTS
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.RUBY_TRIAL_KEY));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.STAFF));

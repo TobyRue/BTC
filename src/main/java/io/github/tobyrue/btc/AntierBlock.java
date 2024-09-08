@@ -34,11 +34,11 @@ public class AntierBlock extends Block  implements ModBlockEntityProvider<Antier
     private static final VoxelShape FULL_SHAPE;
 
     static {
-        MIDDLE = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 8.0, 10.0);
+        MIDDLE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
         //change top and bottom
-        TOP = Block.createCuboidShape(1.0, 10.0, 1.0, 15.0, 12.0, 15.0);
-        BOTTOM = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 2.0, 15.0);
-        FULL_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 12.0, 15.0);
+        TOP = Block.createCuboidShape(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);
+        BOTTOM = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+        FULL_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
         SHAPE = VoxelShapes.union(MIDDLE, TOP, BOTTOM);
     }
     public AntierBlock(Settings settings) {

@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"3": "btc:block/reinforced_deepslate_all_side",
-		"5": "btc:block/antier_both",
+		"3": "btc:blocks/reinforced_deepslate_all_side",
+		"5": "btc:blocks/antier_no_build",
 		"particle": "btc:block/reinforced_deepslate_all_side"
 	},
 	"elements": [
