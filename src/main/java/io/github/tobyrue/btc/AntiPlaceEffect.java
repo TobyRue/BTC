@@ -19,6 +19,6 @@ public class AntiPlaceEffect extends StatusEffect {
     protected AntiPlaceEffect() {
         // category: StatusEffectCategory - describes if the effect is helpful (BENEFICIAL), harmful (HARMFUL) or useless (NEUTRAL)
         // color: int - Color is the color assigned to the effect (in RGB)
-        super(StatusEffectCategory.HARMFUL, 0xe9b8b3);
+        super(StatusEffectCategory.HARMFUL, 0x00FF91);
     }
 }
