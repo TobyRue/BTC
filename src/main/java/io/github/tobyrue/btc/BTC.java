@@ -35,7 +35,6 @@ public class BTC implements ModInitializer {
         ModPotions.initialize();
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if(player instanceof PlayerEntity && player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE)) && !player.isCreative()) {
-                System.out.println("Cant place");
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
