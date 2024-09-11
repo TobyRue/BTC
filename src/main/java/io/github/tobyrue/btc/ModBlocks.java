@@ -63,7 +63,9 @@ public class ModBlocks {
             true
     );
     public static final DungeonWireBlock DUNGEON_WIRE = (DungeonWireBlock) register(
-            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
+                return 15;
+            })),
 
             "dungeon_wire",
             true
