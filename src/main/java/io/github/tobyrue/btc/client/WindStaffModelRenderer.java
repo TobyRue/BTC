@@ -29,6 +29,13 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         renderCounter++;
     }
 
+    public void renderRods(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        matrices.push();
+
+
+        matrices.pop();
+    }
+
     public void renderWind(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
@@ -96,9 +103,11 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         }*/
 
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
-
         matrices.translate(0, -0.8, 0.15);
         minecraft.getItemRenderer().renderItem(HANDLE, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+
+        renderRods(stack, mode, matrices, vertexConsumers, light, overlay);
+
         matrices.pop();
     }
 }
