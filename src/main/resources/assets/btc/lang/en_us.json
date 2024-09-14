@@ -9,8 +9,8 @@
 
 
   "item.btc.ruby_trial_key": "Ruby Trial Key",
-  "item.btc.staff": "Staff",
-  "item.btc.wind_staff": "Wind Staff",
+  "item.btc.staff": "Staff of Arcane Fusion",
+  "item.btc.wind_staff": "Staff of the Breezebound",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
 
@@ -20,5 +20,7 @@
 
   "item.minecraft.splash_potion.effect.anti_place": "Splash Potion of Anti Placing",
 
-  "item.minecraft.lingering_potion.effect.anti_place": "Lingering Potion of Anti Placing"
+  "item.minecraft.lingering_potion.effect.anti_place": "Lingering Potion of Anti Placing",
+
+  "item.minecraft.tipped_arrow.effect.anti_place": "Arrow of Anti Placing"
 }

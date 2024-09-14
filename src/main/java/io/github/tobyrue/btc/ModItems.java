@@ -4,6 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 
 public class ModItems {
     public static Item register(Item item, String id) {
@@ -21,11 +22,11 @@ public class ModItems {
             "ruby_trial_key"
     );
     public static final Item STAFF = register(
-            new Item(new Item.Settings().maxCount(1)),
+            new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "staff"
     );
     public static final Item WIND_STAFF = register(
-        new WindStaffItem(new Item.Settings().maxCount(1)),
+        new WindStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "wind_staff"
     );
 
