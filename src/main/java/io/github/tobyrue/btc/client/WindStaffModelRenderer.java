@@ -6,17 +6,21 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 
 @Environment(EnvType.CLIENT)
 public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
-
+    public static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/trident.png");
     public static final ItemStack HANDLE = new ItemStack(ModItems.STAFF, 1);
     private static final DummyWindCharge dummy = new DummyWindCharge(); // Static variable
     private static int renderCounter = 0; // Counter to slow down age update
@@ -30,6 +34,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     }
 
     public void renderRods(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        // Push matrix to keep transformations isolated
         matrices.push();
 
 
