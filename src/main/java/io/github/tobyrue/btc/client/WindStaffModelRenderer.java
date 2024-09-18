@@ -4,17 +4,18 @@ import io.github.tobyrue.btc.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.minecraft.block.entity.VaultBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-
 
 @Environment(EnvType.CLIENT)
 public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
@@ -28,7 +29,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         super();
         this.model = new WindStaffEntityModel(context.getPart(EntityModelLayers.TRIDENT));
     }
-
     private void updateDummy() {
         // Increment the age of the dummy entity every 10 render calls
         if (renderCounter % 10 == 0) {
@@ -37,13 +37,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         renderCounter++;
     }
 
-    public void renderRods(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        // Push matrix to keep transformations isolated
-        matrices.push();
-
-
-        matrices.pop();
-    }
 
     public void renderWind(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
@@ -114,9 +107,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
         matrices.translate(0, -0.8, 0.15);
         minecraft.getItemRenderer().renderItem(HANDLE, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
-
-        renderRods(stack, mode, matrices, vertexConsumers, light, overlay);
-
         matrices.pop();
     }
 }
