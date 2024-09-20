@@ -83,16 +83,16 @@ public static TexturedModelData getTexturedModelData() {
         ModelPartData modelPartData = modelData.getRoot();
 
         modelPartData.addChild("element1", ModelPartBuilder.create()
-                .uv(11, 16).cuboid(5.5F, -12.6F, -1.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
+                .uv(11, 16).cuboid(5.5F, -12.7F, -4.15F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
 
         modelPartData.addChild("element2", ModelPartBuilder.create()
-                .uv(8, 16).cuboid(6.5F, -12.6F, -2.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
+                .uv(8, 16).cuboid(6.5F, -12.7F, -5.15F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
 
         modelPartData.addChild("element3", ModelPartBuilder.create()
-                .uv(18, 25).cuboid(6.5F, -12.6F, -0.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
+                .uv(18, 25).cuboid(6.5F, -12.7F, -3.15F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
 
         modelPartData.addChild("element4", ModelPartBuilder.create()
-                .uv(24, 12).cuboid(7.5F, -12.6F, -1.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
+                .uv(24, 12).cuboid(7.5F, -12.7F, -4.15F, 1.0F, 22.0F, 1.0F), ModelTransform.of(-7.0F, -5F, -1.5F, 2.65F, 0.0F, 0.0F));
         return TexturedModelData.of(modelData, 16, 16);
     }
 //    public static TexturedModelData getTexturedModelData() {
