@@ -22,5 +22,9 @@
 
   "item.minecraft.lingering_potion.effect.anti_place": "Lingering Potion of Anti Placing",
 
-  "item.minecraft.tipped_arrow.effect.anti_place": "Arrow of Anti Placing"
+  "item.minecraft.tipped_arrow.effect.anti_place": "Arrow of Anti Placing",
+
+  "category.btc.keys": "BTC Keys",
+
+  "key.btc.secondary_staff_ability": "Secondary Staff Ability"
 }
