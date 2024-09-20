@@ -19,6 +19,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
+import java.util.Stack;
+
 import static io.github.tobyrue.btc.client.BTCClient.WIND_STAFF_LAYER;
 
 @Environment(EnvType.CLIENT)
@@ -26,7 +28,16 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     public static final ItemStack HANDLE = new ItemStack(ModItems.STAFF, 1);
     private static final DummyWindCharge dummy = new DummyWindCharge(); // Static variable
     private static int renderCounter = 0; // Counter to slow down age update
-    public static final Identifier TEXTURE = Identifier.of("textures/entity/breeze_rods.png");
+    public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/breeze_rods.png");
+
+    private static final String ELEMENT1 = "element1";
+    private static final String ELEMENT2 = "element2";
+    private static final String ELEMENT3 = "element3";
+    private static final String ELEMENT4 = "element4";
+
+
+
+
     private final ModelPart element1;
     private final ModelPart element2;
     private final ModelPart element3;
@@ -34,13 +45,84 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     private final ModelPart root;
 
     public WindStaffModelRenderer(ModelPart root) {
-        super(RenderLayer::getEntitySolid);
         this.root = root;
         this.element1 = root.getChild("element1");
         this.element2 = root.getChild("element2");
         this.element3 = root.getChild("element3");
         this.element4 = root.getChild("element4");
     }
+//    public static TexturedModelData getTexturedModelData() {
+//        ModelData modelData = new ModelData();
+//        ModelPartData modelPartData = modelData.getRoot();
+//
+//        // Adjusting element1
+//        modelPartData.addChild("element1", ModelPartBuilder.create()
+//                        .uv(11, 16).cuboid(6.5F, -5F, 7.5F, 1.0F, 22.0F, 1.0F),
+//                ModelTransform.of(5.5F, -6F, 7.5F, 0.0F, 30.0F, 0.0F)); // Yaw rotation of 45 degrees
+//
+//        // Adjusting element2
+//        modelPartData.addChild("element2", ModelPartBuilder.create()
+//                        .uv(8, 16).cuboid(7.5F, -5F, 6.5F, 1.0F, 22.0F, 1.0F),
+//                ModelTransform.of(6.5F, -6F, 6.5F, 0.0F, 30.0F, 0.0F)); // No changes here
+//
+//        // Adjusting element3 with a slight upward shift and rotation
+//        modelPartData.addChild("element3", ModelPartBuilder.create()
+//                        .uv(18, 25).cuboid(7.5F, -5F, 8.5F, 1.0F, 22.0F, 1.0F),
+//                ModelTransform.of(6.5F, -5F, 8.5F, 0.0F, 30.0F, 0.0F)); // Rotated 90 degrees around Y-axis
+//
+//        // Adjusting element4 with a rotation around the X-axis
+//        modelPartData.addChild("element4", ModelPartBuilder.create()
+//                        .uv(24, 12).cuboid(8.5F, -5F, 7.5F, 1.0F, 22.0F, 1.0F),
+//                ModelTransform.of(7.5F, -6F, 7.5F, 0.0F, 30.0F, 0.0F)); // Rotated 30 degrees around X-axis (pitch)
+//
+//        return TexturedModelData.of(modelData, 16, 16);
+//    }
+
+public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+
+        modelPartData.addChild("element1", ModelPartBuilder.create()
+                .uv(11, 16).cuboid(-8.0F, -5F, -1.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(5.5F, -6F, 7.5F, 14.7F, 0.0F, 0.0F));
+
+        modelPartData.addChild("element2", ModelPartBuilder.create()
+                .uv(8, 16).cuboid(-7.0F, -5F, -2.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(6.5F, -6F, 6.5F, 14.7F, 0.0F, 0.0F));
+
+        modelPartData.addChild("element3", ModelPartBuilder.create()
+                .uv(18, 25).cuboid(-7.0F, -5F, -0.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(6.5F, -6F, 8.5F, 14.7F, 0.0F, 0.0F));
+
+        modelPartData.addChild("element4", ModelPartBuilder.create()
+                .uv(24, 12).cuboid(-6.0F, -5F, -1.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(7.5F, -6F, 7.5F, 14.7F, 0.0F, 0.0F));
+        return TexturedModelData.of(modelData, 16, 16);
+    }
+//    public static TexturedModelData getTexturedModelData() {
+//        ModelData modelData = new ModelData();
+//        ModelPartData modelPartData = modelData.getRoot();
+//
+//        modelPartData.addChild("element1", ModelPartBuilder.create()
+//                .uv(11, 16).cuboid(-7.5F, -5F, 7.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(5.5F, -6F, 7.5F, 0.0F, 0.0F, 0.0F));
+//
+//        modelPartData.addChild("element2", ModelPartBuilder.create()
+//                .uv(8, 16).cuboid(-6.5F, -5F, 6.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(6.5F, -6F, 6.5F, 0.0F, 0.0F, 0.0F));
+//
+//        modelPartData.addChild("element3", ModelPartBuilder.create()
+//                .uv(18, 25).cuboid(-6.5F, -5F, 8.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(6.5F, -6F, 8.5F, 0.0F, 0.0F, 0.0F));
+//
+//        modelPartData.addChild("element4", ModelPartBuilder.create()
+//                .uv(24, 12).cuboid(-5.5F, -5F, 7.5F, 1.0F, 22.0F, 1.0F), ModelTransform.of(7.5F, -6F, 7.5F, 0.0F, 0.0F, 0.0F));
+//        return TexturedModelData.of(modelData, 16, 16);
+//    }
+    public ModelPart getPart1() {return this.element1;}
+    public ModelPart getPart2() {return this.element2;}
+    public ModelPart getPart3() {return this.element3;}
+    public ModelPart getPart4() {return this.element4;}
+
+    public void renderModel(ItemStack stack, MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.root.render(matrices, vertices, light, overlay);
+        MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
+    }
+
+
     private void updateDummy() {
         // Increment the age of the dummy entity every 10 render calls
         if (renderCounter % 10 == 0) {
@@ -71,6 +153,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         }*/
         // Move the item
         matrices.translate(0.5, 1.5, 0.2);
+
 
         // Rotate the item
 
@@ -123,18 +206,12 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
         matrices.translate(0, -0.8, 0.15);
         minecraft.getItemRenderer().renderItem(HANDLE, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+        // Bind texture
+        MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
+
+        // Create VertexConsumer for the texture
+        VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
+        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
         matrices.pop();
-    }
-    public static TexturedModelData getTexturedModelData() {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-
-        modelPartData.addChild("part1", ModelPartBuilder.create().uv(9, 7).cuboid(5.0F, 17.0F, 7.0F, 6.0F, 1.0F, 2.0F), ModelTransform.NONE);
-        modelPartData.addChild("part2", ModelPartBuilder.create().uv(10, 2).cuboid(1.0F, 20.0F, 7.0F, 2.0F, 2.0F, 2.0F), ModelTransform.NONE);
-        modelPartData.addChild("part3", ModelPartBuilder.create().uv(9, 9).cuboid(0.0F, 22.0F, 7.0F, 2.0F, 4.0F, 2.0F), ModelTransform.NONE);
-        // Add remaining parts similarly...
-        modelPartData.addChild("part28", ModelPartBuilder.create().uv(9, 0).cuboid(7.0F, 18.0F, 8.0F, 2.0F, 2.0F, 1.0F), ModelTransform.NONE);
-
-        return TexturedModelData.of(modelData, 64, 64);
     }
 }
