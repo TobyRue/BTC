@@ -64,12 +64,5 @@ public class BTCClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_LEFT_ALT, // Default key: left control
                 "category.btc.keys" // The category of the keybinding
         ));
-
-        // Listen for client tick events to handle keybindings
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (leftAltKeyBinding.isPressed()) {
-                System.out.println("Control key is being held down");
-            }
-        });
     }
 }

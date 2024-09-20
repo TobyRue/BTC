@@ -1,9 +1,11 @@
 package io.github.tobyrue.btc;
 
 import io.github.tobyrue.btc.client.BTCClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -28,31 +30,34 @@ public class WindStaffItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (!world.isClient && player.isSneaking()) {
-            // Pull mobs towards the player immediately
-            pullMobsTowardsPlayer(world, player);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        if (!world.isClient && user.isSneaking()) {
+            // Pull mobs towards the user immediately
+            pullMobsTowardsPlayer(world, user);
+            user.getItemCooldownManager().set(this, 80);
             return TypedActionResult.success(itemStack);
             // Schedule shooting mobs away after a delay (e.g., 100 ticks = 5 seconds)
         } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed()) {
-            // Push mobs away from the player (Left Alt + Right-Click)
-            shootMobsAway(player, world);
+            // Push mobs away from the user (Left Alt + Right-Click)
+            shootMobsAway(user, world);
+            user.getItemCooldownManager().set(this, 80);
+            return TypedActionResult.success(itemStack);
         }
 
         return TypedActionResult.fail(itemStack);
     }
 
-    private void pullMobsTowardsPlayer(World world, PlayerEntity player) {
+    private void pullMobsTowardsPlayer(World world, PlayerEntity user) {
         // Use the PULL_RADIUS variable to define the radius
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(PULL_RADIUS), entity -> entity != player);
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(PULL_RADIUS), entity -> entity != user);
         // Log the number of entities found
-        // Pull all mobs towards the player
+        // Pull all mobs towards the user
         for (LivingEntity entity : entities) {
-            // Calculate the direction towards the player
-            double dx = player.getX() - entity.getX();
-            double dy = player.getY() - entity.getY();
-            double dz = player.getZ() - entity.getZ();
+            // Calculate the direction towards the user
+            double dx = user.getX() - entity.getX();
+            double dy = user.getY() - entity.getY();
+            double dz = user.getZ() - entity.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
             double strength = PULL_STRENGTH;
             if (distance != 0) {
@@ -60,17 +65,18 @@ public class WindStaffItem extends Item {
             }
         }
     }
-    private void shootMobsAway(PlayerEntity player, World world) {
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(SHOOT_RADIUS), entity -> entity != player);
 
-        // Shoot all mobs away from the player
+    private void shootMobsAway(PlayerEntity user, World world) {
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(SHOOT_RADIUS), entity -> entity != user);
+
+        // Shoot all mobs away from the user
         for (LivingEntity entity : entities) {
-            double dx = entity.getX() - player.getX();
-            double dy = entity.getY() - player.getY();
-            double dz = entity.getZ() - player.getZ();
+            double dx = entity.getX() - user.getX();
+            double dy = entity.getY() - user.getY();
+            double dz = entity.getZ() - user.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-            // Apply velocity away from the player
+            // Apply velocity away from the user
             double strength = SHOOT_STRENGTH;
             if (distance != 0) {
                 entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
@@ -78,7 +84,11 @@ public class WindStaffItem extends Item {
             }
 
             // Optionally, deal damage to the entity
-            entity.damage(world.getDamageSources().flyIntoWall(), 10);
+            if (entity instanceof PlayerEntity) {
+                entity.damage(ModDamageTypes.of(world, ModDamageTypes.WIND_BURST), 5.0f);
+            } else {
+                entity.damage(world.getDamageSources().flyIntoWall(), 5);
+            }
         }
     }
 }
