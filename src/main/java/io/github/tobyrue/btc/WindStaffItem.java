@@ -28,7 +28,6 @@ public class WindStaffItem extends Item {
     private static final double PULL_STRENGTH = 3.0;
     private static final double SHOOT_STRENGTH = 7.0;
     private static final int PROJECTILE_COUNT = 7; // Number of projectiles to shoot
-    private static final float SPREAD_ANGLE = 0.5f;
 
     public WindStaffItem(Settings settings) {
         super(settings);
@@ -37,27 +36,32 @@ public class WindStaffItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        if (!world.isClient && user.isSneaking()) {
+
+        if (!world.isClient && !user.isSneaking() && !BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
+            // Push mobs away from the user (Tilda + Right-Click)
+            // Create and shoot the WindChargeEntity
+            WindChargeEntity windCharge = new WindChargeEntity(user, world, user.getX(), user.getY() + 1.0, user.getZ());
+            Vec3d direction = user.getRotationVec(1.0f);
+            windCharge.setVelocity(direction.multiply(1.5)); // Adjust speed as needed
+            user.getItemCooldownManager().set(this, 10);
+            world.spawnEntity(windCharge);
+            return TypedActionResult.success(itemStack);
+        } else if (!world.isClient && user.isSneaking() && !BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
             // Pull mobs towards the user immediately
+            shootWindCharges(user, world);
+            user.getItemCooldownManager().set(this, 20);
+            return TypedActionResult.success(itemStack);
+            // Schedule shooting mobs away after a delay (e.g., 100 ticks = 5 seconds)
+        } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
+            // Push mobs away from the user (Left Alt + Right-Click)
             pullMobsTowardsPlayer(world, user);
             user.getItemCooldownManager().set(this, 40);
             return TypedActionResult.success(itemStack);
-            // Schedule shooting mobs away after a delay (e.g., 100 ticks = 5 seconds)
-        } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed()) {
-            // Push mobs away from the user (Left Alt + Right-Click)
+        } else if(!world.isClient && BTCClient.tildeKeyBinding.isPressed() && !BTCClient.leftAltKeyBinding.isPressed()){
             shootMobsAway(user, world);
             user.getItemCooldownManager().set(this, 80);
             return TypedActionResult.success(itemStack);
-        } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed() && user.isSneaking()) {
-            // Push mobs away from the user (Left Alt + Right-Click)
-            shootMobsAway(user, world);
-            user.getItemCooldownManager().set(this, 80);
-            return TypedActionResult.success(itemStack);
-        } else {
-            if (!world.isClient) {
-                shootWindCharges(user, world);
-                return TypedActionResult.success(itemStack);
-            }
+
         }
 
 
@@ -65,21 +69,21 @@ public class WindStaffItem extends Item {
     }
     private void shootWindCharges(PlayerEntity user, World world) {
         Vec3d baseDirection = user.getRotationVec(1.0f).normalize(); // Get the player's facing direction
+        double spreadFactor = 0.2; // Controls how much deviation there is from the forward direction
 
         for (int i = 0; i < PROJECTILE_COUNT; i++) {
             // Create a new WindChargeEntity
             WindChargeEntity windCharge = new WindChargeEntity(user, world, user.getX(), user.getY() + 1.0, user.getZ());
 
-            // Calculate a random angle offset for scattering
-            double angleOffset = (Math.random() - 0.5) * SPREAD_ANGLE; // Random angle offset
-            double scatterX = baseDirection.x + Math.cos(angleOffset) * 0.5; // Modify X
-            double scatterZ = baseDirection.z + Math.sin(angleOffset) * 0.5; // Modify Z
+            // Apply random spread within a controlled cone
+            double randomPitch = (Math.random() - 0.5) * spreadFactor;
+            double randomYaw = (Math.random() - 0.5) * spreadFactor;
 
-            // Create scatter direction and normalize it
-            Vec3d scatterDirection = new Vec3d(scatterX, baseDirection.y, scatterZ).normalize();
+            // Calculate the scattered direction by modifying the player's original facing direction
+            Vec3d scatterDirection = baseDirection.add(randomYaw, randomPitch, randomYaw).normalize();
 
             // Set the spawn position slightly in front of the player
-            Vec3d spawnPosition = user.getPos().add(baseDirection.multiply(1)).add(0, 1, 0);
+            Vec3d spawnPosition = user.getPos().add(baseDirection.multiply(1.5)).add(0, 1, 0);
             windCharge.setPos(spawnPosition.x, spawnPosition.y, spawnPosition.z);
 
             // Set the velocity of the wind charge

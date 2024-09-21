@@ -27,5 +27,7 @@
 
   "category.btc.keys": "BTC Keys",
 
-  "key.btc.secondary_staff_ability": "Secondary Staff Ability"
+  "key.btc.secondary_staff_ability": "Secondary Staff Ability",
+  "key.btc.tertiary_staff_ability": "Tertiary Staff Ability"
+
 }

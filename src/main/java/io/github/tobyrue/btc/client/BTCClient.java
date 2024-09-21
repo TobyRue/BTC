@@ -41,6 +41,7 @@ public class BTCClient implements ClientModInitializer {
 //    private boolean windStaffRendererRegistered = false; // Flag to track registration status
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
     public static KeyBinding leftAltKeyBinding;
+    public static KeyBinding tildeKeyBinding;
 
     @Override
     public void onInitializeClient() {
@@ -62,6 +63,12 @@ public class BTCClient implements ClientModInitializer {
                 "key.btc.secondary_staff_ability", // The translation key for the keybinding
                 InputUtil.Type.KEYSYM, // Key type (keyboard)
                 GLFW.GLFW_KEY_LEFT_ALT, // Default key: left control
+                "category.btc.keys" // The category of the keybinding
+        ));
+        tildeKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.tertiary_staff_ability", // The translation key for the keybinding
+                InputUtil.Type.KEYSYM, // Key type (keyboard)
+                GLFW.GLFW_KEY_GRAVE_ACCENT, // Default key: left control
                 "category.btc.keys" // The category of the keybinding
         ));
     }
