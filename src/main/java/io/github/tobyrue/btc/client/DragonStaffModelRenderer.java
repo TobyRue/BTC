@@ -19,7 +19,7 @@ import net.minecraft.util.math.RotationAxis;
 @Environment(EnvType.CLIENT)
 public class DragonStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer{
     public static final ItemStack HANDLE_DRAGON = new ItemStack(ModItems.STAFF, 1);
-    public static final ItemStack FIRE_CHARGE = new ItemStack(Items.FIRE_CHARGE, 1);
+    public static final ItemStack ENDER_PEARL = new ItemStack(Items.ENDER_PEARL, 1);
     public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/dragon_breath_staff.png");
     private static final String ELEMENT1 = "element1";
     private static final String ELEMENT2 = "element2";
@@ -78,7 +78,7 @@ public class DragonStaffModelRenderer implements BuiltinItemRendererRegistry.Dyn
         matrices.translate(0.5, 1.4, 0.2);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle)); // Apply rotation on Y-axis
 
-        minecraft.getItemRenderer().renderItem(FIRE_CHARGE, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+        minecraft.getItemRenderer().renderItem(ENDER_PEARL, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         matrices.pop();
     }
     @Override
