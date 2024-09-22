@@ -33,6 +33,10 @@ public class ModItems {
             new FireStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "fire_staff"
     );
+    public static final Item DRAGON_STAFF = register(
+            new DragonStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+            "dragon_staff"
+    );
 
     public static void initialize() {
     }
