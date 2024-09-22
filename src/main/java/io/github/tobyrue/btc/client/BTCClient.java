@@ -38,8 +38,9 @@ import org.lwjgl.glfw.GLFW;
 
 public class BTCClient implements ClientModInitializer {
 
-//    private boolean windStaffRendererRegistered = false; // Flag to track registration status
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
+    public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
+
     public static KeyBinding leftAltKeyBinding;
     public static KeyBinding tildeKeyBinding;
 
@@ -58,7 +59,11 @@ public class BTCClient implements ClientModInitializer {
             ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(WIND_STAFF_LAYER);
             new WindStaffModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
         });
-
+        EntityModelLayerRegistry.registerModelLayer(FIRE_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
+        BuiltinItemRendererRegistry.INSTANCE.register(ModItems.FIRE_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
+            ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(FIRE_STAFF_LAYER);
+            new FireStaffModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
+        });
         leftAltKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.btc.secondary_staff_ability", // The translation key for the keybinding
                 InputUtil.Type.KEYSYM, // Key type (keyboard)

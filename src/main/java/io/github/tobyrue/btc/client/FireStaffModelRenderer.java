@@ -4,32 +4,23 @@ import io.github.tobyrue.btc.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
-import net.minecraft.block.entity.VaultBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.WindChargeEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.TridentEntityModel;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
-import java.util.Stack;
-
-import static io.github.tobyrue.btc.client.BTCClient.WIND_STAFF_LAYER;
-
 @Environment(EnvType.CLIENT)
-public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
-    public static final ItemStack HANDLE_WIND = new ItemStack(ModItems.STAFF, 1);
-    private static final DummyWindCharge dummy = new DummyWindCharge(); // Static variable
-    private static int renderCounter = 0; // Counter to slow down age update
-    public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/breeze_rods.png");
-
+public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer{
+    public static final ItemStack HANDLE_FIRE = new ItemStack(ModItems.STAFF, 1);
+    public static final ItemStack FIRE_CHARGE = new ItemStack(Items.FIRE_CHARGE, 1);
+    public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/blaze_rods.png");
     private static final String ELEMENT1 = "element1";
     private static final String ELEMENT2 = "element2";
     private static final String ELEMENT3 = "element3";
@@ -41,7 +32,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     private final ModelPart element4;
     private final ModelPart root;
 
-    public WindStaffModelRenderer(ModelPart root) {
+    public FireStaffModelRenderer(ModelPart root) {
         this.root = root;
         this.element1 = root.getChild("element1");
         this.element2 = root.getChild("element2");
@@ -49,7 +40,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         this.element4 = root.getChild("element4");
     }
 
-public static TexturedModelData getTexturedModelData() {
+    public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
 
@@ -76,42 +67,32 @@ public static TexturedModelData getTexturedModelData() {
         this.root.render(matrices, vertices, light, overlay);
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
     }
-
-    private void updateDummy() {
-        // Increment the age of the dummy entity every 10 render calls
-        if (renderCounter % 10 == 0) {
-            dummy.age++;
-        }
-        renderCounter++;
-    }
-
-
-    public void renderWind(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void renderFire(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
-        var tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-        EntityRendererFactory.Context context = new EntityRendererFactory.Context(minecraft.getEntityRenderDispatcher(), minecraft.getItemRenderer(), minecraft.getBlockRenderManager(), null, minecraft.getResourceManager(), minecraft.getEntityModelLoader(), minecraft.textRenderer
-        );
-        matrices.translate(0.5, 1.5, 0.2);
 
-        updateDummy();
-        new WindChargeEntityRenderer(context).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
+        // Rotate the fire charge continuously
+        long time = System.currentTimeMillis() % 3600L; // Get time to create smooth rotation
+        float angle = (time / 10.0f) % 360; // Adjust rotation speed by changing divisor
 
+        matrices.translate(0.5, 1.4, 0.2);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle)); // Apply rotation on Y-axis
+
+        minecraft.getItemRenderer().renderItem(FIRE_CHARGE, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         matrices.pop();
     }
-
         @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
-        renderWind(stack, mode, matrices, vertexConsumers, light, overlay);
+        renderFire(stack, mode, matrices, vertexConsumers, light, overlay);
 
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
 
         matrices.translate(0.5, 0.5, 0.20);
 
-        minecraft.getItemRenderer().renderItem(HANDLE_WIND, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+        minecraft.getItemRenderer().renderItem(HANDLE_FIRE, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
         VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
 

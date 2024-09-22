@@ -29,7 +29,10 @@ public class ModItems {
         new WindStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "wind_staff"
     );
-
+    public static final Item FIRE_STAFF = register(
+            new FireStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+            "fire_staff"
+    );
 
     public static void initialize() {
     }
