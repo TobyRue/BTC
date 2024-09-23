@@ -42,15 +42,7 @@ public class BTC implements ModInitializer {
             }
             return ActionResult.PASS;
         });
-//        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-//            if(player instanceof ServerPlayerEntity) {
-//                if(player.hasStatusEffect((RegistryEntry<StatusEffect>) BTC.ANTI_PLACE)) {
-//                    System.out.println("Block placement prevented due to effect");
-//                    return ActionResult.FAIL;
-//                }
-//            }
-//            return ActionResult.SUCCESS;
-//        });
+
         //INGREDIENTS
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.RUBY_TRIAL_KEY));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.STAFF));

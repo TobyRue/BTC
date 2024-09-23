@@ -10,9 +10,13 @@ import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.WindChargeItem;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
@@ -133,5 +137,19 @@ public class WindStaffItem extends Item {
                 entity.damage(world.getDamageSources().flyIntoWall(), 5);
             }
         }
+    }
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltip, TooltipType tooltipType) {
+        super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
+        tooltip.add(this.getDescription1().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
+        tooltip.add(this.getDescription2().formatted(Formatting.WHITE));
+
+        // Add custom tooltip text
+    }
+    public MutableText getDescription1() {
+        return Text.literal("Right Click:");
+    }
+    public MutableText getDescription2() {
+        return Text.literal("Single Wind Charge");
     }
 }
