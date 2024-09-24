@@ -69,7 +69,7 @@ public class FireStaffItem extends Item {
             return TypedActionResult.success(itemStack);
             // Schedule shooting mobs away after a delay (e.g., 100 ticks = 5 seconds)
         }else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 100, 0));
+            user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
             user.getItemCooldownManager().set(this, 100);
             user.setOnFireForTicks(100);
             return TypedActionResult.success(itemStack);
@@ -86,13 +86,36 @@ public class FireStaffItem extends Item {
         super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
         tooltip.add(this.getDescription1().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.RED));
         tooltip.add(this.getDescription2().formatted(Formatting.WHITE));
-
+        tooltip.add(this.getDescription3().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.RED));
+        tooltip.add(this.getDescription4().formatted(Formatting.WHITE));
+        tooltip.add(this.getDescription5().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.RED));
+        tooltip.add(this.getDescription6().formatted(Formatting.WHITE));
+        tooltip.add(this.getDescription7().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.RED));
+        tooltip.add(this.getDescription8().formatted(Formatting.WHITE));
         // Add custom tooltip text
     }
     public MutableText getDescription1() {
         return Text.literal("Right Click:");
     }
     public MutableText getDescription2() {
-        return Text.literal("Small Blast Fireball");
+        return Text.literal("Weak Fire Ball");
+    }
+    public MutableText getDescription3() {
+        return Text.literal("Shift Right Click:");
+    }
+    public MutableText getDescription4() {
+        return Text.literal("Strong Fireball Attack");
+    }
+    public MutableText getDescription5() {
+        return Text.literal("Alt Right Click:");
+    }
+    public MutableText getDescription6() {
+        return Text.literal("Strength 2 for 7 Seconds");
+    }
+    public MutableText getDescription7() {
+        return Text.literal("Tilde Right Click:");
+    }
+    public MutableText getDescription8() {
+        return Text.literal("Resistance 3 for 5 Seconds");
     }
 }

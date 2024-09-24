@@ -143,13 +143,36 @@ public class WindStaffItem extends Item {
         super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
         tooltip.add(this.getDescription1().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
         tooltip.add(this.getDescription2().formatted(Formatting.WHITE));
-
+        tooltip.add(this.getDescription3().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
+        tooltip.add(this.getDescription4().formatted(Formatting.WHITE));
+        tooltip.add(this.getDescription5().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
+        tooltip.add(this.getDescription6().formatted(Formatting.WHITE));
+        tooltip.add(this.getDescription7().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
+        tooltip.add(this.getDescription8().formatted(Formatting.WHITE));
         // Add custom tooltip text
     }
     public MutableText getDescription1() {
         return Text.literal("Right Click:");
     }
     public MutableText getDescription2() {
-        return Text.literal("Single Wind Charge");
+        return Text.literal("Wind Charge");
+    }
+    public MutableText getDescription3() {
+        return Text.literal("Shift Right Click:");
+    }
+    public MutableText getDescription4() {
+        return Text.literal("Cluster Shot of Wind Charges");
+    }
+    public MutableText getDescription5() {
+        return Text.literal("Alt Right Click:");
+    }
+    public MutableText getDescription6() {
+        return Text.literal("Pull Nearby Mobs Towards You");
+    }
+    public MutableText getDescription7() {
+        return Text.literal("Tilde Right Click:");
+    }
+    public MutableText getDescription8() {
+        return Text.literal("Shoot Nearby Entities Away Dealing Damage");
     }
 }

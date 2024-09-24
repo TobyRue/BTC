@@ -25,8 +25,11 @@ public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
 
     public static final StatusEffect ANTI_PLACE;
+    public static final StatusEffect DRAGON_THORNS;
+
     static {
         ANTI_PLACE = Registry.register(Registries.STATUS_EFFECT, Identifier.of("btc", "anti_place"), new AntiPlaceEffect());
+        DRAGON_THORNS = Registry.register(Registries.STATUS_EFFECT, Identifier.of("btc", "dragon_thorns"), new DragonThornsEffect());
     }
 
     @Override
