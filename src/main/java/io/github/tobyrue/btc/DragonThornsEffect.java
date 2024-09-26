@@ -40,9 +40,10 @@ public class DragonThornsEffect extends StatusEffect {
             if (reducedDamage < 0) {
                 reducedDamage = 0;
             }
-            if (entity.getHealth() == entity.getMaxHealth() * 0.02) {
+            if(!(entity.getHealth() <= 0)){
                 entity.setHealth((amount * (0.2f)) + (entity.getHealth()));
             }
+
             System.out.println("Damage Protected: " + reducedDamage);
             // Modify the damage taken by the entity
         }
