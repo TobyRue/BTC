@@ -28,7 +28,6 @@ public class DragonScalesEffect extends StatusEffect {
             // Reflect damage to the attacker
             if (source.getAttacker() instanceof LivingEntity attacker) {
                 float reflectionDamage = amount * (0.25f * level); // Reflect 25% of damage per level
-                System.out.println("Name of attacker: " + attacker + " Damage: " + reflectionDamage);
                 attacker.damage(source, reflectionDamage);
             }
 
@@ -42,9 +41,6 @@ public class DragonScalesEffect extends StatusEffect {
             if(!(entity.getHealth() <= 0)){
                 entity.setHealth(reducedDamage);
             }
-
-            System.out.println("Damage Protected: " + reducedDamage);
-            // Modify the damage taken by the entity
         }
     }
 
