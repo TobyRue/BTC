@@ -34,18 +34,13 @@ public class DragonScalesEffect extends StatusEffect {
 
             // Apply damage reduction to the entity with the effect
             float reducedDamage = amount * (0.2f * level) + entity.getHealth();
-            float noDamage = entity.getHealth() + amount;
             // Ensure that damage doesn't go negative
             if(reducedDamage < 0) {
                 reducedDamage = 0;
             }
 
             if(!(entity.getHealth() <= 0)){
-                if (level <= 4) {
-                    entity.setHealth(reducedDamage);
-                } else if (level >= 5) {
-                    entity.setHealth(noDamage);
-                }
+                entity.setHealth(reducedDamage);
             }
 
             System.out.println("Damage Protected: " + reducedDamage);
