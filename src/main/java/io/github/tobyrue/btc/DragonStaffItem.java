@@ -12,6 +12,7 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -65,14 +66,23 @@ public class DragonStaffItem extends Item {
             world.spawnEntity(dragonFireballEntity);
 
             // Apply a cooldown to the staff to prevent spamming
-            user.getItemCooldownManager().set(this, 100); // Adjust the cooldown as necessary
+            user.getItemCooldownManager().set(this, 100);
             return TypedActionResult.success(itemStack);
-        } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
+        } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed() && !user.isSneaking()) {
             applyLifesteal(world, user, 10);
-            user.getItemCooldownManager().set(this, 20); // Adjust the cooldown as necessary
+            user.getItemCooldownManager().set(this, 20);
             return TypedActionResult.success(itemStack);
-        } else if (!world.isClient && BTCClient.tildeKeyBinding.isPressed() && !BTCClient.leftAltKeyBinding.isPressed()) {
-
+        } else if (!world.isClient && BTCClient.tildeKeyBinding.isPressed() && !BTCClient.leftAltKeyBinding.isPressed() && !user.isSneaking()) {
+            user.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 200, 0));
+            user.getItemCooldownManager().set(this, 160);
+            return TypedActionResult.success(itemStack);
+        } else if (!world.isClient && BTCClient.tildeKeyBinding.isPressed() && BTCClient.leftAltKeyBinding.isPressed() && !user.isSneaking()) {
+            user.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 600, 2));
+            user.getItemCooldownManager().set(this, 640);
+            return TypedActionResult.success(itemStack);
+        } else if (!world.isClient && BTCClient.tildeKeyBinding.isPressed() && BTCClient.leftAltKeyBinding.isPressed() && user.isSneaking()) {
+            user.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 1200, 4));
+            user.getItemCooldownManager().set(this, 1200);
             return TypedActionResult.success(itemStack);
         }
 
@@ -114,6 +124,10 @@ public class DragonStaffItem extends Item {
         tooltip.add(this.getDescription6().formatted(Formatting.WHITE));
         tooltip.add(this.getDescription7().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.BLUE));
         tooltip.add(this.getDescription8().formatted(Formatting.WHITE));
+        tooltip.add(this.getDescription9().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.BLUE));
+        tooltip.add(this.getDescription10().formatted(Formatting.WHITE));
+        tooltip.add(this.getDescription11().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.BLUE));
+        tooltip.add(this.getDescription12().formatted(Formatting.WHITE));
         // Add custom tooltip text
     }
     public MutableText getDescription1() {
@@ -138,6 +152,18 @@ public class DragonStaffItem extends Item {
         return Text.literal("Tilde Right Click:");
     }
     public MutableText getDescription8() {
-        return Text.literal("None Yet");
+        return Text.literal("Dragon Scales for 10 Seconds at Level 1");
+    }
+    public MutableText getDescription9() {
+        return Text.literal("Tilde, Left Alt, Right Click:");
+    }
+    public MutableText getDescription10() {
+        return Text.literal("Dragon Scales for 30 Seconds at Level 3");
+    }
+    public MutableText getDescription11() {
+        return Text.literal("Tilde, Left Alt, Shift Right Click:");
+    }
+    public MutableText getDescription12() {
+        return Text.literal("Dragon Scales for 60 Seconds at Level 5");
     }
 }
