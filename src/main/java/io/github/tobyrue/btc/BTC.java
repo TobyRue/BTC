@@ -34,7 +34,6 @@ public class BTC implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        System.out.println("hello world");
         ModBlocks.initialize();
         ModItems.initialize();
         ModBlockEntities.initialize();
