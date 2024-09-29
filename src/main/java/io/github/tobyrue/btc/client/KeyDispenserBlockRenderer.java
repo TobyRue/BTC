@@ -16,6 +16,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RotationAxis;
 
+import java.util.Collections;
+
 @Environment(EnvType.CLIENT)
 public class KeyDispenserBlockRenderer implements BlockEntityRenderer<KeyDispenserBlockEntity> {
     private static ItemStack key1 = new ItemStack(ModItems.RUBY_TRIAL_KEY, 1);
@@ -25,7 +27,20 @@ public class KeyDispenserBlockRenderer implements BlockEntityRenderer<KeyDispens
     @Override
     public void render(KeyDispenserBlockEntity blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
-        renderItem(blockEntity, new ItemStack(ModItems.RUBY_TRIAL_KEY), tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.2, 0.25f);
+        MinecraftClient client = MinecraftClient.getInstance();
+        String uuid = client.player.getUuid().toString();
+
+        // Log the state of the HASH_SET
+        System.out.println("Current HASH_SET contents: " + blockEntity.HASH_SET);
+
+        // Check if the player's UUID is in the HASH_SET
+        if (!blockEntity.HASH_SET.contains(uuid)) {
+            System.out.println("Should be rendered to: " + uuid);
+            renderItem(blockEntity, key1, tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.2, 0.25f);
+        } else {
+            System.out.println("Should not Rendered to: " + uuid);
+        }
+
         matrices.pop();
     }
     public void renderItem(KeyDispenserBlockEntity blockEntity, ItemStack stack, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -35,7 +50,7 @@ public class KeyDispenserBlockRenderer implements BlockEntityRenderer<KeyDispens
     public void renderItem(KeyDispenserBlockEntity blockEntity, ItemStack stack, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, double x, double z, float dTheta) {
         matrices.push();
         // Rotate the item
-        matrices.translate(0.5, 0.99, 0.5);
+        matrices.translate(0.5, 1.2, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((blockEntity.getWorld().getTime() + tickDelta) * 4 + (dTheta * 360)));
         int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
         MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, blockEntity.getWorld(), 0);

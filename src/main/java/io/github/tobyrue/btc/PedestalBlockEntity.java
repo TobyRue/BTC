@@ -25,7 +25,7 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 
 
-public class PedestalBlockEntity extends BlockEntity{
+public class PedestalBlockEntity extends BlockEntity {
 
     public final HashMap<String, Integer> HASH_MAP = new HashMap<>();
 

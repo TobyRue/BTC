@@ -4,10 +4,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
 public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>{
     private static final VoxelShape TOP_SHAPE;
@@ -44,6 +51,16 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return SHAPE;
     }
+
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        return world.getBlockEntity(pos, ModBlockEntities.KEY_DISPENSER_ENTITY).get().onUse(state, world, pos, player, hit);
+    }
+
+    //    @Override
+//    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+//        return world.getBlockEntity(pos, ModBlockEntities.KEY_DISPENSER_ENTITY).get().onUseWithItem(stack, state, world, pos, player, hand, hit);
+//    }
     @Override
     public BlockEntityType<KeyDispenserBlockEntity> getBlockEntityType() {
         return ModBlockEntities.KEY_DISPENSER_ENTITY;
