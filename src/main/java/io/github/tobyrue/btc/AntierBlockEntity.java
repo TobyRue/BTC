@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class AntierBlockEntity  extends BlockEntity implements BlockEntityTicker<AntierBlockEntity> {
+public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity> {
 
     public AntierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ANTIER_BLOCK_ENTITY, pos, state);

@@ -62,6 +62,13 @@ public class ModBlocks {
             "pedestal",
             true
     );
+    public static final KeyDispenserBlock KEY_DISPENSER_BLOCK = (KeyDispenserBlock) register(
+            new KeyDispenserBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
+                return 12;
+            }).strength(-1.0F, 3600000.0F)),
+            "key_dispenser",
+            true
+    );
     public static final DungeonWireBlock DUNGEON_WIRE = (DungeonWireBlock) register(
             new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
                 return 15;
