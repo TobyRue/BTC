@@ -30,14 +30,9 @@ public class KeyDispenserBlockRenderer implements BlockEntityRenderer<KeyDispens
         MinecraftClient client = MinecraftClient.getInstance();
         String uuid = client.player.getUuid().toString();
         // Log the state of the HASH_SET
-        System.out.println("Current HASH_SET contents: " + blockEntity.HASH_SET);
-
         // Check if the player's UUID is in the HASH_SET
         if (!blockEntity.HASH_SET.contains(uuid)) {
-            System.out.println("Should be rendered to: " + uuid);
             renderItem(blockEntity, key1, tickDelta, matrices, vertexConsumers, light, overlay, 0.2, 0.2, 0.25f);
-        } else {
-            System.out.println("Should not Rendered to: " + uuid);
         }
 
         matrices.pop();

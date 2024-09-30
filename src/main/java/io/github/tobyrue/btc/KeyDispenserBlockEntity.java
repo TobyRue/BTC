@@ -38,7 +38,6 @@ public class KeyDispenserBlockEntity extends BlockEntity {
 
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         var uuid = player.getUuid().toString();
-        System.out.println("Clicked:" + uuid);
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);
