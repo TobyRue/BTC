@@ -4,17 +4,25 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+
+import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
 public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>{
     private static final VoxelShape TOP_SHAPE;
@@ -57,10 +65,30 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
         return world.getBlockEntity(pos, ModBlockEntities.KEY_DISPENSER_ENTITY).get().onUse(state, world, pos, player, hit);
     }
 
-    //    @Override
-//    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-//        return world.getBlockEntity(pos, ModBlockEntities.KEY_DISPENSER_ENTITY).get().onUseWithItem(stack, state, world, pos, player, hand, hit);
-//    }
+
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+
+
+        int i;
+        double d2;
+        double e2;
+        double f2;
+        for(i = 0; i < 3; ++i) {
+            d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
+            e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
+            f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
+            for (Direction direction : Direction.values()) {
+                BlockPos neighborPos = pos.offset(direction);
+                BlockState neighborState = world.getBlockState(neighborPos);
+                if (neighborState.getBlock() instanceof DungeonWireBlock && neighborState.get(POWERED)) {
+                    world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
+                }
+            }
+        }
+        super.randomDisplayTick(state, world, pos, random);
+    }
+
     @Override
     public BlockEntityType<KeyDispenserBlockEntity> getBlockEntityType() {
         return ModBlockEntities.KEY_DISPENSER_ENTITY;

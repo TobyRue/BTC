@@ -29,7 +29,6 @@ public class KeyDispenserBlockRenderer implements BlockEntityRenderer<KeyDispens
         matrices.push();
         MinecraftClient client = MinecraftClient.getInstance();
         String uuid = client.player.getUuid().toString();
-
         // Log the state of the HASH_SET
         System.out.println("Current HASH_SET contents: " + blockEntity.HASH_SET);
 

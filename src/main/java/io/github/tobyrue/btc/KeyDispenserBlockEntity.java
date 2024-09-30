@@ -11,12 +11,18 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 import java.util.HashSet;
 
@@ -38,13 +44,14 @@ public class KeyDispenserBlockEntity extends BlockEntity {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
             if (neighborState.getBlock() instanceof DungeonWireBlock && neighborState.get(POWERED)) {
-                if (!world.isClient) {
-                    if (!HASH_SET.contains(uuid)) {
-                        HASH_SET.add(uuid);
+                if (!HASH_SET.contains(uuid)) {
+                    HASH_SET.add(uuid);
+                    world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+                    if (!world.isClient) {
                         player.getInventory().offerOrDrop(dropStack);
-                        markDirty();  // Mark the block entity as dirty to ensure data is saved
-                        return ActionResult.SUCCESS;
                     }
+                    markDirty();
+                    return ActionResult.SUCCESS;
                 }
             }
         }
