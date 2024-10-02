@@ -30,6 +30,7 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
     private static final VoxelShape MIDDLE_SHAPE;
     private static final VoxelShape BOTTOM_MIDDLE_SHAPE;
     private static final VoxelShape BOTTOM_SHAPE;
+    private static final VoxelShape BOTTOM_SHAPE1;
 
     private static final VoxelShape SHAPE;
 
@@ -37,13 +38,14 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
         super(settings);
     }
     static {
-        BOTTOM_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 2.0, 14.0);
+        BOTTOM_SHAPE1 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+        BOTTOM_SHAPE = Block.createCuboidShape(2.0, 1.0, 2.0, 14.0, 2.0, 14.0);
         TOP_MIDDLE_SHAPE = Block.createCuboidShape(3.0, 2.0, 3.0, 13.0, 5.0, 13.0);
         MIDDLE_SHAPE = Block.createCuboidShape(4.0, 5.0, 4.0, 12.0, 9.0, 12.0);
         BOTTOM_MIDDLE_SHAPE = Block.createCuboidShape(3.0, 9.0, 3.0, 13.0, 12.0, 13.0);
         TOP_SHAPE = Block.createCuboidShape(2.0, 12.0, 2.0, 14.0, 14.0, 14.0);
 
-        SHAPE = VoxelShapes.union(BOTTOM_SHAPE, TOP_MIDDLE_SHAPE, MIDDLE_SHAPE, BOTTOM_MIDDLE_SHAPE, TOP_SHAPE);
+        SHAPE = VoxelShapes.union(BOTTOM_SHAPE1, BOTTOM_SHAPE, TOP_MIDDLE_SHAPE, MIDDLE_SHAPE, BOTTOM_MIDDLE_SHAPE, TOP_SHAPE);
     }
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
