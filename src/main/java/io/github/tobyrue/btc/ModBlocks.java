@@ -77,6 +77,14 @@ public class ModBlocks {
             "dungeon_wire",
             true
     );
+    public static final FireDispenserBlock FIRE_DISPENSER = (FireDispenserBlock) register(
+            new FireDispenserBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
+                return 15;
+            })),
+
+            "fire_dispenser",
+            true
+    );
     public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
             new DungeonDoorBlock(AbstractBlock.Settings.create().strength(7.5F, 3600000.0F)),
 
