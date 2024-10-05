@@ -342,31 +342,6 @@ public class DungeonWireBlock extends Block
 //        }
     }
 
-    /**
-     * Returns whether the block is capable of emitting a redstone signal.
-     */
-    @Override
-    protected boolean emitsRedstonePower(BlockState state)
-    {
-        return true;
-    }
 
-    /**
-     * The weak redstone signal strength.
-     * @remarks Weak cannot pass through blocks. For example Redstone Dust cannot but a Repeater can.
-     */
-    @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
-    {
-        return state.get(ROOT) ? 15 : 0;
-    }
-
-    /**
-     * The strong redstone signal strength.
-     */
-    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
-    {
-        return getWeakRedstonePower(state, world, pos, direction);
-    }
 
 }

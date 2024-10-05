@@ -2,7 +2,11 @@ package io.github.tobyrue.btc;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.MagmaBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -21,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
-public class FireDispenserBlock extends Block {
+public class FireDispenserBlock extends Block implements ModBlockEntityProvider<FireDispenserBlockEntity>, ModTickBlockEntityProvider<FireDispenserBlockEntity> {
     public static final EnumProperty<FireDispenserType> FIRE_DISPENSER_TYPE = EnumProperty.of("fire_dispenser_type", FireDispenserType.class);
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
@@ -65,6 +69,7 @@ public class FireDispenserBlock extends Block {
         return SHAPE;
     }
     /** Make a Block Entity and change method FireSwich to ticker*/
+
     /**
     public void FireSwich(BlockState state, World world, BlockPos pos) {
         for (Direction direction : Direction.values()) {
@@ -80,6 +85,7 @@ public class FireDispenserBlock extends Block {
         }
     }
      */
+
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (random.nextInt(8) == 0) {
@@ -96,10 +102,21 @@ public class FireDispenserBlock extends Block {
             d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
-            world.addParticle(ParticleTypes.SMOKE, d2, e2, f2, 0.0, 0.0, 0.0);
-            world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
-
+            if (!(state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.NO_FIRE)) {
+                world.addParticle(ParticleTypes.SMOKE, d2, e2, f2, 0.0, 0.0, 0.0);
+            }
+            if ((state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.SHORT_FIRE) || (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.TALL_FIRE)) {
+                world.addParticle(ParticleTypes.FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
+            }
+            if ((state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.SHORT_FIRE_SOUL) || (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.TALL_FIRE_SOUL)) {
+                world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
+            }
         }
         super.randomDisplayTick(state, world, pos, random);
+    }
+
+    @Override
+    public BlockEntityType<FireDispenserBlockEntity> getBlockEntityType() {
+        return ModBlockEntities.FIRE_DISPENSER_ENTITY;
     }
 }
