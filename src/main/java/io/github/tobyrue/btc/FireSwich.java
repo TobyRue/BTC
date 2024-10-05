@@ -14,7 +14,15 @@ public enum FireSwich implements StringIdentifiable {
     TALL_SOUL_TO_SHORT("tall_soul_to_short"),
     TALL_TO_SHORT_SOUL("tall_to_short_soul"),
     SHORT_SOUL_TO_TALL("short_soul_to_tall"),
-    SHORT_TO_TALL_SOUL("short_to_tall_soul");
+    SHORT_TO_TALL_SOUL("short_to_tall_soul"),
+    OFF_TO_SHORT("off_to_short"),
+    OFF_TO_SHORT_SOUL("off_to_short_soul"),
+    OFF_TO_TALL("off_to_tall"),
+    OFF_TO_TALL_SOUL("off_to_tall_soul"),
+    SHORT_TO_OFF("short_to_off"),
+    SHORT_SOUL_TO_OFF("short_soul_to_off"),
+    TALL_TO_OFF("tall_to_off"),
+    TALL_SOUL_TO_OFF("tall_soul_to_off");
     private final String name;
 
     FireSwich(String name) {
