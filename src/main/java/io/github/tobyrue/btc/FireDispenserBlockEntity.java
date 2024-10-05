@@ -22,7 +22,6 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
             BlockState neighborState = world.getBlockState(neighborPos);
 
             if(neighborState.getBlock() instanceof DungeonWireBlock) {
-                BlockState no_fire = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE);
                 BlockState short_fire = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.SHORT_FIRE);
                 BlockState short_fire_soul = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.SHORT_FIRE_SOUL);
                 BlockState tall_fire = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.TALL_FIRE);
