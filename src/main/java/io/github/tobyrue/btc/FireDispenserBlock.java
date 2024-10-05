@@ -72,23 +72,6 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return SHAPE;
     }
-    /** Make a Block Entity and change method FireSwich to ticker*/
-
-    /**
-    public void FireSwich(BlockState state, World world, BlockPos pos) {
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            if (neighborState.getBlock() instanceof DungeonWireBlock && neighborState.get(POWERED)) {
-                BlockState newState1 = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.TALL_FIRE);
-                world.setBlockState(pos, newState1);
-            } else if(neighborState.getBlock() instanceof DungeonWireBlock && !neighborState.get(POWERED)) {
-                BlockState newState2 = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.SHORT_FIRE);
-                world.setBlockState(pos, newState2);
-            }
-        }
-    }
-     */
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
