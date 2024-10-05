@@ -27,6 +27,7 @@ import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
 public class FireDispenserBlock extends Block implements ModBlockEntityProvider<FireDispenserBlockEntity>, ModTickBlockEntityProvider<FireDispenserBlockEntity> {
     public static final EnumProperty<FireDispenserType> FIRE_DISPENSER_TYPE = EnumProperty.of("fire_dispenser_type", FireDispenserType.class);
+    public static final EnumProperty<FireSwich> FIRE_SWICH = EnumProperty.of("fire_swich", FireSwich.class);
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
     private static final VoxelShape BOTTOM_SHAPE;
@@ -36,7 +37,8 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
     public FireDispenserBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE));
+                .with(FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE)
+                .with(FIRE_SWICH, FireSwich.SHORT_TO_TALL));
     }
     static {
         BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -48,11 +50,13 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
-                .with(FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE);
+                .with(FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE)
+                .with(FIRE_SWICH, FireSwich.SHORT_TO_TALL);
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FIRE_DISPENSER_TYPE);
+        builder.add(FIRE_SWICH);
     }
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
