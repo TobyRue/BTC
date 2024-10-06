@@ -5,7 +5,6 @@ import io.github.tobyrue.btc.ModItems;
 import io.github.tobyrue.btc.PedestalBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.DecoratedPotBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
