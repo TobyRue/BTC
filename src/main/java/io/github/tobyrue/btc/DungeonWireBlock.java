@@ -341,7 +341,18 @@ public class DungeonWireBlock extends Block
 //            action.onDungeonWireChange(pointedToState, world, blockPos.offset(Direction.DOWN), Direction.UP, );
 //        }
     }
+    @Override
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
 
+    @Override
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        if (state.get(POWERED)) {
+            return 15;
+        }
+        return 0;
+    }
 
 
 }
