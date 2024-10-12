@@ -2,7 +2,7 @@
   "credit": "Made with Blockbench",
   "textures": {
     "0": "minecraft:block/chiseled_tuff_top",
-    "1": "btc:block/fire_dispenser_top",
+    "1": "minecraft:block/chiseled_tuff_top",
     "2": "minecraft:block/fire_1",
     "particle": "minecraft:block/chiseled_tuff_top"
   },
