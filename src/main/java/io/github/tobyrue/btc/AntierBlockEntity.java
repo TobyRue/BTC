@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity> {
+public class AntierBlockEntity extends BlockEntity /*implements BlockEntityTicker<AntierBlockEntity>*/ {
 
     public AntierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ANTIER_BLOCK_ENTITY, pos, state);
@@ -47,19 +47,19 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             }
         }
     }
-    @Override
-    public void tick(World world, BlockPos blockPos, BlockState state, AntierBlockEntity blockEntity) {
-        if (world instanceof ServerWorld) {
-            ServerWorld serverWorld = (ServerWorld) world;
-
-            // Increase tick counter
-            tickCounter++;
-
-            // Example: Check every 20 ticks
-            if (tickCounter % 20 == 0) {
-                // Call checkPlayersInRange with a range of 15 blocks
-                checkPlayersInRange(serverWorld, blockPos, state, 15.0);
-            }
-        }
-    }
+//    @Override
+//    public void tick(World world, BlockPos blockPos, BlockState state, AntierBlockEntity blockEntity) {
+//        if (world instanceof ServerWorld) {
+//            ServerWorld serverWorld = (ServerWorld) world;
+//
+//            // Increase tick counter
+//            tickCounter++;
+//
+//            // Example: Check every 20 ticks
+//            if (tickCounter % 20 == 0) {
+//                // Call checkPlayersInRange with a range of 15 blocks
+//                checkPlayersInRange(serverWorld, blockPos, state, 15.0);
+//            }
+//        }
+//    }
 }

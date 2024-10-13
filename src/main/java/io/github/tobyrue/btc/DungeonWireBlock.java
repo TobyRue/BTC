@@ -320,19 +320,16 @@ public class DungeonWireBlock extends Block
      * @remarks getPlacementState -> neighborUpdate -> onPlaced
      */
     @Override
-    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block sourceBlock, BlockPos sourcePos, boolean notify)
-    {
+    public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         super.neighborUpdate(blockState, world, blockPos, sourceBlock, sourcePos, notify);
 
-        if (!world.isClient)
-        {
+        if(!world.isClient) {
             BlockState newState = blockState;
             newState = updateFacingState(newState, world, blockPos);
             newState = updateConnectionParent(newState, world, blockPos);
             newState = updatePowered(newState, world, blockPos);
 
-            if (!blockState.equals(newState))
-            {
+            if(!blockState.equals(newState)) {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
         }
