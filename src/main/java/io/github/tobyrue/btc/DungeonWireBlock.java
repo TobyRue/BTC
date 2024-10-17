@@ -18,8 +18,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class DungeonWireBlock extends Block
-{
+public class DungeonWireBlock extends Block {
     public static final MapCodec<DungeonWireBlock> CODEC = createCodec(DungeonWireBlock::new);
 
     public static final DirectionProperty FACING = Properties.FACING;
@@ -109,12 +108,12 @@ public class DungeonWireBlock extends Block
      */
     private BlockState updateFacingState(BlockState blockState, World world, BlockPos blockPos)
     {
-        boolean up    = world.getBlockState(blockPos.offset(Direction.UP)).isOf(this);
-        boolean down  = world.getBlockState(blockPos.offset(Direction.DOWN)).isOf(this);
-        boolean north = world.getBlockState(blockPos.offset(Direction.NORTH)).isOf(this);
-        boolean east  = world.getBlockState(blockPos.offset(Direction.EAST)).isOf(this);
-        boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).isOf(this);
-        boolean west  = world.getBlockState(blockPos.offset(Direction.WEST)).isOf(this);
+        boolean up = world.getBlockState(blockPos.offset(Direction.UP)).isOf(this) || world.getBlockState(blockPos.offset(Direction.UP)).getBlock() instanceof CopperWireBlock;
+        boolean down = world.getBlockState(blockPos.offset(Direction.DOWN)).isOf(this) || world.getBlockState(blockPos.offset(Direction.DOWN)).getBlock() instanceof CopperWireBlock;
+        boolean north = world.getBlockState(blockPos.offset(Direction.NORTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.NORTH)).getBlock() instanceof CopperWireBlock;
+        boolean east = world.getBlockState(blockPos.offset(Direction.EAST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.EAST)).getBlock() instanceof CopperWireBlock;
+        boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.SOUTH)).getBlock() instanceof CopperWireBlock;
+        boolean west = world.getBlockState(blockPos.offset(Direction.WEST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.WEST)).getBlock() instanceof CopperWireBlock;
 
         if (!up && !down && !north && !east && !south && !west)
         {
@@ -191,8 +190,7 @@ public class DungeonWireBlock extends Block
         for (Direction direction: Direction.values())
         {
             BlockState other = world.getBlockState(blockPos.offset(direction));
-            if (!other.isOf(this))
-            {
+            if (!(other.isOf(this))) {
                 continue;
             }
 
