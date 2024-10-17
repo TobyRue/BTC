@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "btc:block/powered_copper_wire_right_bottom",
+    "side": "btc:block/chiseled_copper_bricks",
+    "top": "btc:block/chiseled_copper_bricks_top"
+  }
+}
