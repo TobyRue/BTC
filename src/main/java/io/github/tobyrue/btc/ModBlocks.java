@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc;
 
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -24,6 +26,12 @@ public class ModBlocks {
 
     return Registry.register(Registries.BLOCK, id, block);
 }
+
+    public static final Block CHISELED_COPPER_BRICKS = register(
+            new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.COPPER).mapColor(MapColor.TERRACOTTA_ORANGE).requiresTool().strength(3.0F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
+            "chiseled_copper_bricks",
+            true
+    );
     public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
             new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).luminance((state) -> {
                 return 15;
@@ -32,7 +40,6 @@ public class ModBlocks {
             true
 
             );
-
     public static final OminousBeaconBlock OMINOUS_BEACON = (OminousBeaconBlock) register(
             new OminousBeaconBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).luminance((state) -> {
                 return 14;
@@ -40,7 +47,6 @@ public class ModBlocks {
             "ominous_beacon",
             true
     );
-    //STONE_PRESSURE_PLATE = register((String)"stone_pressure_plate", new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).solid().instrument(NoteBlockInstrument.BASEDRUM).requiresTool().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY)));
 
     public static final PressurePlateBlock DUNGEON_PRESSURE_PLATE = (PressurePlateBlock) register(
             new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().strength(-1.0F, 3600000.0F)),
@@ -75,6 +81,14 @@ public class ModBlocks {
             })),
 
             "dungeon_wire",
+            true
+    );
+    public static final CopperWireBlock COPPER_WIRE = (CopperWireBlock) register(
+            new CopperWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
+                return 15;
+            })),
+
+            "copper_wire",
             true
     );
     public static final FireDispenserBlock FIRE_DISPENSER = (FireDispenserBlock) register(
