@@ -169,6 +169,7 @@ public class CopperWireBlock extends Block {
 
 
             if(other.contains(CONNECTION) && other.contains(POWERED)) {
+
                 Connection parent = other.get(CONNECTION);
                 if(parent != Connection.NONE) {
                     if((parent.asDirection().getOpposite() == direction)) {
@@ -185,13 +186,13 @@ public class CopperWireBlock extends Block {
                         }
                     }
                 }
-            } else if(other.contains(CONNECTION1) && other.contains(POWERED1) && other.contains(POWERABLE_BY_REDSTONE)) {
+            } else if(other.contains(CONNECTION1) && other.contains(POWERED1)) {
                 Connection parent1 = other.get(CONNECTION1);
                 if(parent1 != Connection.NONE) {
                     if((parent1.asDirection().getOpposite() == direction)) {
                         continue;
                     }
-                    if(other.get(POWERED1) || other.get(POWERABLE_BY_REDSTONE)) {
+                    if(other.get(POWERED1)) {
                         if (poweredTarget == Connection.NONE) {
                             poweredTarget = Connection.of(direction);
                         }
@@ -289,13 +290,13 @@ public class CopperWireBlock extends Block {
             if(!blockState.equals(newState)) {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
-            boolean bl = (Boolean)blockState.get(POWERED1);
+            boolean bl = (Boolean)blockState.get(ROOT1);
             if(blockState.get(POWERABLE_BY_REDSTONE)) {
                 if (bl != world.isReceivingRedstonePower(blockPos)) {
                     if (bl) {
                         world.scheduleBlockTick(blockPos, this, 4);
                     } else {
-                        world.setBlockState(blockPos, (BlockState) blockState.cycle(POWERED1), 2);
+                        world.setBlockState(blockPos, (BlockState) blockState.cycle(ROOT1), 2);
                     }
                 }
             }
@@ -303,8 +304,8 @@ public class CopperWireBlock extends Block {
     }
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if ((Boolean)state.get(POWERED1) && !world.isReceivingRedstonePower(pos)) {
-            world.setBlockState(pos, (BlockState)state.cycle(POWERED1), 2);
+        if ((Boolean)state.get(ROOT1) && !world.isReceivingRedstonePower(pos)) {
+            world.setBlockState(pos, (BlockState)state.cycle(ROOT1), 2);
         }
     }
     @Override
@@ -316,13 +317,4 @@ public class CopperWireBlock extends Block {
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return state.get(POWERED1) ? 15 : 0;
     }
-
-    /**
-     * Returns whether the block is capable of emitting a redstone signal.
-     */
-    @Override
-    protected boolean emitsRedstonePower(BlockState state) {
-        return true;
-    }
-
 }
