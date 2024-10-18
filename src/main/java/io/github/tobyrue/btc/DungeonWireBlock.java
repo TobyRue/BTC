@@ -321,10 +321,6 @@ public class DungeonWireBlock extends Block {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
         }
-//        BlockState pointedToState = world.getBlockState(blockPos.offset(Direction.DOWN));
-//        if(pointedToState.getBlock() instanceof IDungeonWireAction action) {
-//            action.onDungeonWireChange(pointedToState, world, blockPos.offset(Direction.DOWN), Direction.UP, );
-//        }
     }
     @Override
     public boolean hasComparatorOutput(BlockState state) {

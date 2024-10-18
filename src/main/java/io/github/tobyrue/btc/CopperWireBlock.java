@@ -211,18 +211,14 @@ public class CopperWireBlock extends Block {
      * @param blockPos
      * @return
      */
-    private boolean isValidConnectionParent(BlockState blockState, World world, BlockPos blockPos)
-    {
+    private boolean isValidConnectionParent(BlockState blockState, World world, BlockPos blockPos) {
         Connection parent = blockState.get(CONNECTION1);
-        if (parent != Connection.NONE)
-        {
+        if(parent != Connection.NONE) {
             BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-            if (other.isOf(this) && other.get(CONNECTION1) != Connection.NONE)
-            {
+            if(other.isOf(this) && other.get(CONNECTION1) != Connection.NONE) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -233,13 +229,10 @@ public class CopperWireBlock extends Block {
      * @param blockPos
      * @return
      */
-    private BlockState updateConnectionParent(BlockState blockState, World world, BlockPos blockPos)
-    {
-        if (isValidConnectionParent(blockState, world, blockPos))
-        {
+    private BlockState updateConnectionParent(BlockState blockState, World world, BlockPos blockPos) {
+        if(isValidConnectionParent(blockState, world, blockPos)) {
             return blockState;
         }
-
         Connection parent = findConnectionParent(blockState, world, blockPos);
         return blockState.with(CONNECTION1, parent);
     }
@@ -251,15 +244,12 @@ public class CopperWireBlock extends Block {
      * @param blockPos
      * @return
      */
-    private BlockState updatePowered(BlockState blockState, World world, BlockPos blockPos)
-    {
-        if (blockState.get(ROOT1))
-        {
+    private BlockState updatePowered(BlockState blockState, World world, BlockPos blockPos) {
+        if(blockState.get(ROOT1)) {
             return blockState.with(POWERED1, true);
         }
 
-        if (blockState.get(CONNECTION1) == Connection.NONE)
-        {
+        if(blockState.get(CONNECTION1) == Connection.NONE) {
             return blockState.with(POWERED1, false);
         }
         Connection parent = blockState.get(CONNECTION1);
@@ -267,12 +257,11 @@ public class CopperWireBlock extends Block {
         Connection parent1 = blockState.get(CONNECTION1);
         BlockState other1 = world.getBlockState(blockPos.offset(parent1.asDirection()));
 
-        if (other.getBlock() instanceof DungeonWireBlock && other.get(POWERED))
-        {
+        if(other.getBlock() instanceof DungeonWireBlock && other.get(POWERED)) {
             return blockState.with(POWERED1, true);
         }
 
-        if (other1.isOf(this) && other.contains(POWERED1)) {
+        if(other1.isOf(this) && other.contains(POWERED1)) {
             return blockState.with(POWERED1, true);
         }
         return blockState.with(POWERED1, false);
@@ -283,13 +272,13 @@ public class CopperWireBlock extends Block {
     public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         super.neighborUpdate(blockState, world, blockPos, sourceBlock, sourcePos, notify);
 
-        if (!world.isClient) {
+        if(!world.isClient) {
             BlockState newState = blockState;
             newState = updateFacingState(newState, world, blockPos);
             newState = updateConnectionParent(newState, world, blockPos);
             newState = updatePowered(newState, world, blockPos);
 
-            if (!blockState.equals(newState)) {
+            if(!blockState.equals(newState)) {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
         }
