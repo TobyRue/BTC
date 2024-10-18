@@ -36,7 +36,6 @@ public class CopperWireBlock extends Block {
     public static final BooleanProperty POWERED1 = BooleanProperty.of("powered");
 
     public static final BooleanProperty POWERABLE_BY_REDSTONE = BooleanProperty.of("powerable_by_redstone");
-    public static final BooleanProperty EMITS_REDSTONE = BooleanProperty.of("emits_redstone");
 
     public CopperWireBlock(Settings settings) {
         super(settings);
@@ -44,7 +43,6 @@ public class CopperWireBlock extends Block {
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(ROOT1, false)
                 .with(POWERABLE_BY_REDSTONE, true)
-                .with(EMITS_REDSTONE, true)
                 .with(FACING_DOWN, false)
                 .with(FACING_UP, false)
                 .with(FACING_RIGHT, false)
@@ -88,8 +86,7 @@ public class CopperWireBlock extends Block {
                 FACING,
                 POWERED1,
                 POWERABLE_BY_REDSTONE,
-                ROOT1,
-                EMITS_REDSTONE
+                ROOT1
         );
     }
 
