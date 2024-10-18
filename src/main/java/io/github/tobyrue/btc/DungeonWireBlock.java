@@ -250,7 +250,7 @@ public class DungeonWireBlock extends Block {
         if (parent != Connection.NONE)
         {
             BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-            if (other.isOf(this) && other.get(CONNECTION) != Connection.NONE)
+            if ((other.isOf(this) || other.getBlock() instanceof CopperWireBlock) && other.get(CONNECTION) != Connection.NONE)
             {
                 return true;
             }
@@ -298,8 +298,9 @@ public class DungeonWireBlock extends Block {
 
         Connection parent = blockState.get(CONNECTION);
         BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-        if (other.isOf(this) && other.get(POWERED))
+        if ((other.isOf(this) && other.get(POWERED)) || (other.getBlock() instanceof CopperWireBlock && other.get(POWERED)))
         {
+            System.out.println("Checking power state: " + blockPos + " powered: " + blockState.get(POWERED));
             return blockState.with(POWERED, true);
         }
 

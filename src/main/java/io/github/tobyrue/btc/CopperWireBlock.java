@@ -174,11 +174,14 @@ public class CopperWireBlock extends Block {
         return blockState.with(CONNECTION, parent);
     }
 
-    private boolean isValidConnectionParent(BlockState blockState, World world, BlockPos blockPos) {
+    private boolean isValidConnectionParent(BlockState blockState, World world, BlockPos blockPos)
+    {
         Connection parent = blockState.get(CONNECTION);
-        if (parent != Connection.NONE) {
+        if (parent != Connection.NONE)
+        {
             BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-            if (other.isOf(this)) {
+            if ((other.isOf(this) || other.getBlock() instanceof DungeonWireBlock) && other.get(CONNECTION) != Connection.NONE)
+            {
                 return true;
             }
         }
@@ -195,10 +198,10 @@ public class CopperWireBlock extends Block {
 
         Connection parent = blockState.get(CONNECTION);
         BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-        if (other.isOf(this)) {
+        if ((other.isOf(this) && other.get(POWERED)) || (other.getBlock() instanceof DungeonWireBlock && other.get(POWERED))) {
+            System.out.println("Checking power state: " + blockPos + " powered: " + blockState.get(POWERED));
             return other.get(POWERED) ? blockState.with(POWERED, true) : blockState.with(POWERED, false);
         }
-
         return blockState.with(POWERED, false);
     }
 
