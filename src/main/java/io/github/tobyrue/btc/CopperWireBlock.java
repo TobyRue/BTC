@@ -20,12 +20,15 @@ public class CopperWireBlock extends Block {
     public static final MapCodec<CopperWireBlock> CODEC = createCodec(CopperWireBlock::new);
 
     public static final DirectionProperty FACING = Properties.FACING;
+
     public static final BooleanProperty FACING_UP = BooleanProperty.of("up");
     public static final BooleanProperty FACING_DOWN = BooleanProperty.of("down");
     public static final BooleanProperty FACING_LEFT = BooleanProperty.of("left");
     public static final BooleanProperty FACING_RIGHT = BooleanProperty.of("right");
+
     public static final BooleanProperty ROOT1 = BooleanProperty.of("root");
     public static final EnumProperty<Connection> CONNECTION1 = EnumProperty.of("connection", Connection.class);
+
     public static final BooleanProperty POWERED1 = BooleanProperty.of("powered");
 
     public CopperWireBlock(Settings settings) {
@@ -87,7 +90,7 @@ public class CopperWireBlock extends Block {
         boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.SOUTH)).getBlock() instanceof DungeonWireBlock;
         boolean west = world.getBlockState(blockPos.offset(Direction.WEST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.WEST)).getBlock() instanceof DungeonWireBlock;
 
-        if (!up && !down && !north && !east && !south && !west) {
+        if(!up && !down && !north && !east && !south && !west) {
             return blockState;
         }
 
@@ -140,75 +143,64 @@ public class CopperWireBlock extends Block {
      * @return
      * @remarks Only finds blocks of the same class.
      */
-    private Connection findConnectionParent(BlockState blockState, World world, BlockPos blockPos)
-    {
+    private Connection findConnectionParent(BlockState blockState, World world, BlockPos blockPos) {
         Connection poweredTarget = Connection.NONE;
         Connection unpoweredTarget = Connection.NONE;
 
-        for (Direction direction: Direction.values())
-        {
+        for(Direction direction: Direction.values()) {
             BlockState other = world.getBlockState(blockPos.offset(direction));
-            if (!(other.isOf(this) || other.getBlock() instanceof DungeonWireBlock))
-            {
+            if(!(other.isOf(this) || other.getBlock() instanceof DungeonWireBlock)) {
                 continue;
             }
 
-            if (other.contains(ROOT) && other.get(ROOT))
-            {
+            if(other.contains(ROOT) && other.get(ROOT)) {
                 return Connection.of(direction);
-            } else if (other.contains(ROOT1) && other.get(ROOT1))
-            {
+            } else if(other.contains(ROOT1) && other.get(ROOT1)) {
                 return Connection.of(direction);
             }
 
 
             if(other.contains(CONNECTION) && other.contains(POWERED)) {
                 Connection parent = other.get(CONNECTION);
-                if (parent != Connection.NONE) {
-                    if ((parent.asDirection().getOpposite() == direction)) {
+                if(parent != Connection.NONE) {
+                    if((parent.asDirection().getOpposite() == direction)) {
                         continue;
                     }
 
-                    if (other.get(POWERED)) {
-                        if (poweredTarget == Connection.NONE) {
+                    if(other.get(POWERED)) {
+                        if(poweredTarget == Connection.NONE) {
                             poweredTarget = Connection.of(direction);
                         }
                     } else {
-                        if (unpoweredTarget == Connection.NONE) {
+                        if(unpoweredTarget == Connection.NONE) {
                             unpoweredTarget = Connection.of(direction);
                         }
                     }
                 }
-            } else if (other.contains(CONNECTION1) && other.contains(POWERED1)) {
+            } else if(other.contains(CONNECTION1) && other.contains(POWERED1)) {
                 Connection parent1 = other.get(CONNECTION1);
-                if (parent1 != Connection.NONE) {
-                    if ((parent1.asDirection().getOpposite() == direction)) {
+                if(parent1 != Connection.NONE) {
+                    if((parent1.asDirection().getOpposite() == direction)) {
                         continue;
                     }
-
-                    if (other.get(POWERED1)) {
+                    if(other.get(POWERED1)) {
                         if (poweredTarget == Connection.NONE) {
                             poweredTarget = Connection.of(direction);
                         }
                     } else {
-                        if (unpoweredTarget == Connection.NONE) {
+                        if(unpoweredTarget == Connection.NONE) {
                             unpoweredTarget = Connection.of(direction);
                         }
                     }
                 }
             }
         }
-
-        if (poweredTarget != Connection.NONE)
-        {
+        if(poweredTarget != Connection.NONE) {
             return poweredTarget;
         }
-
-        if (unpoweredTarget != Connection.NONE)
-        {
+        if(unpoweredTarget != Connection.NONE) {
             return unpoweredTarget;
         }
-
         return Connection.NONE;
     }
 
