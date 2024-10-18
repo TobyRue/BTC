@@ -319,12 +319,12 @@ public class CopperWireBlock extends Block {
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return state.get(POWERED1) ? 15 : 0;
     }
+    
     /**
      * Returns whether the block is capable of emitting a redstone signal.
      */
     @Override
-    protected boolean emitsRedstonePower(BlockState state)
-    {
+    protected boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
@@ -333,16 +333,14 @@ public class CopperWireBlock extends Block {
      * @remarks Weak cannot pass through blocks. For example Redstone Dust cannot but a Repeater can.
      */
     @Override
-    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
-    {
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return state.get(POWERED) ? 15 : 0;
     }
 
     /**
      * The strong redstone signal strength.
      */
-    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
-    {
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return getWeakRedstonePower(state, world, pos, direction);
     }
 }
