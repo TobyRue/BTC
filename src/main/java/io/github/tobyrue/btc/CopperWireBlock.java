@@ -14,6 +14,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import static io.github.tobyrue.btc.DungeonWireBlock.*;
+
 public class CopperWireBlock extends Block {
     public static final MapCodec<CopperWireBlock> CODEC = createCodec(CopperWireBlock::new);
 
@@ -146,36 +148,52 @@ public class CopperWireBlock extends Block {
         for (Direction direction: Direction.values())
         {
             BlockState other = world.getBlockState(blockPos.offset(direction));
-            if (!other.isOf(this))
+            if (!(other.isOf(this) || other.getBlock() instanceof DungeonWireBlock))
             {
                 continue;
             }
 
-            if (other.get(ROOT1))
+            if (other.contains(ROOT) && other.get(ROOT))
+            {
+                return Connection.of(direction);
+            } else if (other.contains(ROOT1) && other.get(ROOT1))
             {
                 return Connection.of(direction);
             }
 
-            Connection parent = other.get(CONNECTION1);
-            if (parent != Connection.NONE)
-            {
-                if (parent.asDirection().getOpposite() == direction)
-                {
-                    continue;
-                }
 
-                if (other.get(POWERED1))
-                {
-                    if (poweredTarget == Connection.NONE)
-                    {
-                        poweredTarget = Connection.of(direction);
+            if(other.contains(CONNECTION) && other.contains(POWERED)) {
+                Connection parent = other.get(CONNECTION);
+                if (parent != Connection.NONE) {
+                    if ((parent.asDirection().getOpposite() == direction)) {
+                        continue;
+                    }
+
+                    if (other.get(POWERED)) {
+                        if (poweredTarget == Connection.NONE) {
+                            poweredTarget = Connection.of(direction);
+                        }
+                    } else {
+                        if (unpoweredTarget == Connection.NONE) {
+                            unpoweredTarget = Connection.of(direction);
+                        }
                     }
                 }
-                else
-                {
-                    if (unpoweredTarget == Connection.NONE)
-                    {
-                        unpoweredTarget = Connection.of(direction);
+            } else if (other.contains(CONNECTION1) && other.contains(POWERED1)) {
+                Connection parent1 = other.get(CONNECTION1);
+                if (parent1 != Connection.NONE) {
+                    if ((parent1.asDirection().getOpposite() == direction)) {
+                        continue;
+                    }
+
+                    if (other.get(POWERED1)) {
+                        if (poweredTarget == Connection.NONE) {
+                            poweredTarget = Connection.of(direction);
+                        }
+                    } else {
+                        if (unpoweredTarget == Connection.NONE) {
+                            unpoweredTarget = Connection.of(direction);
+                        }
                     }
                 }
             }
@@ -252,14 +270,19 @@ public class CopperWireBlock extends Block {
         {
             return blockState.with(POWERED1, false);
         }
-
         Connection parent = blockState.get(CONNECTION1);
         BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-        if (other.isOf(this) && other.get(POWERED1))
+        Connection parent1 = blockState.get(CONNECTION1);
+        BlockState other1 = world.getBlockState(blockPos.offset(parent1.asDirection()));
+
+        if (other.getBlock() instanceof DungeonWireBlock && other.get(POWERED))
         {
             return blockState.with(POWERED1, true);
         }
 
+        if (other1.isOf(this) && other.contains(POWERED1)) {
+            return blockState.with(POWERED1, true);
+        }
         return blockState.with(POWERED1, false);
     }
 

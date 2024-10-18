@@ -192,12 +192,6 @@ public class DungeonWireBlock extends Block {
         for (Direction direction: Direction.values())
         {
             BlockState other = world.getBlockState(blockPos.offset(direction));
-            if (other.getBlock() instanceof CopperWireBlock) {
-                System.out.println("Neighbor is Copper Wire");
-                if (other.get(CONNECTION1) != Connection.NONE) {
-                    System.out.println("and has connection");
-                }
-            }
             if (!(other.isOf(this) || other.getBlock() instanceof CopperWireBlock))
             {
                 continue;
