@@ -185,13 +185,13 @@ public class CopperWireBlock extends Block {
                         }
                     }
                 }
-            } else if(other.contains(CONNECTION1) && other.contains(POWERED1)) {
+            } else if(other.contains(CONNECTION1) && other.contains(POWERED1) && other.contains(POWERABLE_BY_REDSTONE)) {
                 Connection parent1 = other.get(CONNECTION1);
                 if(parent1 != Connection.NONE) {
                     if((parent1.asDirection().getOpposite() == direction)) {
                         continue;
                     }
-                    if(other.get(POWERED1)) {
+                    if(other.get(POWERED1) || other.get(POWERABLE_BY_REDSTONE)) {
                         if (poweredTarget == Connection.NONE) {
                             poweredTarget = Connection.of(direction);
                         }
