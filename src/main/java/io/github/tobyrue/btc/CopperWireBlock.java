@@ -120,7 +120,7 @@ public class CopperWireBlock extends Block {
                     .with(FACING_DOWN, down)
                     .with(FACING_LEFT, south)
                     .with(FACING_RIGHT, north);
-        } else if (facing == Direction.SOUTH) {
+        } else if(facing == Direction.SOUTH) {
             return blockState
                     .with(FACING_UP, up)
                     .with(FACING_DOWN, down)
