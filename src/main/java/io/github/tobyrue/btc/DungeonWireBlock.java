@@ -18,6 +18,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+import static io.github.tobyrue.btc.CopperWireBlock.*;
+
 public class DungeonWireBlock extends Block {
     public static final MapCodec<DungeonWireBlock> CODEC = createCodec(DungeonWireBlock::new);
 
@@ -190,35 +192,58 @@ public class DungeonWireBlock extends Block {
         for (Direction direction: Direction.values())
         {
             BlockState other = world.getBlockState(blockPos.offset(direction));
-            if (!(other.isOf(this))) {
+            if (other.getBlock() instanceof CopperWireBlock) {
+                System.out.println("Neighbor is Copper Wire");
+                if (other.get(CONNECTION1) != Connection.NONE) {
+                    System.out.println("and has connection");
+                }
+            }
+            if (!(other.isOf(this) || other.getBlock() instanceof CopperWireBlock))
+            {
                 continue;
             }
 
-            if (other.get(ROOT))
+            if (other.contains(ROOT) && other.get(ROOT))
+            {
+                return Connection.of(direction);
+            } else if (other.contains(ROOT1) && other.get(ROOT1))
             {
                 return Connection.of(direction);
             }
 
-            Connection parent = other.get(CONNECTION);
-            if (parent != Connection.NONE)
-            {
-                if (parent.asDirection().getOpposite() == direction)
-                {
-                    continue;
-                }
 
-                if (other.get(POWERED))
-                {
-                    if (poweredTarget == Connection.NONE)
-                    {
-                        poweredTarget = Connection.of(direction);
+            if(other.contains(CONNECTION) && other.contains(POWERED)) {
+                Connection parent = other.get(CONNECTION);
+                if (parent != Connection.NONE) {
+                    if ((parent.asDirection().getOpposite() == direction)) {
+                        continue;
+                    }
+
+                    if (other.get(POWERED)) {
+                        if (poweredTarget == Connection.NONE) {
+                            poweredTarget = Connection.of(direction);
+                        }
+                    } else {
+                        if (unpoweredTarget == Connection.NONE) {
+                            unpoweredTarget = Connection.of(direction);
+                        }
                     }
                 }
-                else
-                {
-                    if (unpoweredTarget == Connection.NONE)
-                    {
-                        unpoweredTarget = Connection.of(direction);
+            } else if (other.contains(CONNECTION1) && other.contains(POWERED1)) {
+                Connection parent1 = other.get(CONNECTION1);
+                if (parent1 != Connection.NONE) {
+                    if ((parent1.asDirection().getOpposite() == direction)) {
+                        continue;
+                    }
+
+                    if (other.get(POWERED1)) {
+                        if (poweredTarget == Connection.NONE) {
+                            poweredTarget = Connection.of(direction);
+                        }
+                    } else {
+                        if (unpoweredTarget == Connection.NONE) {
+                            unpoweredTarget = Connection.of(direction);
+                        }
                     }
                 }
             }
@@ -250,7 +275,7 @@ public class DungeonWireBlock extends Block {
         if (parent != Connection.NONE)
         {
             BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-            if ((other.isOf(this) || other.getBlock() instanceof CopperWireBlock) && other.get(CONNECTION) != Connection.NONE)
+            if (other.isOf(this) && other.get(CONNECTION) != Connection.NONE)
             {
                 return true;
             }
@@ -295,15 +320,19 @@ public class DungeonWireBlock extends Block {
         {
             return blockState.with(POWERED, false);
         }
-
         Connection parent = blockState.get(CONNECTION);
         BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-        if ((other.isOf(this) && other.get(POWERED)) || (other.getBlock() instanceof CopperWireBlock && other.get(POWERED)))
+        Connection parent1 = blockState.get(CONNECTION);
+        BlockState other1 = world.getBlockState(blockPos.offset(parent1.asDirection()));
+
+        if (other.getBlock() instanceof CopperWireBlock && other.get(POWERED1))
         {
-            System.out.println("Checking power state: " + blockPos + " powered: " + blockState.get(POWERED));
             return blockState.with(POWERED, true);
         }
 
+        if (other1.isOf(this) && other.contains(POWERED)) {
+            return blockState.with(POWERED, true);
+        }
         return blockState.with(POWERED, false);
     }
 

@@ -22,9 +22,9 @@ public class CopperWireBlock extends Block {
     public static final BooleanProperty FACING_DOWN = BooleanProperty.of("down");
     public static final BooleanProperty FACING_LEFT = BooleanProperty.of("left");
     public static final BooleanProperty FACING_RIGHT = BooleanProperty.of("right");
-    public static final BooleanProperty ROOT = BooleanProperty.of("root");
-    public static final EnumProperty<Connection> CONNECTION = EnumProperty.of("connection", Connection.class);
-    public static final BooleanProperty POWERED = BooleanProperty.of("powered");
+    public static final BooleanProperty ROOT1 = BooleanProperty.of("root");
+    public static final EnumProperty<Connection> CONNECTION1 = EnumProperty.of("connection", Connection.class);
+    public static final BooleanProperty POWERED1 = BooleanProperty.of("powered");
 
     public CopperWireBlock(Settings settings) {
         super(settings);
@@ -35,9 +35,9 @@ public class CopperWireBlock extends Block {
                 .with(FACING_RIGHT, false)
                 .with(FACING_LEFT, false)
                 .with(FACING, Direction.NORTH)
-                .with(ROOT, false)
-                .with(CONNECTION, Connection.NONE)
-                .with(POWERED, false)
+                .with(ROOT1, false)
+                .with(CONNECTION1, Connection.NONE)
+                .with(POWERED1, false)
         );
     }
 
@@ -57,7 +57,7 @@ public class CopperWireBlock extends Block {
 
         placementState = updateFacingState(placementState, world, blockPos);
         Connection parent = findConnectionParent(placementState, world, blockPos);
-        placementState = placementState.with(CONNECTION, parent);
+        placementState = placementState.with(CONNECTION1, parent);
         placementState = updatePowered(placementState, world, blockPos);
 
         return placementState;
@@ -66,14 +66,14 @@ public class CopperWireBlock extends Block {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(
-                CONNECTION,
+                CONNECTION1,
                 FACING_DOWN,
                 FACING_LEFT,
                 FACING_RIGHT,
                 FACING_UP,
                 FACING,
-                POWERED,
-                ROOT
+                POWERED1,
+                ROOT1
         );
     }
 
@@ -130,80 +130,139 @@ public class CopperWireBlock extends Block {
         }
     }
 
-    private Connection findConnectionParent(BlockState blockState, World world, BlockPos blockPos) {
+    /**
+     *
+     * @param blockState
+     * @param world
+     * @param blockPos
+     * @return
+     * @remarks Only finds blocks of the same class.
+     */
+    private Connection findConnectionParent(BlockState blockState, World world, BlockPos blockPos)
+    {
         Connection poweredTarget = Connection.NONE;
         Connection unpoweredTarget = Connection.NONE;
 
-        for (Direction direction : Direction.values()) {
+        for (Direction direction: Direction.values())
+        {
             BlockState other = world.getBlockState(blockPos.offset(direction));
-
-            if (!(other.isOf(this))) {
+            if (!other.isOf(this))
+            {
                 continue;
             }
 
-            if (other.get(ROOT)) {
+            if (other.get(ROOT1))
+            {
                 return Connection.of(direction);
             }
 
-            Connection parent = other.get(CONNECTION);
-            if (parent != Connection.NONE) {
-                if (parent.asDirection().getOpposite() == direction) {
+            Connection parent = other.get(CONNECTION1);
+            if (parent != Connection.NONE)
+            {
+                if (parent.asDirection().getOpposite() == direction)
+                {
                     continue;
                 }
 
-                if (other.get(POWERED)) {
-                    if (poweredTarget == Connection.NONE) {
+                if (other.get(POWERED1))
+                {
+                    if (poweredTarget == Connection.NONE)
+                    {
                         poweredTarget = Connection.of(direction);
                     }
-                } else {
-                    if (unpoweredTarget == Connection.NONE) {
+                }
+                else
+                {
+                    if (unpoweredTarget == Connection.NONE)
+                    {
                         unpoweredTarget = Connection.of(direction);
                     }
                 }
             }
         }
 
-        return poweredTarget != Connection.NONE ? poweredTarget : unpoweredTarget != Connection.NONE ? unpoweredTarget : Connection.NONE;
-    }
-    private BlockState updateConnectionParent(BlockState blockState, World world, BlockPos blockPos) {
-        if (isValidConnectionParent(blockState, world, blockPos)) {
-            return blockState;
+        if (poweredTarget != Connection.NONE)
+        {
+            return poweredTarget;
         }
 
-        Connection parent = findConnectionParent(blockState, world, blockPos);
-        return blockState.with(CONNECTION, parent);
+        if (unpoweredTarget != Connection.NONE)
+        {
+            return unpoweredTarget;
+        }
+
+        return Connection.NONE;
     }
 
+    /**
+     *
+     * @param blockState
+     * @param world
+     * @param blockPos
+     * @return
+     */
     private boolean isValidConnectionParent(BlockState blockState, World world, BlockPos blockPos)
     {
-        Connection parent = blockState.get(CONNECTION);
+        Connection parent = blockState.get(CONNECTION1);
         if (parent != Connection.NONE)
         {
             BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-            if ((other.isOf(this) || other.getBlock() instanceof DungeonWireBlock) && other.get(CONNECTION) != Connection.NONE)
+            if (other.isOf(this) && other.get(CONNECTION1) != Connection.NONE)
             {
                 return true;
             }
         }
+
         return false;
     }
-    private BlockState updatePowered(BlockState blockState, World world, BlockPos blockPos) {
-        if (blockState.get(ROOT)) {
-            return blockState.with(POWERED, true);
+
+    /**
+     *
+     * @param blockState
+     * @param world
+     * @param blockPos
+     * @return
+     */
+    private BlockState updateConnectionParent(BlockState blockState, World world, BlockPos blockPos)
+    {
+        if (isValidConnectionParent(blockState, world, blockPos))
+        {
+            return blockState;
         }
 
-        if (blockState.get(CONNECTION) == Connection.NONE) {
-            return blockState.with(POWERED, false);
-        }
-
-        Connection parent = blockState.get(CONNECTION);
-        BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
-        if ((other.isOf(this) && other.get(POWERED)) || (other.getBlock() instanceof DungeonWireBlock && other.get(POWERED))) {
-            System.out.println("Checking power state: " + blockPos + " powered: " + blockState.get(POWERED));
-            return other.get(POWERED) ? blockState.with(POWERED, true) : blockState.with(POWERED, false);
-        }
-        return blockState.with(POWERED, false);
+        Connection parent = findConnectionParent(blockState, world, blockPos);
+        return blockState.with(CONNECTION1, parent);
     }
+
+    /**
+     *
+     * @param blockState
+     * @param world
+     * @param blockPos
+     * @return
+     */
+    private BlockState updatePowered(BlockState blockState, World world, BlockPos blockPos)
+    {
+        if (blockState.get(ROOT1))
+        {
+            return blockState.with(POWERED1, true);
+        }
+
+        if (blockState.get(CONNECTION1) == Connection.NONE)
+        {
+            return blockState.with(POWERED1, false);
+        }
+
+        Connection parent = blockState.get(CONNECTION1);
+        BlockState other = world.getBlockState(blockPos.offset(parent.asDirection()));
+        if (other.isOf(this) && other.get(POWERED1))
+        {
+            return blockState.with(POWERED1, true);
+        }
+
+        return blockState.with(POWERED1, false);
+    }
+
 
     @Override
     public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
@@ -228,6 +287,6 @@ public class CopperWireBlock extends Block {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return state.get(POWERED) ? 15 : 0;
+        return state.get(POWERED1) ? 15 : 0;
     }
 }
