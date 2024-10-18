@@ -3,7 +3,9 @@ package io.github.tobyrue.btc;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -11,6 +13,7 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +34,7 @@ public class CopperWireBlock extends Block {
 
     public static final BooleanProperty POWERED1 = BooleanProperty.of("powered");
 
+    public static final BooleanProperty POWERABLE_BY_REDSTONE = BooleanProperty.of("powerable_by_redstone");
     public CopperWireBlock(Settings settings) {
         super(settings);
 
@@ -43,6 +47,7 @@ public class CopperWireBlock extends Block {
                 .with(ROOT1, false)
                 .with(CONNECTION1, Connection.NONE)
                 .with(POWERED1, false)
+                .with(POWERABLE_BY_REDSTONE, true)
         );
     }
 
@@ -78,6 +83,7 @@ public class CopperWireBlock extends Block {
                 FACING_UP,
                 FACING,
                 POWERED1,
+                POWERABLE_BY_REDSTONE,
                 ROOT1
         );
     }
@@ -281,9 +287,24 @@ public class CopperWireBlock extends Block {
             if(!blockState.equals(newState)) {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
+            boolean bl = (Boolean)blockState.get(ROOT1);
+            if(blockState.get(POWERABLE_BY_REDSTONE)) {
+                if (bl != world.isReceivingRedstonePower(blockPos)) {
+                    if (bl) {
+                        world.scheduleBlockTick(blockPos, this, 4);
+                    } else {
+                        world.setBlockState(blockPos, (BlockState) blockState.cycle(ROOT1), 2);
+                    }
+                }
+            }
         }
     }
-
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if ((Boolean)state.get(ROOT1) && !world.isReceivingRedstonePower(pos)) {
+            world.setBlockState(pos, (BlockState)state.cycle(ROOT1), 2);
+        }
+    }
     @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
