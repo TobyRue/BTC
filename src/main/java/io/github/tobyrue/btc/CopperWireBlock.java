@@ -14,6 +14,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,19 +36,22 @@ public class CopperWireBlock extends Block {
     public static final BooleanProperty POWERED1 = BooleanProperty.of("powered");
 
     public static final BooleanProperty POWERABLE_BY_REDSTONE = BooleanProperty.of("powerable_by_redstone");
+    public static final BooleanProperty EMITS_REDSTONE = BooleanProperty.of("emits_redstone");
+
     public CopperWireBlock(Settings settings) {
         super(settings);
 
         this.setDefaultState(this.stateManager.getDefaultState()
+                .with(ROOT1, false)
+                .with(POWERABLE_BY_REDSTONE, true)
+                .with(EMITS_REDSTONE, true)
                 .with(FACING_DOWN, false)
                 .with(FACING_UP, false)
                 .with(FACING_RIGHT, false)
                 .with(FACING_LEFT, false)
                 .with(FACING, Direction.NORTH)
-                .with(ROOT1, false)
                 .with(CONNECTION1, Connection.NONE)
                 .with(POWERED1, false)
-                .with(POWERABLE_BY_REDSTONE, true)
         );
     }
 
@@ -84,7 +88,8 @@ public class CopperWireBlock extends Block {
                 FACING,
                 POWERED1,
                 POWERABLE_BY_REDSTONE,
-                ROOT1
+                ROOT1,
+                EMITS_REDSTONE
         );
     }
 
@@ -313,5 +318,31 @@ public class CopperWireBlock extends Block {
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return state.get(POWERED1) ? 15 : 0;
+    }
+    /**
+     * Returns whether the block is capable of emitting a redstone signal.
+     */
+    @Override
+    protected boolean emitsRedstonePower(BlockState state)
+    {
+        return true;
+    }
+
+    /**
+     * The weak redstone signal strength.
+     * @remarks Weak cannot pass through blocks. For example Redstone Dust cannot but a Repeater can.
+     */
+    @Override
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
+    {
+        return state.get(POWERED) ? 15 : 0;
+    }
+
+    /**
+     * The strong redstone signal strength.
+     */
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
+    {
+        return getWeakRedstonePower(state, world, pos, direction);
     }
 }
