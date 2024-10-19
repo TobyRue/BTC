@@ -4,13 +4,22 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RedstoneLampBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -317,4 +326,28 @@ public class CopperWireBlock extends Block {
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return state.get(POWERED1) ? 15 : 0;
     }
+    @Override
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        // Check if the player is holding the wrench
+        ItemStack heldItem = player.getStackInHand(hand);
+        if (heldItem.isOf(ModItems.WRENCH)) { // Replace "ModItems.WRENCH" with your actual wrench item
+            if (!world.isClient) {
+                // Toggle the POWERABLE_BY_REDSTONE property
+                boolean currentState = state.get(POWERABLE_BY_REDSTONE);
+                BlockState newState = state.with(POWERABLE_BY_REDSTONE, !currentState);
+                world.setBlockState(pos, newState, Block.NOTIFY_ALL);
+
+                // Send a message to the player
+                String message = "Powerable by redstone: " + (!currentState ? "enabled" : "disabled");
+                player.sendMessage(Text.literal(message), true);
+
+                // Optionally, play a sound
+                world.playSound(null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            }
+            return ItemActionResult.SUCCESS;
+        }
+        return ItemActionResult.FAIL;
+    }
+
+
 }
