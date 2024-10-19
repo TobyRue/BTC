@@ -106,4 +106,11 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
     public BlockEntityType<FireDispenserBlockEntity> getBlockEntityType() {
         return ModBlockEntities.FIRE_DISPENSER_ENTITY;
     }
+    public static int getLuminance(BlockState currentBlockState) {
+        // Check the FIRE_DISPENSER_TYPE property
+        FireDispenserType fireType = currentBlockState.get(FIRE_DISPENSER_TYPE);
+
+        // Return 15 if the fire type is not NO_FIRE, otherwise return 0
+        return fireType != FireDispenserType.NO_FIRE ? 15 : 0;
+    }
 }

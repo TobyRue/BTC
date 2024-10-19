@@ -32,8 +32,8 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
 
     static {
-        ANTI_PLACE = Registry.register(Registries.STATUS_EFFECT, Identifier.of("btc", "anti_place"), new AntiPlaceEffect());
-        DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, Identifier.of("btc", "dragon_scales"), new DragonScalesEffect());
+        ANTI_PLACE = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "anti_place"), new AntiPlaceEffect());
+        DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "dragon_scales"), new DragonScalesEffect());
     }
 
     @Override

@@ -334,4 +334,11 @@ public class DungeonWireBlock extends Block {
         }
         return 0;
     }
+    public static int getLuminance(BlockState currentBlockState) {
+        // Get the value of the "activated" property.
+        boolean activated = currentBlockState.get(DungeonWireBlock.POWERED);
+
+        // Return a light level if activated = true
+        return activated ? 15 : 0;
+    }
 }

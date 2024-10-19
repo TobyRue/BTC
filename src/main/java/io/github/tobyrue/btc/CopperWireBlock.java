@@ -45,11 +45,13 @@ public class CopperWireBlock extends Block {
     public static final BooleanProperty POWERED1 = BooleanProperty.of("powered");
 
     public static final BooleanProperty POWERABLE_BY_REDSTONE = BooleanProperty.of("powerable_by_redstone");
+    public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");
 
     public CopperWireBlock(Settings settings) {
         super(settings);
 
         this.setDefaultState(this.stateManager.getDefaultState()
+                .with(SURVIVAL, true)
                 .with(ROOT1, false)
                 .with(POWERABLE_BY_REDSTONE, true)
                 .with(FACING_DOWN, false)
@@ -87,6 +89,7 @@ public class CopperWireBlock extends Block {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(
+                SURVIVAL,
                 CONNECTION1,
                 FACING_DOWN,
                 FACING_LEFT,
@@ -330,7 +333,7 @@ public class CopperWireBlock extends Block {
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         // Check if the player is holding the wrench
         ItemStack heldItem = player.getStackInHand(hand);
-        if (heldItem.isOf(ModItems.WRENCH)) { // Replace "ModItems.WRENCH" with your actual wrench item
+        if (heldItem.isOf(ModItems.WRENCH) && state.get(SURVIVAL)) {
             if (!world.isClient) {
                 // Toggle the POWERABLE_BY_REDSTONE property
                 boolean currentState = state.get(POWERABLE_BY_REDSTONE);
@@ -348,6 +351,12 @@ public class CopperWireBlock extends Block {
         }
         return ItemActionResult.FAIL;
     }
+    public static int getLuminance(BlockState currentBlockState) {
+        // Get the value of the "activated" property.
+        boolean activated = currentBlockState.get(CopperWireBlock.POWERED1);
 
+        // Return a light level if activated = true
+        return activated ? 15 : 0;
+    }
 
 }

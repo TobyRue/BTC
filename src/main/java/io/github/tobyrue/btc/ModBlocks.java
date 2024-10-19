@@ -76,26 +76,24 @@ public class ModBlocks {
             true
     );
     public static final DungeonWireBlock DUNGEON_WIRE = (DungeonWireBlock) register(
-            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
-                return 15;
-            })),
+            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
+                    DungeonWireBlock::getLuminance)
+            ),
 
             "dungeon_wire",
             true
     );
     public static final CopperWireBlock COPPER_WIRE = (CopperWireBlock) register(
-            new CopperWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
-                return 15;
-            })),
-
+            new CopperWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
+                    CopperWireBlock::getLuminance)
+            ),
             "copper_wire",
             true
     );
     public static final FireDispenserBlock FIRE_DISPENSER = (FireDispenserBlock) register(
-            new FireDispenserBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance((state) -> {
-                return 15;
-            })),
-
+            new FireDispenserBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
+                    FireDispenserBlock::getLuminance)
+    ),
             "fire_dispenser",
             true
     );
