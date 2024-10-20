@@ -29,7 +29,7 @@ public class ModItems {
     public static final Item IRON_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),
         "iron_wrench"
     );
-    public static final Item GOLD_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
+    public static final Item GOLD_WRENCH = register(new GoldWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
             "gold_wrench"
     );
     public static final Item STAFF = register(
