@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "btc:ominous_beacon"
+          "name": "btc:copper_wire"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "btc:blocks/dungeon_fire"
+  "random_sequence": "btc:blocks/copper_wire"
 }
