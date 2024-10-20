@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "btc:item/wrench"
+    "layer0": "btc:item/iron_wrench"
   }
 }

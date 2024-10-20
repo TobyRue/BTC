@@ -26,10 +26,12 @@ public class ModItems {
             new Item(new Item.Settings()),
             "ruby_trial_key"
     );
-    public static final Item WRENCH = register(new WrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
-        "wrench"
-        );
-
+    public static final Item IRON_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),
+        "iron_wrench"
+    );
+    public static final Item GOLD_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
+            "gold_wrench"
+    );
     public static final Item STAFF = register(
             new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "staff"

@@ -68,39 +68,4 @@ public class OminousBeaconBlock extends Block implements ModBlockEntityProvider<
     public BlockEntityType<OminousBeaconBlockEntity> getBlockEntityType() {
         return ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY;
     }
-//    @Override
-//    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-//        // Check if the player is holding the wrench
-//        ItemStack heldItem = player.getStackInHand(hand);
-//        if (heldItem.isOf(ModItems.WRENCH) && state.get(SURVIVAL)) {
-//            if (BTCClient.leftAltKeyBinding.isPressed()) {
-//                Direction currentFacing = state.get(FACING);
-//                Direction newFacing;
-//                // Cycle through the directions
-//                newFacing = switch (currentFacing) {
-//                    case NORTH -> Direction.EAST;
-//                    case EAST -> Direction.SOUTH;
-//                    case SOUTH -> Direction.WEST;
-//                    case WEST -> Direction.UP;
-//                    case UP -> Direction.DOWN;
-//                    case DOWN -> Direction.NORTH;
-//                    default -> Direction.NORTH; // Fallback to NORTH if something goes wrong
-//                };
-//
-//                // Update the block state with the new facing direction
-//                BlockState newState = state.with(FACING, newFacing);
-//                world.setBlockState(pos, newState, Block.NOTIFY_ALL);
-//
-//                // Send a message to the player indicating the new facing direction
-//                String directionMessage = "Facing direction changed to: " + newFacing.getName();
-//                player.sendMessage(Text.literal(directionMessage), true);
-//
-//                // Optionally, play a sound
-//                world.playSound(null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 8.0F, 1.0F);
-//
-//                return ItemActionResult.SUCCESS;
-//            }
-//        }
-//        return ItemActionResult.FAIL;
-//    }
 }

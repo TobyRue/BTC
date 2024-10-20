@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:wrench"
+        "recipe": "btc:iron_wrench"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "btc:wrench"
+      "btc:iron_wrench"
     ]
   },
   "sends_telemetry_event": false
