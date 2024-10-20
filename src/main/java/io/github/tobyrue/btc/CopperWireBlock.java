@@ -337,7 +337,7 @@ public class CopperWireBlock extends Block {
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         // Check if the player is holding the wrench
         ItemStack heldItem = player.getStackInHand(hand);
-        if (heldItem.isOf(ModItems.WRENCH) && state.get(SURVIVAL)) {
+        if ((heldItem.isOf(ModItems.IRON_WRENCH) || heldItem.isOf(ModItems.GOLD_WRENCH)) && state.get(SURVIVAL)) {
             if (!world.isClient) {
                 // Toggle the POWERABLE_BY_REDSTONE property
                 boolean currentState = state.get(POWERABLE_BY_REDSTONE);
