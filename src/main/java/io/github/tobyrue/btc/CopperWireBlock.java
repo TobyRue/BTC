@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc;
 
 import com.mojang.serialization.MapCodec;
+import io.github.tobyrue.btc.client.BTCClient;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RedstoneLampBlock;
@@ -329,25 +330,57 @@ public class CopperWireBlock extends Block {
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return state.get(POWERED1) ? 15 : 0;
     }
+
+
+
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         // Check if the player is holding the wrench
         ItemStack heldItem = player.getStackInHand(hand);
         if (heldItem.isOf(ModItems.WRENCH) && state.get(SURVIVAL)) {
-            if (!world.isClient) {
-                // Toggle the POWERABLE_BY_REDSTONE property
-                boolean currentState = state.get(POWERABLE_BY_REDSTONE);
-                BlockState newState = state.with(POWERABLE_BY_REDSTONE, !currentState);
+            System.out.println(player.isSneaking() + " 1");
+            if (!BTCClient.leftAltKeyBinding.isPressed()) {
+                if (!world.isClient) {
+                    // Toggle the POWERABLE_BY_REDSTONE property
+                    boolean currentState = state.get(POWERABLE_BY_REDSTONE);
+                    BlockState newState = state.with(POWERABLE_BY_REDSTONE, !currentState);
+                    world.setBlockState(pos, newState, Block.NOTIFY_ALL);
+
+                    // Send a message to the player
+                    String message = "Powerable by redstone: " + (!currentState ? "enabled" : "disabled");
+                    player.sendMessage(Text.literal(message), true);
+
+                    // Optionally, play a sound
+                    world.playSound(null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 8.0F, 1.0F);
+                }
+                return ItemActionResult.SUCCESS;
+            } else if (BTCClient.leftAltKeyBinding.isPressed()) {
+                Direction currentFacing = state.get(FACING);
+                Direction newFacing;
+                // Cycle through the directions
+                newFacing = switch (currentFacing) {
+                    case NORTH -> Direction.EAST;
+                    case EAST -> Direction.SOUTH;
+                    case SOUTH -> Direction.WEST;
+                    case WEST -> Direction.UP;
+                    case UP -> Direction.DOWN;
+                    case DOWN -> Direction.NORTH;
+                    default -> Direction.NORTH; // Fallback to NORTH if something goes wrong
+                };
+
+                // Update the block state with the new facing direction
+                BlockState newState = state.with(FACING, newFacing);
                 world.setBlockState(pos, newState, Block.NOTIFY_ALL);
 
-                // Send a message to the player
-                String message = "Powerable by redstone: " + (!currentState ? "enabled" : "disabled");
-                player.sendMessage(Text.literal(message), true);
+                // Send a message to the player indicating the new facing direction
+                String directionMessage = "Facing direction changed to: " + newFacing.getName();
+                player.sendMessage(Text.literal(directionMessage), true);
 
                 // Optionally, play a sound
-                world.playSound(null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.playSound(null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 8.0F, 1.0F);
+
+                return ItemActionResult.SUCCESS;
             }
-            return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.FAIL;
     }

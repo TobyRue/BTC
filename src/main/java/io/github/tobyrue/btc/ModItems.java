@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -25,19 +26,9 @@ public class ModItems {
             new Item(new Item.Settings()),
             "ruby_trial_key"
     );
-    public static final Item WRENCH = register(new Item(new Item.Settings().maxCount(1)) {
-        @Override
-        public ActionResult useOnBlock(ItemUsageContext context) {
-            var state = context.getWorld().getBlockState(context.getBlockPos());
-            if(!state.streamTags().anyMatch(t->t == BTC.WRENCH_BLACKLIST) && !(state.getBlock() instanceof PistonBlock && state.get(PistonBlock.EXTENDED))) {
-                context.getWorld().setBlockState(context.getBlockPos(), state.rotate(context.getPlayer().isSneaking() ? BlockRotation.CLOCKWISE_90 : BlockRotation.COUNTERCLOCKWISE_90));
-                return ActionResult.SUCCESS;
-            }
-            return super.useOnBlock(context);
-        }
-    },
-    "wrench"
-    );
+    public static final Item WRENCH = register(new WrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
+        "wrench"
+        );
 
     public static final Item STAFF = register(
             new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),

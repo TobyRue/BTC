@@ -8,17 +8,17 @@
     "X": {
       "item": "minecraft:iron_ingot"
     },
-    "@": {
+    "S": {
       "item": "minecraft:iron_nugget"
     }
   },
   "pattern": [
     " X ",
-    " @X",
+    " SX",
     "#  "
   ],
   "result": {
-    "item": "btc:wrench"
+    "id": "btc:wrench"
   },
   "show_notification": true
 }
