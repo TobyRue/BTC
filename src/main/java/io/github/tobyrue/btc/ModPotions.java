@@ -10,6 +10,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class ModPotions {
@@ -23,7 +24,34 @@ public class ModPotions {
                                     Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE),
                                     3600,
                                     0)));
+    public static final Potion DRAGON_SCALES =
+            Registry.register(
+                    Registries.POTION,
+                    Identifier.of("btc", "dragon_scales"),
+                    new Potion(
+                            new StatusEffectInstance(
+                                    Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
+                                    2400,
+                                    0)));
+    public static final Potion LONG_DRAGON_SCALES =
+            Registry.register(
+                    Registries.POTION,
+                    Identifier.of("btc", "long_dragon_scales"),
+                    new Potion(
+                            new StatusEffectInstance(
+                                    Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
+                                    4800,
+                                    0)));
 
+    public static final Potion STRONG_DRAGON_SCALES =
+            Registry.register(
+                    Registries.POTION,
+                    Identifier.of("btc", "strong_dragon_scales"),
+                    new Potion(
+                            new StatusEffectInstance(
+                                    Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
+                                    2400,
+                                    1)));
     public static void initialize() {
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
             builder.registerPotionRecipe(
@@ -33,6 +61,36 @@ public class ModPotions {
                     Items.ENDER_EYE,
                     // Output potion.
                     Registries.POTION.getEntry(ANTI_PLACE)
+            );
+        });
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+            builder.registerPotionRecipe(
+                    // Input potion.
+                    Potions.TURTLE_MASTER,
+                    // Ingredient
+                    ModItems.DRAGON_ROD,
+                    // Output potion.
+                    Registries.POTION.getEntry(DRAGON_SCALES)
+            );
+        });
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+            builder.registerPotionRecipe(
+                    // Input potion.
+                    Registries.POTION.getEntry(DRAGON_SCALES),
+                    // Ingredient
+                    Items.REDSTONE,
+                    // Output potion.
+                    Registries.POTION.getEntry(LONG_DRAGON_SCALES)
+            );
+        });
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+            builder.registerPotionRecipe(
+                    // Input potion.
+                    Registries.POTION.getEntry(DRAGON_SCALES),
+                    // Ingredient
+                    Items.GLOWSTONE_DUST,
+                    // Output potion.
+                    Registries.POTION.getEntry(STRONG_DRAGON_SCALES)
             );
         });
     }

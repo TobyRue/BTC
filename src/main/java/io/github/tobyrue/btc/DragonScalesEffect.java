@@ -14,7 +14,7 @@ public class DragonScalesEffect extends StatusEffect {
     protected DragonScalesEffect() {
         // category: StatusEffectCategory - describes if the effect is helpful (BENEFICIAL), harmful (HARMFUL) or useless (NEUTRAL)
         // color: int - Color is the color assigned to the effect (in RGB)
-        super(StatusEffectCategory.BENEFICIAL, 0x433A57);
+        super(StatusEffectCategory.BENEFICIAL, 0x9E4576);
     }
 
     @Override
