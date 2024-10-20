@@ -28,15 +28,23 @@
 
   "item.minecraft.potion.effect.anti_place": "Potion of Anti Placing",
   "item.minecraft.potion.effect.dragon_scales": "Potion of Dragon Scales",
+  "item.minecraft.potion.effect.long_dragon_scales": "Potion of Long Dragon Scales",
+  "item.minecraft.potion.effect.strong_dragon_scales": "Potion of Dragon Scales",
 
   "item.minecraft.splash_potion.effect.anti_place": "Splash Potion of Anti Placing",
   "item.minecraft.splash_potion.effect.dragon_scales": "Splash Potion of Dragon Scales",
+  "item.minecraft.splash_potion.effect.long_dragon_scales": "Splash Potion Long of Dragon Scales",
+  "item.minecraft.splash_potion.effect.strong_dragon_scales": "Splash Potion of Strong Dragon Scales",
 
   "item.minecraft.lingering_potion.effect.anti_place": "Lingering Potion of Anti Placing",
   "item.minecraft.lingering_potion.effect.dragon_scales": "Lingering Potion of Dragon Scales",
+  "item.minecraft.lingering_potion.effect.long_dragon_scales": "Lingering Potion Long of Dragon Scales",
+  "item.minecraft.lingering_potion.effect.strong_dragon_scales": "Lingering Potion of Strong Dragon Scales",
 
   "item.minecraft.tipped_arrow.effect.anti_place": "Arrow of Anti Placing",
   "item.minecraft.tipped_arrow.effect.dragon_scales": "Arrow of Dragon Scales",
+  "item.minecraft.tipped_arrow.effect.long_dragon_scales": "Arrow of Long Dragon Scales",
+  "item.minecraft.tipped_arrow.effect.strong_dragon_scales": "Arrow of Strong Dragon Scales",
 
   "category.btc.keys": "BTC Keys",
 
