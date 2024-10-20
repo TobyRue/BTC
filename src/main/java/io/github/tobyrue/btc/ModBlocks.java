@@ -28,12 +28,12 @@ public class ModBlocks {
 }
 
     public static final Block CHISELED_COPPER_BRICKS = register(
-            new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.COPPER).mapColor(MapColor.TERRACOTTA_ORANGE).requiresTool().strength(3.0F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
+            new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.COPPER).mapColor(MapColor.TERRACOTTA_ORANGE).requiresTool().strength(1.5F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
             "chiseled_copper_bricks",
             true
     );
     public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
-            new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).luminance((state) -> {
+            new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().luminance((state) -> {
                 return 15;
             }).strength(3.5F, 3600000.0F)),
             "dungeon_fire",
@@ -41,7 +41,7 @@ public class ModBlocks {
 
             );
     public static final OminousBeaconBlock OMINOUS_BEACON = (OminousBeaconBlock) register(
-            new OminousBeaconBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).luminance((state) -> {
+            new OminousBeaconBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().luminance((state) -> {
                 return 14;
             }).strength(3.5F, 3600000.0F)),
             "ominous_beacon",
@@ -49,7 +49,7 @@ public class ModBlocks {
     );
 
     public static final PressurePlateBlock DUNGEON_PRESSURE_PLATE = (PressurePlateBlock) register(
-            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().strength(2.0F, 3600000.0F)),
+            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F)),
             "dungeon_pressure_plate",
             true
     );
@@ -84,21 +84,21 @@ public class ModBlocks {
             true
     );
     public static final CopperWireBlock COPPER_WIRE = (CopperWireBlock) register(
-            new CopperWireBlock(AbstractBlock.Settings.create().strength(8F, 3600000.0F).luminance(
+            new CopperWireBlock(AbstractBlock.Settings.create().requiresTool().strength(8F, 3600000.0F).luminance(
                     CopperWireBlock::getLuminance)
             ),
             "copper_wire",
             true
     );
     public static final FireDispenserBlock FIRE_DISPENSER = (FireDispenserBlock) register(
-            new FireDispenserBlock(AbstractBlock.Settings.create().strength(4.5F, 3600000.0F).luminance(
+            new FireDispenserBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
                     FireDispenserBlock::getLuminance)
     ),
             "fire_dispenser",
             true
     );
     public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
-            new DungeonDoorBlock(AbstractBlock.Settings.create().strength(6.5F, 3600000.0F)),
+            new DungeonDoorBlock(AbstractBlock.Settings.create().requiresTool().strength(6.5F, 3600000.0F)),
 
             "dungeon_door",
             true
