@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "S": {
+      "item": "btc:staff"
+    },
+    "C": {
+      "item": "minecraft:ender_pearl"
+    },
+    "R": {
+      "item": "minecraft:dragon_rod"
+    }
+  },
+  "pattern": [
+    "RCR",
+    "#S#",
+    "R#R"
+  ],
+  "result": {
+    "id": "btc:dragon_staff"
+  },
+  "show_notification": true
+}

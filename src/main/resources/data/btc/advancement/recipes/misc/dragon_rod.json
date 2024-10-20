@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dragons_breath": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:dragons_breath"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:dragon_rod"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dragons_breath"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:dragon_rod"
+    ]
+  }
+}

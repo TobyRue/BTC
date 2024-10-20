@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "minecraft:dragons_breath"
+    },
+    "S": {
+      "item": "minecraft:chorus_flower"
+    },
+    "R": {
+      "item": "minecraft:end_rod"
+    }
+  },
+  "pattern": [
+    "R#R",
+    "#S#",
+    "R#R"
+  ],
+  "result": {
+    "id": "btc:dragon_rod"
+  },
+  "show_notification": true
+}

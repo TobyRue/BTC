@@ -32,6 +32,9 @@ public class ModItems {
     public static final Item GOLD_WRENCH = register(new GoldWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
             "gold_wrench"
     );
+    public static final Item DRAGON_ROD = register(new Item(new Item.Settings().rarity(Rarity.RARE)),
+            "dragon_rod"
+    );
     public static final Item STAFF = register(
             new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "staff"
