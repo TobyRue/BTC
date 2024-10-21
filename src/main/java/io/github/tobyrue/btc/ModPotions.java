@@ -3,6 +3,7 @@ package io.github.tobyrue.btc;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Items;
+import net.minecraft.item.SmithingTemplateItem;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
@@ -38,7 +39,6 @@ public class ModPotions {
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
                                     4800,
                                     0)));
-
     public static final Potion STRONG_DRAGON_SCALES =
             Registry.register(
                     Registries.POTION,
