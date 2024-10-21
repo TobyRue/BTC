@@ -27,7 +27,7 @@ public class ModPotions {
                     new Potion(
                             new StatusEffectInstance(
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
-                                    3600,
+                                    2400,
                                     0)));
     public static final Potion LONG_DRAGON_SCALES =
             Registry.register(
@@ -36,7 +36,7 @@ public class ModPotions {
                     new Potion(
                             new StatusEffectInstance(
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
-                                    7200,
+                                    4800,
                                     0)));
 
     public static final Potion STRONG_DRAGON_SCALES =
@@ -46,7 +46,7 @@ public class ModPotions {
                     new Potion(
                             new StatusEffectInstance(
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
-                                    3600,
+                                    2400,
                                     1)));
     public static void initialize() {
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
