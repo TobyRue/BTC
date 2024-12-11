@@ -1,9 +1,9 @@
 package io.github.tobyrue.btc;
 
+import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Items;
-import net.minecraft.item.SmithingTemplateItem;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;

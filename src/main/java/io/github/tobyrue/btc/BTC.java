@@ -1,30 +1,21 @@
 package io.github.tobyrue.btc;
 
+import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.block.Block;
-import net.minecraft.block.RailBlock;
-import net.minecraft.block.RedstoneLampBlock;
-import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemGroups;
-import net.minecraft.item.TridentItem;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
 
 public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";

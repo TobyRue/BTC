@@ -1,8 +1,7 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.KeyDispenserBlockEntity;
-import io.github.tobyrue.btc.ModItems;
-import io.github.tobyrue.btc.PedestalBlockEntity;
+import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
+import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -15,8 +14,6 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RotationAxis;
-
-import java.util.Collections;
 
 @Environment(EnvType.CLIENT)
 public class KeyDispenserBlockRenderer implements BlockEntityRenderer<KeyDispenserBlockEntity> {

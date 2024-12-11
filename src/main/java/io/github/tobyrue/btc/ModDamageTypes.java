@@ -10,8 +10,8 @@ import net.minecraft.world.World;
 
 public class ModDamageTypes {
 
-    static RegistryKey<DamageType> BEACON_BURN = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("btc", "beacon_burn"));
-    static RegistryKey<DamageType> WIND_BURST = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("btc", "wind_burst"));
+    public static RegistryKey<DamageType> BEACON_BURN = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("btc", "beacon_burn"));
+    public static RegistryKey<DamageType> WIND_BURST = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("btc", "wind_burst"));
 
     public static DamageSource of(World world, RegistryKey<DamageType> key) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));

@@ -1,15 +1,17 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.FireDispenserType;
+import io.github.tobyrue.btc.FireSwich;
+import io.github.tobyrue.btc.block.DungeonWireBlock;
+import io.github.tobyrue.btc.block.FireDispenserBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
+import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 public class FireDispenserBlockEntity extends BlockEntity implements BlockEntityTicker<FireDispenserBlockEntity> {
     public FireDispenserBlockEntity(BlockPos pos, BlockState state) {

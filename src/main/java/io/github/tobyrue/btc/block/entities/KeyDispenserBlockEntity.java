@@ -1,5 +1,7 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.block.DungeonWireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,22 +13,17 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 import java.util.HashSet;
 
-import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
+import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 public class KeyDispenserBlockEntity extends BlockEntity {
 
@@ -36,7 +33,7 @@ public class KeyDispenserBlockEntity extends BlockEntity {
         super(ModBlockEntities.KEY_DISPENSER_ENTITY, pos, state);
     }
 
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         var uuid = player.getUuid().toString();
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
         for (Direction direction : Direction.values()) {

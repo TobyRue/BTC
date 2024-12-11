@@ -1,5 +1,6 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.BTC;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.item.Item;
@@ -10,7 +11,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Direction;
 

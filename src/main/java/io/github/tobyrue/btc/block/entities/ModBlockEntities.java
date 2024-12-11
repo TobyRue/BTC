@@ -1,5 +1,6 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.ModBlocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

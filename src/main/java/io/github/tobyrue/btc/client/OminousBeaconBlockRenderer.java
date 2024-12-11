@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.OminousBeaconBlockEntity;
+import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import io.github.tobyrue.btc.BTC;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;

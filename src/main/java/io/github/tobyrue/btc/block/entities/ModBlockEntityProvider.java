@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block.entities;
 
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;

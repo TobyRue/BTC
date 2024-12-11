@@ -1,29 +1,27 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.*;
+import io.github.tobyrue.btc.block.entities.FireDispenserBlockEntity;
+import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
+import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.MagmaBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
 
 public class FireDispenserBlock extends Block implements ModBlockEntityProvider<FireDispenserBlockEntity>, ModTickBlockEntityProvider<FireDispenserBlockEntity> {
     public static final EnumProperty<FireDispenserType> FIRE_DISPENSER_TYPE = EnumProperty.of("fire_dispenser_type", FireDispenserType.class);

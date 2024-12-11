@@ -1,18 +1,14 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.AntierType;
+import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.AntierBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.TntBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;

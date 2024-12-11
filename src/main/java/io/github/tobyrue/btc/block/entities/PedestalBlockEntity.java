@@ -1,5 +1,6 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.*;
 import net.minecraft.component.ComponentMap;

@@ -1,18 +1,15 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
+import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -22,9 +19,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-import static io.github.tobyrue.btc.DungeonWireBlock.POWERED;
+import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
-public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>{
+public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity> {
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape TOP_MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;

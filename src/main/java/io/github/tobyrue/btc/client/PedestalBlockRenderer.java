@@ -1,7 +1,7 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.ModItems;
-import io.github.tobyrue.btc.PedestalBlockEntity;
+import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.block.entities.PedestalBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

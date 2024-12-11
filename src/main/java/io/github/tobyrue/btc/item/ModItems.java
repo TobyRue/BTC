@@ -1,13 +1,9 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.item;
 
-import net.minecraft.block.PistonBlock;
+import io.github.tobyrue.btc.*;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 

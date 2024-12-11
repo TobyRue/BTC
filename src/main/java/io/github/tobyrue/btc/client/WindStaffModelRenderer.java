@@ -1,27 +1,19 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.ModItems;
+import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
-import net.minecraft.block.entity.VaultBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-
-import java.util.Stack;
-
-import static io.github.tobyrue.btc.client.BTCClient.WIND_STAFF_LAYER;
 
 @Environment(EnvType.CLIENT)
 public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
