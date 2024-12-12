@@ -16,7 +16,6 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 	private final ModelPart eldritch_luminaries;
 	private final ModelPart head;
 	private final ModelPart fullbody;
-	private final ModelPart body;
 	private final ModelPart arms;
 	private final ModelPart legs;
 
@@ -25,7 +24,6 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 		this.eldritch_luminaries = root.getChild("eldritch_luminaries");
 		this.head = eldritch_luminaries.getChild("head");
 		this.fullbody = eldritch_luminaries.getChild("fullbody");
-		this.body = eldritch_luminaries.getChild("body");
 		this.arms = eldritch_luminaries.getChild("arms");
 		this.legs = eldritch_luminaries.getChild("legs");
 	}

@@ -10,11 +10,11 @@ import net.minecraft.util.Identifier;
 
 public class EldritchLuminariesRenerer extends MobEntityRenderer<EldritchLuminariesEntity, EldritchLuminariesModel<EldritchLuminariesEntity>> {
 
-    private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "texture/entity/eldritch_luminaries.png");
-    private static final Identifier TEXTURE_ANGRY = Identifier.of(BTC.MOD_ID, "texture/entity/eldritch_luminaries_angry.png");
+    private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminaries.png");
+    private static final Identifier TEXTURE_ANGRY = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminaries_angry.png");
 
     public EldritchLuminariesRenerer(EntityRendererFactory.Context context) {
-        super(context, new EldritchLuminariesModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARIES)), 0.9f);
+        super(context, new EldritchLuminariesModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARIES)), 0.3f);
     }
 
     @Override

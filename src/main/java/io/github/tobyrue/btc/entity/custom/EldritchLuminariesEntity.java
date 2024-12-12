@@ -2,9 +2,7 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.AttackGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
@@ -30,14 +28,15 @@ public class EldritchLuminariesEntity extends AnimalEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new TemptGoal(this, 1.25D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
-        this.goalSelector.add(2, new AttackGoal(this));
+        this.goalSelector.add(1, new WanderAroundFarGoal(this, 10D));
+        this.goalSelector.add(2, new TemptGoal(this, 0.5D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
+        this.goalSelector.add(3, new AttackGoal(this));
     }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminariesAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 50f)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3f)
                 .add(EntityAttributes.GENERIC_ARMOR, 8f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,2f)
