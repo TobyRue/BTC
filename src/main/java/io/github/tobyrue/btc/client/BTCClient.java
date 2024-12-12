@@ -67,5 +67,7 @@ public class BTCClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_GRAVE_ACCENT, // Default key: left control
                 "category.btc.keys" // The category of the keybinding
         ));
+
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARIES, EldritchLuminariesModel::getTexturedModelData);
     }
 }

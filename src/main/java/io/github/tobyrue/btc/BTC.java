@@ -2,10 +2,13 @@ package io.github.tobyrue.btc;
 
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.entity.custom.EldritchLuminariesEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,6 +38,7 @@ public class BTC implements ModInitializer {
         ModItems.initialize();
         ModBlockEntities.initialize();
         ModPotions.initialize();
+        FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARIES, EldritchLuminariesEntity.createEldritchLuminariesAttributes());
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if(player instanceof PlayerEntity && player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE)) && !player.isCreative()) {
                 return ActionResult.FAIL;

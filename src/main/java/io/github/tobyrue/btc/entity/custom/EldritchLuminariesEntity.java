@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -30,6 +31,7 @@ public class EldritchLuminariesEntity extends AnimalEntity {
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new TemptGoal(this, 1.25D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
+        this.goalSelector.add(2, new AttackGoal(this));
     }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminariesAttributes() {

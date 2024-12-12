@@ -2,13 +2,15 @@
 // Exported for Minecraft version 1.17+ for Yarn
 // Paste this class into your mod and generate all required imports
 
-package com.example.mod;
+package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.entity.custom.EldritchLuminariesEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 
 public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart eldritch_luminaries;
@@ -17,6 +19,7 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 	private final ModelPart body;
 	private final ModelPart arms;
 	private final ModelPart legs;
+
 
 	public EldritchLuminariesModel(ModelPart root) {
 		this.eldritch_luminaries = root.getChild("eldritch_luminaries");
