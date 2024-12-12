@@ -13,5 +13,6 @@ import net.minecraft.util.Identifier;
 public class ModEntities {
     public static final EntityType<EldritchLuminariesEntity> ELDRITCH_LUMINARIES = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(BTC.MOD_ID, "eldritch_luminaries"),
-            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, EldritchLuminariesEntity::new).dimensions(EntityDimensions.fixed(1f, 1f)).build());
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, EldritchLuminariesEntity::new)
+                    .dimensions(EntityDimensions.fixed(1f, 1f)).build());
 }

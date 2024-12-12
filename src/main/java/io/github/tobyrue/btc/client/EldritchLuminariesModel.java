@@ -4,13 +4,17 @@
 
 package io.github.tobyrue.btc.client;
 
+import io.github.tobyrue.btc.entity.animation.ModAnimations;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminariesEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.animation.Animation;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.VindicatorEntity;
+import net.minecraft.util.math.MathHelper;
 
 public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart eldritch_luminaries;
@@ -88,7 +92,21 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 	}
 	@Override
 	public void setAngles(EldritchLuminariesEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		this.setHeadAngles(netHeadYaw, headPitch);
+
+		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_SPRINT, limbSwing, limbSwingAmount, 2f, 2.5f);
+		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARIES_IDLE, ageInTicks, 1f);
 	}
+
+	private void setHeadAngles(float headYaw, float headPitch) {
+		headYaw = MathHelper.clamp(headYaw, -30.0f, 30.0f);
+		headPitch = MathHelper.clamp(headPitch, -25.0f, 45.0f);
+
+		this.head.yaw = headYaw * 0.017453292F;
+		this.head.pitch = headPitch * 0.017453292F;
+	}
+
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
 		eldritch_luminaries.render(matrices, vertexConsumer, light, overlay, color);

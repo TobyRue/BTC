@@ -1,7 +1,10 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
+import io.github.tobyrue.btc.entity.ModEntities;
+import net.fabricmc.fabric.api.item.v1.FabricItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -47,7 +50,10 @@ public class ModItems {
             new DragonStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "dragon_staff"
     );
-
+    public static final Item ELDRITCH_LUMINARIES_SPAWN_EGG = register(
+            new SpawnEggItem(ModEntities.ELDRITCH_LUMINARIES, 0x37BBDD, 0x3714C1, new Item.Settings()),
+            "eldritch_luminaries_spawn_egg"
+    );
     public static void initialize() {
     }
 }

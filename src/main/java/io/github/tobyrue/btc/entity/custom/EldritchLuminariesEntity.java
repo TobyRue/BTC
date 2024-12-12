@@ -50,7 +50,7 @@ public class EldritchLuminariesEntity extends AnimalEntity {
     public void tick() {
         super.tick();
         if(this.getWorld().isClient()) {
-
+            setupAnimationStates();
         }
     }
 
