@@ -85,10 +85,14 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(4f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("sidearmsfull",
-                        new Transformation(Transformation.Targets.SCALE,
-                                new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
-                                        Transformation.Interpolations.LINEAR))).build();
+				.addBoneAnimation("armfullside1",
+						new Transformation(Transformation.Targets.SCALE,
+								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
+										Transformation.Interpolations.LINEAR)))
+				.addBoneAnimation("armfullside2",
+						new Transformation(Transformation.Targets.SCALE,
+								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
+										Transformation.Interpolations.LINEAR))).build();
         public static final Animation ELDRITCH_LUMINARIES_ATTACK_CHARGE = Animation.Builder.create(4f)
                 .addBoneAnimation("head",
                                           new Transformation(Transformation.Targets.ROTATE,
@@ -200,9 +204,13 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(0.25f, AnimationHelper.createRotationalVector(-12.5f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("sidearmsfull",
-                        new Transformation(Transformation.Targets.SCALE,
-                                new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
+				.addBoneAnimation("armfullside1",
+						new Transformation(Transformation.Targets.SCALE,
+								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
+										Transformation.Interpolations.LINEAR)))
+				.addBoneAnimation("armfullside2",
+						new Transformation(Transformation.Targets.SCALE,
+								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR))).build();
         public static final Animation ELDRITCH_LUMINARIES_CAST = Animation.Builder.create(2.25f)
                 .addBoneAnimation("armfullside1",

@@ -95,7 +95,7 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(netHeadYaw, headPitch);
 
-		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_SPRINT, limbSwing, limbSwingAmount, 2f, 2.5f);
+		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARIES_IDLE, ageInTicks, 1f);
 	}
 
