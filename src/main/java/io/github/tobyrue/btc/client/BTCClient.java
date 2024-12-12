@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -9,6 +10,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
@@ -67,6 +69,8 @@ public class BTCClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_GRAVE_ACCENT, // Default key: left control
                 "category.btc.keys" // The category of the keybinding
         ));
+
+        EntityRendererRegistry.register(ModEntities.ELDRITCH_LUMINARIES, EldritchLuminariesRenerer::new);
 
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARIES, EldritchLuminariesModel::getTexturedModelData);
     }

@@ -2,8 +2,10 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminariesEntity;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class EldritchLuminariesRenerer extends MobEntityRenderer<EldritchLuminariesEntity, EldritchLuminariesModel<EldritchLuminariesEntity>> {
@@ -17,6 +19,11 @@ public class EldritchLuminariesRenerer extends MobEntityRenderer<EldritchLuminar
 
     @Override
     public Identifier getTexture(EldritchLuminariesEntity entity) {
-        return null;
+        return TEXTURE;
     }
+
+//    @Override
+//    public void render(EldritchLuminariesEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+//        super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
+//    }
 }
