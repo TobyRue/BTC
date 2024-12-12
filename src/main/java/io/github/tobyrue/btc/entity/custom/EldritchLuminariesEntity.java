@@ -28,7 +28,7 @@ public class EldritchLuminariesEntity extends AnimalEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new WanderAroundFarGoal(this, 10D));
+        this.goalSelector.add(1, new WanderAroundFarGoal(this, 1D));
         this.goalSelector.add(2, new TemptGoal(this, 0.5D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
         this.goalSelector.add(3, new AttackGoal(this));
     }
