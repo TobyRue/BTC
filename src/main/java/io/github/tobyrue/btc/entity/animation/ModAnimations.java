@@ -48,10 +48,10 @@ public class ModAnimations {
 						new Transformation(Transformation.Targets.SCALE,
 								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("armfullside2",
-                        new Transformation(Transformation.Targets.SCALE,
-                                new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
-                                        Transformation.Interpolations.LINEAR))).build();
+				.addBoneAnimation("armfullside2",
+						new Transformation(Transformation.Targets.SCALE,
+								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
+										Transformation.Interpolations.LINEAR))).build();
         public static final Animation ELDRITCH_LUMINARIES_IDLE = Animation.Builder.create(4f).looping()
                 .addBoneAnimation("sidearm1",
                         new Transformation(Transformation.Targets.TRANSLATE,
@@ -85,11 +85,7 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(4f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-				.addBoneAnimation("armfullside1",
-						new Transformation(Transformation.Targets.SCALE,
-								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
-										Transformation.Interpolations.LINEAR)))
-				.addBoneAnimation("armfullside2",
+				.addBoneAnimation("sidearmsfull1",
 						new Transformation(Transformation.Targets.SCALE,
 								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR))).build();
@@ -204,11 +200,7 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(0.25f, AnimationHelper.createRotationalVector(-12.5f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-				.addBoneAnimation("armfullside1",
-						new Transformation(Transformation.Targets.SCALE,
-								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
-										Transformation.Interpolations.LINEAR)))
-				.addBoneAnimation("armfullside2",
+				.addBoneAnimation("sidearmsfull",
 						new Transformation(Transformation.Targets.SCALE,
 								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR))).build();
@@ -260,7 +252,7 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(3f, AnimationHelper.createRotationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("sidearmsfull",
+                .addBoneAnimation("sidearmsfull2",
                         new Transformation(Transformation.Targets.SCALE,
                                 new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))

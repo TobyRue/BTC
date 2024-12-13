@@ -8,12 +8,8 @@ import io.github.tobyrue.btc.entity.animation.ModAnimations;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminariesEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.animation.Animation;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends SinglePartEntityModel<T> {
@@ -37,7 +33,7 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 		ModelPartData eldritch_luminaries = modelPartData.addChild("eldritch_luminaries", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 4.0F, 0.0F));
 
 		ModelPartData head = eldritch_luminaries.addChild("head", ModelPartBuilder.create().uv(24, 50).cuboid(-1.0F, -3.0F, -6.0F, 2.0F, 5.0F, 2.0F, new Dilation(0.0F))
-		.uv(0, 18).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+				.uv(0, 18).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
 		ModelPartData fullbody = eldritch_luminaries.addChild("fullbody", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 12.0F, 0.0F));
 
@@ -55,7 +51,11 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 
 		ModelPartData arms = eldritch_luminaries.addChild("arms", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 3.0F, 1.0F));
 
-		ModelPartData sidearmsfull = arms.addChild("sidearmsfull", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData sidearmsfull2 = arms.addChild("sidearmsfull2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 17.0F, -1.0F));
+
+		ModelPartData sidearmsfull1 = sidearmsfull2.addChild("sidearmsfull1", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+
+		ModelPartData sidearmsfull = sidearmsfull1.addChild("sidearmsfull", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -17.0F, 1.0F));
 
 		ModelPartData armfullside1 = sidearmsfull.addChild("armfullside1", ModelPartBuilder.create().uv(0, 61).cuboid(-4.0F, -2.0F, -13.0F, 4.0F, 4.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(-5.0F, 0.0F, 0.0F));
 
@@ -95,7 +95,7 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(netHeadYaw, headPitch);
 
-		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
+		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_SPRINT, limbSwing, limbSwingAmount, 2f, 2.5f);
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARIES_IDLE, ageInTicks, 1f);
 	}
 
