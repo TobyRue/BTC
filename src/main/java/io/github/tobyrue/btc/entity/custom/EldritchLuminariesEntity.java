@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.entity.ai.EldritchLuminariesCastGoal;
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityPose;
@@ -24,14 +25,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class EldritchLuminariesEntity extends AnimalEntity {
 
-//    private static final TrackedData<Boolean> ATTACKING =
-//            DataTracker.registerData(EldritchLuminariesEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> ATTACKING =
+            DataTracker.registerData(EldritchLuminariesEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
-//    public final AnimationState attackAnimationState = new AnimationState();
-//    public int attackAnimationTimeout = 0;
+    public final AnimationState attackAnimationState = new AnimationState();
+    public int attackAnimationTimeout = 0;
 
     public EldritchLuminariesEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -45,16 +46,16 @@ public class EldritchLuminariesEntity extends AnimalEntity {
             --this.idleAnimationTimeout;
         }
 
-//        if (this.isAttacking() && attackAnimationTimeout <= 0) {
-//            attackAnimationTimeout = 40;
-//            attackAnimationState.start(this.age);
-//        } else {
-//            --this.attackAnimationTimeout;
-//        }
-//
-//        if (!this.isAttacking()) {
-//            attackAnimationState.stop();
-//        }
+        if (this.isAttacking() && attackAnimationTimeout <= 0) {
+            attackAnimationTimeout = 40;
+            attackAnimationState.start(this.age);
+        } else {
+            --this.attackAnimationTimeout;
+        }
+
+        if (!this.isAttacking()) {
+            attackAnimationState.stop();
+        }
     }
 
     protected void updateLimbs(float posDelta) {
@@ -70,14 +71,14 @@ public class EldritchLuminariesEntity extends AnimalEntity {
         }
     }
 
-//    public void setAttacking(boolean attacking) {
-//        this.dataTracker.set(ATTACKING, attacking);
-//    }
-//
-//    @Override
-//    public boolean isAttacking() {
-//        return this.dataTracker.get(ATTACKING);
-//    }
+    public void setAttacking(boolean attacking) {
+        this.dataTracker.set(ATTACKING, attacking);
+    }
+
+    @Override
+    public boolean isAttacking() {
+        return this.dataTracker.get(ATTACKING);
+    }
 
     @Nullable
     @Override
@@ -85,17 +86,19 @@ public class EldritchLuminariesEntity extends AnimalEntity {
         return null;
     }
 
-//    @Override
-//    protected void initDataTracker(DataTracker.Builder builder) {
-//        this.dataTracker.set(ATTACKING, false);
-//    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        this.dataTracker.set(ATTACKING, false);
+    }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new WanderAroundFarGoal(this, 1D));
+        this.goalSelector.add(1, new EldritchLuminariesCastGoal(this, 1D, true));
+        this.targetSelector.add(1, new RevengeGoal(this));
         this.goalSelector.add(2, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
-//        this.goalSelector.add(3, new AttackGoal(this));
     }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminariesAttributes() {

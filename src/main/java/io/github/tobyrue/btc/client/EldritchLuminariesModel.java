@@ -97,6 +97,7 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 
 		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_SPRINT, limbSwing, limbSwingAmount, 2f, 2.5f);
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARIES_IDLE, ageInTicks, 1f);
+		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARIES_CAST, ageInTicks, 1f);
 	}
 
 	private void setHeadAngles(float headYaw, float headPitch) {
