@@ -5,17 +5,25 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.entity.animation.ModAnimations;
-import io.github.tobyrue.btc.entity.custom.EldritchLuminariesEntity;
+import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
-public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends SinglePartEntityModel<T> {
+public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> implements ModelWithArms {
 	private final ModelPart eldritch_luminaries;
 	private final ModelPart head;
 	private final ModelPart fullbody;
+	private final ModelPart armfullside1;
+	private final ModelPart sidearmsfull;
+	private final ModelPart sidearmsfull1;
+	private final ModelPart sidearmsfull2;
+	private final ModelPart armfullside2;
+
 	private final ModelPart arms;
 	private final ModelPart legs;
 
@@ -25,6 +33,12 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 		this.head = eldritch_luminaries.getChild("head");
 		this.fullbody = eldritch_luminaries.getChild("fullbody");
 		this.arms = eldritch_luminaries.getChild("arms");
+		this.sidearmsfull2 = arms.getChild("sidearmsfull2");
+		this.sidearmsfull1 = sidearmsfull2.getChild("sidearmsfull1");
+		this.sidearmsfull = sidearmsfull1.getChild("sidearmsfull");
+		this.armfullside1 = sidearmsfull.getChild("armfullside1");
+		this.armfullside2 = sidearmsfull.getChild("armfullside2");
+
 		this.legs = eldritch_luminaries.getChild("legs");
 	}
 	public static TexturedModelData getTexturedModelData() {
@@ -61,7 +75,13 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 
 		ModelPartData armfullside2 = sidearmsfull.addChild("armfullside2", ModelPartBuilder.create().uv(40, 61).cuboid(-0.1206F, -2.0F, -13.316F, 4.0F, 4.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(5.0F, 0.0F, 0.0F));
 
-		ModelPartData armscrossed = arms.addChild("armscrossed", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData armscrossed1 = arms.addChild("armscrossed1", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 17.0F, -1.0F));
+
+		ModelPartData armscrossed2 = armscrossed1.addChild("armscrossed2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+
+		ModelPartData armscrossed3 = armscrossed2.addChild("armscrossed3", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+
+		ModelPartData armscrossed = armscrossed3.addChild("armscrossed", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -17.0F, 1.0F));
 
 		ModelPartData arm1 = armscrossed.addChild("arm1", ModelPartBuilder.create(), ModelTransform.pivot(-7.0F, -1.0F, -1.0F));
 
@@ -91,13 +111,13 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 	@Override
-	public void setAngles(EldritchLuminariesEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setAngles(EldritchLuminaryEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(netHeadYaw, headPitch);
 
-		this.animateMovement(ModAnimations.ELDRITCH_LUMINARIES_SPRINT, limbSwing, limbSwingAmount, 2f, 2.5f);
-		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARIES_IDLE, ageInTicks, 1f);
-		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARIES_CAST, ageInTicks, 1f);
+		this.animateMovement(ModAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
+		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
+//		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
 	}
 
 	private void setHeadAngles(float headYaw, float headPitch) {
@@ -116,5 +136,16 @@ public class EldritchLuminariesModel<T extends EldritchLuminariesEntity> extends
 	@Override
 	public ModelPart getPart() {
 		return eldritch_luminaries;
+	}
+
+	@Override
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
+		if (arm == Arm.RIGHT) {
+
+			this.armfullside1.rotate(matrices);
+		} else if (arm == Arm.LEFT) {
+
+			this.armfullside2.rotate(matrices);
+		}
 	}
 }

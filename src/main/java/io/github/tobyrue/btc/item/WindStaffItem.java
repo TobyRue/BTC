@@ -18,7 +18,7 @@ import net.minecraft.entity.LivingEntity;
 
 import java.util.List;
 
-public class WindStaffItem extends Item {
+public class WindStaffItem extends StaffItem {
     // Configurable pull range (in blocks)
     private static final double PULL_RADIUS = 25.0;
     private static final double SHOOT_RADIUS = 15.0;

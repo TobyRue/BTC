@@ -7,7 +7,7 @@ import net.minecraft.client.render.entity.animation.Transformation;
 
 public class ModAnimations {
 
-        public static final Animation ELDRITCH_LUMINARIES_WALK = Animation.Builder.create(1.5f).looping()
+        public static final Animation ELDRITCH_LUMINARY_WALK = Animation.Builder.create(1.5f).looping()
                 .addBoneAnimation("leg_2",
                         new Transformation(Transformation.Targets.ROTATE,
                                 new Keyframe(0f, AnimationHelper.createRotationalVector(-12.5f, 0f, 0f),
@@ -52,7 +52,7 @@ public class ModAnimations {
 						new Transformation(Transformation.Targets.SCALE,
 								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR))).build();
-        public static final Animation ELDRITCH_LUMINARIES_IDLE = Animation.Builder.create(4f).looping()
+        public static final Animation ELDRITCH_LUMINARY_IDLE = Animation.Builder.create(4f).looping()
                 .addBoneAnimation("sidearm1",
                         new Transformation(Transformation.Targets.TRANSLATE,
                                 new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
@@ -89,7 +89,7 @@ public class ModAnimations {
 						new Transformation(Transformation.Targets.SCALE,
 								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR))).build();
-        public static final Animation ELDRITCH_LUMINARIES_ATTACK_CHARGE = Animation.Builder.create(4f)
+        public static final Animation ELDRITCH_LUMINARY_ATTACK_CHARGE = Animation.Builder.create(4f)
                 .addBoneAnimation("head",
                                           new Transformation(Transformation.Targets.ROTATE,
 		new Keyframe(0f, AnimationHelper.createRotationalVector(0f, 0f, 0f),
@@ -154,7 +154,7 @@ public class ModAnimations {
         Transformation.Interpolations.LINEAR),
                 new Keyframe(2.5416765f, AnimationHelper.createScalingVector(1f, 1f, 1f),
         Transformation.Interpolations.LINEAR))).build();
-        public static final Animation ELDRITCH_LUMINARIES_CHARGE = Animation.Builder.create(0.2916767f).looping()
+        public static final Animation ELDRITCH_LUMINARY_CHARGE = Animation.Builder.create(0.2916767f).looping()
                 .addBoneAnimation("leg1",
                         new Transformation(Transformation.Targets.ROTATE,
                                 new Keyframe(0f, AnimationHelper.createRotationalVector(12.5f, 0f, 0f),
@@ -183,7 +183,7 @@ public class ModAnimations {
                         new Transformation(Transformation.Targets.SCALE,
                                 new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR))).build();
-        public static final Animation ELDRITCH_LUMINARIES_SPRINT = Animation.Builder.create(0.25f).looping()
+        public static final Animation ELDRITCH_LUMINARY_SPRINT = Animation.Builder.create(0.25f).looping()
                 .addBoneAnimation("leg1",
                         new Transformation(Transformation.Targets.ROTATE,
                                 new Keyframe(0f, AnimationHelper.createRotationalVector(12.5f, 0f, 0f),
@@ -204,7 +204,7 @@ public class ModAnimations {
 						new Transformation(Transformation.Targets.SCALE,
 								new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 										Transformation.Interpolations.LINEAR))).build();
-        public static final Animation ELDRITCH_LUMINARIES_CAST = Animation.Builder.create(2.25f)
+        public static final Animation ELDRITCH_LUMINARY_CAST = Animation.Builder.create(2.25f)
                 .addBoneAnimation("armfullside1",
                         new Transformation(Transformation.Targets.ROTATE,
                                 new Keyframe(0f, AnimationHelper.createRotationalVector(15f, 0f, 0f),
@@ -316,7 +316,7 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(3f, AnimationHelper.createRotationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR))).build();
-        public static final Animation ELDRITCH_LUMINARIES_LARGE_CAST = Animation.Builder.create(2.5f)
+        public static final Animation ELDRITCH_LUMINARY_LARGE_CAST = Animation.Builder.create(2.5f)
                 .addBoneAnimation("armfullside1",
                                           new Transformation(Transformation.Targets.ROTATE,
 		new Keyframe(0f, AnimationHelper.createRotationalVector(15f, 0f, 0f),

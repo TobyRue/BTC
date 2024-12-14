@@ -7,6 +7,6 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.Identifier;
 
 public class ModModelLayers {
-    public static final EntityModelLayer ELDRITCH_LUMINARIES =
+    public static final EntityModelLayer ELDRITCH_LUMINARY =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "eldritch_luminaries"), "main");
 }

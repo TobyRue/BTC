@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class FireStaffItem extends Item {
+public class FireStaffItem extends StaffItem {
     public FireStaffItem(Settings settings) {
         super(settings);
     }

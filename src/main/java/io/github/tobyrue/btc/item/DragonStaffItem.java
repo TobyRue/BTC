@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class DragonStaffItem extends Item {
+public class DragonStaffItem extends StaffItem {
     public DragonStaffItem(Settings settings) {
         super(settings);
     }
