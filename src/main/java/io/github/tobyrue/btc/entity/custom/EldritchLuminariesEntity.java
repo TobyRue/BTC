@@ -11,6 +11,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -23,7 +24,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class EldritchLuminariesEntity extends AnimalEntity {
+public class EldritchLuminariesEntity extends AnimalEntity implements Angerable {
 
     private static final TrackedData<Boolean> ATTACKING =
             DataTracker.registerData(EldritchLuminariesEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -71,27 +72,6 @@ public class EldritchLuminariesEntity extends AnimalEntity {
         }
     }
 
-    public void setAttacking(boolean attacking) {
-        this.dataTracker.set(ATTACKING, attacking);
-    }
-
-    @Override
-    public boolean isAttacking() {
-        return this.dataTracker.get(ATTACKING);
-    }
-
-    @Nullable
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null;
-    }
-
-
-    @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        this.dataTracker.set(ATTACKING, false);
-    }
-
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
@@ -109,6 +89,26 @@ public class EldritchLuminariesEntity extends AnimalEntity {
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,2f)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.75f);
+    }
+    public void setAttacking(boolean attacking) {
+        this.dataTracker.set(ATTACKING, attacking);
+    }
+
+    @Override
+    public boolean isAttacking() {
+        return this.dataTracker.get(ATTACKING);
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ATTACKING, false);
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return null;
     }
 
     @Override

@@ -14,5 +14,5 @@ public class ModEntities {
     public static final EntityType<EldritchLuminariesEntity> ELDRITCH_LUMINARIES = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(BTC.MOD_ID, "eldritch_luminaries"),
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, EldritchLuminariesEntity::new)
-                    .dimensions(EntityDimensions.fixed(1f, 1f)).build());
+                    .dimensions(EntityDimensions.fixed(0.75f, 1.9f).withEyeHeight(1.7f)).build());
 }

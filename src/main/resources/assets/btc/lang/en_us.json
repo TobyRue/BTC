@@ -19,6 +19,7 @@
   "item.btc.wind_staff": "Staff of the Breezebound",
   "item.btc.fire_staff": "Staff of the Blaze",
   "item.btc.dragon_staff": "Staff of the Dragonhearted",
+  "item.btc.eldritch_luminaries_spawn_egg": "Eldritch Luminaries Spawn Egg",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
   "death.attack.wind_burst": "%1$s got blasted away",
@@ -49,6 +50,7 @@
   "category.btc.keys": "BTC Keys",
 
   "key.btc.secondary_staff_ability": "Secondary Staff Ability",
-  "key.btc.tertiary_staff_ability": "Tertiary Staff Ability"
+  "key.btc.tertiary_staff_ability": "Tertiary Staff Ability",
 
+  "entity.btc.eldritch_luminaries": "Eldritch Luminaries"
 }
