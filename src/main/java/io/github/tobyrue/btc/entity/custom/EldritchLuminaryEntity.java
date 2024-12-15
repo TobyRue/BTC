@@ -1,6 +1,9 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.entity.ai.EldritchLuminariesStrafeGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryFireCastGoal;
+import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
+import io.github.tobyrue.btc.entity.ai.EldritchLuminaryWindBurstGoal;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.StaffItem;
 import net.minecraft.entity.*;
@@ -74,9 +77,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
-        this.goalSelector.add(2, new EldritchLuminaryFireCastGoal(this));
+//        this.goalSelector.add(2, new EldritchLuminaryFireCastGoal(this));
+        this.goalSelector.add(2, new EldritchLuminaryWindBurstGoal(this, 2));
         this.goalSelector.add(2, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
-        this.goalSelector.add(0, new LookAtEntityGoal(this, PlayerEntity.class, 22.0F));
+        this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {
             return Math.abs(entity.getY() - this.getY()) <= 4.0;
         }));
