@@ -1,30 +1,22 @@
 package io.github.tobyrue.btc.entity.ai;
 
+import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.item.Items;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.EnumSet;
-
 public class EldritchLuminaryWindBurstGoal extends Goal {
-    private final MobEntity luminary;
-    private LivingEntity target;
-    private final World world;
-    private int cooldown = 0;
-    private double windChargeSpeed = 0;
+    private final EldritchLuminaryEntity luminary;
+    public int cooldown;
 
-
-    public EldritchLuminaryWindBurstGoal(MobEntity luminary, double windChargeSpeed) {
+    public EldritchLuminaryWindBurstGoal(EldritchLuminaryEntity luminary) {
         this.luminary = luminary;
-        this.world = luminary.getWorld();
-        this.windChargeSpeed = windChargeSpeed;
-        this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 
     @Override
@@ -32,62 +24,75 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
         return this.luminary.getTarget() != null;
     }
 
-
     @Override
     public void start() {
         this.cooldown = 0;
+        luminary.setAttacking(true);
     }
 
     @Override
     public void stop() {
-        System.out.println("Shooting stopped.");
+        luminary.setAttacking(false);
+        System.out.println("Wind Charge stopped.");
     }
 
     @Override
     public boolean shouldRunEveryTick() {
         return true;
     }
+
+
     @Override
     public void tick() {
-        if (this.target == null) return;
+        LivingEntity target = this.luminary.getTarget();
+        if (target != null) {
+            double maxDistance = 64.0;
+            if (target.squaredDistanceTo(this.luminary) < maxDistance * maxDistance && this.luminary.canSee(target)) {
+                World world = this.luminary.getWorld();
+                ++this.cooldown;
 
-        this.luminary.lookAtEntity(this.target, 30.0F, 30.0F);
+                // Rotate towards the target
+                Vec3d targetPos = target.getPos().subtract(this.luminary.getPos());
+                double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
+                double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
 
-        if (cooldown > 0) {
-            cooldown--;
-            return;
+                if (Math.abs(yawDifference) > 10.0F) {
+                    // If not facing the target, rotate towards it
+                    this.luminary.getLookControl().lookAt(target, 30.0F, 30.0F);
+                    this.luminary.setYaw((float) targetYaw);
+                    this.cooldown = 0; // Reset cooldown if not facing the target
+                    return;
+                }
+
+                if (this.cooldown == 20) {
+                    double speed = 1.5; // Adjusted speed for Wind Charge
+                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                    // More precise aim towards the center of the target
+                    double dx = target.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                    double dy = target.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                    double dz = target.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                    // Create the WindCharge entity
+                    WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, world);
+                    windChargeEntity.setVelocity(velocity);
+                    windChargeEntity.setPosition(
+                            this.luminary.getX() + vec3d.x * 1.5,
+                            this.luminary.getBodyY(0.5) + 0.5,
+                            this.luminary.getZ() + vec3d.z * 1.5
+                    );
+
+                    world.spawnEntity(windChargeEntity);
+                    this.cooldown = -40; // Cooldown before the next Wind Charge
+                }
+            } else if (this.cooldown > 0) {
+                --this.cooldown;
+            }
+
+            System.out.println("Cooldown: " + (this.cooldown > 10));
         }
-
-        double distance = this.luminary.squaredDistanceTo(this.target.getX(), this.target.getY(), this.target.getZ());
-        if (distance < 100.0D) { // 10 blocks range
-            // Play wind sound
-            this.luminary.playSound(SoundEvents.ENTITY_WIND_CHARGE_THROW, 1.0F, 1.0F);
-
-            // Calculate direction
-            Vec3d direction = this.target.getPos().subtract(this.luminary.getPos()).normalize();
-
-            double speedMultiplier = windChargeSpeed;
-            Vec3d velocity = direction.multiply(speedMultiplier);
-
-            WindChargeEntity windCharge = new WindChargeEntity(
-                    this.luminary.getWorld(),
-                    this.luminary.getX() + direction.x * 2.0,
-                    this.luminary.getEyeY() + 0.5,
-                    this.luminary.getZ() + direction.z * 2.0,
-                    velocity
-            );
-
-            // Set the owner of the wind charge
-            windCharge.setOwner(this.luminary);
-
-            windCharge.setVelocity(velocity);
-
-            // Spawn the wind charge in the world
-            this.luminary.getWorld().spawnEntity(windCharge);
-
-            // Reset cooldown to 2–3 seconds (randomly chosen)
-            cooldown = this.luminary.getRandom().nextInt(21) + 40;
-        }
-        System.out.println("Cooldown: " + (this.cooldown > 10));
     }
+
 }

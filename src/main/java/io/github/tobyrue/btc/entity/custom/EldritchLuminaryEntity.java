@@ -1,36 +1,48 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.client.EldritchLuminariesModel;
+import io.github.tobyrue.btc.client.EldritchLuminariesRenerer;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminariesStrafeGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryFireCastGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryWindBurstGoal;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.StaffItem;
+import net.minecraft.client.render.entity.WolfEntityRenderer;
+import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.*;
+import net.minecraft.entity.passive.DolphinEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class EldritchLuminaryEntity extends HostileEntity implements Angerable, RangedAttackMob {
-
+    private static final TrackedData<Boolean> ATTACKING =
+            DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     @Nullable
     private StaffItem staff = null;
-//    private static final TrackedData<Boolean> ATTACKING =
-//            DataTracker.registerData(EldritchLuminariesEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    public final AnimationState attackAnimationState = new AnimationState();
+    private int attackAnimationTimeout = 0;
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
-    public final AnimationState attackAnimationState = new AnimationState();
-    public int attackAnimationTimeout = 0;
 
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -48,14 +60,15 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             --this.idleAnimationTimeout;
         }
 
-        if (this.isAttacking() && attackAnimationTimeout <= 0) {
+
+        if(this.isAttacking() && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
         } else {
             --this.attackAnimationTimeout;
         }
 
-        if (!this.isAttacking()) {
+        if(!this.isAttacking()) {
             attackAnimationState.stop();
         }
     }
@@ -65,6 +78,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.limbAnimator.updateLimbs(f, 0.2F);
     }
 
+    public void triggerAttackAnimation() {
+        this.attackAnimationState.start(this.age);
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -72,13 +89,25 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             setupAnimationStates();
         }
     }
+    public void setAttacking(boolean attacking) {
+        this.dataTracker.set(ATTACKING, attacking);
+    }
 
+    @Override
+    public boolean isAttacking() {
+        return this.dataTracker.get(ATTACKING);
+    }
+
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ATTACKING, false);
+    }
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
-//        this.goalSelector.add(2, new EldritchLuminaryFireCastGoal(this));
-        this.goalSelector.add(2, new EldritchLuminaryWindBurstGoal(this, 2));
+        this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
+        this.goalSelector.add(2, new EldritchLuminaryFireCastGoal(this));
         this.goalSelector.add(2, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
         this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {

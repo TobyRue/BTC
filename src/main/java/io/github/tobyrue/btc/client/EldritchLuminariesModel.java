@@ -15,6 +15,8 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> implements ModelWithArms {
+
+
 	private final ModelPart eldritch_luminaries;
 	private final ModelPart head;
 	private final ModelPart fullbody;
@@ -29,7 +31,7 @@ public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends S
 
 
 	public EldritchLuminariesModel(ModelPart root) {
-		this.eldritch_luminaries = root.getChild("eldritch_luminaries");
+        this.eldritch_luminaries = root.getChild("eldritch_luminaries");
 		this.head = eldritch_luminaries.getChild("head");
 		this.fullbody = eldritch_luminaries.getChild("fullbody");
 		this.arms = eldritch_luminaries.getChild("arms");
@@ -116,8 +118,9 @@ public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends S
 		this.setHeadAngles(netHeadYaw, headPitch);
 
 		this.animateMovement(ModAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
+
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
-//		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
+		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
 	}
 
 	private void setHeadAngles(float headYaw, float headPitch) {

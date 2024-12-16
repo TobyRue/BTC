@@ -24,10 +24,12 @@ public class EldritchLuminaryFireCastGoal extends Goal {
     @Override
     public void start() {
         this.cooldown = 0;
+        luminary.setAttacking(true);
     }
 
     @Override
     public void stop() {
+        luminary.setAttacking(false);
         System.out.println("Shooting stopped.");
     }
 

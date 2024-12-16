@@ -217,7 +217,7 @@ public class ModAnimations {
                         new Transformation(Transformation.Targets.ROTATE,
                                 new Keyframe(0f, AnimationHelper.createRotationalVector(82.5f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("armscrossed",
+                .addBoneAnimation("armscrossed1",
                         new Transformation(Transformation.Targets.SCALE,
                                 new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR))).build();
@@ -256,7 +256,7 @@ public class ModAnimations {
                         new Transformation(Transformation.Targets.SCALE,
                                 new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("armscrossed",
+                .addBoneAnimation("armscrossed2",
                         new Transformation(Transformation.Targets.TRANSLATE,
                                 new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR),
@@ -266,7 +266,7 @@ public class ModAnimations {
                                         Transformation.Interpolations.LINEAR),
                                 new Keyframe(3f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("armscrossed",
+                .addBoneAnimation("armscrossed2",
                         new Transformation(Transformation.Targets.ROTATE,
                                 new Keyframe(0f, AnimationHelper.createRotationalVector(0f, 0f, 0f),
                                         Transformation.Interpolations.LINEAR),
@@ -343,7 +343,7 @@ public class ModAnimations {
         Transformation.Interpolations.LINEAR),
                 new Keyframe(2.25f, AnimationHelper.createRotationalVector(16.81f, 26.49f, 7.67f),
         Transformation.Interpolations.LINEAR)))
-                .addBoneAnimation("armscrossed",
+                .addBoneAnimation("armscrossed3",
                                           new Transformation(Transformation.Targets.SCALE,
 		new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
         Transformation.Interpolations.LINEAR))).build();
