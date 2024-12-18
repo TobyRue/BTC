@@ -14,7 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
-public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> implements ModelWithArms {
+public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> implements ModelWithArms {
 
 
 	private final ModelPart eldritch_luminaries;
@@ -22,22 +22,20 @@ public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends S
 	private final ModelPart fullbody;
 	private final ModelPart armfullside1;
 	private final ModelPart sidearmsfull;
-	private final ModelPart sidearmsfull1;
-	private final ModelPart sidearmsfull2;
 	private final ModelPart armfullside2;
+	private final ModelPart armscrossed1;
 
 	private final ModelPart arms;
 	private final ModelPart legs;
 
 
-	public EldritchLuminariesModel(ModelPart root) {
+	public EldritchLuminaryModel(ModelPart root) {
         this.eldritch_luminaries = root.getChild("eldritch_luminaries");
 		this.head = eldritch_luminaries.getChild("head");
 		this.fullbody = eldritch_luminaries.getChild("fullbody");
 		this.arms = eldritch_luminaries.getChild("arms");
-		this.sidearmsfull2 = arms.getChild("sidearmsfull2");
-		this.sidearmsfull1 = sidearmsfull2.getChild("sidearmsfull1");
-		this.sidearmsfull = sidearmsfull1.getChild("sidearmsfull");
+		this.armscrossed1 = arms.getChild("armscrossed1");
+		this.sidearmsfull = arms.getChild("sidearmsfull");
 		this.armfullside1 = sidearmsfull.getChild("armfullside1");
 		this.armfullside2 = sidearmsfull.getChild("armfullside2");
 
@@ -67,23 +65,13 @@ public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends S
 
 		ModelPartData arms = eldritch_luminaries.addChild("arms", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 3.0F, 1.0F));
 
-		ModelPartData sidearmsfull2 = arms.addChild("sidearmsfull2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 17.0F, -1.0F));
-
-		ModelPartData sidearmsfull1 = sidearmsfull2.addChild("sidearmsfull1", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-
-		ModelPartData sidearmsfull = sidearmsfull1.addChild("sidearmsfull", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -17.0F, 1.0F));
+		ModelPartData sidearmsfull = arms.addChild("sidearmsfull", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
 		ModelPartData armfullside1 = sidearmsfull.addChild("armfullside1", ModelPartBuilder.create().uv(0, 61).cuboid(-4.0F, -2.0F, -13.0F, 4.0F, 4.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(-5.0F, 0.0F, 0.0F));
 
 		ModelPartData armfullside2 = sidearmsfull.addChild("armfullside2", ModelPartBuilder.create().uv(40, 61).cuboid(-0.1206F, -2.0F, -13.316F, 4.0F, 4.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(5.0F, 0.0F, 0.0F));
 
-		ModelPartData armscrossed1 = arms.addChild("armscrossed1", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 17.0F, -1.0F));
-
-		ModelPartData armscrossed2 = armscrossed1.addChild("armscrossed2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-
-		ModelPartData armscrossed3 = armscrossed2.addChild("armscrossed3", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-
-		ModelPartData armscrossed = armscrossed3.addChild("armscrossed", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -17.0F, 1.0F));
+		ModelPartData armscrossed = arms.addChild("armscrossed", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
 		ModelPartData arm1 = armscrossed.addChild("arm1", ModelPartBuilder.create(), ModelTransform.pivot(-7.0F, -1.0F, -1.0F));
 
@@ -116,11 +104,20 @@ public class EldritchLuminariesModel<T extends EldritchLuminaryEntity> extends S
 	public void setAngles(EldritchLuminaryEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(netHeadYaw, headPitch);
+		if (entity.attackAnimationState.isRunning()) {
+			this.armfullside1.visible = true;
+			this.armfullside2.visible = true;
+			this.armscrossed1.visible = false;
+		} else {
+			this.armfullside1.visible = false;
+			this.armfullside2.visible = false;
+			this.armscrossed1.visible = true;
+		}
+
+		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
 
 		this.animateMovement(ModAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
-
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
-		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
 	}
 
 	private void setHeadAngles(float headYaw, float headPitch) {

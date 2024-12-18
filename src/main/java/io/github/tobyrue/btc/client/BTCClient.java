@@ -70,8 +70,8 @@ public class BTCClient implements ClientModInitializer {
                 "category.btc.keys" // The category of the keybinding
         ));
 
-        EntityRendererRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminariesRenerer::new);
+        EntityRendererRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryRenerer::new);
 
-        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARY, EldritchLuminariesModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARY, EldritchLuminaryModel::getTexturedModelData);
     }
 }
