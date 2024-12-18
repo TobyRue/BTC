@@ -21,13 +21,13 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
-public class EldritchLuminariesRenerer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminariesModel<EldritchLuminaryEntity>> {
+public class EldritchLuminaryRenerer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
 
     private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary.png");
     private static final Identifier TEXTURE_ANGRY = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_angry.png");
 
-    public EldritchLuminariesRenerer(EntityRendererFactory.Context context) {
-        super(context, new EldritchLuminariesModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARY)), 0.5f);
+    public EldritchLuminaryRenerer(EntityRendererFactory.Context context) {
+        super(context, new EldritchLuminaryModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARY)), 0.5f);
     }
 
     @Override

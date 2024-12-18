@@ -23,7 +23,7 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 	private final ModelPart armfullside1;
 	private final ModelPart sidearmsfull;
 	private final ModelPart armfullside2;
-	private final ModelPart armscrossed1;
+	private final ModelPart armscrossed;
 
 	private final ModelPart arms;
 	private final ModelPart legs;
@@ -34,7 +34,7 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 		this.head = eldritch_luminaries.getChild("head");
 		this.fullbody = eldritch_luminaries.getChild("fullbody");
 		this.arms = eldritch_luminaries.getChild("arms");
-		this.armscrossed1 = arms.getChild("armscrossed1");
+		this.armscrossed = arms.getChild("armscrossed");
 		this.sidearmsfull = arms.getChild("sidearmsfull");
 		this.armfullside1 = sidearmsfull.getChild("armfullside1");
 		this.armfullside2 = sidearmsfull.getChild("armfullside2");
@@ -107,11 +107,11 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 		if (entity.attackAnimationState.isRunning()) {
 			this.armfullside1.visible = true;
 			this.armfullside2.visible = true;
-			this.armscrossed1.visible = false;
+			this.armscrossed.visible = false;
 		} else {
 			this.armfullside1.visible = false;
 			this.armfullside2.visible = false;
-			this.armscrossed1.visible = true;
+			this.armscrossed.visible = true;
 		}
 
 		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);

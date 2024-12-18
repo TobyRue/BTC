@@ -1,7 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
-import io.github.tobyrue.btc.client.EldritchLuminariesModel;
-import io.github.tobyrue.btc.client.EldritchLuminariesRenerer;
+
 import io.github.tobyrue.btc.entity.ai.EldritchLuminariesStrafeGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryFireCastGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
