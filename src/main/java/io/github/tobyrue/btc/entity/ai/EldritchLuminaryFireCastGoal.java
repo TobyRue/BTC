@@ -10,8 +10,8 @@ import net.minecraft.world.World;
 
 public class EldritchLuminaryFireCastGoal extends Goal {
     private final EldritchLuminaryEntity luminary;
-    public int cooldown;
-
+    private int ticksUntilNextAttack = 45; // Attack delay in ticks (1 second = 20 ticks)
+    private int attackDelay = 45;
     public EldritchLuminaryFireCastGoal(EldritchLuminaryEntity luminary) {
         this.luminary = luminary;
     }
@@ -23,16 +23,27 @@ public class EldritchLuminaryFireCastGoal extends Goal {
 
     @Override
     public void start() {
-        this.cooldown = 0;
+        attackDelay = 45;
+        ticksUntilNextAttack = 45;
         luminary.setAttacking(true);
+    }
+
+    protected void resetAttackCooldown() {
+        this.ticksUntilNextAttack = this.getTickCount(attackDelay * 2);
+    }
+    protected boolean isTimeToAttack() {
+        return this.ticksUntilNextAttack <= 0;
     }
 
     @Override
     public void stop() {
-        luminary.setAttacking(false);
-        System.out.println("Shooting stopped.");
+        this.luminary.setAttacking(false);
+        super.stop();
     }
 
+    private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
+        return this.luminary.distanceTo(eEnemy) >= 4f && this.luminary.distanceTo(eEnemy) <= 16f; // TODO
+    }
     @Override
     public boolean shouldRunEveryTick() {
         return true;
@@ -40,34 +51,32 @@ public class EldritchLuminaryFireCastGoal extends Goal {
 
     @Override
     public void tick() {
-        LivingEntity target = this.luminary.getTarget();
-        if (target != null) {
+        LivingEntity eEnemy = this.luminary.getTarget();
             double maxDistance = 64.0;
-            if (target.squaredDistanceTo(this.luminary) < maxDistance * maxDistance && this.luminary.canSee(target)) {
-                World world = this.luminary.getWorld();
-                ++this.cooldown;
+            if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
+                if (isEnemyWithinAttackDistance(eEnemy)) {
+                    World world = this.luminary.getWorld();
 
                 // Rotate towards the target
-                Vec3d targetPos = target.getPos().subtract(this.luminary.getPos());
+                Vec3d targetPos = eEnemy.getPos().subtract(this.luminary.getPos());
                 double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
                 double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
 
                 if (Math.abs(yawDifference) > 10.0F) {
                     // If not facing the target, rotate towards it
-                    this.luminary.getLookControl().lookAt(target, 30.0F, 30.0F);
+                    this.luminary.getLookControl().lookAt(eEnemy, 30.0F, 30.0F);
                     this.luminary.setYaw((float) targetYaw);
-                    this.cooldown = 0; // Reset cooldown if not facing the target
                     return;
                 }
 
-                if (this.cooldown == 20) {
+                if (this.isTimeToAttack()) {
                     double speed = 1.5; // Adjusted speed for higher accuracy
                     Vec3d vec3d = this.luminary.getRotationVec(1.0F);
 
                     // More precise aim towards the center of the target
-                    double dx = target.getX() - (this.luminary.getX() + vec3d.x * 4.0);
-                    double dy = target.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
-                    double dz = target.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
 
                     Vec3d vec3d2 = new Vec3d(dx, dy, dz);
 
@@ -81,13 +90,14 @@ public class EldritchLuminaryFireCastGoal extends Goal {
                     );
 
                     world.spawnEntity(fireballEntity);
-                    this.cooldown = -40;
+                    this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
                 }
-            } else if (this.cooldown > 0) {
-                --this.cooldown;
+            } else {
+                resetAttackCooldown();
+                this.ticksUntilNextAttack = 45;
+                luminary.setAttacking(false);
             }
 
-            System.out.println("Cooldown: " + (this.cooldown > 10));
         }
     }
 }
