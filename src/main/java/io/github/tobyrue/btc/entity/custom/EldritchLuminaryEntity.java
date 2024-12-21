@@ -37,7 +37,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private StaffItem staff = null;
 
     public final AnimationState attackAnimationState = new AnimationState();
-    private int attackAnimationTimeout = 0;
+    public int attackAnimationTimeout = 0;
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -106,8 +106,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
         this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
-        this.goalSelector.add(2, new EldritchLuminaryFireCastGoal(this));
-        this.goalSelector.add(2, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
+        this.goalSelector.add(1, new EldritchLuminaryFireCastGoal(this));
+        this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
         this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {
             return Math.abs(entity.getY() - this.getY()) <= 4.0;
@@ -122,6 +122,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,2f)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20)
+                .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.5)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.75f);
     }
 
