@@ -66,7 +66,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
 //                    return;
 //            }
             if(isTimeToStartAttackAnimation()) {
-                luminary.setAttacking(true);
+                luminary.setWindCharge(true);
             }
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
@@ -97,7 +97,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
         } else {
             resetAttackCooldown();
             shouldCountTillNextAttack = false;
-            luminary.setAttacking(false);
+            luminary.setWindCharge(false);
             luminary.attackAnimationTimeout = 0;
         }
         if(shouldCountTillNextAttack) {
@@ -106,7 +106,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
     }
     @Override
     public void stop() {
-        this.luminary.setAttacking(false);
+        this.luminary.setWindCharge(false);
         super.stop();
     }
 }

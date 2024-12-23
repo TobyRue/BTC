@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.entity.custom;
 
 
+import io.github.tobyrue.btc.AttackType;
+import io.github.tobyrue.btc.FireSwich;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminariesStrafeGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryFireCastGoal;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
@@ -17,12 +19,14 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,9 +37,11 @@ import java.util.UUID;
 public class EldritchLuminaryEntity extends HostileEntity implements Angerable, RangedAttackMob {
     private static final TrackedData<Boolean> ATTACKING =
             DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
     @Nullable
     private StaffItem staff = null;
 
+    private int chooseAttack = 40;
     public final AnimationState attackAnimationState = new AnimationState();
     public int attackAnimationTimeout = 0;
 
@@ -84,6 +90,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Override
     public void tick() {
         super.tick();
+        this.chooseAttack = Math.max(this.chooseAttack - 1, 0);
+        if (chooseAttack == 0) {
+            System.out.println("Choose Attack is 0");
+            chooseAttack = 40;
+        } else {
+            System.out.println("Choose Attack is: " + chooseAttack);
+        }
         if(this.getWorld().isClient()) {
             setupAnimationStates();
         }
