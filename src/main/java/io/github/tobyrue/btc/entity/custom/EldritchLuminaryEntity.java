@@ -35,8 +35,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class EldritchLuminaryEntity extends HostileEntity implements Angerable, RangedAttackMob {
-    private static final TrackedData<Boolean> ATTACKING =
-            DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Byte> ATTACKING =
+            DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BYTE);
 
     @Nullable
     private StaffItem staff = null;
@@ -48,6 +48,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
+    private AttackType attackType = AttackType.NONE;
 
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -66,14 +67,14 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
 
-        if(this.isAttacking() && attackAnimationTimeout <= 0) {
+        if(this.attackType != AttackType.NONE && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
         } else {
             --this.attackAnimationTimeout;
         }
 
-        if(!this.isAttacking()) {
+        if(this.attackType == AttackType.NONE) {
             attackAnimationState.stop();
         }
     }
@@ -93,6 +94,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.chooseAttack = Math.max(this.chooseAttack - 1, 0);
         if (chooseAttack == 0) {
             System.out.println("Choose Attack is 0");
+            setAttack(AttackType.NONE);
             chooseAttack = 40;
         } else {
             System.out.println("Choose Attack is: " + chooseAttack);
@@ -101,18 +103,23 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             setupAnimationStates();
         }
     }
-    public void setAttacking(boolean attacking) {
-        this.dataTracker.set(ATTACKING, attacking);
+    public void setAttack(AttackType attack) {
+        this.dataTracker.set(ATTACKING, (byte) attack.id);
+        this.attackType = attack;
+    }
+
+    public AttackType getAttack() {
+        return !this.getWorld().isClient ? this.attackType : AttackType.byId((Byte)this.dataTracker.get(ATTACKING));
     }
 
     @Override
     public boolean isAttacking() {
-        return this.dataTracker.get(ATTACKING);
+        return this.getAttack() != AttackType.NONE;
     }
 
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(ATTACKING, false);
+        builder.add(ATTACKING, (byte) 0);
     }
     @Override
     protected void initGoals() {

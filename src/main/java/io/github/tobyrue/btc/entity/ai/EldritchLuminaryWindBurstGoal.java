@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.entity.ai;
 
+import io.github.tobyrue.btc.AttackType;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -59,14 +60,14 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
-        if (isEnemyWithinAttackDistance(eEnemy)) {
+        if (isEnemyWithinAttackDistance(eEnemy) && luminary.getAttack() == AttackType.NONE) {
             shouldCountTillNextAttack = true;
 //            if (eEnemy == null) {
 //                    this.ticksUntilNextAttack = 40;
 //                    return;
 //            }
             if(isTimeToStartAttackAnimation()) {
-                luminary.setWindCharge(true);
+                luminary.setAttack(AttackType.WIND_CHARGE);
             }
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
@@ -97,7 +98,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
         } else {
             resetAttackCooldown();
             shouldCountTillNextAttack = false;
-            luminary.setWindCharge(false);
+            luminary.setAttack(AttackType.NONE);
             luminary.attackAnimationTimeout = 0;
         }
         if(shouldCountTillNextAttack) {
@@ -106,7 +107,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
     }
     @Override
     public void stop() {
-        this.luminary.setWindCharge(false);
+        luminary.setAttack(AttackType.NONE);
         super.stop();
     }
 }
