@@ -35,8 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class EldritchLuminaryEntity extends HostileEntity implements Angerable, RangedAttackMob {
-    private static final TrackedData<Byte> ATTACKING =
-            DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Byte> ATTACKING;
 
     @Nullable
     private StaffItem staff = null;
@@ -54,6 +53,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         super(entityType, world);
         this.staff = ModItems.FIRE_STAFF;
         this.experiencePoints = 15;
+        this.attackType = AttackType.NONE;
+
     }
     public int getFireballStrength() {
         return 1;
@@ -66,15 +67,19 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             --this.idleAnimationTimeout;
         }
 
+        System.out.println("attack animation timeout: "+attackAnimationTimeout);
+        System.out.println("Client true or false: " + this.getWorld().isClient() + " and Attack Type: " + this.getAttack());
 
-        if(this.attackType != AttackType.NONE && attackAnimationTimeout <= 0) {
+        if(this.getAttack() != AttackType.NONE && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40;
+            System.out.println("Starting animation");
             attackAnimationState.start(this.age);
         } else {
             --this.attackAnimationTimeout;
         }
 
-        if(this.attackType == AttackType.NONE) {
+        if(this.getAttack() == AttackType.NONE) {
+            System.out.println("Stoping animation");
             attackAnimationState.stop();
         }
     }
@@ -103,9 +108,15 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             setupAnimationStates();
         }
     }
+
+    static {
+        ATTACKING = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BYTE);
+    }
+
     public void setAttack(AttackType attack) {
         this.dataTracker.set(ATTACKING, (byte) attack.id);
         this.attackType = attack;
+        System.out.println("After set attack: " + getAttack() + ", " + this.getWorld().isClient);
     }
 
     public AttackType getAttack() {

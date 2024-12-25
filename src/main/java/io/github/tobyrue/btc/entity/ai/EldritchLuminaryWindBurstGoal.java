@@ -6,9 +6,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -67,8 +66,10 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
 //                    return;
 //            }
             if(isTimeToStartAttackAnimation()) {
+                System.out.println("is time to start attack animation");
                 luminary.setAttack(AttackType.WIND_CHARGE);
             }
+            System.out.println("Client true or false: " + luminary.getWorld().isClient() + ", " + luminary.getAttack());
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
                 if (isTimeToAttack()) {

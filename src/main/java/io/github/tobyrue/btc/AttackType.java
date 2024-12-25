@@ -6,7 +6,7 @@ import net.minecraft.util.function.ValueLists;
 import java.util.function.IntFunction;
 
 public enum AttackType {
-    DRAGON_FIRE_BALL(1),
+    DRAGON_FIRE_BALL(3),
     WIND_CHARGE(2),
     FIRE_BALL(1),
     NONE(0);
