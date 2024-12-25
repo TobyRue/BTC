@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 
 public class EldritchLuminaryWindBurstGoal extends Goal {
     private final EldritchLuminaryEntity luminary;
-    private int ticksUntilNextAttack = 40;
-    private int attackDelay = 40;
+    private int ticksUntilNextAttack = 20;
+    private int attackDelay = 20;
     private boolean shouldCountTillNextAttack = false;
 
     public EldritchLuminaryWindBurstGoal(PathAwareEntity mob) {
@@ -29,8 +29,8 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
     @Override
     public void start() {
         super.start();
-        attackDelay = 40;
-        ticksUntilNextAttack = 40;
+        attackDelay = 20;
+        ticksUntilNextAttack = 20;
     }
 
 
@@ -49,7 +49,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
 
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
-        return this.luminary.distanceTo(eEnemy) >= 4f && this.luminary.distanceTo(eEnemy) <= 16f; // TODO
+        return this.luminary.distanceTo(eEnemy) >= 2f && this.luminary.distanceTo(eEnemy) <= 6f; // TODO
     }
     @Override
     public boolean shouldRunEveryTick() {
@@ -59,20 +59,20 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
-        if (isEnemyWithinAttackDistance(eEnemy) && luminary.getAttack() == AttackType.NONE) {
+        if (isEnemyWithinAttackDistance(eEnemy)) {
             shouldCountTillNextAttack = true;
 //            if (eEnemy == null) {
 //                    this.ticksUntilNextAttack = 40;
 //                    return;
 //            }
-            if(isTimeToStartAttackAnimation()) {
-                System.out.println("is time to start attack animation");
+            if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
                 luminary.setAttack(AttackType.WIND_CHARGE);
             }
-            System.out.println("Client true or false: " + luminary.getWorld().isClient() + ", " + luminary.getAttack());
+            System.out.println(luminary.getAttack());
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
-                if (isTimeToAttack()) {
+
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.WIND_CHARGE && luminary.getAttack() != AttackType.NONE) {
                     World world = this.luminary.getWorld();
 
                     double speed = 1.5;
@@ -93,11 +93,12 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
                     );
 
                     world.spawnEntity(windChargeEntity);
-                    this.ticksUntilNextAttack = 40;
+                    this.ticksUntilNextAttack = 20;
                 }
             }
         } else {
-            resetAttackCooldown();
+//            resetAttackCooldown();
+            ticksUntilNextAttack = 20;
             shouldCountTillNextAttack = false;
             luminary.setAttack(AttackType.NONE);
             luminary.attackAnimationTimeout = 0;

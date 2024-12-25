@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 
 public class EldritchLuminaryFireCastGoal extends Goal {
     private final EldritchLuminaryEntity luminary;
-    private int ticksUntilNextAttack = 40;
-    private int attackDelay = 40;
+    private int ticksUntilNextAttack = 20;
+    private int attackDelay = 20;
     private boolean shouldCountTillNextAttack = false;
 
     public EldritchLuminaryFireCastGoal(PathAwareEntity mob) {
@@ -29,8 +29,8 @@ public class EldritchLuminaryFireCastGoal extends Goal {
     @Override
     public void start() {
         super.start();
-        attackDelay = 40;
-        ticksUntilNextAttack = 40;
+        attackDelay = 20;
+        ticksUntilNextAttack = 20;
     }
 
 
@@ -49,7 +49,7 @@ public class EldritchLuminaryFireCastGoal extends Goal {
 
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
-        return this.luminary.distanceTo(eEnemy) >= 4f && this.luminary.distanceTo(eEnemy) <= 16f; // TODO
+        return this.luminary.distanceTo(eEnemy) >= 6f && this.luminary.distanceTo(eEnemy) <= 16f; // TODO
     }
     @Override
     public boolean shouldRunEveryTick() {
@@ -60,18 +60,18 @@ public class EldritchLuminaryFireCastGoal extends Goal {
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
-        if (isEnemyWithinAttackDistance(eEnemy) && luminary.getAttack() == AttackType.NONE) {
+        if (isEnemyWithinAttackDistance(eEnemy)) {
             shouldCountTillNextAttack = true;
 //            if (eEnemy == null) {
 //                this.ticksUntilNextAttack = 40;
 //                return;
 //            }
-            if(isTimeToStartAttackAnimation()) {
+            if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
                 luminary.setAttack(AttackType.FIRE_BALL);
             }
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
-                if (isTimeToAttack()) {
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.FIRE_BALL && luminary.getAttack() != AttackType.NONE) {
                     World world = this.luminary.getWorld();
 
 //                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
@@ -104,7 +104,7 @@ public class EldritchLuminaryFireCastGoal extends Goal {
                     );
 
                     world.spawnEntity(fireballEntity);
-                    this.ticksUntilNextAttack = 45;
+                    this.ticksUntilNextAttack = 20;
                 }
             }
         } else {

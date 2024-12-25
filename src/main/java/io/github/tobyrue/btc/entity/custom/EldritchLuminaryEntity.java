@@ -40,14 +40,14 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Nullable
     private StaffItem staff = null;
 
-    private int chooseAttack = 40;
+    private int chooseAttack = 80;
     public final AnimationState attackAnimationState = new AnimationState();
     public int attackAnimationTimeout = 0;
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
-    private AttackType attackType = AttackType.NONE;
+    private AttackType attackType;
 
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -67,19 +67,15 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             --this.idleAnimationTimeout;
         }
 
-        System.out.println("attack animation timeout: "+attackAnimationTimeout);
-        System.out.println("Client true or false: " + this.getWorld().isClient() + " and Attack Type: " + this.getAttack());
-
-        if(this.getAttack() != AttackType.NONE && attackAnimationTimeout <= 0) {
+        if(this.getAttack() != AttackType.NONE /*&& attackAnimationTimeout <= 0*/) {
+            System.out.println("Attack is: " + this.getAttack());
             attackAnimationTimeout = 40;
-            System.out.println("Starting animation");
             attackAnimationState.start(this.age);
         } else {
             --this.attackAnimationTimeout;
         }
 
-        if(this.getAttack() == AttackType.NONE) {
-            System.out.println("Stoping animation");
+        if(chooseAttack == 0) {
             attackAnimationState.stop();
         }
     }
@@ -96,16 +92,16 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Override
     public void tick() {
         super.tick();
-        this.chooseAttack = Math.max(this.chooseAttack - 1, 0);
-        if (chooseAttack == 0) {
-            System.out.println("Choose Attack is 0");
-            setAttack(AttackType.NONE);
-            chooseAttack = 40;
-        } else {
-            System.out.println("Choose Attack is: " + chooseAttack);
-        }
         if(this.getWorld().isClient()) {
             setupAnimationStates();
+            this.chooseAttack = Math.max(this.chooseAttack - 1, 0);
+            if (chooseAttack == 0) {
+                System.out.println("Choose Attack is 0");
+                setAttack(AttackType.NONE);
+                chooseAttack = 80;
+            } else {
+                System.out.println("Choose Attack is: " + chooseAttack);
+            }
         }
     }
 
@@ -116,7 +112,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public void setAttack(AttackType attack) {
         this.dataTracker.set(ATTACKING, (byte) attack.id);
         this.attackType = attack;
-        System.out.println("After set attack: " + getAttack() + ", " + this.getWorld().isClient);
     }
 
     public AttackType getAttack() {
