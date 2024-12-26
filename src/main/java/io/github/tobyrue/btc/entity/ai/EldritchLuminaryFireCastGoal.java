@@ -110,7 +110,9 @@ public class EldritchLuminaryFireCastGoal extends Goal {
         } else {
             resetAttackCooldown();
             shouldCountTillNextAttack = false;
-            luminary.setAttack(AttackType.NONE);
+            if (luminary.getAttack() == AttackType.FIRE_BALL) {
+                luminary.setAttack(AttackType.NONE);
+            }
             luminary.attackAnimationTimeout = 0;
         }
         if(shouldCountTillNextAttack) {

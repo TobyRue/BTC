@@ -49,7 +49,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
 
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
-        return this.luminary.distanceTo(eEnemy) >= 2f && this.luminary.distanceTo(eEnemy) <= 6f; // TODO
+        return this.luminary.distanceTo(eEnemy) >= 1f && this.luminary.distanceTo(eEnemy) <= 6f; // TODO
     }
     @Override
     public boolean shouldRunEveryTick() {
@@ -72,7 +72,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
 
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.WIND_CHARGE && luminary.getAttack() != AttackType.NONE) {
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.WIND_CHARGE) {
                     World world = this.luminary.getWorld();
 
                     double speed = 1.5;
@@ -100,7 +100,9 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
 //            resetAttackCooldown();
             ticksUntilNextAttack = 20;
             shouldCountTillNextAttack = false;
-            luminary.setAttack(AttackType.NONE);
+            if (luminary.getAttack() == AttackType.WIND_CHARGE) {
+                luminary.setAttack(AttackType.NONE);
+            }
             luminary.attackAnimationTimeout = 0;
         }
         if(shouldCountTillNextAttack) {

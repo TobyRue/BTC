@@ -15,11 +15,13 @@ public class EldritchLuminaryStrafeGoal extends Goal {
     private boolean strafingLeft;
     private boolean movingBackward;
     private int combatTicks = -1;
+    private double closeRangeThreshold;
 
-    public EldritchLuminaryStrafeGoal(MobEntity luminary, double speed, float range) {
+    public EldritchLuminaryStrafeGoal(MobEntity luminary, double speed, float range, double closeRangeThreshold) {
         this.luminary = luminary;
         this.speed = speed;
         this.range = range;
+        this.closeRangeThreshold = closeRangeThreshold;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 
@@ -50,7 +52,6 @@ public class EldritchLuminaryStrafeGoal extends Goal {
         if (this.target == null) return;
 
         double distance = this.luminary.squaredDistanceTo(this.target.getX(), this.target.getY(), this.target.getZ());
-        double closeRangeThreshold = 5.0D;
 
         // Reevaluate strafing directions every 20 ticks
         if (this.combatTicks >= 20) {
@@ -60,7 +61,7 @@ public class EldritchLuminaryStrafeGoal extends Goal {
         }
 
         // Move backward if the target is within 5 blocks
-        if (distance < closeRangeThreshold * closeRangeThreshold) {
+        if (distance < this.closeRangeThreshold * this.closeRangeThreshold) {
             this.movingBackward = true;
         } else if (distance > (double) (this.range * 0.75F)) {
             this.movingBackward = false;

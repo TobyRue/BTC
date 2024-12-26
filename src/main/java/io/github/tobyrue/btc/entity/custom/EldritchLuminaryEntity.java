@@ -47,6 +47,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
+
     private AttackType attackType;
 
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -66,16 +67,15 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         } else {
             --this.idleAnimationTimeout;
         }
-
-        if(this.getAttack() != AttackType.NONE /*&& attackAnimationTimeout <= 0*/) {
-            System.out.println("Attack is: " + this.getAttack());
+        System.out.println("Attack is: " + this.getAttack());
+        if(this.getAttack() != AttackType.NONE && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
         } else {
             --this.attackAnimationTimeout;
         }
 
-        if(chooseAttack == 0) {
+        if(this.getAttack() == AttackType.NONE) {
             attackAnimationState.stop();
         }
     }
@@ -97,7 +97,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             this.chooseAttack = Math.max(this.chooseAttack - 1, 0);
             if (chooseAttack == 0) {
                 System.out.println("Choose Attack is 0");
-                setAttack(AttackType.NONE);
+//                setAttack(AttackType.NONE);
                 chooseAttack = 80;
             } else {
                 System.out.println("Choose Attack is: " + chooseAttack);
@@ -134,7 +134,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
         this.goalSelector.add(1, new EldritchLuminaryFireCastGoal(this));
         this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
-        this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F));
+        this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F, 10D));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {
             return Math.abs(entity.getY() - this.getY()) <= 4.0;
         }));
