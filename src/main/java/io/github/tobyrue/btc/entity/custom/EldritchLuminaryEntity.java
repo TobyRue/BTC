@@ -3,10 +3,7 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.AttackType;
 import io.github.tobyrue.btc.FireSwich;
-import io.github.tobyrue.btc.entity.ai.EldritchLuminariesStrafeGoal;
-import io.github.tobyrue.btc.entity.ai.EldritchLuminaryFireCastGoal;
-import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
-import io.github.tobyrue.btc.entity.ai.EldritchLuminaryWindBurstGoal;
+import io.github.tobyrue.btc.entity.ai.*;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.StaffItem;
 import net.minecraft.client.render.entity.WolfEntityRenderer;
@@ -16,6 +13,7 @@ import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -26,11 +24,13 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
 
@@ -47,6 +47,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
+    private int progress = 0;
 
     private AttackType attackType;
 
@@ -67,7 +68,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         } else {
             --this.idleAnimationTimeout;
         }
-        System.out.println("Attack is: " + this.getAttack());
+        System.out.println("Attack is: " + this.getAttack() + " Client is " + getWorld().isClient);
         if(this.getAttack() != AttackType.NONE && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
@@ -89,22 +90,49 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.attackAnimationState.start(this.age);
     }
 
+    public int attackTick = 100; // Default to no action scheduled.
+
+
+
+
+
     @Override
     public void tick() {
         super.tick();
-        if(this.getWorld().isClient()) {
+        if (!this.getWorld().isClient() && getAttack() != AttackType.NONE) {
+            progress++;
+            if (progress == 65) {
+                progress = 0;
+            }
+        }
+
+        if (this.getWorld().isClient()) {
             setupAnimationStates();
-            this.chooseAttack = Math.max(this.chooseAttack - 1, 0);
-            if (chooseAttack == 0) {
-                System.out.println("Choose Attack is 0");
-//                setAttack(AttackType.NONE);
-                chooseAttack = 80;
-            } else {
-                System.out.println("Choose Attack is: " + chooseAttack);
+        }
+//        System.out.println(attackTick);
+        if (attackTick > 0) {
+            attackTick--;
+            if (attackTick <= 10) {
+                executeTimedAction();
+                this.scheduleAction(100); // Schedule action after 100 ticks
             }
         }
     }
 
+    public int getProgress() {
+        //include validation, logic, logging or whatever you like here
+        return this.progress;
+    }
+
+    public void scheduleAction(int ticks) {
+        this.attackTick = ticks;
+    }
+
+    private void executeTimedAction() {
+        // Define what happens after the timer ends
+//        System.out.println("Timed action executed for Eldritch Luminary! Is client is " + getWorld().isClient);
+        this.setAttack(AttackType.NONE); // Example action
+    }
     static {
         ATTACKING = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.BYTE);
     }
@@ -132,6 +160,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
         this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
+        this.goalSelector.add(1, new EldritchLuminaryDragonFireCastGoal(this));
         this.goalSelector.add(1, new EldritchLuminaryFireCastGoal(this));
         this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
         this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F, 10D));

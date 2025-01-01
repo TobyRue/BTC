@@ -6,22 +6,19 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class EldritchLuminaryFireCastGoal extends Goal {
+public class EldritchLuminaryDragonFireCastGoal extends Goal {
     private final EldritchLuminaryEntity luminary;
-    private int ticksUntilNextAttack = 43;
-    private int attackDelay = 43;
+    private int ticksUntilNextAttack = 61;
+    private int attackDelay = 61;
     private boolean shouldCountTillNextAttack = false;
 
-    public EldritchLuminaryFireCastGoal(PathAwareEntity mob) {
+    public EldritchLuminaryDragonFireCastGoal(PathAwareEntity mob) {
         luminary = ((EldritchLuminaryEntity) mob);
     }
 
@@ -33,8 +30,8 @@ public class EldritchLuminaryFireCastGoal extends Goal {
     @Override
     public void start() {
         super.start();
-        attackDelay = 43;
-        ticksUntilNextAttack = 43;
+        attackDelay = 61;
+        ticksUntilNextAttack = 61;
     }
 
 
@@ -47,7 +44,7 @@ public class EldritchLuminaryFireCastGoal extends Goal {
     }
 
     protected boolean isTimeToAttack() {
-        return luminary.getProgress() == 20;
+        return luminary.getProgress() == 60;
     }
 
 
@@ -60,25 +57,25 @@ public class EldritchLuminaryFireCastGoal extends Goal {
         return true;
     }
 
+
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
         if (isEnemyWithinAttackDistance(eEnemy)) {
             shouldCountTillNextAttack = true;
 //            if (eEnemy == null) {
-//                this.ticksUntilNextAttack = 43;
+//                this.ticksUntilNextAttack = 40;
 //                return;
 //            }
-            MinecraftServer server;
             if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
-                luminary.setAttack(AttackType.FIRE_BALL);
+                luminary.setAttack(AttackType.DRAGON_FIRE_BALL);
             }
+
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.FIRE_BALL) {
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
                     World world = this.luminary.getWorld();
                     System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
-
 //                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
 //                    double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
 //
@@ -100,22 +97,22 @@ public class EldritchLuminaryFireCastGoal extends Goal {
 
                     Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
 
-                    FireballEntity fireballEntity = new FireballEntity(world, this.luminary, vec3d2.normalize(), this.luminary.getFireballStrength());
-                    fireballEntity.setVelocity(velocity);
-                    fireballEntity.setPosition(
+                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, luminary, velocity);
+                    dragonFireballEntity.setVelocity(velocity);
+                    dragonFireballEntity.setPosition(
                             this.luminary.getX() + vec3d.x * 1.5,
                             this.luminary.getBodyY(0.5) + 0.5,
                             this.luminary.getZ() + vec3d.z * 1.5
                     );
 
-                    world.spawnEntity(fireballEntity);
-                    this.ticksUntilNextAttack = 43;
+                    world.spawnEntity(dragonFireballEntity);
+                    this.ticksUntilNextAttack = 61;
                 }
             }
         } else {
             resetAttackCooldown();
             shouldCountTillNextAttack = false;
-            if (luminary.getAttack() == AttackType.FIRE_BALL) {
+            if (luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
                 luminary.setAttack(AttackType.NONE);
             }
             luminary.attackAnimationTimeout = 0;
