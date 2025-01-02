@@ -3,96 +3,89 @@ package io.github.tobyrue.btc.entity.ai;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.EnumSet;
 
 public class EldritchLuminaryStrafeGoal extends Goal {
-    private final MobEntity luminary;
-    private LivingEntity target;
+    private final MobEntity actor;
     private final double speed;
     private final float range;
-    private boolean strafingLeft;
-    private boolean movingBackward;
+    private final double squaredRange;
     private int combatTicks = -1;
-    private double closeRangeThreshold;
+    private int targetSeeingTicker = 0;
+    private boolean movingToLeft = false;
+    private boolean backward = false;
 
-    public EldritchLuminaryStrafeGoal(MobEntity luminary, double speed, float range, double closeRangeThreshold) {
-        this.luminary = luminary;
+    public EldritchLuminaryStrafeGoal(MobEntity actor, double speed, float range) {
+        this.actor = actor;
         this.speed = speed;
         this.range = range;
-        this.closeRangeThreshold = closeRangeThreshold;
+        this.squaredRange = range * range; // Precompute squared range
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 
     @Override
     public boolean canStart() {
-        this.target = this.luminary.getTarget();
-        // Check if the target is valid and set by the ActiveTargetGoal
-        return this.target != null && this.target.isAlive() && this.luminary.getTarget() instanceof LivingEntity;
-    }
-
-    @Override
-    public boolean shouldContinue() {
-        return this.target != null && this.target.isAlive() && this.luminary.getTarget() instanceof LivingEntity;
-    }
-
-    @Override
-    public void start() {
-        this.combatTicks = 0;
+        LivingEntity target = this.actor.getTarget();
+        return target != null && target.isAlive();
     }
 
     @Override
     public void stop() {
-        this.target = null;
+        this.combatTicks = -1;
+        this.targetSeeingTicker = 0;
     }
 
     @Override
     public void tick() {
-        if (this.target == null) return;
+        LivingEntity target = this.actor.getTarget();
+        if (target == null) return;
 
-        double distance = this.luminary.squaredDistanceTo(this.target.getX(), this.target.getY(), this.target.getZ());
+        double squaredDistance = this.actor.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
+        boolean canSee = this.actor.getVisibilityCache().canSee(target);
+        boolean wasSeeing = this.targetSeeingTicker > 0;
 
-        // Reevaluate strafing directions every 20 ticks
+        if (canSee != wasSeeing) {
+            this.targetSeeingTicker = 0;
+        }
+
+        if (canSee) {
+            ++this.targetSeeingTicker;
+        } else {
+            --this.targetSeeingTicker;
+        }
+
+        if (squaredDistance <= this.squaredRange && this.targetSeeingTicker >= 20) {
+            this.actor.getNavigation().stop();
+            ++this.combatTicks;
+        } else {
+            this.actor.getNavigation().startMovingTo(target, this.speed);
+            this.combatTicks = -1;
+        }
+
         if (this.combatTicks >= 20) {
-            this.strafingLeft = this.luminary.getRandom().nextBoolean();
-            this.movingBackward = this.luminary.getRandom().nextBoolean();
+            if (this.actor.getRandom().nextFloat() < 0.3) {
+                this.movingToLeft = !this.movingToLeft;
+            }
+
+            if (this.actor.getRandom().nextFloat() < 0.3) {
+                this.backward = !this.backward;
+            }
+
             this.combatTicks = 0;
         }
 
-        // Move backward if the target is within 5 blocks
-        if (distance < this.closeRangeThreshold * this.closeRangeThreshold) {
-            this.movingBackward = true;
-        } else if (distance > (double) (this.range * 0.75F)) {
-            this.movingBackward = false;
-        }
+        if (this.combatTicks > -1) {
+            if (squaredDistance > this.squaredRange * 0.75F) {
+                this.backward = false;
+            } else if (squaredDistance < this.squaredRange * 0.25F) {
+                this.backward = true;
+            }
 
-        // Strafing and climbing logic
-        double strafeX = this.movingBackward ? -0.5 : 0.5;
-        double strafeZ = this.strafingLeft ? 0.5 : -0.5;
-
-        // Pathfinding for climbing
-        BlockPos targetPos = this.target.getBlockPos();
-        BlockPos luminaryPos = this.luminary.getBlockPos();
-        boolean shouldClimb = luminaryPos.getY() < targetPos.getY(); // Target is higher up
-
-        if (shouldClimb) {
-            this.luminary.getNavigation().startMovingTo(
-                    targetPos.getX() + strafeX,
-                    targetPos.getY(),
-                    targetPos.getZ() + strafeZ,
-                    this.speed
-            );
+            this.actor.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
+            this.actor.lookAtEntity(target, 30.0F, 30.0F);
         } else {
-            this.luminary.getMoveControl().strafeTo(
-                    (float) strafeX,
-                    (float) strafeZ
-            );
+            this.actor.getLookControl().lookAt(target, 30.0F, 30.0F);
         }
-
-        // Keep the luminary focused on the target
-        this.luminary.lookAtEntity(this.target, 30.0F, 30.0F);
-
-        this.combatTicks++;
     }
 }

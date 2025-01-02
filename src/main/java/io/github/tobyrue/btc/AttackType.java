@@ -7,8 +7,8 @@ import java.util.function.IntFunction;
 
 public enum AttackType {
     DRAGON_FIRE_BALL(3),
-    WIND_CHARGE(2),
-    FIRE_BALL(1),
+    FIRE_BALL(2),
+    WIND_CHARGE(1),
     NONE(0);
 
     private static final IntFunction<AttackType> BY_ID = ValueLists.createIdToValueFunction((AttackType type) -> {

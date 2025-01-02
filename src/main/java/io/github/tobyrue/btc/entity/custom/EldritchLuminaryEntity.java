@@ -14,6 +14,8 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -36,6 +38,7 @@ import java.util.UUID;
 
 public class EldritchLuminaryEntity extends HostileEntity implements Angerable, RangedAttackMob {
     private static final TrackedData<Byte> ATTACKING;
+    private LivingEntity target;
 
     @Nullable
     private StaffItem staff = null;
@@ -51,6 +54,53 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
     private AttackType attackType;
 
+    @Override
+    protected void initGoals() {
+        this.goalSelector.add(0, new SwimGoal(this));
+        this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
+        this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
+//        this.goalSelector.add(1, new EldritchLuminaryDragonFireCastGoal(this));
+//        this.goalSelector.add(1, new EldritchLuminaryFireCastGoal(this));
+        this.goalSelector.add(1, new EldritchLuminaryCastGoal(this));
+        this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
+        this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 16.0F));
+        this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {
+            return Math.abs(entity.getY() - this.getY()) <= 4.0;
+        }));
+        this.targetSelector.add(0, new TrackTargetGoal(this, true, false) {
+            @Override
+            public boolean canStart() {
+                return true;
+            }
+        });
+//        this.targetSelector.add(0, new Target);
+    }
+
+//    @Override
+//    public boolean isInvulnerableTo(DamageSource damageSource) {
+//        if (damageSource.isOf(DamageTypes.MAGIC)) {
+//            System.out.println("Damaged by breath");
+//            return true;
+//        }
+//        return super.isInvulnerableTo(damageSource);
+//    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        // Print out what damage source is causing the damage
+        System.out.println("Damage received from: " + source.getName());
+        if (source == this.getDamageSources().dragonBreath()) {
+            return false;
+        }
+        return super.damage(source, amount);
+    }
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        if (source == this.getDamageSources().dragonBreath()) {
+            return true;
+        }
+        return super.isInvulnerableTo(source);
+    }
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.staff = ModItems.FIRE_STAFF;
@@ -99,6 +149,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Override
     public void tick() {
         super.tick();
+
+        if (this.getTarget() != null) {
+            System.out.println("Target is: " + this.getTarget().getName().getString());
+        }
         if (!this.getWorld().isClient() && getAttack() != AttackType.NONE) {
             progress++;
             if (progress == 65) {
@@ -155,19 +209,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         super.initDataTracker(builder);
         builder.add(ATTACKING, (byte) 0);
     }
-    @Override
-    protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
-        this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
-        this.goalSelector.add(1, new EldritchLuminaryDragonFireCastGoal(this));
-        this.goalSelector.add(1, new EldritchLuminaryFireCastGoal(this));
-        this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
-        this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 12.0F, 10D));
-        this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {
-            return Math.abs(entity.getY() - this.getY()) <= 4.0;
-        }));
-    }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminaryAttributes() {
         return MobEntity.createMobAttributes()
@@ -201,6 +242,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Override
     public UUID getAngryAt() {
         return null;
+    }
+    @Nullable
+    public LivingEntity getTarget() {
+        return this.target;
+    }
+    public void setTarget(@Nullable LivingEntity target) {
+        this.target = target;
     }
 
     @Override
