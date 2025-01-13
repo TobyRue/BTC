@@ -6,13 +6,16 @@ import io.github.tobyrue.btc.FireSwich;
 import io.github.tobyrue.btc.entity.ai.*;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.StaffItem;
+import net.minecraft.client.render.entity.EvokerEntityRenderer;
 import net.minecraft.client.render.entity.WolfEntityRenderer;
+import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
@@ -20,16 +23,21 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
+import net.minecraft.entity.passive.CodEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -41,7 +49,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private LivingEntity target;
 
     @Nullable
-    private StaffItem staff = null;
 
     private int chooseAttack = 80;
     public final AnimationState attackAnimationState = new AnimationState();
@@ -51,9 +58,9 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private int idleAnimationTimeout = 0;
 
     private int progress = 0;
+    private int disappearDelay = 200;
 
     private AttackType attackType;
-
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
@@ -85,25 +92,17 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 //        return super.isInvulnerableTo(damageSource);
 //    }
 
+
     @Override
     public boolean damage(DamageSource source, float amount) {
-        // Print out what damage source is causing the damage
-        System.out.println("Damage received from: " + source.getName());
-        if (source == this.getDamageSources().dragonBreath()) {
+        if (source.isOf(DamageTypes.INDIRECT_MAGIC)) {
             return false;
         }
         return super.damage(source, amount);
     }
-    @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        if (source == this.getDamageSources().dragonBreath()) {
-            return true;
-        }
-        return super.isInvulnerableTo(source);
-    }
+
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.staff = ModItems.FIRE_STAFF;
         this.experiencePoints = 15;
         this.attackType = AttackType.NONE;
 
@@ -118,7 +117,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         } else {
             --this.idleAnimationTimeout;
         }
-        System.out.println("Attack is: " + this.getAttack() + " Client is " + getWorld().isClient);
+//        System.out.println("Attack is: " + this.getAttack() + " Client is " + getWorld().isClient);
         if(this.getAttack() != AttackType.NONE && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
@@ -155,11 +154,29 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
         if (!this.getWorld().isClient() && getAttack() != AttackType.NONE) {
             progress++;
+            disappearDelay--;
             if (progress == 65) {
                 progress = 0;
             }
+            if (this.hasStatusEffect(StatusEffects.INVISIBILITY)) {
+                disappearDelay = 2400;
+            }
         }
-
+      if (this.getWorld().isClient) {
+            AttackType spell = this.getAttack();
+            float f = (float)spell.particleVelocity[0];
+            float g = (float)spell.particleVelocity[1];
+            float h = (float)spell.particleVelocity[2];
+            float i = this.bodyYaw * 0.017453292F + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
+            float j = MathHelper.cos(i);
+            float k = MathHelper.sin(i);
+            double d = 0.6 * (double)this.getScale();
+            double e = 1.8 * (double)this.getScale();
+            if (spell != AttackType.NONE) {
+                this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h), this.getX() + (double) j * d, this.getY() + e, this.getZ() + (double) k * d, 0.0, 0.0, 0.0);
+                this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h), this.getX() - (double) j * d, this.getY() + e, this.getZ() - (double) k * d, 0.0, 0.0, 0.0);
+            }
+        }
         if (this.getWorld().isClient()) {
             setupAnimationStates();
         }
@@ -174,10 +191,11 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     public int getProgress() {
-        //include validation, logic, logging or whatever you like here
         return this.progress;
     }
-
+    public int getDisappearDelay() {
+        return this.disappearDelay;
+    }
     public void scheduleAction(int ticks) {
         this.attackTick = ticks;
     }
@@ -221,12 +239,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.5)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.75f);
     }
-
-    @Nullable
-    public StaffItem getHeldStaff() {
-        return this.staff;
-    }
-
 
     @Override
     public int getAngerTime() {

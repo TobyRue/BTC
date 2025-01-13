@@ -4,8 +4,11 @@ import io.github.tobyrue.btc.AttackType;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.EvokerEntity;
+import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -21,9 +24,7 @@ import java.util.Random;
 
 public class EldritchLuminaryCastGoal extends Goal {
     private final EldritchLuminaryEntity luminary;
-    private int ticksUntilNextAttack = 43;
-    private int attackDelay = 43;
-    private boolean shouldCountTillNextAttack = false;
+
 
     public EldritchLuminaryCastGoal(PathAwareEntity mob) {
         luminary = ((EldritchLuminaryEntity) mob);
@@ -37,24 +38,15 @@ public class EldritchLuminaryCastGoal extends Goal {
     @Override
     public void start() {
         super.start();
-        attackDelay = 43;
-        ticksUntilNextAttack = 43;
-    }
-
-
-    protected void resetAttackCooldown() {
-        this.ticksUntilNextAttack = this.getTickCount(attackDelay * 2);
-    }
-
-    protected boolean isTimeToStartAttackAnimation() {
-        return this.ticksUntilNextAttack <= attackDelay;
     }
 
     protected boolean isTimeToAttack() {
         return luminary.getProgress() == 20;
     }
 
-
+    protected boolean canDisappear() {
+        return luminary.getDisappearDelay() <= 0;
+    }
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
         return this.luminary.distanceTo(eEnemy) >= 6f && this.luminary.distanceTo(eEnemy) <= 16f; // TODO
@@ -64,15 +56,11 @@ public class EldritchLuminaryCastGoal extends Goal {
         return true;
     }
 
-
-
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
 
         if (isEnemyWithinAttackDistance(eEnemy)) {
-            shouldCountTillNextAttack = true;
-
 //            if (eEnemy == null) {
 //                this.ticksUntilNextAttack = 43;
 //                return;
@@ -80,17 +68,17 @@ public class EldritchLuminaryCastGoal extends Goal {
 //            if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
 //                luminary.setAttack(AttackType.FIRE_BALL);
 //            }
-            System.out.println("Progress is: " + luminary.getProgress());
+//            System.out.println("Progress is: " + luminary.getProgress());
             if (luminary.getAttack() == AttackType.NONE) {
-                int random = (int)(Math.random() * 2 + 2);
-                System.out.println("Random is: " + random);
+                int random = (int)(Math.random() * 3 + 2);
+//                System.out.println("Random is: " + random);
                 luminary.setAttack(AttackType.byId(random));
             }
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
                     World world = this.luminary.getWorld();
-                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
+//                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
 //                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
 //                    double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
 //
@@ -121,11 +109,10 @@ public class EldritchLuminaryCastGoal extends Goal {
                     );
 
                     world.spawnEntity(dragonFireballEntity);
-                    this.ticksUntilNextAttack = 61;
                 }
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.FIRE_BALL) {
                     World world = this.luminary.getWorld();
-                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
+//                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
 
 //                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
 //                    double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
@@ -155,22 +142,19 @@ public class EldritchLuminaryCastGoal extends Goal {
                             this.luminary.getBodyY(0.5) + 0.5,
                             this.luminary.getZ() + vec3d.z * 1.5
                     );
-
                     world.spawnEntity(fireballEntity);
-                    this.ticksUntilNextAttack = 43;
+                }
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.INVISIBLE && canDisappear() && !luminary.hasStatusEffect(StatusEffects.INVISIBILITY)) {
+//                    System.out.println("Has Invisibility: " + luminary.hasStatusEffect(StatusEffects.INVISIBILITY));
+                    this.luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
                 }
             }
         } else {
-            resetAttackCooldown();
-            shouldCountTillNextAttack = false;
-            if (luminary.getAttack() == AttackType.FIRE_BALL || luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
+            if (luminary.getAttack() == AttackType.FIRE_BALL || luminary.getAttack() == AttackType.DRAGON_FIRE_BALL || luminary.getAttack() == AttackType.INVISIBLE) {
                 luminary.setAttack(AttackType.NONE);
             }
-            luminary.attackAnimationTimeout = 0;
         }
-        if(shouldCountTillNextAttack) {
-            this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-        }
+//        System.out.println("Can Disappear is, " + canDisappear() + ", Can Disappear progress is, " + luminary.getDisappearDelay());
     }
     @Override
     public void stop() {
