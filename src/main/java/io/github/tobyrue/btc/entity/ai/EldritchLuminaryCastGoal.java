@@ -59,7 +59,7 @@ public class EldritchLuminaryCastGoal extends Goal {
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
-
+        System.out.println("Attack is, " + luminary.getAttack());
         if (isEnemyWithinAttackDistance(eEnemy)) {
 //            if (eEnemy == null) {
 //                this.ticksUntilNextAttack = 43;
@@ -68,10 +68,10 @@ public class EldritchLuminaryCastGoal extends Goal {
 //            if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
 //                luminary.setAttack(AttackType.FIRE_BALL);
 //            }
-//            System.out.println("Progress is: " + luminary.getProgress());
+            System.out.println("Progress is: " + luminary.getProgress());
             if (luminary.getAttack() == AttackType.NONE) {
                 int random = (int)(Math.random() * 3 + 2);
-//                System.out.println("Random is: " + random);
+                System.out.println("Random is: " + random);
                 luminary.setAttack(AttackType.byId(random));
             }
             double maxDistance = 64.0;
@@ -154,7 +154,7 @@ public class EldritchLuminaryCastGoal extends Goal {
                 luminary.setAttack(AttackType.NONE);
             }
         }
-//        System.out.println("Can Disappear is, " + canDisappear() + ", Can Disappear progress is, " + luminary.getDisappearDelay());
+        System.out.println("Can Disappear is, " + canDisappear() + ", Can Disappear progress is, " + luminary.getDisappearDelay());
     }
     @Override
     public void stop() {

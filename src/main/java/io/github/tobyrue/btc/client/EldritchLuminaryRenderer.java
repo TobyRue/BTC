@@ -9,6 +9,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -24,7 +25,9 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
 
     @Override
     public Identifier getTexture(EldritchLuminaryEntity luminary) {
-        if(luminary.getAttack() != AttackType.NONE) {
+        LivingEntity eEnemy = luminary.getTarget();
+
+        if(eEnemy != null) {
             return TEXTURE_ANGRY;
         } else {
             return TEXTURE;

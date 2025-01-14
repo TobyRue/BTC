@@ -48,7 +48,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<Byte> ATTACKING;
     private LivingEntity target;
 
-    @Nullable
 
     private int chooseAttack = 80;
     public final AnimationState attackAnimationState = new AnimationState();
@@ -153,16 +152,22 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             System.out.println("Target is: " + this.getTarget().getName().getString());
         }
         if (!this.getWorld().isClient() && getAttack() != AttackType.NONE) {
-            progress++;
+            if ((this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() <= -20) || this.getAttack() != AttackType.INVISIBLE || (this.getAttack() == AttackType.INVISIBLE && this.hasStatusEffect(StatusEffects.INVISIBILITY))) {
+                progress++;
+            }
             disappearDelay--;
             if (progress == 65) {
                 progress = 0;
+            } else if (progress == 40) {
+                setAttack(AttackType.NONE);
             }
             if (this.hasStatusEffect(StatusEffects.INVISIBILITY)) {
                 disappearDelay = 2400;
             }
         }
-      if (this.getWorld().isClient) {
+
+        //TODO
+        if (this.getWorld().isClient && this.getAttack() != AttackType.NONE) {
             AttackType spell = this.getAttack();
             float f = (float)spell.particleVelocity[0];
             float g = (float)spell.particleVelocity[1];
@@ -172,22 +177,22 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             float k = MathHelper.sin(i);
             double d = 0.6 * (double)this.getScale();
             double e = 1.8 * (double)this.getScale();
-            if (spell != AttackType.NONE) {
                 this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h), this.getX() + (double) j * d, this.getY() + e, this.getZ() + (double) k * d, 0.0, 0.0, 0.0);
                 this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h), this.getX() - (double) j * d, this.getY() + e, this.getZ() - (double) k * d, 0.0, 0.0, 0.0);
-            }
+
         }
         if (this.getWorld().isClient()) {
             setupAnimationStates();
         }
 //        System.out.println(attackTick);
-        if (attackTick > 0) {
-            attackTick--;
-            if (attackTick <= 10) {
-                executeTimedAction();
-                this.scheduleAction(100); // Schedule action after 100 ticks
-            }
-        }
+//        if (attackTick > 0) {
+//            attackTick--;
+//            if (attackTick <= 10) {
+//                executeTimedAction();
+//                this.scheduleAction(100); // Schedule action after 100 ticks
+//            }
+//        }
+
     }
 
     public int getProgress() {
