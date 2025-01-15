@@ -69,7 +69,7 @@ public class EldritchLuminaryCastGoal extends Goal {
 //                luminary.setAttack(AttackType.FIRE_BALL);
 //            }
             System.out.println("Progress is: " + luminary.getProgress());
-            if (luminary.getAttack() == AttackType.NONE) {
+            if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
                 int random = (int)(Math.random() * 3 + 2);
                 System.out.println("Random is: " + random);
                 luminary.setAttack(AttackType.byId(random));
@@ -154,7 +154,7 @@ public class EldritchLuminaryCastGoal extends Goal {
                 luminary.setAttack(AttackType.NONE);
             }
         }
-        System.out.println("Can Disappear is, " + canDisappear() + ", Can Disappear progress is, " + luminary.getDisappearDelay());
+//        System.out.println("Can Disappear is, " + canDisappear() + ", Can Disappear progress is, " + luminary.getDisappearDelay());
     }
     @Override
     public void stop() {

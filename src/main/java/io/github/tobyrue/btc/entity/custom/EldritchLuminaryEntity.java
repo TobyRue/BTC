@@ -117,7 +117,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             --this.idleAnimationTimeout;
         }
 //        System.out.println("Attack is: " + this.getAttack() + " Client is " + getWorld().isClient);
-        if(this.getAttack() != AttackType.NONE && attackAnimationTimeout <= 0) {
+        if(this.getAttack() != AttackType.NONE) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
         } else {
@@ -151,8 +151,14 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (this.getTarget() != null) {
             System.out.println("Target is: " + this.getTarget().getName().getString());
         }
-        if (!this.getWorld().isClient() && getAttack() != AttackType.NONE) {
-            if ((this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() <= -20) || this.getAttack() != AttackType.INVISIBLE || (this.getAttack() == AttackType.INVISIBLE && this.hasStatusEffect(StatusEffects.INVISIBILITY))) {
+        //TODO
+        if (this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() > 600) {
+            this.setAttack(AttackType.NONE);
+            progress = 40;
+        }
+
+        if (!this.getWorld().isClient()) {
+            if ((this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() <= -20) || this.getAttack() != AttackType.INVISIBLE || (this.getAttack() == AttackType.INVISIBLE && this.hasStatusEffect(StatusEffects.INVISIBILITY)) || this.getAttack() == AttackType.NONE) {
                 progress++;
             }
             disappearDelay--;
@@ -169,6 +175,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         //TODO
         if (this.getWorld().isClient && this.getAttack() != AttackType.NONE) {
             AttackType spell = this.getAttack();
+            System.out.println("Attack is not None: " + this.isAttacking() + ", Attack is:" + this.getAttack());
             float f = (float)spell.particleVelocity[0];
             float g = (float)spell.particleVelocity[1];
             float h = (float)spell.particleVelocity[2];
