@@ -6,9 +6,9 @@ import net.minecraft.util.function.ValueLists;
 import java.util.function.IntFunction;
 
 public enum AttackType {
-    INVISIBLE(4, 0.3, 0.3, 0.8),
-    DRAGON_FIRE_BALL(3, 0.7, 0.5, 0.2),
-    FIRE_BALL(2, 0.4, 0.3, 0.35),
+    INVISIBLE(4, 0.9, 0.9, 0.9),
+    DRAGON_FIRE_BALL(3, 0.3, 0.0, 0.5),
+    FIRE_BALL(2, 0.8, 0.4, 0.0),
     WIND_CHARGE(1, 0.7, 0.7, 0.8),
     NONE(0, 0.0, 0.0, 0.0);
 
