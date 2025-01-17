@@ -176,16 +176,16 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (this.getWorld().isClient && this.getAttack() != AttackType.NONE) {
             AttackType spell = this.getAttack();
             System.out.println("Attack is not None: " + this.isAttacking() + ", Attack is:" + this.getAttack());
-            float f = (float)spell.particleVelocity[0];
-            float g = (float)spell.particleVelocity[1];
-            float h = (float)spell.particleVelocity[2];
+            float r = (float)spell.color[0];
+            float g = (float)spell.color[1];
+            float b = (float)spell.color[2];
             float i = this.bodyYaw * 0.017453292F + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
             float j = MathHelper.cos(i);
             float k = MathHelper.sin(i);
             double d = 0.6 * (double)this.getScale();
             double e = 1.8 * (double)this.getScale();
-                this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h), this.getX() + (double) j * d, this.getY() + e, this.getZ() + (double) k * d, 0.0, 0.0, 0.0);
-                this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h), this.getX() - (double) j * d, this.getY() + e, this.getZ() - (double) k * d, 0.0, 0.0, 0.0);
+                this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b), this.getX() + (double) j * d, this.getY() + e, this.getZ() + (double) k * d, 0.0, 0.0, 0.0);
+                this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b), this.getX() - (double) j * d, this.getY() + e, this.getZ() - (double) k * d, 0.0, 0.0, 0.0);
 
         }
         if (this.getWorld().isClient()) {

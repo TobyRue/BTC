@@ -7,7 +7,7 @@ import java.util.function.IntFunction;
 
 public enum AttackType {
     INVISIBLE(4, 0.9, 0.9, 0.9),
-    DRAGON_FIRE_BALL(3, 0.3, 0.0, 0.5),
+    DRAGON_FIRE_BALL(3, 0.4, 0.0, 0.5),
     FIRE_BALL(2, 0.8, 0.4, 0.0),
     WIND_CHARGE(1, 0.7, 0.7, 0.8),
     NONE(0, 0.0, 0.0, 0.0);
@@ -16,11 +16,11 @@ public enum AttackType {
         return attackType.id;
     }, values(), ValueLists.OutOfBoundsHandling.ZERO);
     public final int id;
-    public final double[] particleVelocity;
+    public final double[] color;
 
-    AttackType(final int id, final double particleVelocityX, final double particleVelocityY, final double particleVelocityZ) {
+    AttackType(final int id, final double red, final double green, final double blue) {
         this.id = id;
-        this.particleVelocity = new double[]{particleVelocityX, particleVelocityY, particleVelocityZ};
+        this.color = new double[]{red, green, blue};
     }
 
     public static AttackType byId(int id) {
