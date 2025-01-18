@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -27,12 +28,12 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
     public Identifier getTexture(EldritchLuminaryEntity luminary) {
         LivingEntity eEnemy = luminary.getTarget();
 
-        if(eEnemy != null) {
+        if(luminary.getAttack() != AttackType.NONE) {
             return TEXTURE_ANGRY;
         } else {
             return TEXTURE;
         }
-    }
+    } 
 
     @Override
     public void render(EldritchLuminaryEntity livingEntity, float f, float g, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i) {

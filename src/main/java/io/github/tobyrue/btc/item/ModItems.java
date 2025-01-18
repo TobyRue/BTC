@@ -55,6 +55,10 @@ public class ModItems {
             new SpawnEggItem(ModEntities.ELDRITCH_LUMINARY, 0x37BBDD, 0xCC9104, new Item.Settings()),
             "eldritch_luminary_spawn_egg"
     );
+    public static final Item WATER_BLAST = register(
+            new WaterBlastItem(new Item.Settings().maxCount(64).rarity(Rarity.COMMON)),
+            "water_blast"
+    );
     public static void initialize() {
     }
 }

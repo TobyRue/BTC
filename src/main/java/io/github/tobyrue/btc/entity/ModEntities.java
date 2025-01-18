@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.entity;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -17,4 +18,12 @@ public class ModEntities {
             Identifier.of(BTC.MOD_ID, "eldritch_luminary"),
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, EldritchLuminaryEntity::new)
                     .dimensions(EntityDimensions.fixed(0.75f, 1.9f).withEyeHeight(1.7f)).build());
+//    public static final EntityType<WaterBlastEntity> WATER_BLAST = Registry.register(Registries.ENTITY_TYPE,
+//            Identifier.of(BTC.MOD_ID, "water_blast"),
+//            EntityType.Builder.<WaterBlastEntity>create(WaterBlastEntity::new, SpawnGroup.MISC)
+//                    .dimensions(0.5f, 1.15f).build());}
+    public static final EntityType<WaterBlastEntity> WATER_BLAST = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "water_blast"),
+            EntityType.Builder.<WaterBlastEntity>create(WaterBlastEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.5f, 0.5f).build());
 }

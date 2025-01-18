@@ -20,6 +20,7 @@
   "item.btc.fire_staff": "Staff of the Blaze",
   "item.btc.dragon_staff": "Staff of the Dragonhearted",
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
+  "item.btc.water_blast": "Water Blast",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
   "death.attack.wind_burst": "%1$s got blasted away",
@@ -52,5 +53,6 @@
   "key.btc.secondary_staff_ability": "Secondary Staff Ability",
   "key.btc.tertiary_staff_ability": "Tertiary Staff Ability",
 
-  "entity.btc.eldritch_luminary": "Eldritch Luminary"
+  "entity.btc.eldritch_luminary": "Eldritch Luminary",
+  "entity.btc.water_blast": "Water Blast"
 }

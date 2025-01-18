@@ -268,4 +268,76 @@ public class ModAnimations {
 					new Transformation(Transformation.Targets.SCALE,
 							new Keyframe(0f, AnimationHelper.createScalingVector(0f, 0f, 0f),
 									Transformation.Interpolations.LINEAR))).build();
+	public static final Animation SPIN = Animation.Builder.create(1f).looping()
+			.addBoneAnimation("waterBlast",
+					new Transformation(Transformation.Targets.ROTATE,
+							new Keyframe(0f, AnimationHelper.createRotationalVector(0f, 0f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(1f, AnimationHelper.createRotationalVector(0f, 0f, -360f),
+									Transformation.Interpolations.LINEAR))).build();
+	public static final Animation HIT = Animation.Builder.create(0.75f)
+			.addBoneAnimation("head",
+					new Transformation(Transformation.Targets.TRANSLATE,
+							new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createTranslationalVector(0f, 0f, -2f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.75f, AnimationHelper.createTranslationalVector(0f, 1f, -2f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("head",
+					new Transformation(Transformation.Targets.SCALE,
+							new Keyframe(0f, AnimationHelper.createScalingVector(1f, 1f, 1f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createScalingVector(2f, 2f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.75f, AnimationHelper.createScalingVector(0f, -0.2f, 0f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("bottom",
+					new Transformation(Transformation.Targets.TRANSLATE,
+							new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createTranslationalVector(1f, -1f, -5f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("bottom",
+					new Transformation(Transformation.Targets.SCALE,
+							new Keyframe(0f, AnimationHelper.createScalingVector(1f, 1f, 1f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createScalingVector(2f, 1f, 0f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("top",
+					new Transformation(Transformation.Targets.TRANSLATE,
+							new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createTranslationalVector(1f, 3f, -5f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("top",
+					new Transformation(Transformation.Targets.SCALE,
+							new Keyframe(0f, AnimationHelper.createScalingVector(1f, 1f, 1f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createScalingVector(2f, 1f, 0f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("right",
+					new Transformation(Transformation.Targets.TRANSLATE,
+							new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createTranslationalVector(-2f, -1f, -5f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("right",
+					new Transformation(Transformation.Targets.SCALE,
+							new Keyframe(0f, AnimationHelper.createScalingVector(1f, 1f, 1f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createScalingVector(1f, 2f, 0f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("left",
+					new Transformation(Transformation.Targets.TRANSLATE,
+							new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createTranslationalVector(2f, -1f, -5f),
+									Transformation.Interpolations.LINEAR)))
+			.addBoneAnimation("left",
+					new Transformation(Transformation.Targets.SCALE,
+							new Keyframe(0f, AnimationHelper.createScalingVector(1f, 1f, 1f),
+									Transformation.Interpolations.LINEAR),
+							new Keyframe(0.375f, AnimationHelper.createScalingVector(1f, 2f, 0f),
+									Transformation.Interpolations.LINEAR))).build();
 }

@@ -9,4 +9,6 @@ import net.minecraft.util.Identifier;
 public class ModModelLayers {
     public static final EntityModelLayer ELDRITCH_LUMINARY =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "eldritch_luminaries"), "main");
+    public static final EntityModelLayer WATER_BURST =
+            new EntityModelLayer(Identifier.of(BTC.MOD_ID, "water_burst"), "main");
 }
