@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -12,10 +13,9 @@ import net.minecraft.util.Identifier;
 // Made with Blockbench 4.12.1
 // Exported for Minecraft version 1.17+ for Yarn
 // Paste this class into your mod and generate all required imports
-public class WaterBlastEntityModel extends EntityModel<Entity> {
-	public static final EntityModelLayer WATER_BURST = new EntityModelLayer(Identifier.of(BTC.MOD_ID, "water_burst"), "main");
-
+public class WaterBlastEntityModel extends EntityModel<WaterBlastEntity> {
 	private final ModelPart waterBlast;
+	public static final EntityModelLayer WATER_BURST = new EntityModelLayer(Identifier.of(BTC.MOD_ID, "water_burst"), "main");
 
 	public WaterBlastEntityModel(ModelPart root) {
 		this.waterBlast = root.getChild("waterBlast");
@@ -23,7 +23,7 @@ public class WaterBlastEntityModel extends EntityModel<Entity> {
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData waterBlast = modelPartData.addChild("waterBlast", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 16.0F, 0.0F));
+		ModelPartData waterBlast = modelPartData.addChild("waterBlast", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 22.0F, -2.0F));
 
 		ModelPartData head = waterBlast.addChild("head", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 1.0F, 0.0F));
 
@@ -40,19 +40,20 @@ public class WaterBlastEntityModel extends EntityModel<Entity> {
 		ModelPartData left = tail.addChild("left", ModelPartBuilder.create().uv(0, 18).cuboid(5.0F, -4.0F, -1.0F, 0.0F, 4.0F, 5.0F, new Dilation(0.0F)), ModelTransform.pivot(-3.0F, -6.0F, 3.0F));
 		return TexturedModelData.of(modelData, 32, 32);
 	}
+
 	@Override
-	public void setAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		waterBlast.render(matrices, vertices, light, overlay, color);
+	}
+
+	@Override
+	public void setAngles(WaterBlastEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		// Convert degrees to radians for rotation
-		float yaw = netHeadYaw * ((float) Math.PI / 180F);
+		float yaw = headYaw * ((float) Math.PI / 180F);
 		float pitch = headPitch * ((float) Math.PI / 180F);
 
 		// Apply rotations to the model
 		this.waterBlast.yaw = yaw;
 		this.waterBlast.pitch = pitch;
-	}
-
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		waterBlast.render(matrices, vertices, light, overlay, color);
 	}
 }
