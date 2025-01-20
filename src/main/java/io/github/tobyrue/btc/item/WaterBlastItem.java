@@ -29,12 +29,13 @@ public class WaterBlastItem extends Item {
         ItemStack itemStack = user.getStackInHand(hand);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
 
-        Vec3d velocity = Vec3d.unpackRgb(2);
+        Vec3d velocity = user.getRotationVec(1.0f).multiply(1.5f);
 
         if (!world.isClient) {
             System.out.println("Spawning WaterBlastEntity at: " + user.getX() + ", " + user.getY() + ", " + user.getZ());
             WaterBlastEntity waterBlast = new WaterBlastEntity(user, world, user.getX(), user.getY(), user.getZ(), velocity);
-            waterBlast.setVelocity(user, user.getPitch(), user.getYaw(), 2.0f, 2.5f, 1f);
+//            Vec3d direction = user.getRotationVec(1.0f);
+//            waterBlast.setVelocity(direction.multiply(1.5));
             world.spawnEntity(waterBlast);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));

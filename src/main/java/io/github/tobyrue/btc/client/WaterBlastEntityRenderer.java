@@ -32,7 +32,7 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     public void render(WaterBlastEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
-
+        
         // Interpolating yaw for smooth rotation
 //        float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
 

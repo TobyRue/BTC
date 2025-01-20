@@ -23,8 +23,8 @@ public class ModEntities {
 //            Identifier.of(BTC.MOD_ID, "water_blast"),
 //            EntityType.Builder.<WaterBlastEntity>create(WaterBlastEntity::new, SpawnGroup.MISC)
 //                    .dimensions(0.5f, 1.15f).build());}
-public static final EntityType<WaterBlastEntity> WATER_BLAST = Registry.register(Registries.ENTITY_TYPE,
-        Identifier.of(BTC.MOD_ID, "water_blast"),
-        EntityType.Builder.<WaterBlastEntity>create(WaterBlastEntity::new, SpawnGroup.MISC)
-                .dimensions(0.5f, 0.5f).build());
+    public static final EntityType<WaterBlastEntity> WATER_BLAST = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "water_blast"),
+            EntityType.Builder.<WaterBlastEntity>create(WaterBlastEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.5f, 0.5f).build());
 }
