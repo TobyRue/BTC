@@ -7,9 +7,12 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.projectile.AbstractWindChargeEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -17,6 +20,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class WaterBlastEntity extends ProjectileEntity {
@@ -30,6 +34,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         this.setPosition(x, y, z);
         this.setOwner(user);
         this.setVelocity(velocity);
+        this.setRotation(user.headYaw, user.getPitch());
     }
 
     @Override
@@ -40,13 +45,44 @@ public class WaterBlastEntity extends ProjectileEntity {
     @Override
     public void tick() {
         super.tick();
-        this.setPosition(this.getPos().add(this.getVelocity()));
+
+        Vec3d oldPos = this.getPos();
+        this.move(MovementType.SELF, this.getVelocity());
+        Vec3d newPos = this.getPos();
+
+        // Check for block collision
+        BlockHitResult blockHitResult = this.getWorld().raycast(new RaycastContext(
+                oldPos, newPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this
+        ));
+
+//        if (blockHitResult.getType() == HitResult.Type.BLOCK) {
+            this.onBlockHit(blockHitResult);
+//            return;
+//        }
+
+        // Check for entity collision
+        EntityHitResult entityHitResult = this.getEntityCollision(this.getPos(), this.getPos().add(this.getVelocity()));
+        if (entityHitResult != null) {
+            this.onEntityHit(entityHitResult);
+            return;
+        }
+
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             this.discard();
-        } else {
-            super.tick();
         }
     }
+    private EntityHitResult getEntityCollision(Vec3d start, Vec3d end) {
+        return ProjectileUtil.getEntityCollision(
+                this.getWorld(),
+                this,
+                start,
+                end,
+                this.getBoundingBox().stretch(this.getVelocity()).expand(1.0D),
+                entity -> !entity.isSpectator() && entity.isAlive() && entity != this.getOwner()
+        );
+    }
+
+
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
@@ -71,17 +107,17 @@ public class WaterBlastEntity extends ProjectileEntity {
     }
 
 //    @Override
-//    protected void onEntityHit(EntityHitResult entityHitResult) {
-//        super.onEntityHit(entityHitResult);
-//        Entity entity = entityHitResult.getEntity();
-//        entity.damage(this.getDamageSources().thrown(this, this.getOwner()), 4);
-//
-//        if (!this.getWorld().isClient()) {
-//            System.out.println("WaterBlastEntity hit an entity: " + entityHitResult.getEntity().getName().getString());
-//            this.getWorld().sendEntityStatus(this, (byte)3);
-//            this.discard();
-//        }
-//    }
+    protected void onEntityHit(EntityHitResult entityHitResult) {
+        super.onEntityHit(entityHitResult);
+        Entity entity = entityHitResult.getEntity();
+        entity.damage(this.getDamageSources().thrown(this, this.getOwner()), 4);
+
+        if (!this.getWorld().isClient()) {
+            System.out.println("WaterBlastEntity hit an entity: " + entityHitResult.getEntity().getName().getString());
+            this.getWorld().sendEntityStatus(this, (byte)3);
+            this.discard();
+        }
+    }
 //    @Override
 //    protected void onEntityHit(EntityHitResult entityHitResult) {
 //        super.onEntityHit(entityHitResult);
