@@ -1,19 +1,24 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.animation.ModAnimations;
+import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 // Made with Blockbench 4.12.1
 // Exported for Minecraft version 1.17+ for Yarn
 // Paste this class into your mod and generate all required imports
-public class WaterBlastEntityModel extends EntityModel<WaterBlastEntity> {
+public class WaterBlastEntityModel<T extends WaterBlastEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart waterBlast;
 	public static final EntityModelLayer WATER_BURST = new EntityModelLayer(Identifier.of(BTC.MOD_ID, "water_burst"), "main");
 
@@ -47,13 +52,12 @@ public class WaterBlastEntityModel extends EntityModel<WaterBlastEntity> {
 	}
 
 	@Override
+	public ModelPart getPart() {
+		return waterBlast;
+	}
+
+	@Override
 	public void setAngles(WaterBlastEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-//		// Convert degrees to radians for rotation
-//		float yaw = headYaw * ((float) Math.PI / 180F);
-//		float pitch = headPitch * ((float) Math.PI / 180F);
-//
-//		// Apply rotations to the model
-//		this.waterBlast.yaw = yaw;
-//		this.waterBlast.pitch = pitch;
+
 	}
 }

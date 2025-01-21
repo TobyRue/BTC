@@ -40,9 +40,15 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
 //        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(interpolatedYaw - 90.0F)); // Adjusting for Minecraft's coordinate system
 //        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
 //        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())));
-        // Rendering the model
+        float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
+        float interpolatedPitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch());
+
+        // Applying rotations
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(interpolatedYaw + 180.0F));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(interpolatedPitch));
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
-                this.model.getLayer(getTexture(entity)), false, false);
+
+        this.model.getLayer(getTexture(entity)), false, false);
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
 //        if(!entity.isGrounded()) {
