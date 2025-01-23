@@ -49,7 +49,7 @@ public class EldritchLuminaryCastGoal extends Goal {
     }
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
-        return this.luminary.distanceTo(eEnemy) >= 6f && this.luminary.distanceTo(eEnemy) <= 16f; // TODO
+        return this.luminary.distanceTo(eEnemy) >= 6f && this.luminary.distanceTo(eEnemy) <= 16f;
     }
     @Override
     public boolean shouldRunEveryTick() {

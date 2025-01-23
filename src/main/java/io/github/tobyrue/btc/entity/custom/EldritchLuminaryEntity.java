@@ -151,7 +151,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (this.getTarget() != null) {
             System.out.println("Target is: " + this.getTarget().getName().getString());
         }
-        //TODO
         if (this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() > 600) {
             this.setAttack(AttackType.NONE);
             progress = 40;
@@ -172,7 +171,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             }
         }
 
-        //TODO
+        //
         if (this.getWorld().isClient && this.getAttack() != AttackType.NONE) {
             AttackType spell = this.getAttack();
             System.out.println("Attack is not None: " + this.isAttacking() + ", Attack is:" + this.getAttack());

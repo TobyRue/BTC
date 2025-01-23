@@ -54,11 +54,13 @@ public class WaterBlastEntity extends ProjectileEntity {
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
         if (hitResult.getType() != HitResult.Type.MISS) {
             this.hitOrDeflect(hitResult);
+            if (this.getWorld() instanceof ServerWorld serverWorld) {
+                serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+            }
         }
     }
 
 
-//TODO ADD PARTIALS
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
         super.onBlockHit(blockHitResult);
@@ -82,7 +84,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         entity.damage(this.getDamageSources().thrown(this, this.getOwner()), 2);
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 100));
-            livingEntity.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DROWNING), 200, 100));
+            livingEntity.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DROWNING), 200, 1));
         }
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);

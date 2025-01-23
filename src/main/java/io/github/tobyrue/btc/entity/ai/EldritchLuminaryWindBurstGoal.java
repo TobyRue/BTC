@@ -49,7 +49,7 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
 
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
-        return this.luminary.distanceTo(eEnemy) >= 1f && this.luminary.distanceTo(eEnemy) <= 6f; // TODO
+        return this.luminary.distanceTo(eEnemy) >= 1f && this.luminary.distanceTo(eEnemy) <= 6f;
     }
     @Override
     public boolean shouldRunEveryTick() {
