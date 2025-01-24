@@ -31,6 +31,8 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        DrowningEffectOverlay.register();
+
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_BEACON, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PEDESTAL, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DUNGEON_FIRE, RenderLayer.getCutoutMipped());

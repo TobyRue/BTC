@@ -40,12 +40,14 @@ public class WaterBlastEntity extends ProjectileEntity {
 
     }
 
-
     @Override
     public void tick() {
         super.tick();
         this.setPosition(this.getPos().add(this.getVelocity()));
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
+            if (this.getWorld() instanceof ServerWorld serverWorld) {
+                serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+            }
             this.discard();
         } else {
             super.tick();
@@ -89,7 +91,6 @@ public class WaterBlastEntity extends ProjectileEntity {
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         }
-//        this.getWorld().addParticle(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
         if (!this.getWorld().isClient()) {
             System.out.println("WaterBlastEntity hit an entity: " + entityHitResult.getEntity().getName().getString());
             this.getWorld().sendEntityStatus(this, (byte)3);

@@ -32,14 +32,25 @@ public class DrowningEffect extends StatusEffect {
         int interval = Math.max(40 - (amplifier * 5), 5); // Minimum interval of 5 ticks
         return duration % interval == 0;
     }
+//    public static int getTotalRespiration(PlayerEntity player) {
+//        int totalRespiration = 0;
+//    Iterable<ItemStack> armorItem = player.getArmorItems();
+//        // Loop through the player's armor items
+//        for (ItemStack armorItem : player.getArmorItems()) {
+//            if (!armorItem.isEmpty()) { // Check if the armor slot has an item
+//                var enchantmentId = armorItem.getEnchantments().equals(Enchantments.RESPIRATION.getValue());            }
+//        }
+//
+//        return totalRespiration;
+//    }
 
     @Override
     public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (!entity.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
-            // Damage increases with the amplifier
+
             entity.damage(entity.getWorld().getDamageSources().drown(), 4);
             return true;
         }
-        return false;
+        return true;
     }
 }
