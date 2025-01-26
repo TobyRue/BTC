@@ -32,7 +32,11 @@ public class WaterBlastEntity extends ProjectileEntity {
         this.setPosition(x, y, z);
         this.setOwner(user);
         this.setVelocity(velocity);
-        this.setRotation(user.headYaw, user.getPitch());
+    }
+
+    @Override
+    protected double getGravity() {
+        return 0.07d;
     }
 
     @Override
@@ -44,6 +48,14 @@ public class WaterBlastEntity extends ProjectileEntity {
     public void tick() {
         super.tick();
         this.setPosition(this.getPos().add(this.getVelocity()));
+        this.applyGravity();
+        Vec3d d = this.getVelocity().normalize();
+        float pitch = (float) Math.asin(-d.getY());
+        //TODO something wrong with z axis / only faces completely correct facing south or at 0 degrees otherwise it rotates somewhat a few degrees towards 0 degrees, when first shot works and faces correct but on next tick it changes but it does try to readjust itself to its velocity try and fix me
+        float yaw = (float) Math.atan2(d.getX(), d.getZ());
+        this.setRotation(pitch, yaw);
+        this.updateRotation();
+        System.out.println("Pitch is, " + pitch + " with Yaw, " + yaw + " Velocity is, " + this.getVelocity() + " With Rotation, " + this.getRotationVector());
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             if (this.getWorld() instanceof ServerWorld serverWorld) {
                 serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
