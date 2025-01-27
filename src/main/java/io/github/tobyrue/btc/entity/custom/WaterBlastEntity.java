@@ -3,8 +3,6 @@ package io.github.tobyrue.btc.entity.custom;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.particle.GustParticle;
-import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -12,8 +10,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.*;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
@@ -34,10 +30,6 @@ public class WaterBlastEntity extends ProjectileEntity {
         this.setPosition(x, y, z);
         this.setOwner(user);
         this.setVelocity(velocity);
-        double l = velocity.horizontalLength();
-        float pitch = (float)(MathHelper.atan2(velocity.getY(), l) * 57.2957763671875);
-        float yaw = (float)(MathHelper.atan2(velocity.getX(), velocity.getZ()) * 57.2957763671875);
-        this.setRotation(pitch, yaw);
     }
 
     @Override
@@ -59,24 +51,20 @@ public class WaterBlastEntity extends ProjectileEntity {
         Vec3d velocity = this.getVelocity();
         double horizontalLength = velocity.horizontalLength();
 
-        // Calculate pitch and yaw
         float pitch = (float) (MathHelper.atan2(velocity.getY(), horizontalLength) * (180.0 / Math.PI));
         float yaw = (float) (MathHelper.atan2(velocity.getX(), velocity.getZ()) * (180.0 / Math.PI));
 
-        // Update rotation using custom logic
         this.setRotation(yaw, pitch);
 
-        // Prevent Minecraft from overriding rotation by skipping unnecessary updates
         this.updatePositionAndAngles(this.getX(), this.getY(), this.getZ(), yaw, pitch);
 
-//        System.out.println("Pitch is, " + Math.toDegrees(pitch) + " with Yaw, " + Math.toDegrees(yaw) + " Velocity is, " + this.getVelocity() + " With Rotation, " + this.getRotationVector() + " Client is, " + this.getWorld().isClient);
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             if (this.getWorld() instanceof ServerWorld serverWorld) {
                 serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
             }
             this.discard();
         }
-
+        
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
         if (hitResult.getType() != HitResult.Type.MISS) {
             this.hitOrDeflect(hitResult);
@@ -85,7 +73,6 @@ public class WaterBlastEntity extends ProjectileEntity {
             }
         }
     }
-
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
