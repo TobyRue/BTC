@@ -31,7 +31,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         this.setOwner(user);
         this.setVelocity(velocity);
     }
-
+//TODO make it place water on impact on top of block but not a source block a thin layer of water
     @Override
     protected double getGravity() {
         return 0.07d;
@@ -64,7 +64,7 @@ public class WaterBlastEntity extends ProjectileEntity {
             }
             this.discard();
         }
-        
+
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
         if (hitResult.getType() != HitResult.Type.MISS) {
             this.hitOrDeflect(hitResult);
