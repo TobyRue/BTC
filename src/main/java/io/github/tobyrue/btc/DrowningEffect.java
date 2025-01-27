@@ -33,10 +33,7 @@ public class DrowningEffect extends StatusEffect {
     protected DrowningEffect() {
         super(StatusEffectCategory.HARMFUL, 0x125184);
     }
-
-
-//TODO
-
+    
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
@@ -44,7 +41,6 @@ public class DrowningEffect extends StatusEffect {
         int interval = Math.max(40 - (amplifier * 5), 5); // Minimum interval of 5 ticks
         return duration % interval == 0;
     }
-
     private static final Random RANDOM = new Random();
 
     @Override

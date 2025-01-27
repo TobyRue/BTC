@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.particle.GustParticle;
+import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,6 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -32,6 +34,10 @@ public class WaterBlastEntity extends ProjectileEntity {
         this.setPosition(x, y, z);
         this.setOwner(user);
         this.setVelocity(velocity);
+        double l = velocity.horizontalLength();
+        float pitch = (float)(MathHelper.atan2(velocity.getY(), l) * 57.2957763671875);
+        float yaw = (float)(MathHelper.atan2(velocity.getX(), velocity.getZ()) * 57.2957763671875);
+        this.setRotation(pitch, yaw);
     }
 
     @Override
@@ -49,20 +55,26 @@ public class WaterBlastEntity extends ProjectileEntity {
         super.tick();
         this.setPosition(this.getPos().add(this.getVelocity()));
         this.applyGravity();
-        Vec3d d = this.getVelocity().normalize();
-        float pitch = (float) Math.asin(-d.getY());
-        //TODO something wrong with z axis / only faces completely correct facing south or at 0 degrees otherwise it rotates somewhat a few degrees towards 0 degrees, when first shot works and faces correct but on next tick it changes but it does try to readjust itself to its velocity try and fix me
-        float yaw = (float) Math.atan2(d.getX(), d.getZ());
-        this.setRotation(pitch, yaw);
-        this.updateRotation();
-        System.out.println("Pitch is, " + pitch + " with Yaw, " + yaw + " Velocity is, " + this.getVelocity() + " With Rotation, " + this.getRotationVector());
+
+        Vec3d velocity = this.getVelocity();
+        double horizontalLength = velocity.horizontalLength();
+
+        // Calculate pitch and yaw
+        float pitch = (float) (MathHelper.atan2(velocity.getY(), horizontalLength) * (180.0 / Math.PI));
+        float yaw = (float) (MathHelper.atan2(velocity.getX(), velocity.getZ()) * (180.0 / Math.PI));
+
+        // Update rotation using custom logic
+        this.setRotation(yaw, pitch);
+
+        // Prevent Minecraft from overriding rotation by skipping unnecessary updates
+        this.updatePositionAndAngles(this.getX(), this.getY(), this.getZ(), yaw, pitch);
+
+//        System.out.println("Pitch is, " + Math.toDegrees(pitch) + " with Yaw, " + Math.toDegrees(yaw) + " Velocity is, " + this.getVelocity() + " With Rotation, " + this.getRotationVector() + " Client is, " + this.getWorld().isClient);
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             if (this.getWorld() instanceof ServerWorld serverWorld) {
                 serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
             }
             this.discard();
-        } else {
-            super.tick();
         }
 
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);

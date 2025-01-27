@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
@@ -14,6 +15,7 @@ import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     protected WaterBlastEntityModel model;
@@ -32,7 +34,7 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     public void render(WaterBlastEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
-        
+
         // Interpolating yaw for smooth rotation
 //        float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
 
@@ -40,14 +42,16 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
 //        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(interpolatedYaw - 90.0F)); // Adjusting for Minecraft's coordinate system
 //        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
 //        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())));
-        float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
-        float interpolatedPitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch());
+
+
 
         // Applying rotations
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(interpolatedYaw + 180.0F));
+        float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
+        float interpolatedPitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch());
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((interpolatedYaw + 180.0F)));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(interpolatedPitch));
-        VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
 
+        VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
         this.model.getLayer(getTexture(entity)), false, false);
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
