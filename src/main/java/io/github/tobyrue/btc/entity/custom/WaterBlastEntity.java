@@ -2,22 +2,31 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.projectile.*;
+import net.minecraft.fluid.FlowableFluid;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class WaterBlastEntity extends ProjectileEntity {
 
@@ -31,7 +40,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         this.setOwner(user);
         this.setVelocity(velocity);
     }
-//TODO make it place water on impact on top of block but not a source block a thin layer of water
+
     @Override
     protected double getGravity() {
         return 0.07d;
@@ -66,6 +75,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         }
 
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
+
         if (hitResult.getType() != HitResult.Type.MISS) {
             this.hitOrDeflect(hitResult);
             if (this.getWorld() instanceof ServerWorld serverWorld) {
@@ -81,11 +91,40 @@ public class WaterBlastEntity extends ProjectileEntity {
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         }
+        BlockPos hitPos = blockHitResult.getBlockPos();
+        Direction hitSide = blockHitResult.getSide();
+
+        if (hitSide == Direction.UP) {  // Ensure it hits the top of the block
+            World world = this.getWorld();
+            BlockState state = world.getBlockState(hitPos);
+
+            if (state.getBlock() instanceof AbstractCauldronBlock) {
+                System.out.println("Hit Cauldron");
+                if (state.isOf(Blocks.WATER_CAULDRON)) {
+                    int currentLevel = state.get(LeveledCauldronBlock.LEVEL);
+
+                    if (currentLevel < 3) {
+                        world.setBlockState(hitPos, state.with(LeveledCauldronBlock.LEVEL, currentLevel + 1));
+                    }
+                } else if (state.isOf(Blocks.CAULDRON)) {
+                    world.setBlockState(hitPos, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 1));
+                }
+
+                world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, hitPos);
+            } else {
+                BlockPos abovePos = hitPos.up();
+                if (world.getBlockState(abovePos).isReplaceable()) {
+                    System.out.println("Hit Block");
+                    BlockState water = Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, 8);
+                    world.setBlockState(abovePos, water);
+                }
+            }
+        }
+
         if (!this.getWorld().isClient) {
             this.discard();
         }
     }
-
     @Override
     public boolean canHit() {
         return true;

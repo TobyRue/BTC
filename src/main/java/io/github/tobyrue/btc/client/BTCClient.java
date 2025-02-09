@@ -49,12 +49,12 @@ public class BTCClient implements ClientModInitializer {
             ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(WIND_STAFF_LAYER);
             new WindStaffModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
         });
-        EntityModelLayerRegistry.registerModelLayer(FIRE_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(FIRE_STAFF_LAYER, FireStaffModelRenderer::getTexturedModelData);
         BuiltinItemRendererRegistry.INSTANCE.register(ModItems.FIRE_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
             ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(FIRE_STAFF_LAYER);
             new FireStaffModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
         });
-        EntityModelLayerRegistry.registerModelLayer(DRAGON_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(DRAGON_STAFF_LAYER, DragonStaffModelRenderer::getTexturedModelData);
         BuiltinItemRendererRegistry.INSTANCE.register(ModItems.DRAGON_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
             ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(DRAGON_STAFF_LAYER);
             new DragonStaffModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
