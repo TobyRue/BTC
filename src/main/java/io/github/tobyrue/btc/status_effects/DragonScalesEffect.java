@@ -1,17 +1,16 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.status_effects;
 
-import net.minecraft.entity.Entity;
+import io.github.tobyrue.btc.BTC;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registries;
 
 import java.util.Objects;
 
 public class DragonScalesEffect extends StatusEffect {
-    protected DragonScalesEffect() {
+    public DragonScalesEffect() {
         // category: StatusEffectCategory - describes if the effect is helpful (BENEFICIAL), harmful (HARMFUL) or useless (NEUTRAL)
         // color: int - Color is the color assigned to the effect (in RGB)
         super(StatusEffectCategory.BENEFICIAL, 0x9E4576);

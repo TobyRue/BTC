@@ -1,7 +1,7 @@
 
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.Connection;
+import io.github.tobyrue.btc.enums.Connection;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;

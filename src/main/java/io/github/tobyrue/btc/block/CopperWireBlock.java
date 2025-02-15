@@ -1,7 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import com.mojang.serialization.MapCodec;
-import io.github.tobyrue.btc.Connection;
+import io.github.tobyrue.btc.enums.Connection;
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

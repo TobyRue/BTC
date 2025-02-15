@@ -26,6 +26,8 @@ public class BTCClient implements ClientModInitializer {
     public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
     public static final EntityModelLayer DRAGON_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "dragon_staff"), "main");
 
+    public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
+
     public static KeyBinding leftAltKeyBinding;
     public static KeyBinding tildeKeyBinding;
 
@@ -59,6 +61,13 @@ public class BTCClient implements ClientModInitializer {
             ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(DRAGON_STAFF_LAYER);
             new DragonStaffModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
         });
+
+        EntityModelLayerRegistry.registerModelLayer(BOOK_LAYER, SpellBookModelRenderer::getTexturedModelData);
+        BuiltinItemRendererRegistry.INSTANCE.register(ModItems.SPELL_BOOK, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
+            ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(BOOK_LAYER);
+            new SpellBookModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
+        });
+
         leftAltKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.btc.secondary_staff_ability", // The translation key for the keybinding
                 InputUtil.Type.KEYSYM, // Key type (keyboard)

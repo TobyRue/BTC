@@ -8,6 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
@@ -59,6 +61,11 @@ public class ModItems {
             new WaterBlastItem(new Item.Settings().maxCount(64).rarity(Rarity.COMMON)),
             "water_blast"
     );
+    public static final Item SPELL_BOOK = register(
+            new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+            "spell_book_item"
+    );
+
     public static void initialize() {
     }
 }

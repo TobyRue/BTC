@@ -1,6 +1,5 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.enums;
 
-import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.util.function.ValueLists;
 
 import java.util.function.IntFunction;

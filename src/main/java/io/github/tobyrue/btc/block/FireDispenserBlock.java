@@ -1,10 +1,11 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.block.entities.FireDispenserBlockEntity;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
+import io.github.tobyrue.btc.enums.FireDispenserType;
+import io.github.tobyrue.btc.enums.FireSwich;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;

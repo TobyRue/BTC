@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.enums;
 
 import java.util.Optional;
 

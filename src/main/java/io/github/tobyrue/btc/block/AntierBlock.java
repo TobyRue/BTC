@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.AntierType;
+import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;

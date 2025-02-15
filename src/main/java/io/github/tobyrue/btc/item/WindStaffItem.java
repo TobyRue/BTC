@@ -1,10 +1,9 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.ModDamageTypes;
+import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.client.BTCClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.MutableText;

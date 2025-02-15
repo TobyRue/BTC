@@ -1,7 +1,7 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.ModDamageTypes;
+import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.block.OminousBeaconBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

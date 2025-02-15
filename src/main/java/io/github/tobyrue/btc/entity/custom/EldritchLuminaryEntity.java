@@ -1,46 +1,28 @@
 package io.github.tobyrue.btc.entity.custom;
 
 
-import io.github.tobyrue.btc.AttackType;
-import io.github.tobyrue.btc.FireSwich;
+import io.github.tobyrue.btc.enums.AttackType;
 import io.github.tobyrue.btc.entity.ai.*;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.StaffItem;
-import net.minecraft.client.render.entity.EvokerEntityRenderer;
-import net.minecraft.client.render.entity.WolfEntityRenderer;
-import net.minecraft.client.render.entity.model.WitherEntityModel;
-import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
-import net.minecraft.entity.passive.CodEntity;
-import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
 

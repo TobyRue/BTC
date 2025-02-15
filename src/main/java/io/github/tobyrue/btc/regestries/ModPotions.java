@@ -1,5 +1,6 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.regestries;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.entity.effect.StatusEffectInstance;

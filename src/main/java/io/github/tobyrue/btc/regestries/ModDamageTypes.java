@@ -1,8 +1,6 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.regestries;
 
 import net.minecraft.entity.damage.*;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;

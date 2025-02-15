@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
-import io.github.tobyrue.btc.AntierType;
+import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.AntierBlock;
 import net.minecraft.block.BlockState;
