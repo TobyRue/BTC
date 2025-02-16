@@ -62,7 +62,7 @@ public class ModItems {
             "water_blast"
     );
     public static final Item SPELL_BOOK = register(
-            new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+            new SpellBookItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "spell_book_item"
     );
 
