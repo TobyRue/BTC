@@ -1,24 +1,15 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.WindChargeEntity;
-import net.minecraft.item.DebugStickItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.WindChargeItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class WaterBlastItem extends Item {
@@ -37,6 +28,7 @@ public class WaterBlastItem extends Item {
             // Spawn the entity 1 block higher
             WaterBlastEntity waterBlast = new WaterBlastEntity(user, world, user.getX(), user.getY() + 1.25, user.getZ(), velocity);
             world.spawnEntity(waterBlast);
+            user.getItemCooldownManager().set(this, 15);
 //            Vec3d direction = user.getRotationVec(1.0f);
 //            waterBlast.setVelocity(direction.multiply(1.5));
         }

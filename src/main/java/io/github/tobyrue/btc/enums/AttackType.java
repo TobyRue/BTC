@@ -5,6 +5,8 @@ import net.minecraft.util.function.ValueLists;
 import java.util.function.IntFunction;
 
 public enum AttackType {
+    REGENERATION(6, 1.0, 0.24, 0.23),
+    WATER_BLAST(5, 0.15, 0.64, 1.0),
     INVISIBLE(4, 0.9, 0.9, 0.9),
     DRAGON_FIRE_BALL(3, 0.4, 0.0, 0.5),
     FIRE_BALL(2, 0.8, 0.4, 0.0),

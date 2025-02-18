@@ -1,5 +1,7 @@
 package io.github.tobyrue.btc.entity.ai;
 
+import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.AttackType;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.entity.LivingEntity;
@@ -9,6 +11,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -60,13 +63,41 @@ public class EldritchLuminaryCastGoal extends Goal {
 //            }
             System.out.println("Progress is: " + luminary.getProgress());
             if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
-                int random = (int)(Math.random() * 3 + 2);
+                // First number of Random is the amount of outcomes, second number should never change and is the offset
+                int random = (int)(Math.random() * 5 + 2);
                 System.out.println("Random is: " + random);
                 luminary.setAttack(AttackType.byId(random));
             }
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
+                    World world = this.luminary.getWorld();
+                    double speed = 1.5;
+                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                    // More precise aim towards the center of the target
+                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                    Vec3d vec3d2 = new Vec3d(dx, dy, dz);
+
+                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, luminary, velocity);
+                    dragonFireballEntity.setVelocity(velocity);
+                    dragonFireballEntity.setPosition(
+                            this.luminary.getX() + vec3d.x * 1.5,
+                            this.luminary.getBodyY(0.5) + 0.5,
+                            this.luminary.getZ() + vec3d.z * 1.5
+                    );
+                    world.spawnEntity(dragonFireballEntity);
+                }
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.REGENERATION) {
+                    World world = this.luminary.getWorld();
+                    luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                }
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.WATER_BLAST) {
                     World world = this.luminary.getWorld();
 //                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
 //                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
@@ -90,29 +121,18 @@ public class EldritchLuminaryCastGoal extends Goal {
 
                     Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
 
-                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, luminary, velocity);
-                    dragonFireballEntity.setVelocity(velocity);
-                    dragonFireballEntity.setPosition(
+                    WaterBlastEntity waterBlast = new WaterBlastEntity(luminary, world, luminary.getX(), luminary.getY() + 1.25, luminary.getZ(), velocity);
+                    waterBlast.setVelocity(velocity);
+                    waterBlast.setPosition(
                             this.luminary.getX() + vec3d.x * 1.5,
                             this.luminary.getBodyY(0.5) + 0.5,
                             this.luminary.getZ() + vec3d.z * 1.5
                     );
-
-                    world.spawnEntity(dragonFireballEntity);
+                    waterBlast.setNoGravity(true);
+                    world.spawnEntity(waterBlast);
                 }
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.FIRE_BALL) {
                     World world = this.luminary.getWorld();
-//                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
-
-//                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
-//                    double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
-//
-//                    if (Math.abs(yawDifference) > 10.0F) {
-//                        this.luminary.getLookControl().lookAt(eEnemy, 30.0F, 30.0F);
-//                        this.luminary.setYaw((float) targetYaw);
-//                        return;
-//                    }
-
                     double speed = 1.5;
                     Vec3d vec3d = this.luminary.getRotationVec(1.0F);
 

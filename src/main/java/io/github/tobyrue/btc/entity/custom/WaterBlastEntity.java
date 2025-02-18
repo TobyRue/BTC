@@ -135,14 +135,16 @@ public class WaterBlastEntity extends ProjectileEntity {
         Entity entity = entityHitResult.getEntity();
         entity.damage(this.getDamageSources().thrown(this, this.getOwner()), 2);
         if (entity instanceof LivingEntity livingEntity) {
-            livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 100));
             livingEntity.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DROWNING), 200, 1));
+            // Extinguish fire if the entity is burning
+            if (livingEntity.isOnFire()) {
+                livingEntity.extinguish();
+            }
         }
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         }
         if (!this.getWorld().isClient()) {
-            System.out.println("WaterBlastEntity hit an entity: " + entityHitResult.getEntity().getName().getString());
             this.getWorld().sendEntityStatus(this, (byte)3);
             this.discard();
         }

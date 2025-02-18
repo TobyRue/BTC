@@ -17,10 +17,7 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
     public FireDispenserBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FIRE_DISPENSER_ENTITY, pos, state);
     }
-/**
- REMINDER:
- Break and Replace old blocks of this to fix bugs
- */
+
     @Override
     public void tick(World world, BlockPos pos, BlockState state, FireDispenserBlockEntity blockEntity) {
         for (Direction direction : Direction.values()) {
