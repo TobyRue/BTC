@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.item;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -16,6 +17,7 @@ import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -37,20 +39,30 @@ public class SpellBookItem extends Item {
         String currentElement = getElement(stack);
         int nextIndex = (ELEMENTS.indexOf(currentElement) + 1) % ELEMENTS.size();
         String nextElement = ELEMENTS.get(nextIndex);
+        if (!player.isSneaking()) {
+            if (getElement(stack).equals("Water Blast")) {
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
+                if (!world.isClient) {
+                    // Spawn the entity 1 block higher
+                    WaterBlastEntity waterBlast = new WaterBlastEntity(player, world, player.getX(), player.getY() + 1.25, player.getZ(), velocity);
+                    world.spawnEntity(waterBlast);
+                    player.getItemCooldownManager().set(this, 15);
+                }
+                player.incrementStat(Stats.USED.getOrCreateStat(this));
+                return TypedActionResult.success(stack);
+            } else if (getElement(stack).equals("Fireball")) {
+                Vec3d velocity = player.getRotationVec(1.0f).multiply(2.5f);
 
-        if (getElement(stack).equals("Water Blast") && !player.isSneaking()) {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-            Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
-            if (!world.isClient) {
-                // Spawn the entity 1 block higher
-                WaterBlastEntity waterBlast = new WaterBlastEntity(player, world, player.getX(), player.getY() + 1.25, player.getZ(), velocity);
-                world.spawnEntity(waterBlast);
-                player.getItemCooldownManager().set(this, 15);
+                if (!world.isClient) {
+                    FireballEntity fireballEntity = new FireballEntity(world, player, velocity, 1);
+                    world.spawnEntity(fireballEntity);
+                    player.getItemCooldownManager().set(this, 15);
+                }
+                player.incrementStat(Stats.USED.getOrCreateStat(this));
+                return TypedActionResult.success(stack);
             }
-            player.incrementStat(Stats.USED.getOrCreateStat(this));
-            return TypedActionResult.success(stack);
         }
-
         // Show message above the hotbar
         if (!world.isClient && player.isSneaking()) {
             player.sendMessage(Text.literal("Spellbook set to: " + nextElement), true);
