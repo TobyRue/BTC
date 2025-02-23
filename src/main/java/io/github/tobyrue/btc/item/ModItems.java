@@ -2,14 +2,10 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
-import net.fabricmc.fabric.api.item.v1.FabricItem;
-import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 

@@ -52,7 +52,7 @@ public class SpellBookItem extends Item {
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
                 return TypedActionResult.success(stack);
             } else if (getElement(stack).equals("Fireball")) {
-                Vec3d velocity = player.getRotationVec(1.0f).multiply(2.5f);
+                Vec3d velocity = player.getRotationVec(1.0f).multiply(5.5f);
 
                 if (!world.isClient) {
                     FireballEntity fireballEntity = new FireballEntity(world, player, velocity, 1);

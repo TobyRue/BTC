@@ -25,9 +25,7 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
     public OminousBeaconBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, pos, state);
     }
-    public void onWalkedIn(World world, BlockPos pos, BlockState state, Entity entity) {
-            entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f);
-    }
+
     private int beamLength = 0;
 
     public int getBeamLength() {
@@ -37,17 +35,24 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
     private void updateBeam(World world, BlockPos pos, BlockState state) {
         var direction = state.get(OminousBeaconBlock.FACING);
         if(direction == Direction.UP || direction == Direction.NORTH || direction == Direction.EAST) {
+            this.beamLength = 0;
             for(int l = 1; l < MAX_LENGTH + 2; l++) {
                 var offsetPos = pos.offset(direction, l);
                 var offsetState = world.getBlockState(offsetPos);
                 if(offsetState.getBlock() == ModBlocks.OMINOUS_BEACON && offsetState.get(OminousBeaconBlock.FACING) == direction.getOpposite()) {
                     this.beamLength = l - 1;
                     break;
-                } else if(offsetState.isOf(Blocks.BEDROCK) || offsetState.getOpacity(world, offsetPos) < 15) {
+                }
+            }
+            for(int l = 1; l < this.beamLength + 1; l++) {
+                var offsetPos = pos.offset(direction, l);
+                var offsetState = world.getBlockState(offsetPos);
+                if(offsetState.isOf(Blocks.BEDROCK) || offsetState.getOpacity(world, offsetPos) < 15) {
                     continue;
                 } else {
                     world.breakBlock(offsetPos, true);
                 }
+                System.out.println(beamLength);
             }
             world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f));
         } else {
