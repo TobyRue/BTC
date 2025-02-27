@@ -16,10 +16,13 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.Block;
+import net.minecraft.block.SculkSensorBlock;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -27,6 +30,8 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+
+import javax.security.auth.callback.CallbackHandler;
 
 public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
@@ -53,11 +58,15 @@ public class BTC implements ModInitializer {
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if(player instanceof PlayerEntity && player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE)) && !player.isCreative()) {
-                return ActionResult.FAIL;
+            if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE)) && !player.isCreative()) {
+                ItemStack stack = player.getStackInHand(hand);
+                if (stack.getItem() instanceof BlockItem) {
+                    return ActionResult.FAIL; // Block placement is prevented
+                }
             }
-            return ActionResult.PASS;
+            return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
+
         Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
         ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
 

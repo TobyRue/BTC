@@ -52,13 +52,11 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                 } else {
                     world.breakBlock(offsetPos, true);
                 }
-                System.out.println(beamLength);
             }
             world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f));
         } else {
             this.beamLength = 0;
         }
-        //eventualy not every tick
     }
 
     @Override
