@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModPotions;
+import io.github.tobyrue.btc.status_effects.AntiMineEffect;
 import io.github.tobyrue.btc.status_effects.AntiPlaceEffect;
 import io.github.tobyrue.btc.status_effects.DragonScalesEffect;
 import io.github.tobyrue.btc.status_effects.DrowningEffect;
@@ -18,12 +19,17 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.SculkSensorBlock;
 import net.minecraft.client.particle.GustParticle;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -37,12 +43,14 @@ public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
 
     public static final StatusEffect ANTI_PLACE;
+    public static final StatusEffect ANTI_MINE;
     public static final StatusEffect DRAGON_SCALES;
     public static final StatusEffect DROWNING;
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
 
     static {
         ANTI_PLACE = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "anti_place"), new AntiPlaceEffect());
+        ANTI_MINE = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "anti_mine"), new AntiMineEffect());
         DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "dragon_scales"), new DragonScalesEffect());
         DROWNING = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "drowning"), new DrowningEffect());
     }
