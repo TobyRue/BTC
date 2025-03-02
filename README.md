@@ -10,6 +10,6 @@ If used elsewhere, the Infinite Library mod will also be credited accordingly.
 Recommended Mods
 Once BTC is fully released and available for download, I highly recommend using it alongside:
 
-NoVaultLimit
+NoVaultLimit (https://www.curseforge.com/minecraft/mc-mods/novaultlimit)
 
 This is because my version of the Trial Chamber is more challenging due to increased spawner density and fewer vaults. While I have balanced loot accordingly, NoVaultLimit helps ensure a more rewarding experience by increasing available loot
