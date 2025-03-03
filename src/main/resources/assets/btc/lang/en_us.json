@@ -26,27 +26,27 @@
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
   "death.attack.wind_burst": "%1$s got blasted away",
 
-  "effect.btc.anti_place": "Anti Place",
+  "effect.btc.miner_mishap": "Miner’s Mishap",
+  "effect.btc.builder_blunder": "Builder’s Blunder",
   "effect.btc.dragon_scales": "Dragon Scales",
   "effect.btc.drowning": "Drowning",
-  "effect.btc.anti_mine": "Anti Mine",
 
-  "item.minecraft.potion.effect.anti_place": "Potion of Anti Placing",
+  "item.minecraft.potion.effect.builder_blunder": "Potion of Builder’s Blunder",
   "item.minecraft.potion.effect.dragon_scales": "Potion of Dragon Scales",
   "item.minecraft.potion.effect.long_dragon_scales": "Potion of Long Dragon Scales",
   "item.minecraft.potion.effect.strong_dragon_scales": "Potion of Dragon Scales",
 
-  "item.minecraft.splash_potion.effect.anti_place": "Splash Potion of Anti Placing",
+  "item.minecraft.splash_potion.effect.builder_blunder": "Splash Potion of Builder’s Blunder",
   "item.minecraft.splash_potion.effect.dragon_scales": "Splash Potion of Dragon Scales",
   "item.minecraft.splash_potion.effect.long_dragon_scales": "Splash Potion Long of Dragon Scales",
   "item.minecraft.splash_potion.effect.strong_dragon_scales": "Splash Potion of Strong Dragon Scales",
 
-  "item.minecraft.lingering_potion.effect.anti_place": "Lingering Potion of Anti Placing",
+  "item.minecraft.lingering_potion.effect.builder_blunder": "Lingering Potion of Builder’s Blunder",
   "item.minecraft.lingering_potion.effect.dragon_scales": "Lingering Potion of Dragon Scales",
   "item.minecraft.lingering_potion.effect.long_dragon_scales": "Lingering Potion Long of Dragon Scales",
   "item.minecraft.lingering_potion.effect.strong_dragon_scales": "Lingering Potion of Strong Dragon Scales",
 
-  "item.minecraft.tipped_arrow.effect.anti_place": "Arrow of Anti Placing",
+  "item.minecraft.tipped_arrow.effect.builder_blunder": "Arrow of Builder’s Blunder",
   "item.minecraft.tipped_arrow.effect.dragon_scales": "Arrow of Dragon Scales",
   "item.minecraft.tipped_arrow.effect.long_dragon_scales": "Arrow of Long Dragon Scales",
   "item.minecraft.tipped_arrow.effect.strong_dragon_scales": "Arrow of Strong Dragon Scales",

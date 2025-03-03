@@ -35,10 +35,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
                 // The player is within range
                 // Apply logic here
                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_MINE), 200, 100));
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.MINER_MISHAP), 200, 100));
                 }
                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE), 200, 100));
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER), 200, 100));
                 }
             }
         }

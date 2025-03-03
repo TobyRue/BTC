@@ -13,19 +13,19 @@ import net.minecraft.util.Identifier;
 
 public class ModPotions {
 
-    public static final Potion ANTI_PLACE =
+    public static final Potion BUILDER_BLUNDER =
             Registry.register(
                     Registries.POTION,
-                    Identifier.of("btc", "anti_place"),
+                    Identifier.of(BTC.MOD_ID, "builder_blunder"),
                     new Potion(
                             new StatusEffectInstance(
-                                    Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE),
+                                    Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER),
                                     3600,
                                     0)));
     public static final Potion DRAGON_SCALES =
             Registry.register(
                     Registries.POTION,
-                    Identifier.of("btc", "dragon_scales"),
+                    Identifier.of(BTC.MOD_ID, "dragon_scales"),
                     new Potion(
                             new StatusEffectInstance(
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
@@ -34,7 +34,7 @@ public class ModPotions {
     public static final Potion LONG_DRAGON_SCALES =
             Registry.register(
                     Registries.POTION,
-                    Identifier.of("btc", "long_dragon_scales"),
+                    Identifier.of(BTC.MOD_ID, "long_dragon_scales"),
                     new Potion(
                             new StatusEffectInstance(
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
@@ -43,7 +43,7 @@ public class ModPotions {
     public static final Potion STRONG_DRAGON_SCALES =
             Registry.register(
                     Registries.POTION,
-                    Identifier.of("btc", "strong_dragon_scales"),
+                    Identifier.of(BTC.MOD_ID, "strong_dragon_scales"),
                     new Potion(
                             new StatusEffectInstance(
                                     Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES),
@@ -57,7 +57,7 @@ public class ModPotions {
                     // Ingredient
                     Items.ENDER_EYE,
                     // Output potion.
-                    Registries.POTION.getEntry(ANTI_PLACE)
+                    Registries.POTION.getEntry(BUILDER_BLUNDER)
             );
         });
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {

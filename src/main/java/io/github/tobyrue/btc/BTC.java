@@ -6,8 +6,8 @@ import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModPotions;
-import io.github.tobyrue.btc.status_effects.AntiMineEffect;
-import io.github.tobyrue.btc.status_effects.AntiPlaceEffect;
+import io.github.tobyrue.btc.status_effects.MinerMishapEffect;
+import io.github.tobyrue.btc.status_effects.BuilderBlunderEffect;
 import io.github.tobyrue.btc.status_effects.DragonScalesEffect;
 import io.github.tobyrue.btc.status_effects.DrowningEffect;
 import net.fabricmc.api.ModInitializer;
@@ -17,19 +17,12 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.Block;
-import net.minecraft.block.SculkSensorBlock;
 import net.minecraft.client.particle.GustParticle;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -37,20 +30,18 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
-import javax.security.auth.callback.CallbackHandler;
-
 public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
 
-    public static final StatusEffect ANTI_PLACE;
-    public static final StatusEffect ANTI_MINE;
+    public static final StatusEffect BUILDER_BLUNDER;
+    public static final StatusEffect MINER_MISHAP;
     public static final StatusEffect DRAGON_SCALES;
     public static final StatusEffect DROWNING;
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
 
     static {
-        ANTI_PLACE = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "anti_place"), new AntiPlaceEffect());
-        ANTI_MINE = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "anti_mine"), new AntiMineEffect());
+        BUILDER_BLUNDER = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "builder_blunder"), new BuilderBlunderEffect());
+        MINER_MISHAP = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "miner_mishap"), new MinerMishapEffect());
         DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "dragon_scales"), new DragonScalesEffect());
         DROWNING = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "drowning"), new DrowningEffect());
     }
@@ -66,7 +57,7 @@ public class BTC implements ModInitializer {
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.ANTI_PLACE)) && !player.isCreative()) {
+            if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER)) && !player.isCreative()) {
                 ItemStack stack = player.getStackInHand(hand);
                 if (stack.getItem() instanceof BlockItem) {
                     return ActionResult.FAIL; // Block placement is prevented
