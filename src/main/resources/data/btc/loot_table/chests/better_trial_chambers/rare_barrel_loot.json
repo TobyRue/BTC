@@ -175,12 +175,57 @@
                 "minecraft:fortune",
                 "minecraft:silk_touch",
                 "minecraft:feather_falling",
-                "minecraft:mending"
+                "minecraft:mending",
+                "minecraft:unbreaking"
               ]
             }
           ],
           "name": "minecraft:book",
           "weight": 30
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:diamond_block",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2,
+                "min": 1
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:emerald_block",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "btc:ruby_trial_key",
+          "weight": 5
         }
       ],
       "rolls": 5

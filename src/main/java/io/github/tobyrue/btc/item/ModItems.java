@@ -2,8 +2,12 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
+import net.minecraft.client.render.entity.TridentEntityRenderer;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.item.TridentItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -30,7 +34,7 @@ public class ModItems {
     public static final Item GOLD_WRENCH = register(new GoldWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
             "gold_wrench"
     );
-    public static final Item DRAGON_ROD = register(new Item(new Item.Settings().rarity(Rarity.RARE)),
+    public static final Item DRAGON_ROD = register(new Item(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
             "dragon_rod"
     );
     public static final StaffItem STAFF = register(
