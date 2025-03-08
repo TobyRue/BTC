@@ -28,9 +28,6 @@ public class BTCClient implements ClientModInitializer {
 
     public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
 
-    public static KeyBinding leftAltKeyBinding;
-    public static KeyBinding tildeKeyBinding;
-
     @Override
     public void onInitializeClient() {
         DrowningEffectOverlay.register();
@@ -67,19 +64,6 @@ public class BTCClient implements ClientModInitializer {
             ModelPart root = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(BOOK_LAYER);
             new SpellBookModelRenderer(root).render(stack, mode, matrices, vertexConsumers, light, overlay);
         });
-
-        leftAltKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.btc.secondary_staff_ability", // The translation key for the keybinding
-                InputUtil.Type.KEYSYM, // Key type (keyboard)
-                GLFW.GLFW_KEY_LEFT_ALT, // Default key: left control
-                "category.btc.keys" // The category of the keybinding
-        ));
-        tildeKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.btc.tertiary_staff_ability", // The translation key for the keybinding
-                InputUtil.Type.KEYSYM, // Key type (keyboard)
-                GLFW.GLFW_KEY_GRAVE_ACCENT, // Default key: left control
-                "category.btc.keys" // The category of the keybinding
-        ));
 
         EntityRendererRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryRenderer::new);
         EntityRendererRegistry.register(ModEntities.WATER_BLAST, WaterBlastEntityRenderer::new);

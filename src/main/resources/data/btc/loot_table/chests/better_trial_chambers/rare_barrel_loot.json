@@ -206,6 +206,22 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
+                "max": 16,
+                "min": 4
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "btc:water_blast",
+          "weight": 100
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
                 "max": 2,
                 "min": 1
               },

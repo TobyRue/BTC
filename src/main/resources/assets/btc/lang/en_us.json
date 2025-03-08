@@ -51,11 +51,6 @@
   "item.minecraft.tipped_arrow.effect.long_dragon_scales": "Arrow of Long Dragon Scales",
   "item.minecraft.tipped_arrow.effect.strong_dragon_scales": "Arrow of Strong Dragon Scales",
 
-  "category.btc.keys": "BTC Keys",
-
-  "key.btc.secondary_staff_ability": "Secondary Staff Ability",
-  "key.btc.tertiary_staff_ability": "Tertiary Staff Ability",
-
   "entity.btc.eldritch_luminary": "Eldritch Luminary",
   "entity.btc.water_blast": "Water Blast"
 }

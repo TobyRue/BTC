@@ -2,10 +2,13 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.client.BTCClient;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -18,6 +21,7 @@ import net.minecraft.entity.LivingEntity;
 import java.util.List;
 
 public class WindStaffItem extends StaffItem {
+    private static final List<String> ATTACKS = List.of("Wind Charge", "Wind Cluster Shot", "Tempest's Call", "Storm Push");
     // Configurable pull range (in blocks)
     private static final double PULL_RADIUS = 25.0;
     private static final double SHOOT_RADIUS = 15.0;
@@ -31,9 +35,18 @@ public class WindStaffItem extends StaffItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
+        ItemStack stack = user.getStackInHand(hand);
 
-        if (!world.isClient && !user.isSneaking() && !BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
+        ItemStack itemStack = user.getStackInHand(hand);
+        String currentElement = getElement(stack);
+        int nextIndex = (ATTACKS.indexOf(currentElement) + 1) % ATTACKS.size();
+        String nextElement = ATTACKS.get(nextIndex);
+        if (!world.isClient && user.isSneaking()) {
+            user.sendMessage(Text.literal("Breezebound Staff set to - " + nextElement), true);
+            setElement(stack, nextElement);
+            return TypedActionResult.success(stack);
+        }
+        if (getElement(stack).equals("Wind Charge") && !user.isSneaking()) {
             // Push mobs away from the user (Tilda + Right-Click)
             // Create and shoot the WindChargeEntity
             WindChargeEntity windCharge = new WindChargeEntity(user, world, user.getX(), user.getY() + 1.0, user.getZ());
@@ -42,27 +55,27 @@ public class WindStaffItem extends StaffItem {
             user.getItemCooldownManager().set(this, 10);
             world.spawnEntity(windCharge);
             return TypedActionResult.success(itemStack);
-        } else if (!world.isClient && user.isSneaking() && !BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
+        } else if (getElement(stack).equals("Wind Cluster Shot") && !user.isSneaking()) {
             // Pull mobs towards the user immediately
             shootWindCharges(user, world);
             user.getItemCooldownManager().set(this, 20);
             return TypedActionResult.success(itemStack);
             // Schedule shooting mobs away after a delay (e.g., 100 ticks = 5 seconds)
-        } else if (!world.isClient && BTCClient.leftAltKeyBinding.isPressed() && !BTCClient.tildeKeyBinding.isPressed()) {
+        } else if (getElement(stack).equals("Tempest's Call") && !user.isSneaking()) {
             // Push mobs away from the user (Left Alt + Right-Click)
             pullMobsTowardsPlayer(world, user);
             user.getItemCooldownManager().set(this, 40);
             return TypedActionResult.success(itemStack);
-        } else if(!world.isClient && BTCClient.tildeKeyBinding.isPressed() && !BTCClient.leftAltKeyBinding.isPressed()){
+        } else if(getElement(stack).equals("Storm Push") && !user.isSneaking()){
             shootMobsAway(user, world);
             user.getItemCooldownManager().set(this, 80);
             return TypedActionResult.success(itemStack);
 
         }
 
-        //TODO: make the staff change attack like the spell book no worky on server
         return TypedActionResult.fail(itemStack);
     }
+
     private void shootWindCharges(PlayerEntity user, World world) {
         Vec3d baseDirection = user.getRotationVec(1.0f).normalize(); // Get the player's facing direction
         double spreadFactor = 0.2; // Controls how much deviation there is from the forward direction
@@ -133,38 +146,41 @@ public class WindStaffItem extends StaffItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltip, TooltipType tooltipType) {
         super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
-        tooltip.add(this.getDescription1().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
-        tooltip.add(this.getDescription2().formatted(Formatting.WHITE));
-        tooltip.add(this.getDescription3().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
-        tooltip.add(this.getDescription4().formatted(Formatting.WHITE));
-        tooltip.add(this.getDescription5().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
-        tooltip.add(this.getDescription6().formatted(Formatting.WHITE));
-        tooltip.add(this.getDescription7().formatted(Formatting.ITALIC, Formatting.BOLD, Formatting.DARK_AQUA));
-        tooltip.add(this.getDescription8().formatted(Formatting.WHITE));
+        tooltip.add(this.currentAttack(stack).formatted(Formatting.BLUE));
+        tooltip.add(this.attackTypes().formatted(Formatting.AQUA));
+        tooltip.add(this.attack1().formatted(Formatting.WHITE));
+        tooltip.add(this.attack2().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3().formatted(Formatting.WHITE));
+        tooltip.add(this.attack4().formatted(Formatting.WHITE));
         // Add custom tooltip text
     }
-    public MutableText getDescription1() {
-        return Text.literal("Right Click:");
+    public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
+    public MutableText attackTypes() {
+        return Text.literal("Attack Types:");
     }
-    public MutableText getDescription2() {
+    public MutableText attack1() {
         return Text.literal("Wind Charge");
     }
-    public MutableText getDescription3() {
-        return Text.literal("Shift Right Click:");
+    public MutableText attack2() {
+        return Text.literal("Wind Cluster Shot");
     }
-    public MutableText getDescription4() {
-        return Text.literal("Cluster Shot of Wind Charges");
+    public MutableText attack3() {
+        return Text.literal("Tempest's Call - Suck Entities Toward You");
     }
-    public MutableText getDescription5() {
-        return Text.literal("Alt Right Click:");
+    public MutableText attack4() {
+        return Text.literal("Storm Push - Blast Nearby Entities Away Dealing Damage");
     }
-    public MutableText getDescription6() {
-        return Text.literal("Pull Nearby Mobs Towards You");
+
+    private String getElement(ItemStack stack) {
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
+        return nbt.contains("Attack") ? nbt.getString("Attack") : ATTACKS.get(0);
     }
-    public MutableText getDescription7() {
-        return Text.literal("Tilde Right Click:");
-    }
-    public MutableText getDescription8() {
-        return Text.literal("Shoot Nearby Entities Away Dealing Damage");
+
+    private void setElement(ItemStack stack, String attack) {
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
+        nbt.putString("Attack", attack); // Update the element
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt)); // Create a new immutable NbtComponent
     }
 }
