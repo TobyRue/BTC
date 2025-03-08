@@ -1,0 +1,303 @@
+{
+    "type": "minecraft:chest",
+    "pools": [
+      {
+        "bonus_rolls": 0,
+          "entries": [
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 10,
+                    "min": 2
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:glow_berries",
+              "weight": 225
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 6,
+                    "min": 3
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:acacia_planks",
+              "weight": 225
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 5,
+                    "min": 2
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:moss_block",
+              "weight": 200
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 5,
+                    "min": 2
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:bone_meal",
+              "weight": 200
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 10,
+                    "min": 5
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:tuff",
+              "weight": 200
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 6,
+                    "min": 3
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:torch",
+              "weight": 200
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": 1,
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:cooked_chicken",
+              "weight": 175
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 2,
+                    "min": 1
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:bread",
+              "weight": 175
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 2,
+                    "min": 1
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:baked_potato",
+              "weight": 175
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": 1,
+                  "function": "minecraft:set_count"
+                },
+                {
+                  "function": "minecraft:set_potion",
+                  "id": "minecraft:regeneration"
+                }
+              ],
+              "name": "minecraft:potion",
+              "weight": 50
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": 1,
+                  "function": "minecraft:set_count"
+                },
+                {
+                  "function": "minecraft:set_potion",
+                  "id": "minecraft:swiftness"
+                }
+              ],
+              "name": "minecraft:potion",
+              "weight": 50
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 8,
+                    "min": 1
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:emerald",
+              "weight": 125
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 8,
+                    "min": 2
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:arrow",
+              "weight": 100
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 12,
+                    "min": 1
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:iron_ingot",
+              "weight": 100
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 4,
+                    "min": 1
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:trial_key",
+              "weight": 25
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:music_disc_creator_music_box",
+              "weight": 15
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 4,
+                    "min": 1
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:diamond",
+              "weight": 30
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "function": "minecraft:enchant_randomly",
+                  "options": [
+                    "minecraft:sharpness",
+                    "minecraft:knockback",
+                    "minecraft:punch",
+                    "minecraft:smite",
+                    "minecraft:looting",
+                    "minecraft:efficiency"
+                  ]
+                }
+              ],
+              "name": "minecraft:book",
+              "weight": 20
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "function": "minecraft:enchant_randomly",
+                  "options": [
+                    "minecraft:fortune",
+                    "minecraft:silk_touch",
+                    "minecraft:feather_falling",
+                    "minecraft:mending"
+                  ]
+                }
+              ],
+              "name": "minecraft:book",
+              "weight": 15
+            }
+          ],
+        "rolls": 10
+      }
+    ],
+  "random_sequence": "btc:chests/better_trial_chambers/barrel_loot"
+}

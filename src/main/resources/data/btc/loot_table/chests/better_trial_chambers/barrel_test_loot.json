@@ -50,24 +50,7 @@
           ],
           "name": "minecraft:diamond_axe",
           "weight": 3
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:enchant_with_levels",
-              "levels": {
-                "type": "minecraft:uniform",
-                "max": 20,
-                "min": 10
-              },
-              "options": "#minecraft:on_random_loot"
-            }
-          ],
-          "name": "minecraft:diamond_chestplate",
-          "weight": 3
-        },
-        {
+        },        {
           "type": "minecraft:item",
           "functions": [
             {
@@ -78,20 +61,6 @@
                 "minecraft:smite",
                 "minecraft:looting",
                 "minecraft:multishot"
-              ]
-            }
-          ],
-          "name": "minecraft:book",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:enchant_randomly",
-              "options": [
-                "minecraft:breach",
-                "minecraft:density"
               ]
             }
           ],

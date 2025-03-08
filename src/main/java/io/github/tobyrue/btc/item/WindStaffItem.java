@@ -60,7 +60,7 @@ public class WindStaffItem extends StaffItem {
 
         }
 
-
+        //TODO: make the staff change attack like the spell book no worky on server
         return TypedActionResult.fail(itemStack);
     }
     private void shootWindCharges(PlayerEntity user, World world) {
