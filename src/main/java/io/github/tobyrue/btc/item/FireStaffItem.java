@@ -3,8 +3,10 @@ package io.github.tobyrue.btc.item;
 import io.github.tobyrue.btc.client.BTCClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
@@ -22,7 +24,10 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class FireStaffItem extends StaffItem {
-    private static final List<String> ATTACKS = List.of("Weak Fire Ball", "Strong Fireball", "Strength", "Resistance");
+    private static final List<String> ATTACKS = List.of("Weak Fire Ball", "Strong Fireball", "Fire Storm", "Strength", "Resistance");
+    private static final double FIRE_RADIUS = 10.0;
+    private static final double MIN_TIME = 2.0;
+    private static final double FIRE_TIME = FIRE_RADIUS + MIN_TIME;
 
     public FireStaffItem(Settings settings) {
         super(settings);
@@ -67,9 +72,12 @@ public class FireStaffItem extends StaffItem {
 
             user.getItemCooldownManager().set(this, 100);
             return TypedActionResult.success(itemStack);
+        } else if (getElement(stack).equals("Fire Storm") && !user.isSneaking()) {
+            setMobsOnFire(world, user);
+            user.getItemCooldownManager().set(this, 400);
+            return TypedActionResult.success(itemStack);
         } else if (getElement(stack).equals("Strength") && !user.isSneaking()) {
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
-            user.getItemCooldownManager().set(this, 100);
             user.setOnFireForTicks(100);
             return TypedActionResult.success(itemStack);
         } else if(getElement(stack).equals("Resistance") && !user.isSneaking()){
@@ -80,6 +88,34 @@ public class FireStaffItem extends StaffItem {
 
         return TypedActionResult.fail(itemStack);
     }
+
+    private void setMobsOnFire(World world, PlayerEntity user) {
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(FIRE_RADIUS),
+                entity -> entity != user && entity instanceof HostileEntity); // Only affect hostile mobs
+        for (LivingEntity entity : entities) {
+            double dx = user.getX() - entity.getX();
+            double dy = user.getY() - entity.getY();
+            double dz = user.getZ() - entity.getZ();
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (entities != null) {
+                if (distance > 0) {
+                    double time = distance * -1;
+                    double time2 = time + FIRE_TIME;
+                    entity.setOnFireFor((float) time2);
+                    user.getItemCooldownManager().set(this, 100);
+                } else if (distance < 0) {
+                    double time3 = distance + FIRE_TIME;
+                    entity.setOnFireFor((float) time3);
+                    user.getItemCooldownManager().set(this, 100);
+                } else if (distance == 0) {
+                    entity.setOnFireFor((float) FIRE_TIME);
+                    user.getItemCooldownManager().set(this, 100);
+                }
+            }
+            System.out.println(entities);
+        }
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltip, TooltipType tooltipType) {
         super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
@@ -88,15 +124,21 @@ public class FireStaffItem extends StaffItem {
         tooltip.add(this.attack1().formatted(Formatting.WHITE));
         tooltip.add(this.attack2().formatted(Formatting.WHITE));
         tooltip.add(this.attack3().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3con().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3con2().formatted(Formatting.WHITE));
         tooltip.add(this.attack4().formatted(Formatting.WHITE));
+        tooltip.add(this.attack5().formatted(Formatting.WHITE));
     }
 
     public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
     public MutableText attackTypes() {return Text.literal("Attack Types:");}
     public MutableText attack1() {return Text.literal("Weak Fire Ball");}
     public MutableText attack2() {return Text.literal("Strong Fireball");}
-    public MutableText attack3() {return Text.literal("Strength - Lvl 2 for 7 Seconds");}
-    public MutableText attack4() {return Text.literal("Resistance - Lvl 3 for 5 Seconds");}
+    public MutableText attack3() {return Text.literal("Fire Storm - Set  Hostile Mobs on Fire Within a " +  FIRE_RADIUS + " Block Radius");}
+    public MutableText attack3con() {return Text.literal("  - With a Minimum of " + MIN_TIME + " Seconds of Burning and Max of " + FIRE_TIME);}
+    public MutableText attack3con2() {return Text.literal("  - Closer to a Hostile Entity the Longer the Burn Time Is");}
+    public MutableText attack4() {return Text.literal("Strength - Lvl 2 for 7 Seconds");}
+    public MutableText attack5() {return Text.literal("Resistance - Lvl 3 for 5 Seconds");}
 
     private String getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
