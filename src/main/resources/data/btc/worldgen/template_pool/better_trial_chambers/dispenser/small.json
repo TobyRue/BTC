@@ -1,0 +1,15 @@
+{
+  "name": "btc:small_dispenser",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:better_trial_chambers/dispenser/small/dispenser",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
