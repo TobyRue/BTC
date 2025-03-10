@@ -64,11 +64,9 @@ public class WindStaffItem extends StaffItem {
         } else if (getElement(stack).equals("Tempest's Call") && !user.isSneaking()) {
             // Push mobs away from the user (Left Alt + Right-Click)
             pullMobsTowardsPlayer(world, user);
-            user.getItemCooldownManager().set(this, 40);
             return TypedActionResult.success(itemStack);
         } else if(getElement(stack).equals("Storm Push") && !user.isSneaking()){
             shootMobsAway(user, world);
-            user.getItemCooldownManager().set(this, 80);
             return TypedActionResult.success(itemStack);
 
         }
@@ -112,8 +110,11 @@ public class WindStaffItem extends StaffItem {
             double dz = user.getZ() - entity.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
             double strength = PULL_STRENGTH;
-            if (distance != 0) {
-                entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
+            if (entities != null) {
+                if (distance != 0) {
+                    entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
+                }
+                user.getItemCooldownManager().set(this, 40);
             }
         }
     }
@@ -129,17 +130,20 @@ public class WindStaffItem extends StaffItem {
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
             // Apply velocity away from the user
-            double strength = SHOOT_STRENGTH;
-            if (distance != 0) {
-                entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
-                System.out.println("Shooting entity away: " + entity.getName().getString());
-            }
+            if (entities != null) {
+                double strength = SHOOT_STRENGTH;
+                if (distance != 0) {
+                    entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
+                    System.out.println("Shooting entity away: " + entity.getName().getString());
+                }
 
-            // Optionally, deal damage to the entity
-            if (entity instanceof PlayerEntity) {
-                entity.damage(ModDamageTypes.of(world, ModDamageTypes.WIND_BURST), 5.0f);
-            } else {
-                entity.damage(world.getDamageSources().flyIntoWall(), 5);
+                // Optionally, deal damage to the entity
+                if (entity instanceof PlayerEntity) {
+                    entity.damage(ModDamageTypes.of(world, ModDamageTypes.WIND_BURST), 5.0f);
+                } else {
+                    entity.damage(world.getDamageSources().flyIntoWall(), 5);
+                }
+                user.getItemCooldownManager().set(this, 80);
             }
         }
     }

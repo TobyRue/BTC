@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.AntierBlock;
@@ -7,15 +8,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.List;
+
+import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
+
 
 public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity> {
 
@@ -24,25 +28,41 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
     }
     private int tickCounter = 0; // Counter to track ticks
     public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
-        // Iterate through all players in the world
+
         List<ServerPlayerEntity> players = world.getPlayers();
+
         for (ServerPlayerEntity player : players) {
-            // Get the player's position
             Vec3d playerPos = player.getPos();
-            // Calculate the distance between the player's position and the block position
             double distance = playerPos.squaredDistanceTo(Vec3d.ofCenter(blockPos));
             if (distance <= range * range) {
-                // The player is within range
-                // Apply logic here
-                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.MINER_MISHAP), 300, 100));
-                }
-                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER), 300, 100));
+                if (!state.get(AntierBlock.DISABLE)) {
+                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
+                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.MINER_MISHAP), 300, 100));
+                    }
+                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
+                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER), 300, 100));
+                    }
+                } else {
+                    for(Direction direction : Direction.values()) {
+                        BlockPos neighborPos = blockPos.offset(direction);
+                        BlockState neighborState = world.getBlockState(neighborPos);
+
+                        if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                            if (!neighborState.get(POWERED)) {
+                                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
+                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.MINER_MISHAP), 300, 100));
+                                }
+                                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
+                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER), 300, 100));
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
     @Override
     public void tick(World world, BlockPos blockPos, BlockState state, AntierBlockEntity blockEntity) {
         if (world instanceof ServerWorld) {

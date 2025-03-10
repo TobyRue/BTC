@@ -24,10 +24,15 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class FireStaffItem extends StaffItem {
-    private static final List<String> ATTACKS = List.of("Weak Fire Ball", "Strong Fireball", "Fire Storm", "Strength", "Resistance");
+    private static final List<String> ATTACKS = List.of("Weak Fire Ball", "Strong Fireball", "Concentrated Fire Storm", "Fire Storm", "Strength", "Resistance");
     private static final double FIRE_RADIUS = 10.0;
+    private static final double FIRE_TIME_CHANGE = 10.0;
     private static final double MIN_TIME = 2.0;
-    private static final double FIRE_TIME = FIRE_RADIUS + MIN_TIME;
+    private static final double FIRE_TIME = FIRE_TIME_CHANGE + MIN_TIME;
+    private static final double SMALL_FIRE_RADIUS = FIRE_RADIUS / 2;
+    private static final double SMALL_MIN_TIME = 10;
+    private static final double SMALL_FIRE_TIME = (FIRE_TIME_CHANGE * 2) + SMALL_MIN_TIME;
+    private static final double EXTRA_COOLDOWN = 2;
 
     public FireStaffItem(Settings settings) {
         super(settings);
@@ -47,34 +52,18 @@ public class FireStaffItem extends StaffItem {
             return TypedActionResult.success(stack);
         }
         if (getElement(stack).equals("Weak Fire Ball") && !user.isSneaking()) {
-            Vec3d direction = user.getRotationVec(1.0F).normalize(); // Normalized direction vector
-
-            FireballEntity fireball = new FireballEntity(world, user, direction, 1); // 1 is the explosion power
-
-            fireball.setPos(user.getX() + direction.x * 1.5, user.getY() + 1.5, user.getZ() + direction.z * 1.5);
-
-            fireball.setVelocity(direction.multiply(1.5));
-
-            world.spawnEntity(fireball);
-
+            shootFireball(world, user, 1);
             user.getItemCooldownManager().set(this, 30);
             return TypedActionResult.success(itemStack);
         } else if (getElement(stack).equals("Strong Fireball") && !user.isSneaking()) {
-            Vec3d direction = user.getRotationVec(1.0F).normalize();
-
-            FireballEntity fireball = new FireballEntity(world, user, direction, 5); // 1 is the explosion power
-
-            fireball.setPos(user.getX() + direction.x * 1.5, user.getY() + 1.5, user.getZ() + direction.z * 1.5);
-
-            fireball.setVelocity(direction.multiply(1.5));
-
-            world.spawnEntity(fireball);
-
+            shootFireball(world, user, 5);
             user.getItemCooldownManager().set(this, 100);
             return TypedActionResult.success(itemStack);
+        } else if (getElement(stack).equals("Concentrated Fire Storm") && !user.isSneaking()) {
+            setMobsOnFireSmall(world, user);
+            return TypedActionResult.success(itemStack);
         } else if (getElement(stack).equals("Fire Storm") && !user.isSneaking()) {
-            setMobsOnFire(world, user);
-            user.getItemCooldownManager().set(this, 400);
+            setMobsOnFireHostile(world, user);
             return TypedActionResult.success(itemStack);
         } else if (getElement(stack).equals("Strength") && !user.isSneaking()) {
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
@@ -88,8 +77,18 @@ public class FireStaffItem extends StaffItem {
 
         return TypedActionResult.fail(itemStack);
     }
+    private void shootFireball(World world, PlayerEntity user, int explosionPower) {
+        Vec3d direction = user.getRotationVec(1.0F).normalize();
 
-    private void setMobsOnFire(World world, PlayerEntity user) {
+        FireballEntity fireball = new FireballEntity(world, user, direction, explosionPower);
+
+        fireball.setPos(user.getX() + direction.x * 1.5, user.getY() + 1.5, user.getZ() + direction.z * 1.5);
+
+        fireball.setVelocity(direction.multiply(1.5));
+
+        world.spawnEntity(fireball);
+    }
+    private void setMobsOnFireHostile(World world, PlayerEntity user) {
         List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(FIRE_RADIUS),
                 entity -> entity != user && entity instanceof HostileEntity); // Only affect hostile mobs
         for (LivingEntity entity : entities) {
@@ -98,21 +97,51 @@ public class FireStaffItem extends StaffItem {
             double dz = user.getZ() - entity.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
             if (entities != null) {
-                if (distance > 0) {
-                    double time = distance * -1;
-                    double time2 = time + FIRE_TIME;
-                    entity.setOnFireFor((float) time2);
-                    user.getItemCooldownManager().set(this, 100);
-                } else if (distance < 0) {
-                    double time3 = distance + FIRE_TIME;
-                    entity.setOnFireFor((float) time3);
-                    user.getItemCooldownManager().set(this, 100);
-                } else if (distance == 0) {
-                    entity.setOnFireFor((float) FIRE_TIME);
-                    user.getItemCooldownManager().set(this, 100);
-                }
+                double timeNorm = (Math.abs(distance) * -1) + FIRE_TIME;
+                entity.setOnFireFor((float) timeNorm);
+                user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
+//                if (distance > 0) {
+//                    double time = distance * -1;
+//                    double time2 = time + FIRE_TIME;
+//                    entity.setOnFireFor((float) time2);
+//                    user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
+//                } else if (distance < 0) {
+//                    double time3 = distance + FIRE_TIME;
+//                    entity.setOnFireFor((float) time3);
+//                    user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
+//                } else if (distance == 0) {
+//                    entity.setOnFireFor((float) FIRE_TIME);
+//                    user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
+//                }
             }
-            System.out.println(entities);
+        }
+    }
+    private void setMobsOnFireSmall(World world, PlayerEntity user) {
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(SMALL_FIRE_RADIUS), entity -> entity != user);
+
+        for (LivingEntity entity : entities) {
+            double dx = user.getX() - entity.getX();
+            double dy = user.getY() - entity.getY();
+            double dz = user.getZ() - entity.getZ();
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (entities != null) {
+                double time1 = Math.pow(distance, 2);
+                double time2 = Math.abs(time1) * -1;
+                double time3 = time2 + SMALL_FIRE_TIME;
+                entity.setOnFireFor((float) time3);
+                // TODO             0 ^ 2 = 0 * -1 = 0 + 30 = 30
+
+                // TODO             1 ^ 2 = 1 * -1 = -1 + 30 = 29
+
+                // TODO             2 ^ 2 = 4 * -1 = -4 + 30 = 26
+
+                // TODO             3 ^ 2 = 9 * -1 = -9 + 30 = 21
+
+                // TODO             4 ^ 2 = 16 * -1 = -16 + 30 = 14
+
+                // TODO             5 ^ 2 = 25 * -1 = -25 + 30 = 5
+                user.getItemCooldownManager().set(this, (int) ((SMALL_FIRE_TIME + EXTRA_COOLDOWN) * 20));
+            }
         }
     }
 
@@ -124,8 +153,11 @@ public class FireStaffItem extends StaffItem {
         tooltip.add(this.attack1().formatted(Formatting.WHITE));
         tooltip.add(this.attack2().formatted(Formatting.WHITE));
         tooltip.add(this.attack3().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3con().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3con2().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3cont().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3cont2().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3small().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3contsmall().formatted(Formatting.WHITE));
+        tooltip.add(this.attack3cont2small().formatted(Formatting.WHITE));
         tooltip.add(this.attack4().formatted(Formatting.WHITE));
         tooltip.add(this.attack5().formatted(Formatting.WHITE));
     }
@@ -135,8 +167,11 @@ public class FireStaffItem extends StaffItem {
     public MutableText attack1() {return Text.literal("Weak Fire Ball");}
     public MutableText attack2() {return Text.literal("Strong Fireball");}
     public MutableText attack3() {return Text.literal("Fire Storm - Set  Hostile Mobs on Fire Within a " +  FIRE_RADIUS + " Block Radius");}
-    public MutableText attack3con() {return Text.literal("  - With a Minimum of " + MIN_TIME + " Seconds of Burning and Max of " + FIRE_TIME);}
-    public MutableText attack3con2() {return Text.literal("  - Closer to a Hostile Entity the Longer the Burn Time Is");}
+    public MutableText attack3cont() {return Text.literal("  - With a Minimum of " + MIN_TIME + " Seconds of Burning and Max of " + FIRE_TIME);}
+    public MutableText attack3cont2() {return Text.literal("  - Closer to a Hostile Entity the Longer the Burn Time Is");}
+    public MutableText attack3small() {return Text.literal("Concentrated Fire Storm - Set All Mobs on Fire Within a " +  SMALL_FIRE_RADIUS + " Block Radius");}
+    public MutableText attack3contsmall() {return Text.literal("  - With a Minimum of " + 5.0 + " Seconds of Burning and Max of " + SMALL_FIRE_TIME);}
+    public MutableText attack3cont2small() {return Text.literal("  - Closer to a Entity the Longer the Burn Time Is");}
     public MutableText attack4() {return Text.literal("Strength - Lvl 2 for 7 Seconds");}
     public MutableText attack5() {return Text.literal("Resistance - Lvl 3 for 5 Seconds");}
 
