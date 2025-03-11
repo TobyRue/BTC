@@ -65,8 +65,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
 
     @Override
     public void tick(World world, BlockPos blockPos, BlockState state, AntierBlockEntity blockEntity) {
-        if (world instanceof ServerWorld) {
-            ServerWorld serverWorld = (ServerWorld) world;
+        if (world instanceof ServerWorld serverWorld) {
+            if (!serverWorld.isChunkLoaded(blockPos)) {
+                return; // Prevent ticking if the chunk is unloaded
+            }
 
             // Increase tick counter
             tickCounter++;

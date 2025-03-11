@@ -24,154 +24,39 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
 
-            if(neighborState.getBlock() instanceof DungeonWireBlock) {
-                BlockState no_fire = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE);
-                BlockState short_fire = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.SHORT_FIRE);
-                BlockState short_fire_soul = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.SHORT_FIRE_SOUL);
-                BlockState tall_fire = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.TALL_FIRE);
-                BlockState tall_fire_soul = state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, FireDispenserType.TALL_FIRE_SOUL);
+            if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                boolean isPowered = neighborState.get(POWERED);
+                FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), isPowered);
 
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_TO_TALL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_SOUL_TO_SHORT) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_SOUL_TO_TALL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_SOUL_TO_TALL_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_TO_SHORT_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_TO_TALL_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_SOUL_TO_SHORT) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_SOUL_TO_SHORT_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_SOUL_TO_TALL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_TO_SHORT) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_TO_SHORT_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_TO_TALL_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_SOUL_TO_OFF) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_SOUL_TO_OFF) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.TALL_TO_OFF) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.SHORT_TO_OFF) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.OFF_TO_TALL_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.OFF_TO_SHORT_SOUL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire_soul);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.OFF_TO_TALL) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, tall_fire);
-                    }
-                }
-                if(state.get(FireDispenserBlock.FIRE_SWICH) == FireSwich.OFF_TO_SHORT) {
-                    if(!neighborState.get(POWERED)) {
-                        world.setBlockState(pos, no_fire);
-                    } else if(neighborState.get(POWERED)) {
-                        world.setBlockState(pos, short_fire);
-                    }
+                if (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) != newType) {
+                    world.setBlockState(pos, state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, newType));
                 }
             }
         }
+    }
+
+    private FireDispenserType getFireTypeFromSwitch(FireSwich fireSwich, boolean isPowered) {
+        return switch (fireSwich) {
+            case SHORT_TO_TALL -> isPowered ? FireDispenserType.TALL_FIRE : FireDispenserType.SHORT_FIRE;
+            case SHORT_SOUL_TO_SHORT -> isPowered ? FireDispenserType.SHORT_FIRE : FireDispenserType.SHORT_FIRE_SOUL;
+            case SHORT_SOUL_TO_TALL -> isPowered ? FireDispenserType.TALL_FIRE : FireDispenserType.SHORT_FIRE_SOUL;
+            case SHORT_SOUL_TO_TALL_SOUL -> isPowered ? FireDispenserType.TALL_FIRE_SOUL : FireDispenserType.SHORT_FIRE_SOUL;
+            case SHORT_TO_SHORT_SOUL -> isPowered ? FireDispenserType.SHORT_FIRE_SOUL : FireDispenserType.SHORT_FIRE;
+            case SHORT_TO_TALL_SOUL -> isPowered ? FireDispenserType.TALL_FIRE_SOUL : FireDispenserType.SHORT_FIRE;
+            case TALL_SOUL_TO_SHORT -> isPowered ? FireDispenserType.SHORT_FIRE : FireDispenserType.TALL_FIRE_SOUL;
+            case TALL_SOUL_TO_SHORT_SOUL -> isPowered ? FireDispenserType.SHORT_FIRE_SOUL : FireDispenserType.TALL_FIRE_SOUL;
+            case TALL_SOUL_TO_TALL -> isPowered ? FireDispenserType.TALL_FIRE : FireDispenserType.TALL_FIRE_SOUL;
+            case TALL_TO_SHORT -> isPowered ? FireDispenserType.SHORT_FIRE : FireDispenserType.TALL_FIRE;
+            case TALL_TO_SHORT_SOUL -> isPowered ? FireDispenserType.SHORT_FIRE_SOUL : FireDispenserType.TALL_FIRE;
+            case TALL_TO_TALL_SOUL -> isPowered ? FireDispenserType.TALL_FIRE_SOUL : FireDispenserType.TALL_FIRE;
+            case TALL_SOUL_TO_OFF -> isPowered ? FireDispenserType.NO_FIRE : FireDispenserType.TALL_FIRE_SOUL;
+            case SHORT_SOUL_TO_OFF -> isPowered ? FireDispenserType.NO_FIRE : FireDispenserType.SHORT_FIRE_SOUL;
+            case TALL_TO_OFF -> isPowered ? FireDispenserType.NO_FIRE : FireDispenserType.TALL_FIRE;
+            case SHORT_TO_OFF -> isPowered ? FireDispenserType.NO_FIRE : FireDispenserType.SHORT_FIRE;
+            case OFF_TO_TALL_SOUL -> isPowered ? FireDispenserType.TALL_FIRE_SOUL : FireDispenserType.NO_FIRE;
+            case OFF_TO_SHORT_SOUL -> isPowered ? FireDispenserType.SHORT_FIRE_SOUL : FireDispenserType.NO_FIRE;
+            case OFF_TO_TALL -> isPowered ? FireDispenserType.TALL_FIRE : FireDispenserType.NO_FIRE;
+            case OFF_TO_SHORT -> isPowered ? FireDispenserType.SHORT_FIRE : FireDispenserType.NO_FIRE;
+        };
     }
 }
