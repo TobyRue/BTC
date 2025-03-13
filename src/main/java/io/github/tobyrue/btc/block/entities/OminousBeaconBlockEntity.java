@@ -58,7 +58,10 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             this.beamLength = 0;
         }
     }
-
+//    @Override
+//    public static void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
+//            updateBeam(world, pos, state);
+//    }
     @Override
     public void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
         if (world.isClient) {

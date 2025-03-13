@@ -6,6 +6,8 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -14,8 +16,9 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
-public class OminousBeaconBlock extends Block implements ModBlockEntityProvider<OminousBeaconBlockEntity>, ModTickBlockEntityProvider<OminousBeaconBlockEntity> {
+public class OminousBeaconBlock extends BlockWithEntity implements ModBlockEntityProvider<OminousBeaconBlockEntity>, ModTickBlockEntityProvider<OminousBeaconBlockEntity> {
 
     public OminousBeaconBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -56,7 +59,11 @@ public class OminousBeaconBlock extends Block implements ModBlockEntityProvider<
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(new Property[]{FACING});
     }
-
+//    @Override
+//    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+//        // Make sure to check world.isClient if you only want to tick only on serverside.
+//        return validateTicker(type, ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, OminousBeaconBlockEntity::tick);
+//    }
     @Override
     public BlockEntityType<OminousBeaconBlockEntity> getBlockEntityType() {
         return ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY;
