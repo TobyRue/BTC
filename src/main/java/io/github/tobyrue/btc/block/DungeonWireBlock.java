@@ -2,6 +2,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.enums.Connection;
+import net.minecraft.util.BlockRotation;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -96,7 +97,9 @@ public class DungeonWireBlock extends Block {
                 ROOT
         );
     }
-
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate((Direction)state.get(FACING)));
+    }
     /**
      *
      * @param blockState

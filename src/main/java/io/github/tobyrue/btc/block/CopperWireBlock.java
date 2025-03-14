@@ -17,6 +17,7 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -84,7 +85,9 @@ public class CopperWireBlock extends Block {
 
         return placementState;
     }
-
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate((Direction)state.get(FACING)));
+    }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(
