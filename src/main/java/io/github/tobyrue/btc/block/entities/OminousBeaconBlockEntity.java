@@ -21,7 +21,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntityTicker<OminousBeaconBlockEntity> {
-    static final int MAX_LENGTH = 16;
+    static final int MAX_LENGTH = 32;
     public OminousBeaconBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, pos, state);
     }
@@ -58,15 +58,10 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             this.beamLength = 0;
         }
     }
-//    @Override
-//    public static void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
-//            updateBeam(world, pos, state);
-//    }
+
     @Override
     public void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
-        if (world.isClient) {
-            updateBeam(world, pos, state);
-        }
+        updateBeam(world, pos, state);
     }
 
 
