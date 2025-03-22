@@ -64,9 +64,6 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
         updateBeam(world, pos, state);
     }
 
-
-
-
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
