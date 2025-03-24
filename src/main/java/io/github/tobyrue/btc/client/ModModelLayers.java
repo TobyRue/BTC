@@ -11,4 +11,6 @@ public class ModModelLayers {
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "eldritch_luminaries"), "main");
     public static final EntityModelLayer WATER_BURST =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "water_burst"), "main");
+    public static final EntityModelLayer COPPER_GOLEM =
+            new EntityModelLayer(Identifier.of(BTC.MOD_ID, "copper_golem"), "main");
 }

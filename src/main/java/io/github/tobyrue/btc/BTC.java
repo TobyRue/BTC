@@ -3,6 +3,7 @@ package io.github.tobyrue.btc;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModPotions;
@@ -55,6 +56,7 @@ public class BTC implements ModInitializer {
         ModBlockEntities.initialize();
         ModPotions.initialize();
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
+        FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER)) && !player.isCreative()) {

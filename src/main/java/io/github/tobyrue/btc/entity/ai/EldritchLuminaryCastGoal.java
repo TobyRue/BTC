@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.AttackType;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -11,6 +12,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -64,12 +66,33 @@ public class EldritchLuminaryCastGoal extends Goal {
             System.out.println("Progress is: " + luminary.getProgress());
             if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
                 // First number of Random is the amount of outcomes, second number should never change and is the offset
-                int random = (int)(Math.random() * 5 + 2);
+                int random = (int)(Math.random() * 5 + 1);
                 System.out.println("Random is: " + random);
                 luminary.setAttack(AttackType.byId(random));
             }
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
+                if (isTimeToAttack() && luminary.getAttack() == AttackType.WIND_CHARGE) {
+                    World world = this.luminary.getWorld();
+
+                    double speed = 1.5;
+                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                    WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, world);
+                    windChargeEntity.setVelocity(velocity);
+                    windChargeEntity.setPosition(
+                            this.luminary.getX() + vec3d.x * 1.5,
+                            this.luminary.getBodyY(0.5) + 0.5,
+                            this.luminary.getZ() + vec3d.z * 1.5
+                    );
+                    world.spawnEntity(windChargeEntity);
+                }
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
                     World world = this.luminary.getWorld();
                     double speed = 1.5;
@@ -160,7 +183,7 @@ public class EldritchLuminaryCastGoal extends Goal {
                 }
             }
         } else {
-            if (luminary.getAttack() == AttackType.FIRE_BALL || luminary.getAttack() == AttackType.DRAGON_FIRE_BALL || luminary.getAttack() == AttackType.INVISIBLE) {
+            if (luminary.getAttack() != AttackType.NONE) {
                 luminary.setAttack(AttackType.NONE);
             }
         }

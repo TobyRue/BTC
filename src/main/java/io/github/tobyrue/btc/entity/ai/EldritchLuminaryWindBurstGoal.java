@@ -96,7 +96,6 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
                 }
             }
         } else {
-//            resetAttackCooldown();
             ticksUntilNextAttack = 20;
             shouldCountTillNextAttack = false;
             if (luminary.getAttack() == AttackType.WIND_CHARGE) {
