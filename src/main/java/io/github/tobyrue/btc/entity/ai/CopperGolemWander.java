@@ -82,6 +82,10 @@ public class CopperGolemWander extends Goal {
 
     @Override
     public boolean shouldContinue() {
+        // Stop movement immediately if oxidized while already moving
+        if (this.mob.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
+            return false;
+        }
         return !this.mob.getNavigation().isIdle() && !this.mob.hasControllingPassenger();
     }
 

@@ -32,5 +32,5 @@ public class ModEntities {
     public static final EntityType<CopperGolemEntity> COPPER_GOLEM = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(BTC.MOD_ID, "copper_golem"),
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, CopperGolemEntity::new)
-                    .dimensions(EntityDimensions.fixed(0.8f, 1.4f)).build());
+                    .dimensions(EntityDimensions.fixed(0.8f, 1.4f).withEyeHeight(0.5f)).build());
 }

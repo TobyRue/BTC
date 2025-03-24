@@ -4,6 +4,7 @@
   "package": "io.github.tobyrue.btc.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CopperGolemSpawnMixin"
   ],
   "client": [
     "ItemRendererMixin",

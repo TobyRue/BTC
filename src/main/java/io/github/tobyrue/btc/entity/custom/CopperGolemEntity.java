@@ -13,10 +13,18 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.SnowGolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public class CopperGolemEntity extends GolemEntity {
@@ -29,11 +37,12 @@ public class CopperGolemEntity extends GolemEntity {
         UNOXIDIZED, EXPOSED, WEATHERED, OXIDIZED
     }
 
-    private Oxidation oxidation = Oxidation.UNOXIDIZED;
     private static final TrackedData<Byte> OXIDATION_STATE;
+    private static final TrackedData<Boolean> WAXED_STATE; // New waxed state
 
     static {
         OXIDATION_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
+        WAXED_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     }
 
 
@@ -53,13 +62,14 @@ public class CopperGolemEntity extends GolemEntity {
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(OXIDATION_STATE, (byte) Oxidation.UNOXIDIZED.ordinal());
+        builder.add(WAXED_STATE, false);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new CopperGolemWander(this, 0.1D));
-        this.goalSelector.add(2, new TemptGoal(this, 0.2D, Ingredient.ofItems(Items.COPPER_INGOT), false));
+        this.goalSelector.add(1, new CopperGolemWander(this, 0.3D));
+        this.goalSelector.add(2, new TemptGoal(this, 0.4D, Ingredient.ofItems(Items.COPPER_INGOT), false));
     }
 
     @Override
@@ -68,27 +78,48 @@ public class CopperGolemEntity extends GolemEntity {
         System.out.println("Oxidation Timer: " + this.oxidationTimer + " Oxidation: " + this.getOxidation());
 
         if (!this.getWorld().isClient) {
-            // Increment the oxidation timer
-            this.oxidationTimer++;
+            if (!this.isWaxed()) { // Only oxidize if NOT waxed
+                this.oxidationTimer++;
 
-            // Check if the timer has reached the interval
-            if (this.oxidationTimer >= OXIDATION_INTERVAL) {
-                // Reset the timer
-                this.oxidationTimer = 0;
-                // Cycle to the next oxidation state
-                this.advanceOxidation();
-                System.out.println("Oxidation State Changed: " + this.getOxidation());
+                if (this.oxidationTimer >= OXIDATION_INTERVAL) {
+                    this.oxidationTimer = 0;
+                    this.advanceOxidation();
+                    System.out.println("Oxidation State Changed: " + this.getOxidation());
+                }
             }
         }
     }
 
-//    private void advanceOxidation() {
-//        switch (oxidation) {
-//            case UNOXIDIZED -> oxidation = Oxidation.EXPOSED;
-//            case EXPOSED -> oxidation = Oxidation.WEATHERED;
-//            case WEATHERED -> oxidation = Oxidation.OXIDIZED;
-//        }
-//    }
+    public boolean isWaxed() {
+        return this.dataTracker.get(WAXED_STATE);
+    }
+
+    public void setWaxed(boolean waxed) {
+        this.dataTracker.set(WAXED_STATE, waxed);
+    }
+
+    @Override
+    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+
+        // Check if the player is using honeycomb
+        if (itemStack.isOf(Items.HONEYCOMB)) {
+            if (!this.isWaxed()) {
+                this.setWaxed(true); // Mark as waxed
+                this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
+
+                // Reduce honeycomb count
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.decrement(1);
+                }
+
+                return ActionResult.SUCCESS;
+            }
+        }
+
+        return super.interactMob(player, hand);
+    }
+
     private void advanceOxidation() {
         Oxidation currentState = this.getOxidation();
         Oxidation nextState = switch (currentState) {
@@ -112,6 +143,7 @@ public class CopperGolemEntity extends GolemEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putByte("OxidationState", (byte) this.getOxidation().ordinal());  // Save the oxidation state
+        nbt.putBoolean("Waxed", this.isWaxed());  // Save the waxed state
     }
 
     @Override
@@ -119,6 +151,9 @@ public class CopperGolemEntity extends GolemEntity {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("OxidationState", NbtElement.BYTE_TYPE)) {
             this.setOxidation(Oxidation.values()[nbt.getByte("OxidationState")]);
+        }
+        if (nbt.contains("Waxed")) {  // No type check needed for booleans
+            this.setWaxed(nbt.getBoolean("Waxed"));
         }
     }
 }
