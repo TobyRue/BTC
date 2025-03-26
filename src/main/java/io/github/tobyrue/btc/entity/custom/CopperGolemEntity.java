@@ -8,6 +8,8 @@ import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -44,7 +46,13 @@ public class CopperGolemEntity extends GolemEntity {
         OXIDATION_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
         WAXED_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     }
-
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.ON_FIRE) || source.isOf(DamageTypes.LIGHTNING_BOLT)) {
+            return false;
+        }
+        return super.damage(source, amount);
+    }
 
     public CopperGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
         super(entityType, world);
