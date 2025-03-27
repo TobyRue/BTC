@@ -1,11 +1,13 @@
 package io.github.tobyrue.btc.entity.custom;
 
-import io.github.tobyrue.btc.entity.ai.CopperGolemWander;
-import io.github.tobyrue.btc.item.ModItems;
-import net.minecraft.entity.EntityType;
+import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
+import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
+import io.github.tobyrue.btc.entity.animation.ModAnimations;
+import io.github.tobyrue.btc.enums.AttackType;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,9 +17,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -27,7 +28,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class CopperGolemEntity extends GolemEntity {
     private int oxidationTimer = 0;
@@ -39,6 +44,15 @@ public class CopperGolemEntity extends GolemEntity {
         UNOXIDIZED, EXPOSED, WEATHERED, OXIDIZED
     }
 
+
+    public final AnimationState wakeUpAnimationState = new AnimationState();
+    private boolean wakeUpAnimationPlayed = false;
+
+
+    public final AnimationState idleAnimationState = new AnimationState();
+    private int idleAnimationTimeout = 0;
+
+
     private static final TrackedData<Byte> OXIDATION_STATE;
     private static final TrackedData<Boolean> WAXED_STATE; // New waxed state
 
@@ -46,9 +60,26 @@ public class CopperGolemEntity extends GolemEntity {
         OXIDATION_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
         WAXED_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     }
+
+
+    private void setupAnimationStates() {
+        if (this.idleAnimationTimeout <= 0) {
+            this.idleAnimationTimeout = this.random.nextInt(40) + 80;
+            this.idleAnimationState.start(this.age);
+        } else {
+            --this.idleAnimationTimeout;
+        }
+        if (this.age <= 80 && !wakeUpAnimationPlayed) {
+            this.wakeUpAnimationState.start(this.age);
+            wakeUpAnimationPlayed = true;
+        }
+    }
+
+
+
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.ON_FIRE) || source.isOf(DamageTypes.LIGHTNING_BOLT)) {
+        if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.ON_FIRE) || source.isOf(DamageTypes.LIGHTNING_BOLT) || source.isOf(DamageTypes.LAVA)) {
             return false;
         }
         return super.damage(source, amount);
@@ -74,16 +105,34 @@ public class CopperGolemEntity extends GolemEntity {
     }
 
     @Override
+    public boolean isFireImmune() {
+        return true;
+    }
+
+    public float getSpeedMultiplier() {
+        return switch (this.getOxidation()) {
+            case UNOXIDIZED -> 1.0f;
+            case EXPOSED -> 0.75f;
+            case WEATHERED -> 0.5f;
+            case OXIDIZED -> 0.0f;
+        };
+    }
+
+    @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new CopperGolemWander(this, 0.3D));
-        this.goalSelector.add(2, new TemptGoal(this, 0.4D, Ingredient.ofItems(Items.COPPER_INGOT), false));
+        this.goalSelector.add(1, new CopperGolemWanderGoal(this, 0.4D));
+        this.goalSelector.add(2, new CopperGolemTemptGoal(this, 0.4D, Ingredient.ofItems(Items.HONEYCOMB), false));
     }
 
     @Override
     public void tick() {
         super.tick();
-        System.out.println("Oxidation Timer: " + this.oxidationTimer + " Oxidation: " + this.getOxidation());
+//        System.out.println("Oxidation Timer: " + this.oxidationTimer + " Oxidation: " + this.getOxidation());
+
+        if (this.getWorld().isClient()) {
+            setupAnimationStates();
+        }
 
         if (!this.getWorld().isClient) {
             if (!this.isWaxed()) { // Only oxidize if NOT waxed
@@ -92,7 +141,7 @@ public class CopperGolemEntity extends GolemEntity {
                 if (this.oxidationTimer >= OXIDATION_INTERVAL) {
                     this.oxidationTimer = 0;
                     this.advanceOxidation();
-                    System.out.println("Oxidation State Changed: " + this.getOxidation());
+//                    System.out.println("Oxidation State Changed: " + this.getOxidation());
                 }
             }
         }
@@ -114,13 +163,30 @@ public class CopperGolemEntity extends GolemEntity {
         if (itemStack.isOf(Items.HONEYCOMB)) {
             if (!this.isWaxed()) {
                 this.setWaxed(true); // Mark as waxed
-                this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
                 // Reduce honeycomb count
                 if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
 
+                return ActionResult.SUCCESS;
+            }
+        }
+        if (itemStack.getItem() instanceof AxeItem) {
+            if (this.isWaxed()) {
+                this.setWaxed(false); // Mark as waxed
+                this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.damage(3, player, EquipmentSlot.MAINHAND);
+                }
+                return ActionResult.SUCCESS;
+            } else if (this.getOxidation() != Oxidation.UNOXIDIZED) {
+                lowerOxidation();
+                this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_SCRAPE, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.damage(3, player, EquipmentSlot.MAINHAND);
+                }
                 return ActionResult.SUCCESS;
             }
         }
@@ -137,15 +203,24 @@ public class CopperGolemEntity extends GolemEntity {
         };
         this.setOxidation(nextState);
     }
+    private void lowerOxidation() {
+        Oxidation currentState = this.getOxidation();
+        Oxidation nextState = switch (currentState) {
+            case OXIDIZED -> Oxidation.WEATHERED;
+            case WEATHERED -> Oxidation.EXPOSED;
+            case EXPOSED, UNOXIDIZED -> Oxidation.UNOXIDIZED;
+        };
+        this.setOxidation(nextState);
+    }
+
 
     public void setOxidation(Oxidation oxidation) {
         this.dataTracker.set(OXIDATION_STATE, (byte) oxidation.ordinal());
     }
+
     public Oxidation getOxidation() {
         return Oxidation.values()[this.dataTracker.get(OXIDATION_STATE)];
     }
-
-
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {

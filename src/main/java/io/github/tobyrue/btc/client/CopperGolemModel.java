@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
@@ -112,6 +113,8 @@ public class CopperGolemModel <T extends CopperGolemEntity> extends SinglePartEn
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(headYaw, headPitch);
+		this.updateAnimation(entity.wakeUpAnimationState, ModAnimations.COPPER_WAKE_UP, animationProgress, 1f);
+		this.updateAnimation(entity.idleAnimationState, ModAnimations.COPPER_IDLE, animationProgress, 1f);
 		this.animateMovement(ModAnimations.COPPER_WALK, limbAngle, limbDistance, 2f, 2.5f);
 	}
 }

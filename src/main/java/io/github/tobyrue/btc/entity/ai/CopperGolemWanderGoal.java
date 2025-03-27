@@ -5,14 +5,12 @@ import java.util.EnumSet;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.Goal.Control;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
-public class CopperGolemWander extends Goal {
+public class CopperGolemWanderGoal extends Goal {
     public static final int DEFAULT_CHANCE = 120;
-    protected final CopperGolemEntity mob;  // Change to CopperGolemEntity
+    protected final CopperGolemEntity mob;
     protected double targetX;
     protected double targetY;
     protected double targetZ;
@@ -21,15 +19,15 @@ public class CopperGolemWander extends Goal {
     protected boolean ignoringChance;
     private final boolean canDespawn;
 
-    public CopperGolemWander(CopperGolemEntity mob, double speed) {
+    public CopperGolemWanderGoal(CopperGolemEntity mob, double speed) {
         this(mob, speed, DEFAULT_CHANCE);
     }
 
-    public CopperGolemWander(CopperGolemEntity mob, double speed, int chance) {
+    public CopperGolemWanderGoal(CopperGolemEntity mob, double speed, int chance) {
         this(mob, speed, chance, true);
     }
 
-    public CopperGolemWander(CopperGolemEntity mob, double speed, int chance, boolean canDespawn) {
+    public CopperGolemWanderGoal(CopperGolemEntity mob, double speed, int chance, boolean canDespawn) {
         this.mob = mob;
         this.speed = speed;
         this.chance = chance;
@@ -39,14 +37,11 @@ public class CopperGolemWander extends Goal {
 
     @Override
     public boolean canStart() {
-        // Only allow CopperGolemEntity to wander
-        if (!(this.mob instanceof CopperGolemEntity)) {
+        if (this.mob.wakeUpAnimationState.isRunning()) {
             return false;
         }
-
-        // Check if the Copper Golem is fully oxidized (OXIDIZED state)
         if (this.mob.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
-            return false; // Stop moving if fully oxidized
+            return false;
         }
 
         if (this.mob.hasControllingPassenger()) {
@@ -83,6 +78,9 @@ public class CopperGolemWander extends Goal {
     @Override
     public boolean shouldContinue() {
         // Stop movement immediately if oxidized while already moving
+        if (this.mob.wakeUpAnimationState.isRunning()) {
+            return false;
+        }
         if (this.mob.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
             return false;
         }
@@ -91,7 +89,7 @@ public class CopperGolemWander extends Goal {
 
     @Override
     public void start() {
-        this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+        this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed * this.mob.getSpeedMultiplier());
     }
 
     @Override
