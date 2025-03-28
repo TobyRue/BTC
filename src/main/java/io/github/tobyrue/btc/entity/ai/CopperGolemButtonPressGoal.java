@@ -14,10 +14,9 @@ import java.util.Queue;
 
 public class CopperGolemButtonPressGoal extends Goal {
     private final CopperGolemEntity golem;
-    private Queue<BlockPos> buttonQueue = new LinkedList<>();  // Queue to store button positions
-    private BlockPos currentButtonPos;  // The current button to press
-    private int pressCooldown = 0;  // Cooldown to prevent immediate reactivation
     private final double speed;
+    private BlockPos targetButtonPos;
+    private int pressCooldown;
 
     public CopperGolemButtonPressGoal(CopperGolemEntity golem, double speed) {
         this.golem = golem;
@@ -27,90 +26,55 @@ public class CopperGolemButtonPressGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        System.out.println("Checking if Copper Golem can start button press goal...");
-
-        // If the golem can't move or is oxidized, return false
-        if (this.golem.cantMove()) {
-            System.out.println("Golem can't move, aborting goal.");
-            return false;
-        }
-        if (this.golem.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
-            System.out.println("Golem is oxidized, aborting goal.");
-            return false;
-        }
         if (pressCooldown > 0) {
             pressCooldown--;
-            System.out.println("Cooldown active: " + pressCooldown + " ticks remaining.");
             return false;
         }
 
-        // Add nearby unpressed buttons to the queue
-        if (buttonQueue.isEmpty()) {
-            BlockPos golemPos = golem.getBlockPos();
-            for (BlockPos pos : BlockPos.iterateOutwards(golemPos, 8, 8, 8)) {
-                BlockState state = golem.getWorld().getBlockState(pos);
-                if (state.getBlock() instanceof ButtonBlock && !state.get(ButtonBlock.POWERED)) {
-                    buttonQueue.add(pos);  // Add position to the queue
-                    System.out.println("Added button at " + pos + " to the queue.");
-                }
+        BlockPos golemPos = golem.getBlockPos();
+        for (BlockPos pos : BlockPos.iterateOutwards(golemPos, 2, 2, 2)) {
+            BlockState state = golem.getWorld().getBlockState(pos);
+            if (state.getBlock() instanceof ButtonBlock && !state.get(ButtonBlock.POWERED)) {
+                targetButtonPos = pos;
+                return true;
             }
         }
-
-        boolean canStart = !buttonQueue.isEmpty();
-        System.out.println("Can start goal: " + canStart);
-        return canStart;  // Only start if there are buttons to press
+        return false;
     }
 
     @Override
     public void start() {
-        System.out.println("Goal started. Moving Copper Golem to press the next button.");
-
-        // Get the next button from the queue
-        if (!buttonQueue.isEmpty()) {
-            currentButtonPos = buttonQueue.poll();
-            System.out.println("Moving to button at " + currentButtonPos);
+        if (targetButtonPos != null) {
             golem.getNavigation().startMovingTo(
-                    currentButtonPos.getX() + 0.5, currentButtonPos.getY(), currentButtonPos.getZ() + 0.5, 1.0
+                    targetButtonPos.getX() + 0.5, targetButtonPos.getY(), targetButtonPos.getZ() + 0.5, 1.0
             );
         }
     }
 
     @Override
     public boolean shouldContinue() {
-        System.out.println("Checking if Copper Golem should continue goal...");
-
-        if (this.golem.cantMove() || this.golem.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
-            System.out.println("Golem can't move or is oxidized. Goal will not continue.");
-            return false;
-        } else {
-            boolean shouldContinue = currentButtonPos != null && golem.squaredDistanceTo(Vec3d.ofCenter(currentButtonPos)) > 1.5;
-            System.out.println("Should continue: " + shouldContinue);
-            return shouldContinue;
-        }
+        return targetButtonPos != null && golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) > 1.5;
     }
 
     @Override
     public void tick() {
-        if (currentButtonPos != null) {
-            double distanceSquared = golem.squaredDistanceTo(Vec3d.ofCenter(currentButtonPos));
-            System.out.println("Current distance to button: " + distanceSquared);
-
-            if (distanceSquared <= 1.5) {
-                BlockState state = golem.getWorld().getBlockState(currentButtonPos);
+        if (targetButtonPos != null) {
+//            this.golem.getLookControl().lookAt(this.targetButtonPos, (float)(this.golem.getMaxHeadRotation() + 20), (float)this.golem.getMaxLookPitchChange());
+            if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {
+                BlockState state = golem.getWorld().getBlockState(targetButtonPos);
                 if (state.getBlock() instanceof ButtonBlock button) {
-                    System.out.println("Pressing button at " + currentButtonPos);
-                    button.powerOn(state, golem.getWorld(), currentButtonPos, null); // Simulate the button press
-                    golem.swingHand(Hand.MAIN_HAND); // Swing hand to simulate interaction
-                    pressCooldown = 100; // Cooldown before the next press (100 ticks)
-                    System.out.println("Cooldown set to " + pressCooldown);
-                    currentButtonPos = null;  // Reset current button to allow golem to find the next
+                    button.powerOn(state, golem.getWorld(), targetButtonPos, null); // Correctly activating the button
+                    golem.swingHand(Hand.MAIN_HAND);
+                    pressCooldown = 100; // Prevent immediate reactivation
+                    targetButtonPos = null;
                 }
             } else {
-                System.out.println("Moving towards button at " + currentButtonPos);
+                System.out.println("Moving towards button at " + targetButtonPos);
                 // Only move toward the button if we haven't reached it yet
-                golem.getNavigation().startMovingTo(currentButtonPos.getX(), currentButtonPos.getY(), currentButtonPos.getZ(), speed);
+                golem.getNavigation().startMovingTo(targetButtonPos.getX(), targetButtonPos.getY(), targetButtonPos.getZ(), speed * this.golem.getSpeedMultiplier());
             }
         }
     }
 }
+
 
