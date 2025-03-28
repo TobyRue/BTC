@@ -4,7 +4,6 @@ import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +38,7 @@ public class CopperGolemTemptGoal extends Goal {
     }
 
     public boolean canStart() {
-        if (this.mob.wakeUpAnimationState.isRunning()) {
+        if (this.mob.cantMove()) {
             return false;
         }
         if (this.mob.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
@@ -59,7 +58,7 @@ public class CopperGolemTemptGoal extends Goal {
     }
 
     public boolean shouldContinue() {
-        if (this.mob.wakeUpAnimationState.isRunning()) {
+        if (this.mob.cantMove()) {
             return false;
         }
         if (this.mob.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
