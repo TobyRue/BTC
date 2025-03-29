@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.entity.custom;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ai.CopperGolemButtonPressGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
@@ -37,15 +36,23 @@ public class CopperGolemEntity extends GolemEntity {
     public enum Oxidation {
         UNOXIDIZED, EXPOSED, WEATHERED, OXIDIZED
     }
+    public enum ButtonDirection {
+        NONE, UP, FRONT
+    }
     private static final TrackedData<Byte> OXIDATION_STATE;
+    private static final TrackedData<Byte> BUTTON_STATE;
     private static final TrackedData<Boolean> WAXED_STATE; // New waxed state
     private static final TrackedData<Boolean> WAKE_UP_PLAYED; // New wake-up state
     private static final TrackedData<Boolean> FIRST_SPAWNED;
+    private static final TrackedData<Integer> AGE_LOCK;
+
     static {
         OXIDATION_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
         WAXED_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         WAKE_UP_PLAYED = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         FIRST_SPAWNED = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        AGE_LOCK = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
+        BUTTON_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
     }
 
     public final AnimationState wakeUpAnimationState = new AnimationState();
@@ -53,6 +60,8 @@ public class CopperGolemEntity extends GolemEntity {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
+    public final AnimationState buttonPressUpAnimationState = new AnimationState();
+    public final AnimationState buttonPressFrontAnimationState = new AnimationState();
 
     public CopperGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
         super(entityType, world);
@@ -79,13 +88,15 @@ public class CopperGolemEntity extends GolemEntity {
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(OXIDATION_STATE, (byte) Oxidation.UNOXIDIZED.ordinal());
+        builder.add(BUTTON_STATE, (byte) ButtonDirection.NONE.ordinal());
         builder.add(WAXED_STATE, false);
         builder.add(WAKE_UP_PLAYED, false);
         builder.add(FIRST_SPAWNED, false);
+        builder.add(AGE_LOCK, this.age);
     }
 
-    private void setupAnimationStates() {
-        // Client-side animations
+    private void setupAnimationStatesClient() {
+        System.out.println("Client, Button Direction is: " + this.getButtonDirection());
         if (this.getOxidation() != Oxidation.OXIDIZED) {
             if (this.idleAnimationTimeout <= 0) {
                 this.idleAnimationTimeout = this.random.nextInt(40) + 80;
@@ -94,10 +105,43 @@ public class CopperGolemEntity extends GolemEntity {
                 --this.idleAnimationTimeout;
             }
         }
-
         if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED && !this.hasWokenUp()) {
             this.wakeUpAnimationState.startIfNotRunning(this.age);
         }
+        if (this.getOxidation() != Oxidation.OXIDIZED) {
+            if (this.getButtonDirection() != ButtonDirection.NONE) {
+                this.buttonPressFrontAnimationState.startIfNotRunning(this.age);
+            } else {
+                this.buttonPressFrontAnimationState.stop();
+            }
+
+//            if (this.getButtonDirection() == ButtonDirection.UP && this.getButtonDirection() != ButtonDirection.NONE) {
+//                System.out.println("Stuff see if work 1111111");
+//                this.buttonPressUpAnimationState.start(this.age);
+//                setButtonDirection(ButtonDirection.NONE);
+//            } else if (this.getButtonDirection() == ButtonDirection.FRONT && this.getButtonDirection() != ButtonDirection.NONE) {
+//                System.out.println("Stuff see if work 22");
+//                this.buttonPressFrontAnimationState.start(this.age);
+//                setButtonDirection(ButtonDirection.NONE);
+//            }
+        }
+    }
+    private void setupAnimationStatesServer() {
+        System.out.println("Server, Button Direction is: " + this.getButtonDirection());
+        if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED) {
+            setWokenUp(true);
+        } else if ((this.getAgeLock() + 80 <= this.age && this.getAgeLock() + 120 >= this.age)) {
+            setIfFirstSpawned(true);
+            setButtonDirection(ButtonDirection.NONE);
+        }
+    }
+
+    public void setButtonDirection(ButtonDirection direction) {
+        this.dataTracker.set(BUTTON_STATE, (byte) direction.ordinal());
+    }
+
+    public ButtonDirection getButtonDirection() {
+        return ButtonDirection.values()[this.dataTracker.get(BUTTON_STATE)];
     }
 
     public boolean cantMove() {
@@ -118,6 +162,13 @@ public class CopperGolemEntity extends GolemEntity {
 
     public void setIfFirstSpawned(boolean spawned) {
         this.dataTracker.set(FIRST_SPAWNED, spawned);
+        if (!spawned) {
+            this.dataTracker.set(AGE_LOCK, this.age);
+        }
+    }
+
+    public Integer getAgeLock() {
+        return this.dataTracker.get(AGE_LOCK);
     }
 
     public boolean isWaxed() {
@@ -195,14 +246,11 @@ public class CopperGolemEntity extends GolemEntity {
         super.tick();
 //        System.out.println("Oxidation Timer: " + this.oxidationTimer + " Oxidation: " + this.getOxidation());
         if (this.getWorld().isClient()) {
-            setupAnimationStates();
+            setupAnimationStatesClient();
+        } else {
+            setupAnimationStatesServer();
         }
         if (!this.getWorld().isClient) {
-            if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED) {
-                setWokenUp(true);
-            } else if (this.age > 80 && this.age < 120) {
-                setIfFirstSpawned(true);
-            }
             if (!this.isWaxed()) { // Only oxidize if NOT waxed
                 this.oxidationTimer++;
 

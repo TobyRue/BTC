@@ -115,6 +115,8 @@ public class CopperGolemModel <T extends CopperGolemEntity> extends SinglePartEn
 		this.setHeadAngles(headYaw, headPitch);
 		this.updateAnimation(entity.wakeUpAnimationState, ModAnimations.COPPER_WAKE_UP, animationProgress, 1f);
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.COPPER_IDLE, animationProgress, 1f);
+		this.updateAnimation(entity.buttonPressFrontAnimationState, ModAnimations.COPPER_PRESS_BUTTON_DOWN, animationProgress, 1f);
+		this.updateAnimation(entity.buttonPressUpAnimationState, ModAnimations.COPPER_PRESS_BUTTON_UP, animationProgress, 1f);
 		this.animateMovement(ModAnimations.COPPER_WALK, limbAngle, limbDistance, 2f, 2.5f);
 	}
 }
