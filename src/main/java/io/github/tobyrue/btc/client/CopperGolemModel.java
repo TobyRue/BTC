@@ -6,15 +6,10 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.entity.animation.ModAnimations;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
-import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.animation.AnimationHelper;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 public class CopperGolemModel <T extends CopperGolemEntity> extends SinglePartEntityModel<T> {
@@ -114,9 +109,13 @@ public class CopperGolemModel <T extends CopperGolemEntity> extends SinglePartEn
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(headYaw, headPitch);
 		this.updateAnimation(entity.wakeUpAnimationState, ModAnimations.COPPER_WAKE_UP, animationProgress, 1f);
+
 		this.updateAnimation(entity.idleAnimationState, ModAnimations.COPPER_IDLE, animationProgress, 1f);
+
 		this.updateAnimation(entity.buttonPressFrontAnimationState, ModAnimations.COPPER_PRESS_BUTTON_DOWN, animationProgress, 1f);
 		this.updateAnimation(entity.buttonPressUpAnimationState, ModAnimations.COPPER_PRESS_BUTTON_UP, animationProgress, 1f);
+		this.updateAnimation(entity.buttonPressDownAnimationState, ModAnimations.COPPER_BUTTON_FAR_DOWN, animationProgress, 1f);
+
 		this.animateMovement(ModAnimations.COPPER_WALK, limbAngle, limbDistance, 2f, 2.5f);
 	}
 }

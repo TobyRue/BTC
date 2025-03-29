@@ -3,23 +3,19 @@ package io.github.tobyrue.btc.entity.ai;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
-import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class CopperGolemButtonPressGoal extends Goal {
     private final CopperGolemEntity golem;
     private final double speed;
     private BlockPos targetButtonPos;
     private int pressCooldown;
+
 
     public CopperGolemButtonPressGoal(CopperGolemEntity golem, double speed) {
         this.golem = golem;
@@ -55,7 +51,7 @@ public class CopperGolemButtonPressGoal extends Goal {
     public void start() {
         if (targetButtonPos != null) {
             golem.getNavigation().startMovingTo(targetButtonPos.getX(), targetButtonPos.getY(), targetButtonPos.getZ(), speed * this.golem.getSpeedMultiplier());
-            lookAtPosition();
+            lookAtPosition(targetButtonPos);
         }
     }
 
@@ -65,29 +61,39 @@ public class CopperGolemButtonPressGoal extends Goal {
             return false;
         }  else {
             return targetButtonPos != null;
-//                    && golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) > 1.5;
         }
     }
+
+
 
     @Override
     public void tick() {
         if (targetButtonPos != null) {
-            lookAtPosition();
-
-            if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2) {
+            lookAtPosition(targetButtonPos);
+            if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {
                 BlockState state = golem.getWorld().getBlockState(targetButtonPos);
                 if ((state.getBlock() instanceof ButtonBlock button) && pressCooldown <= 0) {
-                    golem.setIfFirstSpawned(false);
+                    golem.setCanMoveDelayTwo(false);
                     button.powerOn(state, golem.getWorld(), targetButtonPos, null); // Correctly activating the button
                     golem.swingHand(Hand.MAIN_HAND);
-                    pressCooldown = 180; // Prevent immediate reactivation
+                    if (golem.getOxidation() == CopperGolemEntity.Oxidation.UNOXIDIZED) {
+                        pressCooldown = 120;
+                    } else if (golem.getOxidation() == CopperGolemEntity.Oxidation.EXPOSED) {
+                        pressCooldown = 160;
+                    } else if (golem.getOxidation() == CopperGolemEntity.Oxidation.WEATHERED) {
+                        pressCooldown = 200;
+                    }
+                    if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY() + 1) {
+                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.UP);
+                    } else if (targetButtonPos != null && targetButtonPos.getY() < golem.getBlockPos().getY()) {
+                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.DOWN);
+                    } else if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY()) {
+                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.FRONT);
+                    }
+                    if (pressCooldown > 0) {
+                        pressCooldown--;
+                    }
                     targetButtonPos = null;
-                    golem.setButtonDirection(CopperGolemEntity.ButtonDirection.FRONT);
-//                    if (targetButtonPos.getY() == golem.getPos().getY() + 1) {
-//                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.UP);
-//                    } else {
-//                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.FRONT);
-//                    }
                 }
             }
 
@@ -97,8 +103,8 @@ public class CopperGolemButtonPressGoal extends Goal {
             }
         }
     }
-    public void lookAtPosition() {
-        golem.getLookControl().lookAt(targetButtonPos.getX() + 0.5, targetButtonPos.getY() + 0.5, targetButtonPos.getZ() + 0.5, (float)(this.golem.getMaxHeadRotation() + 20), (float)this.golem.getMaxLookPitchChange());
+    public void lookAtPosition(BlockPos pos) {
+        golem.getLookControl().lookAt(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, (float)(this.golem.getMaxHeadRotation() + 20), (float)this.golem.getMaxLookPitchChange());
     }
 }
 

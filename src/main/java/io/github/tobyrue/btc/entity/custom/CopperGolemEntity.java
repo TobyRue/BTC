@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.entity.ai.CopperGolemButtonPressGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -25,32 +26,42 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class CopperGolemEntity extends GolemEntity {
     private int oxidationTimer = 0;
     private static final int OXIDATION_INTERVAL = 20
+
 //            * 60
             * 5; // Every 5 minutes (6000 ticks)
+    protected double targetX;
+    protected double targetY;
+    protected double targetZ;
+    
+    private static final double SPEED = 0.4D;
 
     public enum Oxidation {
         UNOXIDIZED, EXPOSED, WEATHERED, OXIDIZED
     }
     public enum ButtonDirection {
-        NONE, UP, FRONT
+        NONE, UP, FRONT, DOWN
     }
     private static final TrackedData<Byte> OXIDATION_STATE;
     private static final TrackedData<Byte> BUTTON_STATE;
     private static final TrackedData<Boolean> WAXED_STATE; // New waxed state
     private static final TrackedData<Boolean> WAKE_UP_PLAYED; // New wake-up state
-    private static final TrackedData<Boolean> FIRST_SPAWNED;
+    private static final TrackedData<Boolean> CAN_MOVE_DELAY_ONE;
+    private static final TrackedData<Boolean> CAN_MOVE_DELAY_TWO;
     private static final TrackedData<Integer> AGE_LOCK;
 
     static {
         OXIDATION_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
         WAXED_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         WAKE_UP_PLAYED = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-        FIRST_SPAWNED = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        CAN_MOVE_DELAY_ONE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        CAN_MOVE_DELAY_TWO = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         AGE_LOCK = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
         BUTTON_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
     }
@@ -60,8 +71,9 @@ public class CopperGolemEntity extends GolemEntity {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
-    public final AnimationState buttonPressUpAnimationState = new AnimationState();
     public final AnimationState buttonPressFrontAnimationState = new AnimationState();
+    public final AnimationState buttonPressUpAnimationState = new AnimationState();
+    public final AnimationState buttonPressDownAnimationState = new AnimationState();
 
     public CopperGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
         super(entityType, world);
@@ -79,9 +91,9 @@ public class CopperGolemEntity extends GolemEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(0, new CopperGolemButtonPressGoal(this, 0.4D));
-        this.goalSelector.add(1, new CopperGolemWanderGoal(this, 0.4D));
-        this.goalSelector.add(2, new CopperGolemTemptGoal(this, 0.4D, Ingredient.ofItems(Items.HONEYCOMB), false));
+        this.goalSelector.add(0, new CopperGolemButtonPressGoal(this, SPEED));
+        this.goalSelector.add(1, new CopperGolemWanderGoal(this, SPEED));
+        this.goalSelector.add(2, new CopperGolemTemptGoal(this, SPEED, Ingredient.ofItems(Items.HONEYCOMB), false));
     }
 
     @Override
@@ -91,12 +103,17 @@ public class CopperGolemEntity extends GolemEntity {
         builder.add(BUTTON_STATE, (byte) ButtonDirection.NONE.ordinal());
         builder.add(WAXED_STATE, false);
         builder.add(WAKE_UP_PLAYED, false);
-        builder.add(FIRST_SPAWNED, false);
+        builder.add(CAN_MOVE_DELAY_ONE, false);
+        builder.add(CAN_MOVE_DELAY_TWO, true);
         builder.add(AGE_LOCK, this.age);
     }
 
+    @Nullable
+    protected Vec3d getWanderTarget() {
+        return NoPenaltyTargeting.find(this, 7, 7);
+    }
+
     private void setupAnimationStatesClient() {
-        System.out.println("Client, Button Direction is: " + this.getButtonDirection());
         if (this.getOxidation() != Oxidation.OXIDIZED) {
             if (this.idleAnimationTimeout <= 0) {
                 this.idleAnimationTimeout = this.random.nextInt(40) + 80;
@@ -110,30 +127,39 @@ public class CopperGolemEntity extends GolemEntity {
         }
         if (this.getOxidation() != Oxidation.OXIDIZED) {
             if (this.getButtonDirection() != ButtonDirection.NONE) {
-                this.buttonPressFrontAnimationState.startIfNotRunning(this.age);
+                if (this.getButtonDirection() == ButtonDirection.FRONT) {
+                    this.buttonPressFrontAnimationState.startIfNotRunning(this.age);
+                } else if (this.getButtonDirection() == ButtonDirection.UP) {
+                    this.buttonPressUpAnimationState.startIfNotRunning(this.age);
+                } else if (this.getButtonDirection() == ButtonDirection.DOWN) {
+                    this.buttonPressDownAnimationState.startIfNotRunning(this.age);
+                }
             } else {
                 this.buttonPressFrontAnimationState.stop();
+                this.buttonPressUpAnimationState.stop();
+                this.buttonPressDownAnimationState.stop();
             }
-
-//            if (this.getButtonDirection() == ButtonDirection.UP && this.getButtonDirection() != ButtonDirection.NONE) {
-//                System.out.println("Stuff see if work 1111111");
-//                this.buttonPressUpAnimationState.start(this.age);
-//                setButtonDirection(ButtonDirection.NONE);
-//            } else if (this.getButtonDirection() == ButtonDirection.FRONT && this.getButtonDirection() != ButtonDirection.NONE) {
-//                System.out.println("Stuff see if work 22");
-//                this.buttonPressFrontAnimationState.start(this.age);
-//                setButtonDirection(ButtonDirection.NONE);
-//            }
         }
     }
     private void setupAnimationStatesServer() {
-        System.out.println("Server, Button Direction is: " + this.getButtonDirection());
         if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED) {
             setWokenUp(true);
-        } else if ((this.getAgeLock() + 80 <= this.age && this.getAgeLock() + 120 >= this.age)) {
-            setIfFirstSpawned(true);
+        } else if ((this.getAgeLock() + 80 < this.age && this.getAgeLock() + 120 >= this.age)) {
+            setCanMoveDelayOne(true);
+        } else if ((this.getAgeLock() + 40 <= this.age && this.getAgeLock() + 80 > this.age)) {
+            setCanMoveDelayTwo(true);
             setButtonDirection(ButtonDirection.NONE);
+            navigateAround();
         }
+    }
+    public void navigateAround() {
+        Vec3d vec3d = this.getWanderTarget();
+        if (vec3d != null) {
+            this.targetX = vec3d.x;
+            this.targetY = vec3d.y;
+            this.targetZ = vec3d.z;
+        }
+        this.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, SPEED * this.getSpeedMultiplier());
     }
 
     public void setButtonDirection(ButtonDirection direction) {
@@ -144,10 +170,6 @@ public class CopperGolemEntity extends GolemEntity {
         return ButtonDirection.values()[this.dataTracker.get(BUTTON_STATE)];
     }
 
-    public boolean cantMove() {
-        return !getIfFirstSpawned();
-    }
-
     public boolean hasWokenUp() {
         return this.dataTracker.get(WAKE_UP_PLAYED);
     }
@@ -156,13 +178,28 @@ public class CopperGolemEntity extends GolemEntity {
         this.dataTracker.set(WAKE_UP_PLAYED, wake);
     }
 
-    public boolean getIfFirstSpawned() {
-        return this.dataTracker.get(FIRST_SPAWNED);
+    public boolean cantMove() {
+        return !getCanMoveDelayOne() || !getCanMoveDelayTwo();
     }
 
-    public void setIfFirstSpawned(boolean spawned) {
-        this.dataTracker.set(FIRST_SPAWNED, spawned);
-        if (!spawned) {
+    public boolean getCanMoveDelayOne() {
+        return this.dataTracker.get(CAN_MOVE_DELAY_ONE);
+    }
+
+    public void setCanMoveDelayOne(boolean move) {
+        this.dataTracker.set(CAN_MOVE_DELAY_ONE, move);
+        if (!move) {
+            this.dataTracker.set(AGE_LOCK, this.age);
+        }
+    }
+
+    public boolean getCanMoveDelayTwo() {
+        return this.dataTracker.get(CAN_MOVE_DELAY_TWO);
+    }
+
+    public void setCanMoveDelayTwo(boolean move) {
+        this.dataTracker.set(CAN_MOVE_DELAY_TWO, move);
+        if (!move) {
             this.dataTracker.set(AGE_LOCK, this.age);
         }
     }
@@ -229,35 +266,22 @@ public class CopperGolemEntity extends GolemEntity {
         };
     }
 
-//    public float isStartAnimationPlayingSpeedMultiplier() {
-////        if (this.getWorld().isClient) {
-////            if (this.wakeUpAnimationState.isRunning()) {
-////                return 0;
-////            } else {
-////                return 1;
-////            }
-////        } else {
-////            return 1;
-////        }
-//    }
 
     @Override
     public void tick() {
         super.tick();
-//        System.out.println("Oxidation Timer: " + this.oxidationTimer + " Oxidation: " + this.getOxidation());
         if (this.getWorld().isClient()) {
             setupAnimationStatesClient();
         } else {
             setupAnimationStatesServer();
         }
         if (!this.getWorld().isClient) {
-            if (!this.isWaxed()) { // Only oxidize if NOT waxed
+            if (!this.isWaxed()) {
                 this.oxidationTimer++;
 
                 if (this.oxidationTimer >= OXIDATION_INTERVAL) {
                     this.oxidationTimer = 0;
                     this.advanceOxidation();
-//                    System.out.println("Oxidation State Changed: " + this.getOxidation());
                 }
             }
         }
@@ -269,13 +293,11 @@ public class CopperGolemEntity extends GolemEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
 
-        // Check if the player is using honeycomb
         if (itemStack.isOf(Items.HONEYCOMB)) {
             if (!this.isWaxed()) {
                 this.setWaxed(true); // Mark as waxed
                 this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
-                // Reduce honeycomb count
                 if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -312,7 +334,7 @@ public class CopperGolemEntity extends GolemEntity {
         nbt.putByte("OxidationState", (byte) this.getOxidation().ordinal());  // Save the oxidation state
         nbt.putBoolean("Waxed", this.isWaxed());  // Save the waxed state
         nbt.putBoolean("WakeUpState", this.hasWokenUp());  // Save the wake-up state
-        nbt.putBoolean("FirstSpawnedState", this.getIfFirstSpawned());  // Save the spawn state
+        nbt.putBoolean("FirstSpawnedState", this.getCanMoveDelayOne());  // Save the spawn state
     }
 
     @Override
@@ -328,7 +350,7 @@ public class CopperGolemEntity extends GolemEntity {
             this.setWokenUp(nbt.getBoolean("WakeUpState"));
         }
         if (nbt.contains("FirstSpawnedState")) {  // No type check needed for booleans
-            this.setIfFirstSpawned(nbt.getBoolean("FirstSpawnedState"));
+            this.setCanMoveDelayOne(nbt.getBoolean("FirstSpawnedState"));
         }
     }
 }
