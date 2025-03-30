@@ -1,8 +1,11 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.ai.CopperGolemButtonPressGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
+import io.github.tobyrue.btc.regestries.ModSounds;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -14,6 +17,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
@@ -22,10 +26,14 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -79,6 +87,7 @@ public class CopperGolemEntity extends GolemEntity {
         super(entityType, world);
     }
 
+
     public static DefaultAttributeContainer.Builder createCopperGolemAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 15f)
@@ -87,6 +96,7 @@ public class CopperGolemEntity extends GolemEntity {
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20f)
                 .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1f);
     }
+
 
     @Override
     protected void initGoals() {
@@ -108,10 +118,7 @@ public class CopperGolemEntity extends GolemEntity {
         builder.add(AGE_LOCK, this.age);
     }
 
-    @Nullable
-    protected Vec3d getWanderTarget() {
-        return NoPenaltyTargeting.find(this, 7, 7);
-    }
+
 
     private void setupAnimationStatesClient() {
         if (this.getOxidation() != Oxidation.OXIDIZED) {
@@ -121,6 +128,8 @@ public class CopperGolemEntity extends GolemEntity {
             } else {
                 --this.idleAnimationTimeout;
             }
+        } else {
+            this.idleAnimationState.stop();
         }
         if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED && !this.hasWokenUp()) {
             this.wakeUpAnimationState.startIfNotRunning(this.age);
@@ -149,17 +158,22 @@ public class CopperGolemEntity extends GolemEntity {
         } else if ((this.getAgeLock() + 40 <= this.age && this.getAgeLock() + 80 > this.age)) {
             setCanMoveDelayTwo(true);
             setButtonDirection(ButtonDirection.NONE);
-            navigateAround();
+            navigateAround(16,7);
         }
     }
-    public void navigateAround() {
-        Vec3d vec3d = this.getWanderTarget();
+    public void navigateAround(Integer horizontalRange, Integer verticalRange) {
+        Vec3d vec3d = this.getWanderTarget(horizontalRange, verticalRange);
         if (vec3d != null) {
             this.targetX = vec3d.x;
             this.targetY = vec3d.y;
             this.targetZ = vec3d.z;
         }
         this.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, SPEED * this.getSpeedMultiplier());
+    }
+
+    @Nullable
+    protected Vec3d getWanderTarget(Integer hori, Integer vert) {
+        return NoPenaltyTargeting.find(this, hori, vert);
     }
 
     public void setButtonDirection(ButtonDirection direction) {
@@ -266,10 +280,19 @@ public class CopperGolemEntity extends GolemEntity {
         };
     }
 
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        this.playSound(this.getStepSound(), 0.50F, 1.0F);
+    }
+
+    SoundEvent getStepSound() {
+        return ModSounds.COPPER_STEP;
+    }
 
     @Override
     public void tick() {
         super.tick();
+
         if (this.getWorld().isClient()) {
             setupAnimationStatesClient();
         } else {
@@ -334,7 +357,8 @@ public class CopperGolemEntity extends GolemEntity {
         nbt.putByte("OxidationState", (byte) this.getOxidation().ordinal());  // Save the oxidation state
         nbt.putBoolean("Waxed", this.isWaxed());  // Save the waxed state
         nbt.putBoolean("WakeUpState", this.hasWokenUp());  // Save the wake-up state
-        nbt.putBoolean("FirstSpawnedState", this.getCanMoveDelayOne());  // Save the spawn state
+        nbt.putBoolean("CanMoveDelayOne", this.getCanMoveDelayOne());  // Save the spawn state
+        nbt.putBoolean("CanMoveDelayTwo", this.getCanMoveDelayTwo());  // Save the spawn state
     }
 
     @Override
@@ -349,8 +373,11 @@ public class CopperGolemEntity extends GolemEntity {
         if (nbt.contains("WakeUpState")) {  // No type check needed for booleans
             this.setWokenUp(nbt.getBoolean("WakeUpState"));
         }
-        if (nbt.contains("FirstSpawnedState")) {  // No type check needed for booleans
-            this.setCanMoveDelayOne(nbt.getBoolean("FirstSpawnedState"));
+        if (nbt.contains("CanMoveDelayOne")) {  // No type check needed for booleans
+            this.setCanMoveDelayOne(nbt.getBoolean("CanMoveDelayOne"));
+        }
+        if (nbt.contains("CanMoveDelayTwo")) {  // No type check needed for booleans
+            this.setCanMoveDelayTwo(nbt.getBoolean("CanMoveDelayTwo"));
         }
     }
 }

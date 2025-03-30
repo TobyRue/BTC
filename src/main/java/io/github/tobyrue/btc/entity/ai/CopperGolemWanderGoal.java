@@ -72,7 +72,7 @@ public class CopperGolemWanderGoal extends Goal {
 
     @Nullable
     protected Vec3d getWanderTarget() {
-        return NoPenaltyTargeting.find(this.mob, 10, 7);
+        return NoPenaltyTargeting.find(this.mob, 12, 7);
     }
 
     @Override
@@ -100,6 +100,13 @@ public class CopperGolemWanderGoal extends Goal {
 
     public void ignoreChanceOnce() {
         this.ignoringChance = true;
+    }
+
+    @Override
+    public void tick() {
+        if (this.mob.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
+            stop();
+        }
     }
 
     public void setChance(int chance) {

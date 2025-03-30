@@ -30,7 +30,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<Byte> ATTACKING;
     private LivingEntity target;
 
-
     private int chooseAttack = 80;
     public final AnimationState attackAnimationState = new AnimationState();
     public int attackAnimationTimeout = 0;

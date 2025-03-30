@@ -7,6 +7,7 @@ import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModPotions;
+import io.github.tobyrue.btc.regestries.ModSounds;
 import io.github.tobyrue.btc.status_effects.MinerMishapEffect;
 import io.github.tobyrue.btc.status_effects.BuilderBlunderEffect;
 import io.github.tobyrue.btc.status_effects.DragonScalesEffect;
@@ -55,6 +56,7 @@ public class BTC implements ModInitializer {
         ModItems.initialize();
         ModBlockEntities.initialize();
         ModPotions.initialize();
+        ModSounds.initialize();
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());
 

@@ -4,7 +4,8 @@ import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.Hand;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -15,6 +16,8 @@ public class CopperGolemButtonPressGoal extends Goal {
     private final double speed;
     private BlockPos targetButtonPos;
     private int pressCooldown;
+    private int interest = 100;
+    private Vec3d lastPosition;
 
 
     public CopperGolemButtonPressGoal(CopperGolemEntity golem, double speed) {
@@ -41,6 +44,10 @@ public class CopperGolemButtonPressGoal extends Goal {
             BlockState state = golem.getWorld().getBlockState(pos);
             if (state.getBlock() instanceof ButtonBlock && !state.get(ButtonBlock.POWERED)) {
                 targetButtonPos = pos;
+//                if (interest != 0) {
+//                    interest = 100; // Reset interest when finding a new button
+//                }
+                lastPosition = golem.getPos();
                 return true;
             }
         }
@@ -52,57 +59,86 @@ public class CopperGolemButtonPressGoal extends Goal {
         if (targetButtonPos != null) {
             golem.getNavigation().startMovingTo(targetButtonPos.getX(), targetButtonPos.getY(), targetButtonPos.getZ(), speed * this.golem.getSpeedMultiplier());
             lookAtPosition(targetButtonPos);
+            lastPosition = golem.getPos();
         }
     }
 
     @Override
     public boolean shouldContinue() {
-        if (this.golem.cantMove() || this.golem.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED) {
+        if (targetButtonPos == null) {
             return false;
-        }  else {
-            return targetButtonPos != null;
         }
+
+        BlockState state = golem.getWorld().getBlockState(targetButtonPos);
+
+        if (this.golem.cantMove() || this.golem.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED || interest <= 0) {
+            return false;
+        } else if (state.getBlock() instanceof ButtonBlock && !state.get(ButtonBlock.POWERED)) {
+            return true;
+        }
+        return false;
     }
 
 
 
     @Override
     public void tick() {
+        System.out.println("Interest is: " + interest);
         if (targetButtonPos != null) {
             lookAtPosition(targetButtonPos);
-            if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {
-                BlockState state = golem.getWorld().getBlockState(targetButtonPos);
-                if ((state.getBlock() instanceof ButtonBlock button) && pressCooldown <= 0) {
-                    golem.setCanMoveDelayTwo(false);
-                    button.powerOn(state, golem.getWorld(), targetButtonPos, null); // Correctly activating the button
-                    golem.swingHand(Hand.MAIN_HAND);
-                    if (golem.getOxidation() == CopperGolemEntity.Oxidation.UNOXIDIZED) {
-                        pressCooldown = 120;
-                    } else if (golem.getOxidation() == CopperGolemEntity.Oxidation.EXPOSED) {
-                        pressCooldown = 160;
-                    } else if (golem.getOxidation() == CopperGolemEntity.Oxidation.WEATHERED) {
-                        pressCooldown = 200;
-                    }
-                    if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY() + 1) {
-                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.UP);
-                    } else if (targetButtonPos != null && targetButtonPos.getY() < golem.getBlockPos().getY()) {
-                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.DOWN);
-                    } else if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY()) {
-                        golem.setButtonDirection(CopperGolemEntity.ButtonDirection.FRONT);
-                    }
-                    if (pressCooldown > 0) {
-                        pressCooldown--;
-                    }
-                    targetButtonPos = null;
+            Vec3d currentPos = golem.getPos();
+            double distanceMoved = currentPos.distanceTo(lastPosition);
+            System.out.println("Distance Moved: " + distanceMoved);
+            if (distanceMoved < 0.1) {
+                interest--;
+            } else {
+                if (interest >= 0) {
+                    interest = Math.min(100, interest + 2); // Slightly regain interest when moving
                 }
             }
+//            if (interest <= 0) {
+//                targetCooldown--;
+//            }
+            lastPosition = currentPos;
+            if (interest > 0) {
+                if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {
+                    BlockState state = golem.getWorld().getBlockState(targetButtonPos);
+                    if ((state.getBlock() instanceof ButtonBlock button) && pressCooldown <= 0) {
+                        golem.setCanMoveDelayTwo(false);
+                        button.powerOn(state, golem.getWorld(), targetButtonPos, null);
+//                        golem.getWorld().playSound(golem, golem.getBlockPos(), SoundEvents.BUT, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
-            else {
-                System.out.println("Moving towards button at " + targetButtonPos);
-                golem.getNavigation().startMovingTo(targetButtonPos.getX(), targetButtonPos.getY(), targetButtonPos.getZ(), speed * this.golem.getSpeedMultiplier());
+                        interest = 100;
+                        switch (golem.getOxidation()) {
+                            case UNOXIDIZED -> pressCooldown = 120;
+                            case EXPOSED -> pressCooldown = 160;
+                            case WEATHERED -> pressCooldown = 200;
+                        }
+                        if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY() + 1) {
+                            golem.setButtonDirection(CopperGolemEntity.ButtonDirection.UP);
+                        } else if (targetButtonPos != null && targetButtonPos.getY() < golem.getBlockPos().getY()) {
+                            golem.setButtonDirection(CopperGolemEntity.ButtonDirection.DOWN);
+                        } else if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY()) {
+                            golem.setButtonDirection(CopperGolemEntity.ButtonDirection.FRONT);
+                        }
+                        if (pressCooldown > 0) {
+                            pressCooldown--;
+                        }
+                        targetButtonPos = null;
+                    }
+                } else {
+                    System.out.println("Moving towards button at " + targetButtonPos);
+                    golem.getNavigation().startMovingTo(targetButtonPos.getX(), targetButtonPos.getY(), targetButtonPos.getZ(), speed * this.golem.getSpeedMultiplier());
+                }
+            } else {
+                golem.navigateAround(16, 7);
+                if (interest <= -100) {
+                    interest = 100;
+                }
             }
         }
     }
+
     public void lookAtPosition(BlockPos pos) {
         golem.getLookControl().lookAt(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, (float)(this.golem.getMaxHeadRotation() + 20), (float)this.golem.getMaxLookPitchChange());
     }
