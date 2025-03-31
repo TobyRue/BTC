@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.entity.custom;
 
-import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.ai.CopperGolemButtonPressGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
@@ -17,7 +16,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
@@ -26,8 +24,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -49,6 +45,7 @@ public class CopperGolemEntity extends GolemEntity {
     protected double targetZ;
     
     private static final double SPEED = 0.4D;
+    private static final int COPPER_INGOT_HEAL_VALUE = 5;
 
     public enum Oxidation {
         UNOXIDIZED, EXPOSED, WEATHERED, OXIDIZED
@@ -56,6 +53,7 @@ public class CopperGolemEntity extends GolemEntity {
     public enum ButtonDirection {
         NONE, UP, FRONT, DOWN
     }
+
     private static final TrackedData<Byte> OXIDATION_STATE;
     private static final TrackedData<Byte> BUTTON_STATE;
     private static final TrackedData<Boolean> WAXED_STATE; // New waxed state
@@ -66,12 +64,12 @@ public class CopperGolemEntity extends GolemEntity {
 
     static {
         OXIDATION_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
+        BUTTON_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
         WAXED_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         WAKE_UP_PLAYED = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         CAN_MOVE_DELAY_ONE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         CAN_MOVE_DELAY_TWO = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         AGE_LOCK = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
-        BUTTON_STATE = DataTracker.registerData(CopperGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
     }
 
     public final AnimationState wakeUpAnimationState = new AnimationState();
@@ -90,13 +88,17 @@ public class CopperGolemEntity extends GolemEntity {
 
     public static DefaultAttributeContainer.Builder createCopperGolemAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 15f)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 25f)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.8f)
                 .add(EntityAttributes.GENERIC_ARMOR, 8f)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20f)
                 .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1f);
     }
 
+    @Override
+    protected Vec3d getLeashOffset() {
+        return new Vec3d(0.0D, this.getStandingEyeHeight() - 0.125D, 0.0D);
+    }
 
     @Override
     protected void initGoals() {
@@ -120,47 +122,7 @@ public class CopperGolemEntity extends GolemEntity {
 
 
 
-    private void setupAnimationStatesClient() {
-        if (this.getOxidation() != Oxidation.OXIDIZED) {
-            if (this.idleAnimationTimeout <= 0) {
-                this.idleAnimationTimeout = this.random.nextInt(40) + 80;
-                this.idleAnimationState.startIfNotRunning(this.age);
-            } else {
-                --this.idleAnimationTimeout;
-            }
-        } else {
-            this.idleAnimationState.stop();
-        }
-        if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED && !this.hasWokenUp()) {
-            this.wakeUpAnimationState.startIfNotRunning(this.age);
-        }
-        if (this.getOxidation() != Oxidation.OXIDIZED) {
-            if (this.getButtonDirection() != ButtonDirection.NONE) {
-                if (this.getButtonDirection() == ButtonDirection.FRONT) {
-                    this.buttonPressFrontAnimationState.startIfNotRunning(this.age);
-                } else if (this.getButtonDirection() == ButtonDirection.UP) {
-                    this.buttonPressUpAnimationState.startIfNotRunning(this.age);
-                } else if (this.getButtonDirection() == ButtonDirection.DOWN) {
-                    this.buttonPressDownAnimationState.startIfNotRunning(this.age);
-                }
-            } else {
-                this.buttonPressFrontAnimationState.stop();
-                this.buttonPressUpAnimationState.stop();
-                this.buttonPressDownAnimationState.stop();
-            }
-        }
-    }
-    private void setupAnimationStatesServer() {
-        if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED) {
-            setWokenUp(true);
-        } else if ((this.getAgeLock() + 80 < this.age && this.getAgeLock() + 120 >= this.age)) {
-            setCanMoveDelayOne(true);
-        } else if ((this.getAgeLock() + 40 <= this.age && this.getAgeLock() + 80 > this.age)) {
-            setCanMoveDelayTwo(true);
-            setButtonDirection(ButtonDirection.NONE);
-            navigateAround(16,7);
-        }
-    }
+
     public void navigateAround(Integer horizontalRange, Integer verticalRange) {
         Vec3d vec3d = this.getWanderTarget(horizontalRange, verticalRange);
         if (vec3d != null) {
@@ -238,26 +200,6 @@ public class CopperGolemEntity extends GolemEntity {
         return Oxidation.values()[this.dataTracker.get(OXIDATION_STATE)];
     }
 
-    private void advanceOxidation() {
-        Oxidation currentState = this.getOxidation();
-        Oxidation nextState = switch (currentState) {
-            case UNOXIDIZED -> Oxidation.EXPOSED;
-            case EXPOSED -> Oxidation.WEATHERED;
-            case WEATHERED, OXIDIZED -> Oxidation.OXIDIZED;
-        };
-        this.setOxidation(nextState);
-    }
-
-    private void lowerOxidation() {
-        Oxidation currentState = this.getOxidation();
-        Oxidation nextState = switch (currentState) {
-            case OXIDIZED -> Oxidation.WEATHERED;
-            case WEATHERED -> Oxidation.EXPOSED;
-            case EXPOSED, UNOXIDIZED -> Oxidation.UNOXIDIZED;
-        };
-        this.setOxidation(nextState);
-    }
-
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.ON_FIRE) || source.isOf(DamageTypes.LIGHTNING_BOLT) || source.isOf(DamageTypes.LAVA)) {
@@ -282,17 +224,108 @@ public class CopperGolemEntity extends GolemEntity {
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(this.getStepSound(), 0.50F, 1.0F);
+        this.playSound(this.getStepSound(), 1.0F, 1.0F);
     }
 
     SoundEvent getStepSound() {
         return ModSounds.COPPER_STEP;
     }
 
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.COPPER_AMBIENT;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.COPPER_DEATH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return ModSounds.COPPER_HURT;
+    }
+
+    private void advanceOxidation() {
+        Oxidation currentState = this.getOxidation();
+        Oxidation nextState = switch (currentState) {
+            case UNOXIDIZED -> Oxidation.EXPOSED;
+            case EXPOSED -> Oxidation.WEATHERED;
+            case WEATHERED, OXIDIZED -> Oxidation.OXIDIZED;
+        };
+        this.setOxidation(nextState);
+    }
+
+    private void lowerOxidation() {
+        Oxidation currentState = this.getOxidation();
+        Oxidation nextState = switch (currentState) {
+            case OXIDIZED -> Oxidation.WEATHERED;
+            case WEATHERED -> Oxidation.EXPOSED;
+            case EXPOSED, UNOXIDIZED -> Oxidation.UNOXIDIZED;
+        };
+        this.setOxidation(nextState);
+    }
+    private void setupAnimationStatesClient() {
+        if (this.getOxidation() != Oxidation.OXIDIZED) {
+            if (this.idleAnimationTimeout <= 0) {
+                this.idleAnimationTimeout = this.random.nextInt(40) + 80;
+                this.idleAnimationState.startIfNotRunning(this.age);
+            } else {
+                --this.idleAnimationTimeout;
+            }
+        } else {
+            this.idleAnimationState.stop();
+        }
+        if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED && !this.hasWokenUp()) {
+            this.wakeUpAnimationState.startIfNotRunning(this.age);
+        }
+        if (this.getOxidation() != Oxidation.OXIDIZED) {
+            if (this.getButtonDirection() != ButtonDirection.NONE) {
+                if (this.getButtonDirection() == ButtonDirection.FRONT) {
+                    this.buttonPressFrontAnimationState.startIfNotRunning(this.age);
+                } else if (this.getButtonDirection() == ButtonDirection.UP) {
+                    this.buttonPressUpAnimationState.startIfNotRunning(this.age);
+                } else if (this.getButtonDirection() == ButtonDirection.DOWN) {
+                    this.buttonPressDownAnimationState.startIfNotRunning(this.age);
+                }
+            } else {
+                this.buttonPressFrontAnimationState.stop();
+                this.buttonPressUpAnimationState.stop();
+                this.buttonPressDownAnimationState.stop();
+            }
+        }
+    }
+    private void setupAnimationStatesServer() {
+
+        if (this.age <= 80 && this.getOxidation() != Oxidation.OXIDIZED && !this.hasWokenUp()) {
+            setWokenUp(true);
+            this.getWorld().playSound(this, this.getBlockPos(), ModSounds.COPPER_HEAD_SPIN, SoundCategory.NEUTRAL, 0.5f, 1f);
+        } else if ((this.getAgeLock() + 80 < this.age && this.getAgeLock() + 120 >= this.age)) {
+            setCanMoveDelayOne(true);
+        } else if ((this.getAgeLock() + 40 <= this.age && this.getAgeLock() + 80 > this.age)) {
+            setCanMoveDelayTwo(true);
+            setButtonDirection(ButtonDirection.NONE);
+            if (!cantMove()) {
+                navigateAround(16, 7);
+            }
+        }
+    }
+
+    @Override
+    public void travel(Vec3d movementInput) {
+        if (this.isLeashed()) {
+            movementInput = movementInput.multiply(0.4); // Adjust the multiplier to tweak speed
+        }
+        super.travel(movementInput);
+    }
+
+
     @Override
     public void tick() {
         super.tick();
-
         if (this.getWorld().isClient()) {
             setupAnimationStatesClient();
         } else {
@@ -310,8 +343,6 @@ public class CopperGolemEntity extends GolemEntity {
         }
     }
 
-
-
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
@@ -327,8 +358,7 @@ public class CopperGolemEntity extends GolemEntity {
 
                 return ActionResult.SUCCESS;
             }
-        }
-        if (itemStack.getItem() instanceof AxeItem) {
+        } else if (itemStack.getItem() instanceof AxeItem) {
             if (this.isWaxed()) {
                 this.setWaxed(false); // Mark as waxed
                 this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -341,6 +371,14 @@ public class CopperGolemEntity extends GolemEntity {
                 this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_SCRAPE, SoundCategory.PLAYERS, 1.0F, 1.0F);
                 if (!player.getAbilities().creativeMode) {
                     itemStack.damage(3, player, EquipmentSlot.MAINHAND);
+                }
+                return ActionResult.SUCCESS;
+            }
+        } else if (itemStack.isOf(Items.COPPER_INGOT)) {
+            if (this.getHealth() != this.getMaxHealth()) {
+                this.heal(COPPER_INGOT_HEAL_VALUE);
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.decrement(1);
                 }
                 return ActionResult.SUCCESS;
             }

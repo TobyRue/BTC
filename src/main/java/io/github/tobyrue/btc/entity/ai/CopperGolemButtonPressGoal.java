@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.entity.ai;
 
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
+import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.entity.ai.goal.Goal;
@@ -17,6 +18,7 @@ public class CopperGolemButtonPressGoal extends Goal {
     private BlockPos targetButtonPos;
     private int pressCooldown;
     private int interest = 100;
+    private int soundCooldown = 0;
     private Vec3d lastPosition;
 
 
@@ -83,6 +85,10 @@ public class CopperGolemButtonPressGoal extends Goal {
 
     @Override
     public void tick() {
+//        if (soundCooldown > 0) {
+//            soundCooldown--;
+//        }
+        System.out.println("Sound Cooldown is: " + soundCooldown);
         System.out.println("Interest is: " + interest);
         if (targetButtonPos != null) {
             lookAtPosition(targetButtonPos);
@@ -96,6 +102,7 @@ public class CopperGolemButtonPressGoal extends Goal {
                     interest = Math.min(100, interest + 2); // Slightly regain interest when moving
                 }
             }
+
 //            if (interest <= 0) {
 //                targetCooldown--;
 //            }
@@ -104,9 +111,8 @@ public class CopperGolemButtonPressGoal extends Goal {
                 if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {
                     BlockState state = golem.getWorld().getBlockState(targetButtonPos);
                     if ((state.getBlock() instanceof ButtonBlock button) && pressCooldown <= 0) {
-                        golem.setCanMoveDelayTwo(false);
                         button.powerOn(state, golem.getWorld(), targetButtonPos, null);
-//                        golem.getWorld().playSound(golem, golem.getBlockPos(), SoundEvents.BUT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                        golem.setCanMoveDelayTwo(false);
 
                         interest = 100;
                         switch (golem.getOxidation()) {
@@ -114,6 +120,7 @@ public class CopperGolemButtonPressGoal extends Goal {
                             case EXPOSED -> pressCooldown = 160;
                             case WEATHERED -> pressCooldown = 200;
                         }
+
                         if (targetButtonPos != null && targetButtonPos.getY() == golem.getBlockPos().getY() + 1) {
                             golem.setButtonDirection(CopperGolemEntity.ButtonDirection.UP);
                         } else if (targetButtonPos != null && targetButtonPos.getY() < golem.getBlockPos().getY()) {
@@ -125,6 +132,11 @@ public class CopperGolemButtonPressGoal extends Goal {
                             pressCooldown--;
                         }
                         targetButtonPos = null;
+//                        if (soundCooldown <= 0) {
+//                            soundCooldown = 40;
+//                            System.out.println("Sound Cooldown is 0");
+                            golem.getWorld().playSound(golem, golem.getBlockPos(), ModSounds.COPPER_ARM_MOVE, SoundCategory.NEUTRAL, 0.7f, 1f);
+//                        }
                     }
                 } else {
                     System.out.println("Moving towards button at " + targetButtonPos);

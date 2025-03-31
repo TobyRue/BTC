@@ -1,8 +1,45 @@
 {
   "copper_step": {
-    "subtitle": "sounds.btc.copper_step",
+    "subtitle": "subtitles.block.generic.footsteps",
     "sounds": [
-      "btc:copper_step"
+      "btc:entity/copper_golem/copper_step_1",
+      "btc:entity/copper_golem/copper_step_2",
+      "btc:entity/copper_golem/copper_step_3",
+      "btc:entity/copper_golem/copper_step_4"
+    ]
+  },
+  "copper_head_spin": {
+    "subtitle": "subtitles.entity.btc.copper_golem.copper_head_spin",
+    "sounds": [
+      "btc:entity/copper_golem/copper_head_spin_1",
+      "btc:entity/copper_golem/copper_head_spin_2"
+    ]
+  },
+  "copper_arm_move": {
+    "subtitle": "subtitles.entity.btc.copper_golem.copper_arm_move",
+    "sounds": [
+      "btc:entity/copper_golem/copper_arm_move"
+    ]
+  },
+  "copper_ambient": {
+    "subtitle": "subtitles.entity.btc.copper_golem.copper_ambient",
+    "sounds": [
+      "btc:entity/copper_golem/copper_ambient"
+    ]
+  },
+  "copper_death": {
+    "subtitle": "subtitles.entity.btc.copper_golem.copper_death",
+    "sounds": [
+      "btc:entity/copper_golem/copper_death"
+    ]
+  },
+  "copper_hurt": {
+    "subtitle": "subtitles.entity.btc.copper_golem.copper_hurt",
+    "sounds": [
+      "btc:entity/copper_golem/copper_hurt_1",
+      "btc:entity/copper_golem/copper_hurt_2",
+      "btc:entity/copper_golem/copper_hurt_3",
+      "btc:entity/copper_golem/copper_hurt_4"
     ]
   }
 }
