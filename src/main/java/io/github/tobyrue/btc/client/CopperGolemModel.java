@@ -4,7 +4,7 @@
 
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.entity.animation.ModAnimations;
+import io.github.tobyrue.btc.entity.animation.CopperGolemAnimations;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
@@ -108,14 +108,14 @@ public class CopperGolemModel <T extends CopperGolemEntity> extends SinglePartEn
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(headYaw, headPitch);
-		this.updateAnimation(entity.wakeUpAnimationState, ModAnimations.COPPER_WAKE_UP, animationProgress, 1f);
+		this.updateAnimation(entity.wakeUpAnimationState, CopperGolemAnimations.COPPER_WAKE_UP, animationProgress, 1f);
 
-		this.updateAnimation(entity.idleAnimationState, ModAnimations.COPPER_IDLE, animationProgress, 1f);
+		this.updateAnimation(entity.idleAnimationState, CopperGolemAnimations.COPPER_IDLE, animationProgress, 1f);
 
-		this.updateAnimation(entity.buttonPressFrontAnimationState, ModAnimations.COPPER_PRESS_BUTTON_DOWN, animationProgress, 1f);
-		this.updateAnimation(entity.buttonPressUpAnimationState, ModAnimations.COPPER_PRESS_BUTTON_UP, animationProgress, 1f);
-		this.updateAnimation(entity.buttonPressDownAnimationState, ModAnimations.COPPER_BUTTON_FAR_DOWN, animationProgress, 1f);
+		this.updateAnimation(entity.buttonPressFrontAnimationState, CopperGolemAnimations.COPPER_PRESS_BUTTON_DOWN, animationProgress, 1f);
+		this.updateAnimation(entity.buttonPressUpAnimationState, CopperGolemAnimations.COPPER_PRESS_BUTTON_UP, animationProgress, 1f);
+		this.updateAnimation(entity.buttonPressDownAnimationState, CopperGolemAnimations.COPPER_BUTTON_FAR_DOWN, animationProgress, 1f);
 
-		this.animateMovement(ModAnimations.COPPER_WALK, limbAngle, limbDistance, 2f, 2.5f);
+		this.animateMovement(CopperGolemAnimations.COPPER_WALK, limbAngle, limbDistance, 2f, 2.5f);
 	}
 }

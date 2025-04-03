@@ -4,7 +4,7 @@
 
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.entity.animation.ModAnimations;
+import io.github.tobyrue.btc.entity.animation.LuminaryAnimations;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
@@ -114,10 +114,10 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 			this.armscrossed.visible = true;
 		}
 
-		this.updateAnimation(entity.attackAnimationState, ModAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
+		this.updateAnimation(entity.attackAnimationState, LuminaryAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
 
-		this.animateMovement(ModAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
-		this.updateAnimation(entity.idleAnimationState, ModAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
+		this.animateMovement(LuminaryAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
+		this.updateAnimation(entity.idleAnimationState, LuminaryAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
 	}
 
 	private void setHeadAngles(float headYaw, float headPitch) {

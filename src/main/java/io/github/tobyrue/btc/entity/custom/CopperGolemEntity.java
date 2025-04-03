@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
 import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.WallBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.SwimGoal;
