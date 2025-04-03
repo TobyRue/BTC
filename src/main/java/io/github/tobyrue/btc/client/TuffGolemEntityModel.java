@@ -4,13 +4,19 @@
 
 package io.github.tobyrue.btc.client;
 
+import io.github.tobyrue.btc.entity.animation.CopperGolemAnimations;
+import io.github.tobyrue.btc.entity.animation.TuffGolemAnimations;
+import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
+import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
-public class TuffGolemEntityModel extends EntityModel<Entity> {
+public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart tuff_golem;
 	private final ModelPart body;
 	private final ModelPart head;
@@ -29,6 +35,7 @@ public class TuffGolemEntityModel extends EntityModel<Entity> {
 	private final ModelPart legs;
 	private final ModelPart left_leg;
 	private final ModelPart right_leg;
+
 	public TuffGolemEntityModel(ModelPart root) {
 		this.tuff_golem = root.getChild("tuff_golem");
 		this.body = tuff_golem.getChild("body");
@@ -49,6 +56,7 @@ public class TuffGolemEntityModel extends EntityModel<Entity> {
 		this.left_leg = legs.getChild("left_leg");
 		this.right_leg = legs.getChild("right_leg");
 	}
+
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
@@ -91,12 +99,24 @@ public class TuffGolemEntityModel extends EntityModel<Entity> {
 		ModelPartData right_leg = legs.addChild("right_leg", ModelPartBuilder.create().uv(32, 0).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 5.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, 6.0F, 0.0F));
 		return TexturedModelData.of(modelData, 64, 64);
 	}
-	@Override
-	public void setAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-	}
+
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
 		tuff_golem.render(matrices, vertices, light, overlay, color);
+	}
+
+	@Override
+	public ModelPart getPart() {
+		return tuff_golem;
+	}
+
+	@Override
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+		this.getPart().traverse().forEach(ModelPart::resetTransform);
+
+		this.updateAnimation(entity.idleAnimationState, TuffGolemAnimations.TUFF_IDLE, animationProgress, 1f);
+
+		this.animateMovement(TuffGolemAnimations.TUFF_WALK_WITHOUT_ITEM, limbAngle, limbDistance, 2f, 2.5f);
 	}
 }

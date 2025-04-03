@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.entity;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -34,6 +35,10 @@ public class ModEntities {
             EntityType.Builder.create(CopperGolemEntity::new, SpawnGroup.CREATURE)
                     .dimensions(0.8f, 1.4f).eyeHeight(0.75f).build());
 
+    public static final EntityType<TuffGolemEntity> TUFF_GOLEM = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "tuff_golem"),
+            EntityType.Builder.create(TuffGolemEntity::new, SpawnGroup.CREATURE)
+                    .dimensions(0.8f, 1.4f).eyeHeight(0.75f).build());
 //    public static final EntityType<CopperGolemEntity> COPPER_GOLEM = Registry.register(Registries.ENTITY_TYPE,
 //            Identifier.of(BTC.MOD_ID, "copper_golem"),
 //            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, CopperGolemEntity::new)

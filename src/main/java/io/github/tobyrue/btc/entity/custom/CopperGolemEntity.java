@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.entity.custom;
 import io.github.tobyrue.btc.entity.ai.CopperGolemButtonPressGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemTemptGoal;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
+import io.github.tobyrue.btc.entity.ai.CopperSwimGoal;
 import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBlock;
@@ -103,7 +104,7 @@ public class CopperGolemEntity extends GolemEntity {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
+        this.goalSelector.add(0, new CopperSwimGoal(this));
         this.goalSelector.add(0, new CopperGolemButtonPressGoal(this, SPEED));
         this.goalSelector.add(1, new CopperGolemWanderGoal(this, SPEED));
         this.goalSelector.add(2, new CopperGolemTemptGoal(this, SPEED, Ingredient.ofItems(Items.HONEYCOMB), false));
