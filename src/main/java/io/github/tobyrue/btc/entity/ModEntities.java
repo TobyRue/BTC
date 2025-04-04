@@ -38,7 +38,7 @@ public class ModEntities {
     public static final EntityType<TuffGolemEntity> TUFF_GOLEM = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(BTC.MOD_ID, "tuff_golem"),
             EntityType.Builder.create(TuffGolemEntity::new, SpawnGroup.CREATURE)
-                    .dimensions(0.8f, 1.4f).eyeHeight(0.75f).build());
+                    .dimensions(0.8f, 1.1f).eyeHeight(0.75f).build());
 //    public static final EntityType<CopperGolemEntity> COPPER_GOLEM = Registry.register(Registries.ENTITY_TYPE,
 //            Identifier.of(BTC.MOD_ID, "copper_golem"),
 //            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, CopperGolemEntity::new)

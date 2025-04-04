@@ -118,6 +118,10 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 
 		this.updateAnimation(entity.idleAnimationState, TuffGolemAnimations.TUFF_IDLE, animationProgress, 1f);
 
+		this.updateAnimation(entity.sleepAnimationState, TuffGolemAnimations.TUFF_SLEEP, animationProgress, 1f);
+
+		this.updateAnimation(entity.wakeAnimationState, TuffGolemAnimations.TUFF_WAKE, animationProgress, 1f);
+
 		this.animateMovement(TuffGolemAnimations.TUFF_WALK_WITHOUT_ITEM, limbAngle, limbDistance, 2f, 2.5f);
 	}
 	private void setHeadAngles(float headYaw, float headPitch) {

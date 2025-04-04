@@ -17,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TuffGolemEntity extends GolemEntity {
@@ -25,10 +26,23 @@ public class TuffGolemEntity extends GolemEntity {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
+    public final AnimationState sleepAnimationState = new AnimationState();
+
+    public final AnimationState wakeAnimationState = new AnimationState();
+
+    private boolean justWokeUp = false;
+
+    private Vec3d lastPosition = Vec3d.ZERO;
+    private int ticksStill = 0;
+
     private static final TrackedData<Boolean> IS_SLEEPING; // New waxed state
+    private static final TrackedData<Boolean> CAN_MOVE; // New waxed state
+    private static final TrackedData<Integer> AGE; // New waxed state
 
     static {
         IS_SLEEPING = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        CAN_MOVE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        AGE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
     }
 
     public TuffGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
@@ -39,6 +53,8 @@ public class TuffGolemEntity extends GolemEntity {
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(IS_SLEEPING, false);
+        builder.add(CAN_MOVE, true);
+        builder.add(AGE, this.age);
     }
 
     @Override
@@ -61,6 +77,34 @@ public class TuffGolemEntity extends GolemEntity {
     @Override
     public void tick() {
         super.tick();
+
+        if (!this.getWorld().isClient()) {
+            Vec3d currentPosition = this.getPos();
+            if (!isSleeping()) {
+                if (justWokeUp) {
+                    setCanMove(false);
+                }
+                if (this.getAgeLock() + 20 <= this.age && this.getAgeLock() + 30 <= this.age) {
+                    setCanMove(true);
+                }
+            }
+            if (currentPosition.squaredDistanceTo(lastPosition) < 0.001) {
+                ticksStill++;
+            } else {
+                if (isSleeping()) {
+                    setSleeping(false);
+                    System.out.println("Is sleeping: " + isSleeping());
+                }
+                ticksStill = 0;
+            }
+
+            if (ticksStill >= 200 && !isSleeping()) {
+                setSleeping(true);
+            }
+
+            lastPosition = currentPosition;
+        }
+
         if (this.getWorld().isClient()) {
             setupAnimationStatesClient();
         }
@@ -74,12 +118,40 @@ public class TuffGolemEntity extends GolemEntity {
         this.dataTracker.set(IS_SLEEPING, isSleeping);
     }
 
+    public boolean getCanMove() {
+        return this.dataTracker.get(CAN_MOVE);
+    }
+
+    public void setCanMove(boolean move) {
+        this.dataTracker.set(CAN_MOVE, move);
+        if (!move) {
+            this.dataTracker.set(AGE, this.age);
+        }
+    }
+    public Integer getAgeLock() {
+        return this.dataTracker.get(AGE);
+    }
+
     private void setupAnimationStatesClient() {
         if (this.idleAnimationTimeout <= 0) {
             this.idleAnimationTimeout = this.random.nextInt(40) + 80;
             this.idleAnimationState.startIfNotRunning(this.age);
         } else {
             --this.idleAnimationTimeout;
+        }
+        if (isSleeping()) {
+            sleepAnimationState.startIfNotRunning(this.age);
+            justWokeUp = true;
+            wakeAnimationState.stop();
+        } else {
+            sleepAnimationState.stop();
+
+            System.out.println("Just Woke Up: " + justWokeUp);
+            if (justWokeUp) {
+                wakeAnimationState.start(this.age);
+                justWokeUp = false;
+//                System.out.println("Just Woke Up 222: " + justWokeUp);
+            }
         }
     }
 
