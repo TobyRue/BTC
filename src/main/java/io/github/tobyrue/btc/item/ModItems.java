@@ -59,11 +59,11 @@ public class ModItems {
     );
     public static final Item COPPER_GOLEM_SPAWN_EGG = register(
             new SpawnEggItem(ModEntities.COPPER_GOLEM, 0xC87456, 0x8A422B, new Item.Settings()),
-            "eldritch_luminary_spawn_egg"
+            "copper_golem_spawn_egg"
     );
     public static final Item TUFF_GOLEM_SPAWN_EGG = register(
             new SpawnEggItem(ModEntities.TUFF_GOLEM, 0x636C6D, 0xC6881B, new Item.Settings()),
-            "eldritch_luminary_spawn_egg"
+            "tuff_golem_spawn_egg"
     );
     public static final Item WATER_BLAST = register(
             new WaterBlastItem(new Item.Settings().maxCount(64).rarity(Rarity.COMMON)),

@@ -2,21 +2,9 @@
 // Exported for Minecraft version 1.17+ for Yarn
 // Paste this class into your mod and generate all required imports
 
-package io.github.tobyrue.btc.client;
-
-import io.github.tobyrue.btc.entity.animation.CopperGolemAnimations;
-import io.github.tobyrue.btc.entity.animation.TuffGolemAnimations;
-import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
-import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
-import net.minecraft.client.model.*;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
-
-public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePartEntityModel<T> {
+package com.example.mod;
+   
+public class TuffGolemEntityModel extends EntityModel<Entity> {
 	private final ModelPart tuff_golem;
 	private final ModelPart body;
 	private final ModelPart head;
@@ -35,28 +23,26 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 	private final ModelPart legs;
 	private final ModelPart left_leg;
 	private final ModelPart right_leg;
-
 	public TuffGolemEntityModel(ModelPart root) {
 		this.tuff_golem = root.getChild("tuff_golem");
-		this.body = tuff_golem.getChild("body");
-		this.head = body.getChild("head");
-		this.nose = head.getChild("nose");
-		this.main_head = head.getChild("main_head");
-		this.arms = body.getChild("arms");
-		this.left_arm = arms.getChild("left_arm");
-		this.right_arm = arms.getChild("right_arm");
-		this.cloth = body.getChild("cloth");
-		this.front = cloth.getChild("front");
-		this.sides = cloth.getChild("sides");
-		this.back = cloth.getChild("back");
-		this.body_2 = body.getChild("body_2");
-		this.slider = body_2.getChild("slider");
-		this.main_body = body_2.getChild("main_body");
-		this.legs = tuff_golem.getChild("legs");
-		this.left_leg = legs.getChild("left_leg");
-		this.right_leg = legs.getChild("right_leg");
+		this.body = root.getChild("body");
+		this.head = root.getChild("head");
+		this.nose = root.getChild("nose");
+		this.main_head = root.getChild("main_head");
+		this.arms = root.getChild("arms");
+		this.left_arm = root.getChild("left_arm");
+		this.right_arm = root.getChild("right_arm");
+		this.cloth = root.getChild("cloth");
+		this.front = root.getChild("front");
+		this.sides = root.getChild("sides");
+		this.back = root.getChild("back");
+		this.body_2 = root.getChild("body_2");
+		this.slider = root.getChild("slider");
+		this.main_body = root.getChild("main_body");
+		this.legs = root.getChild("legs");
+		this.left_leg = root.getChild("left_leg");
+		this.right_leg = root.getChild("right_leg");
 	}
-
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
@@ -81,14 +67,14 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 		ModelPartData front = cloth.addChild("front", ModelPartBuilder.create().uv(32, 18).cuboid(-4.0F, 1.0F, -4.0F, 8.0F, 6.0F, 0.0F, new Dilation(0.02F)), ModelTransform.pivot(0.0F, -3.0F, 0.0F));
 
 		ModelPartData sides = cloth.addChild("sides", ModelPartBuilder.create().uv(0, 29).cuboid(4.0F, 1.0F, -4.0F, 0.0F, 6.0F, 8.0F, new Dilation(-0.02F))
-				.uv(16, 29).cuboid(-4.0F, 1.0F, -4.0F, 0.0F, 6.0F, 8.0F, new Dilation(0.02F)), ModelTransform.pivot(0.0F, -3.0F, 0.0F));
+		.uv(16, 29).cuboid(-4.0F, 1.0F, -4.0F, 0.0F, 6.0F, 8.0F, new Dilation(0.02F)), ModelTransform.pivot(0.0F, -3.0F, 0.0F));
 
 		ModelPartData back = cloth.addChild("back", ModelPartBuilder.create().uv(32, 24).cuboid(-4.0F, 1.0F, 4.0F, 8.0F, 6.0F, 0.0F, new Dilation(-0.02F)), ModelTransform.pivot(0.0F, -3.0F, 0.0F));
 
 		ModelPartData body_2 = body.addChild("body_2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
 		ModelPartData slider = body_2.addChild("slider", ModelPartBuilder.create().uv(34, 43).cuboid(-4.0F, -0.91F, -3.0F, 8.0F, 2.0F, 6.0F, new Dilation(0.0F))
-				.uv(34, 51).cuboid(-4.0F, -1.91F, -3.0F, 8.0F, 3.0F, 0.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, 2.9F, -1.0F, 1.5708F, 0.0F, 0.0F));
+		.uv(34, 51).cuboid(-4.0F, -1.91F, -3.0F, 8.0F, 3.0F, 0.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, 2.9F, -1.0F, 1.5708F, 0.0F, 0.0F));
 
 		ModelPartData main_body = body_2.addChild("main_body", ModelPartBuilder.create().uv(0, 15).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 6.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
@@ -99,32 +85,11 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 		ModelPartData right_leg = legs.addChild("right_leg", ModelPartBuilder.create().uv(32, 0).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 5.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, 6.0F, 0.0F));
 		return TexturedModelData.of(modelData, 64, 64);
 	}
-
-
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		tuff_golem.render(matrices, vertices, light, overlay, color);
+	public void setAngles(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 	}
-
 	@Override
-	public ModelPart getPart() {
-		return tuff_golem;
-	}
-
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.setHeadAngles(headYaw, headPitch);
-
-		this.updateAnimation(entity.idleAnimationState, TuffGolemAnimations.TUFF_IDLE, animationProgress, 1f);
-
-		this.animateMovement(TuffGolemAnimations.TUFF_WALK_WITHOUT_ITEM, limbAngle, limbDistance, 2f, 2.5f);
-	}
-	private void setHeadAngles(float headYaw, float headPitch) {
-		headYaw = MathHelper.clamp(headYaw, -30.0f, 30.0f);
-		headPitch = MathHelper.clamp(headPitch, -20.0f, 30.0f);
-
-		this.body.yaw = headYaw * 0.017453292F;
-//		this.body.pitch = headPitch * 0.017453292F;
+	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		tuff_golem.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 	}
 }

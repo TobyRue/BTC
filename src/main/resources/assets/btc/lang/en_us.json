@@ -21,6 +21,8 @@
   "item.btc.dragon_staff": "Staff of the Dragonhearted",
   "item.btc.spell_book_item": "Spell Book",
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
+  "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
+  "item.btc.tuff_golem_spawn_egg": "Tuff Golem Spawn Egg",
   "item.btc.water_blast": "Water Blast",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
@@ -52,6 +54,8 @@
   "item.minecraft.tipped_arrow.effect.strong_dragon_scales": "Arrow of Strong Dragon Scales",
 
   "entity.btc.eldritch_luminary": "Eldritch Luminary",
+  "entity.btc.copper_golem": "Copper Golem",
+  "entity.btc.tuff_golem": "Tuff Golem",
   "entity.btc.water_blast": "Water Blast",
 
   "subtitles.entity.btc.copper_golem.copper_arm_move": "Copper Golem presses button",

@@ -18,7 +18,6 @@ public class CopperGolemButtonPressGoal extends Goal {
     private BlockPos targetButtonPos;
     private int pressCooldown;
     private int interest = 100;
-    private int soundCooldown = 0;
     private Vec3d lastPosition;
 
 
@@ -88,13 +87,10 @@ public class CopperGolemButtonPressGoal extends Goal {
 //        if (soundCooldown > 0) {
 //            soundCooldown--;
 //        }
-        System.out.println("Sound Cooldown is: " + soundCooldown);
-        System.out.println("Interest is: " + interest);
         if (targetButtonPos != null) {
             lookAtPosition(targetButtonPos);
             Vec3d currentPos = golem.getPos();
             double distanceMoved = currentPos.distanceTo(lastPosition);
-            System.out.println("Distance Moved: " + distanceMoved);
             if (distanceMoved < 0.1) {
                 interest--;
             } else {
@@ -132,11 +128,8 @@ public class CopperGolemButtonPressGoal extends Goal {
                             pressCooldown--;
                         }
                         targetButtonPos = null;
-//                        if (soundCooldown <= 0) {
-//                            soundCooldown = 40;
-//                            System.out.println("Sound Cooldown is 0");
-                            golem.getWorld().playSound(golem, golem.getBlockPos(), ModSounds.COPPER_ARM_MOVE, SoundCategory.NEUTRAL, 0.7f, 1f);
-//                        }
+
+                        golem.getWorld().playSound(golem, golem.getBlockPos(), ModSounds.COPPER_ARM_MOVE, SoundCategory.NEUTRAL, 0.7f, 1f);
                     }
                 } else {
                     System.out.println("Moving towards button at " + targetButtonPos);
