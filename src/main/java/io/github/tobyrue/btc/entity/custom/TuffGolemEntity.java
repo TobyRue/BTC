@@ -13,10 +13,15 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -38,11 +43,13 @@ public class TuffGolemEntity extends GolemEntity {
     private static final TrackedData<Boolean> IS_SLEEPING; // New waxed state
     private static final TrackedData<Boolean> CAN_MOVE; // New waxed state
     private static final TrackedData<Integer> AGE; // New waxed state
+    private static final TrackedData<ItemStack> HELD_ITEM;
 
     static {
         IS_SLEEPING = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         CAN_MOVE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         AGE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
+        HELD_ITEM = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     }
 
     public TuffGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
@@ -55,6 +62,7 @@ public class TuffGolemEntity extends GolemEntity {
         builder.add(IS_SLEEPING, false);
         builder.add(CAN_MOVE, true);
         builder.add(AGE, this.age);
+        builder.add(HELD_ITEM, ItemStack.EMPTY);
     }
 
     @Override
@@ -110,6 +118,14 @@ public class TuffGolemEntity extends GolemEntity {
         }
     }
 
+    public ItemStack getHeldItem() {
+        return this.dataTracker.get(HELD_ITEM);
+    }
+
+    public void setHeldItem(ItemStack stack) {
+        this.dataTracker.set(HELD_ITEM, stack);
+    }
+
     public boolean isSleeping() {
         return this.dataTracker.get(IS_SLEEPING);
     }
@@ -154,12 +170,38 @@ public class TuffGolemEntity extends GolemEntity {
             }
         }
     }
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack handStack = player.getStackInHand(hand);
 
+//        if (!this.getWorld().isClient) {
+            System.out.println("Held Item is: " + this.getHeldItem() + ", Item Stack: " + handStack.isEmpty());
+            if (this.getHeldItem().isEmpty() && !handStack.isEmpty()) {
+                // Store the item
+                this.setHeldItem(handStack.copyWithCount(1));
+                System.out.println("Item Stored: " + handStack.getItem().getName());
+                if (!player.isCreative()) {
+                    handStack.decrement(1);
+                }
+                return ActionResult.SUCCESS;
+            } else if (!this.getHeldItem().isEmpty()) {
+                // Give item back to player
+                if (!player.getInventory().insertStack(this.getHeldItem())) {
+                    player.dropItem(this.getHeldItem(), false);
+                }
+                System.out.println("Item Returned: " + this.getHeldItem().getItem().getName());
+                this.setHeldItem(ItemStack.EMPTY);
+                return ActionResult.SUCCESS;
+            }
+//        }
+
+        return super.interactMob(player, hand);
+    }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("Sleeping", this.isSleeping());  // Save the waxed state
+        nbt.putBoolean("Sleeping", this.isSleeping());
     }
 
     @Override

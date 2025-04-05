@@ -2,12 +2,22 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 
+import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
+import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.EnvType;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
 
 
 @Environment(EnvType.CLIENT)
@@ -28,4 +38,31 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
             return RED_EYES_CLOSED;
         }
     }
-}
+
+    @Override
+    public void render(TuffGolemEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        // Push the pose stack to start transformation
+        matrixStack.push();
+
+        // Check if the entity is holding an item
+        ItemStack heldItem = livingEntity.getHeldItem();  // or getHeldItem() based on your entity's method
+
+        // Only render the item if it's not empty
+        if (!heldItem.isEmpty()) {
+            // Render the held item with proper transformations
+            matrixStack.push();
+            matrixStack.translate(0.5D, 1.0D, 0.5D);  // Position the item in front of the golem
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(livingEntity.getYaw())); // Ensure it faces the same direction as the golem
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getWorld().getTime() + f) * 4 + (0.25f * 360))); // Rotation effect
+
+            int lightAbove = WorldRenderer.getLightmapCoordinates(livingEntity.getWorld(), livingEntity.getBlockPos());
+            MinecraftClient.getInstance().getItemRenderer().renderItem(heldItem, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, livingEntity.getWorld(), 0);
+            matrixStack.pop();
+        }
+
+        // Render the entity model
+        super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
+
+        // Pop the pose stack after rendering
+        matrixStack.pop();
+    }}
