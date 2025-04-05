@@ -49,14 +49,17 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
 
         // Only render the item if it's not empty
         if (!heldItem.isEmpty()) {
-            // Render the held item with proper transformations
             matrixStack.push();
-            matrixStack.translate(0.5D, 1.0D, 0.5D);  // Position the item in front of the golem
-            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(livingEntity.getYaw())); // Ensure it faces the same direction as the golem
-            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getWorld().getTime() + f) * 4 + (0.25f * 360))); // Rotation effect
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getHeadYaw() * -1) + 180));  // Rotate based on head yaw
+
+            matrixStack.translate(0.0D, 0.6D, -0.5D);
+            matrixStack.scale(0.7f, 0.7f, 0.7f);
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getWorld().getTime() + f) * 4 + (0.25f * 360))); // Adjust rotation speed
 
             int lightAbove = WorldRenderer.getLightmapCoordinates(livingEntity.getWorld(), livingEntity.getBlockPos());
+
             MinecraftClient.getInstance().getItemRenderer().renderItem(heldItem, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, livingEntity.getWorld(), 0);
+
             matrixStack.pop();
         }
 
