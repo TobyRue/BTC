@@ -255,7 +255,7 @@ public class TuffGolemEntity extends GolemEntity {
         }
         setHeldItem(itemStack);
         if (nbt.contains("HomeX")) {
-            this.homePosition = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
+            this.homePos = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
         }
     }
     public @Nullable Vec3d getHomePosition() {
