@@ -14,6 +14,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePartEntityModel<T> {
@@ -87,8 +88,8 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 
 		ModelPartData body_2 = body.addChild("body_2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
-		ModelPartData slider = body_2.addChild("slider", ModelPartBuilder.create().uv(34, 43).cuboid(-4.0F, -0.91F, -3.0F, 8.0F, 2.0F, 6.0F, new Dilation(0.0F))
-				.uv(34, 51).cuboid(-4.0F, -1.91F, -3.0F, 8.0F, 3.0F, 0.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, 2.9F, -1.0F, 1.5708F, 0.0F, 0.0F));
+		ModelPartData slider = body_2.addChild("slider", ModelPartBuilder.create().uv(34, 43).cuboid(-4.0F, -0.91F, -3.1F, 8.0F, 2.0F, 6.0F, new Dilation(-0.01F))
+				.uv(34, 51).cuboid(-4.0F, -0.91F, -3.1F, 8.0F, 3.0F, 0.0F, new Dilation(-0.01F)), ModelTransform.of(0.0F, 2.8F, -1.0F, 1.5708F, 0.0F, 0.0F));
 
 		ModelPartData main_body = body_2.addChild("main_body", ModelPartBuilder.create().uv(0, 15).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 6.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
@@ -122,13 +123,21 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 
 		this.updateAnimation(entity.wakeAnimationState, TuffGolemAnimations.TUFF_WAKE, animationProgress, 1f);
 
-		this.animateMovement(TuffGolemAnimations.TUFF_WALK_WITHOUT_ITEM, limbAngle, limbDistance, 2f, 2.5f);
+		this.updateAnimation(entity.pickUpItemAnimationState, TuffGolemAnimations.TUFF_PICK_UP_ITEM, animationProgress, 1f);
+		this.updateAnimation(entity.dropItemAnimationState, TuffGolemAnimations.TUFF_DROP_ITEM, animationProgress, 1f);
+
+
+		if (entity.getHeldItem() == ItemStack.EMPTY) {
+			this.animateMovement(TuffGolemAnimations.TUFF_WALK_WITHOUT_ITEM, limbAngle, limbDistance, 2f, 2.5f);
+		} else {
+			this.animateMovement(TuffGolemAnimations.TUFF_WALK_WITH_ITEM, limbAngle, limbDistance, 2f, 2.5f);
+		}
 	}
 	private void setHeadAngles(float headYaw, float headPitch) {
 		headYaw = MathHelper.clamp(headYaw, -30.0f, 30.0f);
 		headPitch = MathHelper.clamp(headPitch, -20.0f, 30.0f);
 
-		this.body.yaw = headYaw * 0.017453292F;
+								this.body.yaw = headYaw * 0.017453292F;
 //		this.body.pitch = headPitch * 0.017453292F;
 	}
 }

@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 
 import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.StaffItem;
 import net.fabricmc.api.EnvType;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import net.fabricmc.api.Environment;
@@ -51,9 +52,12 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
         if (!heldItem.isEmpty()) {
             matrixStack.push();
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getHeadYaw() * -1) + 180));  // Rotate based on head yaw
-
-            matrixStack.translate(0.0D, 0.6D, -0.5D);
-            matrixStack.scale(0.7f, 0.7f, 0.7f);
+            if (livingEntity.isSleeping()) {
+                matrixStack.translate(0.0D, 0.7D, -0.5D);
+            } else {
+                matrixStack.translate(0.0D, 0.75D, -0.5D);
+            }
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getWorld().getTime() + f) * 4 + (0.25f * 360))); // Adjust rotation speed
 
             int lightAbove = WorldRenderer.getLightmapCoordinates(livingEntity.getWorld(), livingEntity.getBlockPos());

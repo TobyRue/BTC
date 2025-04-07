@@ -11,6 +11,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,10 +21,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class TuffGolemEntity extends GolemEntity {
     private static final double SPEED = 0.4D;
@@ -35,10 +38,17 @@ public class TuffGolemEntity extends GolemEntity {
 
     public final AnimationState wakeAnimationState = new AnimationState();
 
+    public final AnimationState pickUpItemAnimationState = new AnimationState();
+
+    public final AnimationState dropItemAnimationState = new AnimationState();
+
     private boolean justWokeUp = false;
 
     private Vec3d lastPosition = Vec3d.ZERO;
     private int ticksStill = 0;
+
+    private Vec3d homePos = null;
+    public int ticksAwayFromHome = 0;
 
     private static final TrackedData<Boolean> IS_SLEEPING; // New waxed state
     private static final TrackedData<Boolean> CAN_MOVE; // New waxed state
@@ -169,15 +179,29 @@ public class TuffGolemEntity extends GolemEntity {
 //                System.out.println("Just Woke Up 222: " + justWokeUp);
             }
         }
+        if (this.getHeldItem() != ItemStack.EMPTY) {
+            pickUpItemAnimationState.startIfNotRunning(this.age);
+            dropItemAnimationState.stop();
+        } else {
+            dropItemAnimationState.startIfNotRunning(this.age);
+            pickUpItemAnimationState.stop();
+        }
     }
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handStack = player.getStackInHand(hand);
 
-//        if (!this.getWorld().isClient) {
+        if (player.isSneaking() && handStack.getItem() == Items.COMPASS) {
+            this.homePos = this.getPos();
+            player.sendMessage(Text.literal("Tuff Golem home set!"), true);
+            return ActionResult.SUCCESS;
+        }
+        if (!player.isSneaking()) {
             System.out.println("Held Item is: " + this.getHeldItem() + ", Item Stack: " + handStack.isEmpty());
             if (this.getHeldItem().isEmpty() && !handStack.isEmpty()) {
                 // Store the item
+                setSleeping(false);
+                ticksStill = 0;
                 this.setHeldItem(handStack.copyWithCount(1));
                 System.out.println("Item Stored: " + handStack.getItem().getName());
                 if (!player.isCreative()) {
@@ -186,6 +210,8 @@ public class TuffGolemEntity extends GolemEntity {
                 return ActionResult.SUCCESS;
             } else if (!this.getHeldItem().isEmpty()) {
                 // Give item back to player
+                ticksStill = 0;
+                setSleeping(false);
                 if (!player.getInventory().insertStack(this.getHeldItem())) {
                     player.dropItem(this.getHeldItem(), false);
                 }
@@ -193,7 +219,7 @@ public class TuffGolemEntity extends GolemEntity {
                 this.setHeldItem(ItemStack.EMPTY);
                 return ActionResult.SUCCESS;
             }
-//        }
+        }
 
         return super.interactMob(player, hand);
     }
@@ -202,13 +228,37 @@ public class TuffGolemEntity extends GolemEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putBoolean("Sleeping", this.isSleeping());
+        if (!this.getHeldItem().isEmpty()) {
+            nbt.put("Item", this.getHeldItem().encode(this.getRegistryManager()));
+        }
+        if (homePos != null) {
+            nbt.putDouble("HomeX", homePos.x);
+            nbt.putDouble("HomeY", homePos.y);
+            nbt.putDouble("HomeZ", homePos.z);
+        }
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("Sleeping")) {  // No type check needed for booleans
-            this.setSleeping(nbt.getBoolean("Sleeping"));
+        this.setSleeping(nbt.getBoolean("Sleeping"));
+        ItemStack itemStack;
+        if (nbt.contains("Item", 10)) {
+            NbtCompound nbtCompound = nbt.getCompound("Item");
+            itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
+        } else {
+            itemStack = ItemStack.EMPTY;
         }
+        if (nbt.contains("Item", 10)) {
+            NbtCompound nbtCompound = nbt.getCompound("Item");
+            itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
+        }
+        setHeldItem(itemStack);
+        if (nbt.contains("HomeX")) {
+            this.homePosition = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
+        }
+    }
+    public @Nullable Vec3d getHomePosition() {
+        return homePos;
     }
 }

@@ -20,6 +20,7 @@ public class TuffWanderGoal extends Goal {
     protected int chance;
     protected boolean ignoringChance;
     private final boolean canDespawn;
+    private int wanderTime = 0;
 
     public TuffWanderGoal(TuffGolemEntity mob, double speed) {
         this(mob, speed, DEFAULT_CHANCE);
@@ -70,7 +71,27 @@ public class TuffWanderGoal extends Goal {
 
     @Nullable
     protected Vec3d getWanderTarget() {
-        return NoPenaltyTargeting.find(this.mob, 12, 7);
+        Vec3d home = mob.getHomePosition();
+        if (home != null) {
+            Vec3d candidate = NoPenaltyTargeting.find(mob, 12, 7);
+            if (candidate != null && candidate.isInRange(home, 10)) {
+                return candidate;
+            }
+
+            // Try returning to home if far away
+            if (!mob.getPos().isInRange(home, 10)) {
+                mob.ticksAwayFromHome++;
+                if (mob.ticksAwayFromHome > 100) {
+                    mob.ticksAwayFromHome = 0;
+                    return home;
+                }
+            } else {
+                mob.ticksAwayFromHome = 0;
+            }
+            return null;
+        }
+
+        return NoPenaltyTargeting.find(mob, 12, 7);
     }
 
     @Override
