@@ -1,8 +1,12 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
+import io.github.tobyrue.btc.entity.ai.TuffWanderAroundGoal;
+import io.github.tobyrue.btc.entity.ai.TuffWanderGoal;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
@@ -15,6 +19,7 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -43,12 +48,12 @@ public class TuffGolemEntity extends GolemEntity {
     public final AnimationState dropItemAnimationState = new AnimationState();
 
     private boolean justWokeUp = false;
+    private Float homeYaw = null;
+    private Vec3d homePos = null;
 
     private Vec3d lastPosition = Vec3d.ZERO;
     private int ticksStill = 0;
 
-    private Vec3d homePos = null;
-    public int ticksAwayFromHome = 0;
 
     private static final TrackedData<Boolean> IS_SLEEPING; // New waxed state
     private static final TrackedData<Boolean> CAN_MOVE; // New waxed state
@@ -79,7 +84,8 @@ public class TuffGolemEntity extends GolemEntity {
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new WanderAroundGoal(this, SPEED));
+        this.goalSelector.add(1, new TuffWanderGoal(this, SPEED));
+        this.goalSelector.add(1, new TuffWanderAroundGoal(this, SPEED));
         this.goalSelector.add(1, new TemptGoal(this, SPEED, Ingredient.ofItems(Items.TUFF), false));
     }
 
@@ -157,6 +163,22 @@ public class TuffGolemEntity extends GolemEntity {
     public Integer getAgeLock() {
         return this.dataTracker.get(AGE);
     }
+    public void setHome(Vec3d pos, float yaw) {
+        this.homeYaw = yaw;
+        this.homePos = pos;
+    }
+    public void setHomePos(Vec3d pos) {
+        this.homePos = pos;
+    }
+
+    @Nullable
+    public Float getHomeYaw() {
+        return this.homeYaw;
+    }
+
+    public @Nullable Vec3d getHomePosition() {
+        return homePos;
+    }
 
     private void setupAnimationStatesClient() {
         if (this.idleAnimationTimeout <= 0) {
@@ -192,8 +214,16 @@ public class TuffGolemEntity extends GolemEntity {
         ItemStack handStack = player.getStackInHand(hand);
 
         if (player.isSneaking() && handStack.getItem() == Items.COMPASS) {
-            this.homePos = this.getPos();
+            Vec3d pos = this.getPos();
+            this.setHome(pos, this.getHeadYaw());
             player.sendMessage(Text.literal("Tuff Golem home set!"), true);
+            return ActionResult.SUCCESS;
+        } else if (this.getHomePosition() != null && handStack.getItem() instanceof AxeItem && player.isSneaking()) {
+            setHomePos(null);
+            player.sendMessage(Text.literal("Tuff Golem home cleared!"), true);
+            if (!player.getAbilities().creativeMode) {
+                handStack.damage(1, player, EquipmentSlot.MAINHAND);
+            }
             return ActionResult.SUCCESS;
         }
         if (!player.isSneaking()) {
@@ -258,7 +288,5 @@ public class TuffGolemEntity extends GolemEntity {
             this.homePos = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
         }
     }
-    public @Nullable Vec3d getHomePosition() {
-        return homePos;
-    }
+
 }

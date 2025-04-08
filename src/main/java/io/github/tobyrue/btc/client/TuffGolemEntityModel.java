@@ -117,6 +117,7 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(headYaw, headPitch);
 
+
 		this.updateAnimation(entity.idleAnimationState, TuffGolemAnimations.TUFF_IDLE, animationProgress, 1f);
 
 		this.updateAnimation(entity.sleepAnimationState, TuffGolemAnimations.TUFF_SLEEP, animationProgress, 1f);
@@ -135,9 +136,9 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 	}
 	private void setHeadAngles(float headYaw, float headPitch) {
 		headYaw = MathHelper.clamp(headYaw, -30.0f, 30.0f);
-		headPitch = MathHelper.clamp(headPitch, -20.0f, 30.0f);
+//		headPitch = MathHelper.clamp(headPitch, -20.0f, 30.0f);
 
-								this.body.yaw = headYaw * 0.017453292F;
+		this.body.yaw = headYaw * 0.017453292F;
 //		this.body.pitch = headPitch * 0.017453292F;
 	}
 }
