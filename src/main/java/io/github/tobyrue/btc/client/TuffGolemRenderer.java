@@ -2,18 +2,15 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 
-import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
-import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.StaffItem;
+import io.github.tobyrue.btc.entity.custom.TuffGolemClothRarityOverlay;
 import net.fabricmc.api.EnvType;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -29,7 +26,10 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
 
     public TuffGolemRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new TuffGolemEntityModel<>(ctx.getPart(ModModelLayers.TUFF_GOLEM)), 0.5f);
+        //TODO WORKS \/  DOES ADD A TEXTURE OVER TOP
+        this.addFeature(new TuffGolemClothRarityOverlay(this));
     }
+
 
     @Override
     public Identifier getTexture(TuffGolemEntity entity) {
@@ -44,7 +44,6 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
     public void render(TuffGolemEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         // Push the pose stack to start transformation
         matrixStack.push();
-
         // Check if the entity is holding an item
         ItemStack heldItem = livingEntity.getHeldItem();  // or getHeldItem() based on your entity's method
 

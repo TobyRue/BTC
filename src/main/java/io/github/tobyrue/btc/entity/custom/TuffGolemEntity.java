@@ -25,11 +25,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,12 +61,14 @@ public class TuffGolemEntity extends GolemEntity {
     private static final TrackedData<Boolean> CAN_MOVE; // New waxed state
     private static final TrackedData<Integer> AGE; // New waxed state
     private static final TrackedData<ItemStack> HELD_ITEM;
+    private static final TrackedData<Integer> CLOTH_COLOR;
 
     static {
         IS_SLEEPING = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         CAN_MOVE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         AGE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
         HELD_ITEM = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+        CLOTH_COLOR = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
     }
 
     public TuffGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
@@ -78,6 +82,7 @@ public class TuffGolemEntity extends GolemEntity {
         builder.add(CAN_MOVE, true);
         builder.add(AGE, this.age);
         builder.add(HELD_ITEM, ItemStack.EMPTY);
+        builder.add(CLOTH_COLOR, 0xFFFFFF);
     }
 
     @Override
@@ -132,6 +137,14 @@ public class TuffGolemEntity extends GolemEntity {
         if (this.getWorld().isClient()) {
             setupAnimationStatesClient();
         }
+    }
+
+    public void setClothColor(int rgb) {
+        this.dataTracker.set(CLOTH_COLOR, rgb);
+    }
+
+    public int getClothColor() {
+        return this.dataTracker.get(CLOTH_COLOR);
     }
 
     public ItemStack getHeldItem() {
