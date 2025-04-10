@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.entity.custom;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
 import io.github.tobyrue.btc.entity.ai.TuffWanderAroundGoal;
 import io.github.tobyrue.btc.entity.ai.TuffWanderGoal;
+import net.minecraft.client.render.entity.SheepEntityRenderer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
@@ -18,17 +19,18 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Colors;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffers;
@@ -57,18 +59,18 @@ public class TuffGolemEntity extends GolemEntity {
     private int ticksStill = 0;
 
 
-    private static final TrackedData<Boolean> IS_SLEEPING; // New waxed state
-    private static final TrackedData<Boolean> CAN_MOVE; // New waxed state
-    private static final TrackedData<Integer> AGE; // New waxed state
+    private static final TrackedData<Boolean> IS_SLEEPING;
+    private static final TrackedData<Boolean> CAN_MOVE;
+    private static final TrackedData<Integer> AGE;
     private static final TrackedData<ItemStack> HELD_ITEM;
-    private static final TrackedData<Integer> CLOTH_COLOR;
+    private static final TrackedData<Integer> COLOR;
 
     static {
         IS_SLEEPING = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         CAN_MOVE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         AGE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
         HELD_ITEM = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-        CLOTH_COLOR = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
+        COLOR = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
     }
 
     public TuffGolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
@@ -82,7 +84,7 @@ public class TuffGolemEntity extends GolemEntity {
         builder.add(CAN_MOVE, true);
         builder.add(AGE, this.age);
         builder.add(HELD_ITEM, ItemStack.EMPTY);
-        builder.add(CLOTH_COLOR, 0xFFFFFF);
+        builder.add(COLOR, DyeColor.RED.getEntityColor());
     }
 
     @Override
@@ -138,15 +140,9 @@ public class TuffGolemEntity extends GolemEntity {
             setupAnimationStatesClient();
         }
     }
-
-    public void setClothColor(int rgb) {
-        this.dataTracker.set(CLOTH_COLOR, rgb);
+    public Integer getColor() {
+        return this.dataTracker.get(COLOR);
     }
-
-    public int getClothColor() {
-        return this.dataTracker.get(CLOTH_COLOR);
-    }
-
     public ItemStack getHeldItem() {
         return this.dataTracker.get(HELD_ITEM);
     }
@@ -222,16 +218,48 @@ public class TuffGolemEntity extends GolemEntity {
             pickUpItemAnimationState.stop();
         }
     }
+
+    public static int combineColors(int color1, int color2) {
+        int alpha1 = (color1 >> 24) & 0xFF;
+        int red1 = (color1 >> 16) & 0xFF;
+        int green1 = (color1 >> 8) & 0xFF;
+        int blue1 = color1 & 0xFF;
+
+        int alpha2 = (color2 >> 24) & 0xFF;
+        int red2 = (color2 >> 16) & 0xFF;
+        int green2 = (color2 >> 8) & 0xFF;
+        int blue2 = color2 & 0xFF;
+
+        // Combine by averaging the RGB channels, and keeping the alpha as is (fully opaque)
+        int combinedRed = (red1 + red2) / 2;
+        int combinedGreen = (green1 + green2) / 2;
+        int combinedBlue = (blue1 + blue2) / 2;
+
+        return (alpha1 << 24) | (combinedRed << 16) | (combinedGreen << 8) | combinedBlue;
+    }
+
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handStack = player.getStackInHand(hand);
+        if (player.isSneaking() && handStack.getItem() instanceof DyeItem dyeItem) {
+            int newColor = dyeItem.getColor().getEntityColor();
+            if (this.getColor() == DyeColor.RED.getEntityColor()) {
+                // First time clicking, just set the color
+                this.dataTracker.set(COLOR, newColor);
+            } else {
+                // Subsequent clicks, combine the color
+                int currentColor = this.getColor();
+                int combinedColor = combineColors(currentColor, newColor);
+                this.dataTracker.set(COLOR, combinedColor);
+            }
+        }
 
         if (player.isSneaking() && handStack.getItem() == Items.COMPASS) {
             Vec3d pos = this.getPos();
             this.setHome(pos, this.getHeadYaw());
             player.sendMessage(Text.literal("Tuff Golem home set!"), true);
             return ActionResult.SUCCESS;
-        } else if (this.getHomePosition() != null && handStack.getItem() instanceof AxeItem && player.isSneaking()) {
+        } else if (this.getHomePosition() != null && handStack.isIn(ItemTags.AXES) && player.isSneaking()) {
             setHomePos(null);
             player.sendMessage(Text.literal("Tuff Golem home cleared!"), true);
             if (!player.getAbilities().creativeMode) {
@@ -279,6 +307,7 @@ public class TuffGolemEntity extends GolemEntity {
             nbt.putDouble("HomeY", homePos.y);
             nbt.putDouble("HomeZ", homePos.z);
         }
+        nbt.putInt("Color", this.getColor());
     }
 
     @Override
@@ -300,6 +329,7 @@ public class TuffGolemEntity extends GolemEntity {
         if (nbt.contains("HomeX")) {
             this.homePos = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
         }
+        this.dataTracker.set(COLOR, nbt.getInt("Color"));
     }
 
 }

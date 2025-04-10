@@ -66,7 +66,7 @@ public class ModItems {
             "tuff_golem_spawn_egg"
     );
     public static final Item WATER_BLAST = register(
-            new WaterBlastItem(new Item.Settings().maxCount(64).rarity(Rarity.COMMON)),
+            new WaterBlastItem(new Item.Settings().maxCount(64).rarity(Rarity.UNCOMMON)),
             "water_blast"
     );
     public static final Item SPELL_BOOK = register(

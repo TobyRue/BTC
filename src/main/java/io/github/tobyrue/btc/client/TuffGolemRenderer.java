@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 
+import io.github.tobyrue.btc.entity.custom.TuffGolemClothOverlay;
 import io.github.tobyrue.btc.entity.custom.TuffGolemClothRarityOverlay;
 import net.fabricmc.api.EnvType;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
@@ -28,6 +29,7 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
         super(ctx, new TuffGolemEntityModel<>(ctx.getPart(ModModelLayers.TUFF_GOLEM)), 0.5f);
         //TODO WORKS \/  DOES ADD A TEXTURE OVER TOP
         this.addFeature(new TuffGolemClothRarityOverlay(this));
+        this.addFeature(new TuffGolemClothOverlay(this));
     }
 
 

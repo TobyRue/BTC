@@ -141,4 +141,6 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 		this.body.yaw = headYaw * 0.017453292F;
 //		this.body.pitch = headPitch * 0.017453292F;
 	}
+
+
 }

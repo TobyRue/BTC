@@ -26,6 +26,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -360,7 +361,7 @@ public class CopperGolemEntity extends GolemEntity {
 
                 return ActionResult.SUCCESS;
             }
-        } else if (itemStack.getItem() instanceof AxeItem) {
+        } else if (itemStack.isIn(ItemTags.AXES)) {
             if (this.isWaxed()) {
                 this.setWaxed(false); // Mark as waxed
                 this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.PLAYERS, 1.0F, 1.0F);
