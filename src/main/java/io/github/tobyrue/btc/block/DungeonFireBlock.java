@@ -185,12 +185,13 @@ public class DungeonFireBlock extends Block {
             decrementFireTime(world, pos, state, 1);
             if (!player.isCreative()) {
                 stack.decrement(1);
+                ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
+                if (!world.isClient) {
+                    player.getInventory().offerOrDrop(emptyBottle);
+                }
             }
             // Remove one water bottle from the player's inventory
-            ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
-            if (!world.isClient) {
-                player.getInventory().offerOrDrop(emptyBottle);
-            }
+
             return ItemActionResult.SUCCESS;
         } else if (stack.getItem() == Items.WATER_BUCKET) {
             player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);

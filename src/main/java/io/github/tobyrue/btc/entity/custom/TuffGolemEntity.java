@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.potion.Potions;
 import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.ItemTags;
@@ -61,6 +62,7 @@ public class TuffGolemEntity extends GolemEntity {
 
     private static final TrackedData<Boolean> IS_SLEEPING;
     private static final TrackedData<Boolean> CAN_MOVE;
+    private static final TrackedData<Boolean> DYED;
     private static final TrackedData<Integer> AGE;
     private static final TrackedData<ItemStack> HELD_ITEM;
     private static final TrackedData<Integer> COLOR;
@@ -68,6 +70,7 @@ public class TuffGolemEntity extends GolemEntity {
     static {
         IS_SLEEPING = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         CAN_MOVE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+        DYED = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         AGE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
         HELD_ITEM = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
         COLOR = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -82,6 +85,7 @@ public class TuffGolemEntity extends GolemEntity {
         super.initDataTracker(builder);
         builder.add(IS_SLEEPING, false);
         builder.add(CAN_MOVE, true);
+        builder.add(DYED, false);
         builder.add(AGE, this.age);
         builder.add(HELD_ITEM, ItemStack.EMPTY);
         builder.add(COLOR, DyeColor.RED.getEntityColor());
@@ -153,6 +157,13 @@ public class TuffGolemEntity extends GolemEntity {
 
     public boolean isSleeping() {
         return this.dataTracker.get(IS_SLEEPING);
+    }
+    public void setDyed(boolean dyed) {
+        this.dataTracker.set(DYED, dyed);
+    }
+
+    public boolean getDyed() {
+        return this.dataTracker.get(DYED);
     }
 
     public void setSleeping(boolean isSleeping) {
@@ -241,17 +252,35 @@ public class TuffGolemEntity extends GolemEntity {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handStack = player.getStackInHand(hand);
+        if (player.isSneaking() && handStack.getItem() instanceof PotionItem) {
+            this.setDyed(false);
+            this.dataTracker.set(COLOR, DyeColor.RED.getEntityColor());
+            if (!player.isCreative()) {
+                handStack.decrement(1);
+                ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
+                if (!this.getWorld().isClient) {
+                    player.getInventory().offerOrDrop(emptyBottle);
+                }
+            }
+            return ActionResult.SUCCESS;
+        }
+
         if (player.isSneaking() && handStack.getItem() instanceof DyeItem dyeItem) {
             int newColor = dyeItem.getColor().getEntityColor();
-            if (this.getColor() == DyeColor.RED.getEntityColor()) {
+            if (!this.getDyed()) {
                 // First time clicking, just set the color
                 this.dataTracker.set(COLOR, newColor);
+                this.setDyed(true);
             } else {
                 // Subsequent clicks, combine the color
                 int currentColor = this.getColor();
                 int combinedColor = combineColors(currentColor, newColor);
                 this.dataTracker.set(COLOR, combinedColor);
             }
+            if (!player.isCreative()) {
+                handStack.decrement(1);
+            }
+            return ActionResult.SUCCESS;
         }
 
         if (player.isSneaking() && handStack.getItem() == Items.COMPASS) {
@@ -299,6 +328,7 @@ public class TuffGolemEntity extends GolemEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putBoolean("Sleeping", this.isSleeping());
+        nbt.putBoolean("Dyed", this.getDyed());
         if (!this.getHeldItem().isEmpty()) {
             nbt.put("Item", this.getHeldItem().encode(this.getRegistryManager()));
         }
@@ -314,6 +344,7 @@ public class TuffGolemEntity extends GolemEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.setSleeping(nbt.getBoolean("Sleeping"));
+        this.setDyed(nbt.getBoolean("Dyed"));
         ItemStack itemStack;
         if (nbt.contains("Item", 10)) {
             NbtCompound nbtCompound = nbt.getCompound("Item");
