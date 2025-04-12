@@ -87,7 +87,6 @@ public class WaterBlastEntity extends ProjectileEntity {
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
         super.onBlockHit(blockHitResult);
-        System.out.println("WaterBlastEntity hit a block at: " + blockHitResult.getBlockPos());
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         }
@@ -99,7 +98,6 @@ public class WaterBlastEntity extends ProjectileEntity {
             BlockState state = world.getBlockState(hitPos);
 
             if (state.getBlock() instanceof AbstractCauldronBlock) {
-                System.out.println("Hit Cauldron");
                 if (state.isOf(Blocks.WATER_CAULDRON)) {
                     int currentLevel = state.get(LeveledCauldronBlock.LEVEL);
 
@@ -114,7 +112,6 @@ public class WaterBlastEntity extends ProjectileEntity {
             } else {
                 BlockPos abovePos = hitPos.up();
                 if (world.getBlockState(abovePos).isReplaceable()) {
-                    System.out.println("Hit Block");
                     BlockState water = Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, 8);
                     world.setBlockState(abovePos, water);
                 }

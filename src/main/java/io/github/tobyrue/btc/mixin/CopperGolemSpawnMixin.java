@@ -32,7 +32,6 @@ public abstract class CopperGolemSpawnMixin  {
     @Inject(method = "scheduledTick", at = @At("TAIL"))
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo ci) {
         if (world.isClient) return;
-        System.out.println("⚡ Lightning Rod placed at " + pos);
         trySpawnCopperGolem(world, pos, state);
     }
 
@@ -43,8 +42,7 @@ public abstract class CopperGolemSpawnMixin  {
         // Check if the structure is correct
         if (state.get(LightningRodBlock.FACING) == Direction.UP) {
             if (world.getBlockState(pumpkinPos).isOf(Blocks.CARVED_PUMPKIN) &&
-                    world.getBlockState(copperPos).isOf(Blocks.COPPER_BLOCK)) {
-                System.out.println("Rod - " + world.getBlockState(pos) + " Pumpkin - " + world.getBlockState(pumpkinPos) + " Copper - " + world.getBlockState(copperPos));
+                world.getBlockState(copperPos).isOf(Blocks.COPPER_BLOCK)) {
 
                 // Mimic breakPatternBlocks() to properly remove structure
                 destroyBlockWithEffect(world, pos);
@@ -61,8 +59,7 @@ public abstract class CopperGolemSpawnMixin  {
         }
         if (state.get(LightningRodBlock.FACING) == Direction.UP) {
             if (world.getBlockState(pumpkinPos).isOf(Blocks.CARVED_PUMPKIN) &&
-                    world.getBlockState(copperPos).isOf(Blocks.WAXED_COPPER_BLOCK)) {
-                System.out.println("Rod - " + world.getBlockState(pos) + " Pumpkin - " + world.getBlockState(pumpkinPos) + " Copper - " + world.getBlockState(copperPos));
+                world.getBlockState(copperPos).isOf(Blocks.WAXED_COPPER_BLOCK)) {
 
                 // Mimic breakPatternBlocks() to properly remove structure
                 destroyBlockWithEffect(world, pos);

@@ -88,7 +88,6 @@ public class PedestalBlockEntity extends BlockEntity {
             nbtList.add(entryNbt);
         }
         nbt.put("CustomData", nbtList);
-        System.out.println("NBT data written: " + nbt);
     }
 
     @Override
@@ -104,7 +103,6 @@ public class PedestalBlockEntity extends BlockEntity {
             int value = entryNbt.getInt("Value");
             HASH_MAP.put(uuid, value);
         }
-        System.out.println("NBT data read: " + nbt);
     }
 
     @Override
@@ -119,11 +117,9 @@ public class PedestalBlockEntity extends BlockEntity {
 
     protected void readComponents(BlockEntity.ComponentsAccess components) {
         super.readComponents(components);
-        System.out.println("Read Component");
     }
 
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        System.out.println("Add Component");
     }
 }

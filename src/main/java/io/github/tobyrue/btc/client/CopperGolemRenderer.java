@@ -25,7 +25,6 @@ public class CopperGolemRenderer extends MobEntityRenderer<CopperGolemEntity, Co
 
     @Override
     public Identifier getTexture(CopperGolemEntity entity) {
-//        System.out.println("Current Oxidation State: " + entity.getOxidation());
         if (entity.getOxidation() == CopperGolemEntity.Oxidation.UNOXIDIZED) {
             return NORM;
         } else if (entity.getOxidation() == CopperGolemEntity.Oxidation.EXPOSED) {

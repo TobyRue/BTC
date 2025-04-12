@@ -132,7 +132,6 @@ public class CopperGolemButtonPressGoal extends Goal {
                         golem.getWorld().playSound(golem, golem.getBlockPos(), ModSounds.COPPER_ARM_MOVE, SoundCategory.NEUTRAL, 0.7f, 1f);
                     }
                 } else {
-                    System.out.println("Moving towards button at " + targetButtonPos);
                     golem.getNavigation().startMovingTo(targetButtonPos.getX(), targetButtonPos.getY(), targetButtonPos.getZ(), speed * this.golem.getSpeedMultiplier());
                 }
             } else {

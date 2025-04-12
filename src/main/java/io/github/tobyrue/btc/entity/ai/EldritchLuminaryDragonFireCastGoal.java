@@ -72,7 +72,6 @@ public class EldritchLuminaryDragonFireCastGoal extends Goal {
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
                     World world = this.luminary.getWorld();
-                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
 //                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
 //                    double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
 //

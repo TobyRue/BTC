@@ -128,7 +128,6 @@ public class TuffGolemEntity extends GolemEntity {
             } else {
                 if (isSleeping()) {
                     setSleeping(false);
-                    System.out.println("Is sleeping: " + isSleeping());
                 }
                 ticksStill = 0;
             }
@@ -213,12 +212,9 @@ public class TuffGolemEntity extends GolemEntity {
             wakeAnimationState.stop();
         } else {
             sleepAnimationState.stop();
-
-            System.out.println("Just Woke Up: " + justWokeUp);
             if (justWokeUp) {
                 wakeAnimationState.start(this.age);
                 justWokeUp = false;
-//                System.out.println("Just Woke Up 222: " + justWokeUp);
             }
         }
         if (this.getHeldItem() != ItemStack.EMPTY) {
@@ -297,13 +293,11 @@ public class TuffGolemEntity extends GolemEntity {
             return ActionResult.SUCCESS;
         }
         if (!player.isSneaking()) {
-            System.out.println("Held Item is: " + this.getHeldItem() + ", Item Stack: " + handStack.isEmpty());
             if (this.getHeldItem().isEmpty() && !handStack.isEmpty()) {
                 // Store the item
                 setSleeping(false);
                 ticksStill = 0;
                 this.setHeldItem(handStack.copyWithCount(1));
-                System.out.println("Item Stored: " + handStack.getItem().getName());
                 if (!player.isCreative()) {
                     handStack.decrement(1);
                 }
@@ -315,7 +309,6 @@ public class TuffGolemEntity extends GolemEntity {
                 if (!player.getInventory().insertStack(this.getHeldItem())) {
                     player.dropItem(this.getHeldItem(), false);
                 }
-                System.out.println("Item Returned: " + this.getHeldItem().getItem().getName());
                 this.setHeldItem(ItemStack.EMPTY);
                 return ActionResult.SUCCESS;
             }
@@ -336,6 +329,7 @@ public class TuffGolemEntity extends GolemEntity {
             nbt.putDouble("HomeX", homePos.x);
             nbt.putDouble("HomeY", homePos.y);
             nbt.putDouble("HomeZ", homePos.z);
+            nbt.putFloat("HomeYaw", homeYaw);
         }
         nbt.putInt("Color", this.getColor());
     }
@@ -359,6 +353,9 @@ public class TuffGolemEntity extends GolemEntity {
         setHeldItem(itemStack);
         if (nbt.contains("HomeX")) {
             this.homePos = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
+        }
+        if (nbt.contains("HomeYaw")) {
+            this.homeYaw = nbt.getFloat("HomeYaw");
         }
         this.dataTracker.set(COLOR, nbt.getInt("Color"));
     }

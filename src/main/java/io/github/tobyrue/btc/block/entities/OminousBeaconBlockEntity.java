@@ -87,11 +87,9 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
 
     protected void readComponents(BlockEntity.ComponentsAccess components) {
         super.readComponents(components);
-        System.out.println("Read Component");
     }
 
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        System.out.println("Add Component");
     }
 }

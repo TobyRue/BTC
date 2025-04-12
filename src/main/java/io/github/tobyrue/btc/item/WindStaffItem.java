@@ -134,7 +134,6 @@ public class WindStaffItem extends StaffItem {
                 double strength = SHOOT_STRENGTH;
                 if (distance != 0) {
                     entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
-                    System.out.println("Shooting entity away: " + entity.getName().getString());
                 }
 
                 // Optionally, deal damage to the entity

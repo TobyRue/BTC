@@ -54,7 +54,6 @@ public class EldritchLuminaryCastGoal extends Goal {
     @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
-        System.out.println("Attack is, " + luminary.getAttack());
         if (isEnemyWithinAttackDistance(eEnemy)) {
 //            if (eEnemy == null) {
 //                this.ticksUntilNextAttack = 43;
@@ -63,11 +62,9 @@ public class EldritchLuminaryCastGoal extends Goal {
 //            if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
 //                luminary.setAttack(AttackType.FIRE_BALL);
 //            }
-            System.out.println("Progress is: " + luminary.getProgress());
             if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
                 // First number of Random is the amount of outcomes, second number should never change and is the offset
                 int random = (int)(Math.random() * 5 + 1);
-                System.out.println("Random is: " + random);
                 luminary.setAttack(AttackType.byId(random));
             }
             double maxDistance = 64.0;
@@ -122,15 +119,6 @@ public class EldritchLuminaryCastGoal extends Goal {
                 }
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.WATER_BLAST) {
                     World world = this.luminary.getWorld();
-//                    System.out.println(luminary.getAttack() + " Fire with client " + world.isClient);
-//                    double targetYaw = MathHelper.atan2(targetPos.z, targetPos.x) * (180.0 / Math.PI) - 90.0;
-//                    double yawDifference = MathHelper.wrapDegrees(this.luminary.getYaw() - (float) targetYaw);
-//
-//                    if (Math.abs(yawDifference) > 10.0F) {
-//                        this.luminary.getLookControl().lookAt(eEnemy, 30.0F, 30.0F);
-//                        this.luminary.setYaw((float) targetYaw);
-//                        return;
-//                    }
 
                     double speed = 1.5;
                     Vec3d vec3d = this.luminary.getRotationVec(1.0F);
@@ -178,7 +166,6 @@ public class EldritchLuminaryCastGoal extends Goal {
                     world.spawnEntity(fireballEntity);
                 }
                 if (isTimeToAttack() && luminary.getAttack() == AttackType.INVISIBLE && canDisappear() && !luminary.hasStatusEffect(StatusEffects.INVISIBILITY)) {
-//                    System.out.println("Has Invisibility: " + luminary.hasStatusEffect(StatusEffects.INVISIBILITY));
                     this.luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
                 }
             }
@@ -187,7 +174,6 @@ public class EldritchLuminaryCastGoal extends Goal {
                 luminary.setAttack(AttackType.NONE);
             }
         }
-//        System.out.println("Can Disappear is, " + canDisappear() + ", Can Disappear progress is, " + luminary.getDisappearDelay());
     }
     @Override
     public void stop() {

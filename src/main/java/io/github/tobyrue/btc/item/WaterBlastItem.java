@@ -24,7 +24,6 @@ public class WaterBlastItem extends Item {
         Vec3d velocity = user.getRotationVec(1.0f).multiply(1.5f);
 
         if (!world.isClient) {
-            System.out.println("Spawning WaterBlastEntity at: " + user.getX() + ", " + (user.getY() + 1.25) + ", " + user.getZ());
             // Spawn the entity 1 block higher
             WaterBlastEntity waterBlast = new WaterBlastEntity(user, world, user.getX(), user.getY() + 1.25, user.getZ(), velocity);
             world.spawnEntity(waterBlast);

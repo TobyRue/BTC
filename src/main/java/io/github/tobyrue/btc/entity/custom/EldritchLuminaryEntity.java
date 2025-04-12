@@ -60,17 +60,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 return true;
             }
         });
-//        this.targetSelector.add(0, new Target);
     }
-
-//    @Override
-//    public boolean isInvulnerableTo(DamageSource damageSource) {
-//        if (damageSource.isOf(DamageTypes.MAGIC)) {
-//            System.out.println("Damaged by breath");
-//            return true;
-//        }
-//        return super.isInvulnerableTo(damageSource);
-//    }
 
 
     @Override
@@ -97,7 +87,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         } else {
             --this.idleAnimationTimeout;
         }
-//        System.out.println("Attack is: " + this.getAttack() + " Client is " + getWorld().isClient);
         if(this.getAttack() != AttackType.NONE) {
             attackAnimationTimeout = 40;
             attackAnimationState.start(this.age);
@@ -129,9 +118,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public void tick() {
         super.tick();
 
-        if (this.getTarget() != null) {
-            System.out.println("Target is: " + this.getTarget().getName().getString());
-        }
         if (this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() > 600) {
             this.setAttack(AttackType.NONE);
             progress = 40;
@@ -155,7 +141,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         //
         if (this.getWorld().isClient && this.getAttack() != AttackType.NONE) {
             AttackType spell = this.getAttack();
-            System.out.println("Attack is not None: " + this.isAttacking() + ", Attack is:" + this.getAttack());
             float r = (float)spell.color[0];
             float g = (float)spell.color[1];
             float b = (float)spell.color[2];
@@ -171,15 +156,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (this.getWorld().isClient()) {
             setupAnimationStates();
         }
-//        System.out.println(attackTick);
-//        if (attackTick > 0) {
-//            attackTick--;
-//            if (attackTick <= 10) {
-//                executeTimedAction();
-//                this.scheduleAction(100); // Schedule action after 100 ticks
-//            }
-//        }
-
     }
 
     public int getProgress() {
@@ -193,8 +169,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     private void executeTimedAction() {
-        // Define what happens after the timer ends
-//        System.out.println("Timed action executed for Eldritch Luminary! Is client is " + getWorld().isClient);
         this.setAttack(AttackType.NONE); // Example action
     }
     static {

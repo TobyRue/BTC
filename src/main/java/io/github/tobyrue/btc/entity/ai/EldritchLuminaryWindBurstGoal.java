@@ -67,7 +67,6 @@ public class EldritchLuminaryWindBurstGoal extends Goal {
             if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
                 luminary.setAttack(AttackType.WIND_CHARGE);
             }
-//            System.out.println(luminary.getAttack());
             double maxDistance = 64.0;
             if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
 
