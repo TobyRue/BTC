@@ -47,8 +47,7 @@ public class WindStaffItem extends StaffItem {
             return TypedActionResult.success(stack);
         }
         if (getElement(stack).equals("Wind Charge") && !user.isSneaking()) {
-            // Push mobs away from the user (Tilda + Right-Click)
-            // Create and shoot the WindChargeEntity
+
             WindChargeEntity windCharge = new WindChargeEntity(user, world, user.getX(), user.getY() + 1.0, user.getZ());
             Vec3d direction = user.getRotationVec(1.0f);
             windCharge.setVelocity(direction.multiply(1.5)); // Adjust speed as needed
@@ -56,19 +55,15 @@ public class WindStaffItem extends StaffItem {
             world.spawnEntity(windCharge);
             return TypedActionResult.success(itemStack);
         } else if (getElement(stack).equals("Wind Cluster Shot") && !user.isSneaking()) {
-            // Pull mobs towards the user immediately
             shootWindCharges(user, world);
             user.getItemCooldownManager().set(this, 20);
             return TypedActionResult.success(itemStack);
-            // Schedule shooting mobs away after a delay (e.g., 100 ticks = 5 seconds)
         } else if (getElement(stack).equals("Tempest's Call") && !user.isSneaking()) {
-            // Push mobs away from the user (Left Alt + Right-Click)
             pullMobsTowardsPlayer(world, user);
             return TypedActionResult.success(itemStack);
         } else if(getElement(stack).equals("Storm Push") && !user.isSneaking()){
             shootMobsAway(user, world);
             return TypedActionResult.success(itemStack);
-
         }
 
         return TypedActionResult.fail(itemStack);

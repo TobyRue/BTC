@@ -100,7 +100,7 @@ public class TuffWanderGoal extends Goal {
         if (mob.getHomePosition() != null) {
             double distance = mob.getPos().distanceTo(mob.getHomePosition());
 
-            if (distance < 2.0) {
+            if (distance < 2.3) {
                 Float yaw = mob.getHomeYaw();
                 if (yaw != null) {
                     mob.setYaw(yaw);

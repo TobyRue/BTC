@@ -2,8 +2,12 @@ package io.github.tobyrue.btc.item;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -24,7 +28,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class SpellBookItem extends Item {
-    private static final List<String> ELEMENTS = List.of("Water Blast", "Fireball", "Dragon Fireball", "Wind Charge");
+    private static final List<String> ELEMENTS = List.of("Water Blast", "Fireball", "Dragon Fireball", "Wind Charge", "Regeneration");
 
 
     public SpellBookItem(Settings settings) {
@@ -60,6 +64,29 @@ public class SpellBookItem extends Item {
                     player.getItemCooldownManager().set(this, 15);
                 }
                 player.incrementStat(Stats.USED.getOrCreateStat(this));
+                return TypedActionResult.success(stack);
+            } if (getElement(stack).equals("Dragon Fireball")) {
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
+                if (!world.isClient) {
+                    // Spawn the entity 1 block higher
+                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, player, velocity);
+                    world.spawnEntity(dragonFireballEntity);
+                    player.getItemCooldownManager().set(this, 15);
+                }
+                player.incrementStat(Stats.USED.getOrCreateStat(this));
+                return TypedActionResult.success(stack);
+            } if (getElement(stack).equals("Wind Charge")) {
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
+                Vec3d direction = player.getRotationVec(1.0f);
+                windCharge.setVelocity(direction.multiply(1.5)); // Adjust speed as needed
+                player.getItemCooldownManager().set(this, 10);
+                world.spawnEntity(windCharge);
+                return TypedActionResult.success(stack);
+            } if (getElement(stack).equals("Regeneration")) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                player.getItemCooldownManager().set(this, 150);
                 return TypedActionResult.success(stack);
             }
         }

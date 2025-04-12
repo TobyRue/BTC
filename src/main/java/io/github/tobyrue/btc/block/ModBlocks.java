@@ -47,10 +47,50 @@ public class ModBlocks {
     );
 
     public static final PressurePlateBlock DUNGEON_PRESSURE_PLATE = (PressurePlateBlock) register(
-            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F)),
+            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F).sounds(BlockSoundGroup.COPPER)),
             "dungeon_pressure_plate",
             true
     );
+    public static final ButtonBlock UNOXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
+            "copper_button_unoxidized",
+            true
+    );
+    public static final ButtonBlock WAXED_UNOXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
+            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(UNOXIDIZED_COPPER_BUTTON)),
+            "waxed_copper_button_unoxidized",
+            true
+    );
+    public static final CopperButtonBlock EXPOSED_COPPER_BUTTON = (CopperButtonBlock) register(
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.EXPOSED),
+            "copper_button_exposed.json",
+            true
+    );
+    public static final ButtonBlock WAXED_EXPOSED_COPPER_BUTTON = (ButtonBlock) register(
+            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(EXPOSED_COPPER_BUTTON)),
+            "waxed_copper_button_exposed",
+            true
+    );
+    public static final ButtonBlock WEATHERED_COPPER_BUTTON = (ButtonBlock) register(
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.WEATHERED),
+            "copper_button_weathered",
+            true
+    );
+    public static final ButtonBlock WAXED_WEATHERED_COPPER_BUTTON = (ButtonBlock) register(
+            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(WEATHERED_COPPER_BUTTON)),
+            "waxed_copper_button_weathered",
+            true
+    );    public static final ButtonBlock OXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.OXIDIZED),
+            "copper_button_oxidized",
+            true
+    );
+    public static final ButtonBlock WAXED_OXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
+            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(OXIDIZED_COPPER_BUTTON)),
+            "waxed_copper_button_oxidized",
+            true
+    );
+
     public static final AntierBlock ANTIER = (AntierBlock) register(
             new AntierBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 7;

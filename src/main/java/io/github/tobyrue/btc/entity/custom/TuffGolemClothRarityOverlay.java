@@ -15,7 +15,7 @@ import net.minecraft.util.Rarity;
 public class TuffGolemClothRarityOverlay extends FeatureRenderer<TuffGolemEntity, TuffGolemEntityModel<TuffGolemEntity>> {
     private static final Identifier IRON = Identifier.of(BTC.MOD_ID, "textures/entity/tuff_golem_iron_overlay.png");
     private static final Identifier GOLD = Identifier.of(BTC.MOD_ID, "textures/entity/tuff_golem_gold_overlay.png");
-    private static final Identifier EMERALD = Identifier.of(BTC.MOD_ID, "textures/entity/tuff_golem_emerald_overlay.png");
+    private static final Identifier AMETHYST = Identifier.of(BTC.MOD_ID, "textures/entity/tuff_golem_amethyst_overlay.png");
     private static final Identifier DIAMOND = Identifier.of(BTC.MOD_ID, "textures/entity/tuff_golem_diamond_overlay.png");
 
     public TuffGolemClothRarityOverlay(FeatureRendererContext<TuffGolemEntity, TuffGolemEntityModel<TuffGolemEntity>> context) {
@@ -37,7 +37,7 @@ public class TuffGolemClothRarityOverlay extends FeatureRenderer<TuffGolemEntity
                 VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(DIAMOND));
                 model.render(matrixStack, vertexConsumer, light, LivingEntityRenderer.getOverlay(entity, 0.0f));
             } else if (heldItemRarity == Rarity.EPIC) {
-                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(EMERALD));
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(AMETHYST));
                 model.render(matrixStack, vertexConsumer, light, LivingEntityRenderer.getOverlay(entity, 0.0f));
             }
         } else {

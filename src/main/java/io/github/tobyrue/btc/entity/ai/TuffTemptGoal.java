@@ -39,9 +39,6 @@ public class TuffTemptGoal extends Goal {
     }
 
     public boolean canStart() {
-        if (!this.mob.getCanMove() && mob.isSleeping()) {
-            return false;
-        }
         if (this.cooldown > 0) {
             --this.cooldown;
             return false;
@@ -56,9 +53,6 @@ public class TuffTemptGoal extends Goal {
     }
 
     public boolean shouldContinue() {
-        if (!this.mob.getCanMove() && mob.isSleeping()) {
-            return false;
-        }
         if (this.canBeScared()) {
             if (this.mob.squaredDistanceTo(this.closestPlayer) < 36.0) {
                 if (this.closestPlayer.squaredDistanceTo(this.lastPlayerX, this.lastPlayerY, this.lastPlayerZ) > 0.010000000000000002) {

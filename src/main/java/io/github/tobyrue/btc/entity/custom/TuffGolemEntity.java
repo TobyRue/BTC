@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ai.CopperGolemWanderGoal;
 import io.github.tobyrue.btc.entity.ai.TuffWanderAroundGoal;
 import io.github.tobyrue.btc.entity.ai.TuffWanderGoal;
@@ -61,17 +62,13 @@ public class TuffGolemEntity extends GolemEntity {
 
 
     private static final TrackedData<Boolean> IS_SLEEPING;
-    private static final TrackedData<Boolean> CAN_MOVE;
     private static final TrackedData<Boolean> DYED;
-    private static final TrackedData<Integer> AGE;
     private static final TrackedData<ItemStack> HELD_ITEM;
     private static final TrackedData<Integer> COLOR;
 
     static {
         IS_SLEEPING = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-        CAN_MOVE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
         DYED = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-        AGE = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
         HELD_ITEM = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
         COLOR = DataTracker.registerData(TuffGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);
     }
@@ -84,9 +81,7 @@ public class TuffGolemEntity extends GolemEntity {
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(IS_SLEEPING, false);
-        builder.add(CAN_MOVE, true);
         builder.add(DYED, false);
-        builder.add(AGE, this.age);
         builder.add(HELD_ITEM, ItemStack.EMPTY);
         builder.add(COLOR, DyeColor.RED.getEntityColor());
     }
@@ -115,14 +110,6 @@ public class TuffGolemEntity extends GolemEntity {
 
         if (!this.getWorld().isClient()) {
             Vec3d currentPosition = this.getPos();
-            if (!isSleeping()) {
-                if (justWokeUp) {
-                    setCanMove(false);
-                }
-                if (this.getAgeLock() + 20 <= this.age && this.getAgeLock() + 30 <= this.age) {
-                    setCanMove(true);
-                }
-            }
             if (currentPosition.squaredDistanceTo(lastPosition) < 0.001) {
                 ticksStill++;
             } else {
@@ -169,19 +156,6 @@ public class TuffGolemEntity extends GolemEntity {
         this.dataTracker.set(IS_SLEEPING, isSleeping);
     }
 
-    public boolean getCanMove() {
-        return this.dataTracker.get(CAN_MOVE);
-    }
-
-    public void setCanMove(boolean move) {
-        this.dataTracker.set(CAN_MOVE, move);
-        if (!move) {
-            this.dataTracker.set(AGE, this.age);
-        }
-    }
-    public Integer getAgeLock() {
-        return this.dataTracker.get(AGE);
-    }
     public void setHome(Vec3d pos, float yaw) {
         this.homeYaw = yaw;
         this.homePos = pos;
@@ -313,8 +287,15 @@ public class TuffGolemEntity extends GolemEntity {
                 return ActionResult.SUCCESS;
             }
         }
-
         return super.interactMob(player, hand);
+    }
+
+    @Override
+    public void travel(Vec3d movementInput) {
+        if (this.isLeashed()) {
+            movementInput = movementInput.multiply(0.4); // Adjust the multiplier to tweak speed
+        }
+        super.travel(movementInput);
     }
 
     @Override
@@ -329,6 +310,8 @@ public class TuffGolemEntity extends GolemEntity {
             nbt.putDouble("HomeX", homePos.x);
             nbt.putDouble("HomeY", homePos.y);
             nbt.putDouble("HomeZ", homePos.z);
+        }
+        if (homeYaw != null) {
             nbt.putFloat("HomeYaw", homeYaw);
         }
         nbt.putInt("Color", this.getColor());
