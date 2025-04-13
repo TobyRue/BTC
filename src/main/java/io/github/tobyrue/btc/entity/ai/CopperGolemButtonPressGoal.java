@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.entity.ai;
 
+import io.github.tobyrue.btc.block.CopperButtonBlock;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.block.BlockState;
@@ -43,7 +44,7 @@ public class CopperGolemButtonPressGoal extends Goal {
         BlockPos golemPos = golem.getBlockPos();
         for (BlockPos pos : BlockPos.iterateOutwards(golemPos, 16, 16, 16)) {
             BlockState state = golem.getWorld().getBlockState(pos);
-            if (state.getBlock() instanceof ButtonBlock && !state.get(ButtonBlock.POWERED)) {
+            if (state.getBlock() instanceof CopperButtonBlock && !state.get(ButtonBlock.POWERED)) {
                 targetButtonPos = pos;
 //                if (interest != 0) {
 //                    interest = 100; // Reset interest when finding a new button
@@ -74,7 +75,7 @@ public class CopperGolemButtonPressGoal extends Goal {
 
         if (this.golem.cantMove() || this.golem.getOxidation() == CopperGolemEntity.Oxidation.OXIDIZED || interest <= 0) {
             return false;
-        } else if (state.getBlock() instanceof ButtonBlock && !state.get(ButtonBlock.POWERED)) {
+        } else if (state.getBlock() instanceof CopperButtonBlock && !state.get(ButtonBlock.POWERED)) {
             return true;
         }
         return false;
@@ -106,7 +107,7 @@ public class CopperGolemButtonPressGoal extends Goal {
             if (interest > 0) {
                 if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {
                     BlockState state = golem.getWorld().getBlockState(targetButtonPos);
-                    if ((state.getBlock() instanceof ButtonBlock button) && pressCooldown <= 0) {
+                    if ((state.getBlock() instanceof CopperButtonBlock button) && pressCooldown <= 0) {
                         button.powerOn(state, golem.getWorld(), targetButtonPos, null);
                         golem.setCanMoveDelayTwo(false);
 

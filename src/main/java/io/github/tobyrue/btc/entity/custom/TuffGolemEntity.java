@@ -133,6 +133,9 @@ public class TuffGolemEntity extends GolemEntity {
     public Integer getColor() {
         return this.dataTracker.get(COLOR);
     }
+    public void setColor(Integer color) {
+        this.dataTracker.set(COLOR, color);
+    }
     public ItemStack getHeldItem() {
         return this.dataTracker.get(HELD_ITEM);
     }

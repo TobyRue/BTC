@@ -237,7 +237,11 @@ public class CopperGolemEntity extends GolemEntity {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.COPPER_AMBIENT;
+        if (this.getOxidation() != Oxidation.OXIDIZED) {
+            return ModSounds.COPPER_AMBIENT;
+        } else {
+            return null;
+        }
     }
 
     @Nullable
