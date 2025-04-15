@@ -43,6 +43,13 @@ public class CopperGolemEntity extends GolemEntity {
 
 //            * 60
             * 5; // Every 5 minutes (6000 ticks)
+
+    private int oxidationTicks = 0;
+    private int nextOxidationDelay = -1;
+    private static final int MINIMUM_OXIDATION_TICKS = 20 * 60 * 6; // 6 minutes
+    private static final int RANDOM_MIN_DELAY = 20 * 30;        // 30 seconds
+    private static final int RANDOM_MAX_DELAY = 20 * 60 * 4;       // 4 minutes
+
     protected double targetX;
     protected double targetY;
     protected double targetZ;
@@ -339,12 +346,33 @@ public class CopperGolemEntity extends GolemEntity {
             setupAnimationStatesServer();
         }
         if (!this.getWorld().isClient) {
-            if (!this.isWaxed()) {
-                this.oxidationTimer++;
+//            if (!this.isWaxed()) {
+//                this.oxidationTimer++;
+//
+//                if (this.oxidationTimer >= OXIDATION_INTERVAL) {
+//                    this.oxidationTimer = 0;
+//                    this.advanceOxidation();
+//                }
+//            }
+            if (!isWaxed() && this.getOxidation() != Oxidation.OXIDIZED ) {
 
-                if (this.oxidationTimer >= OXIDATION_INTERVAL) {
-                    this.oxidationTimer = 0;
-                    this.advanceOxidation();
+                System.out.println("Oxidation ticking... (" + oxidationTicks + "/" + (MINIMUM_OXIDATION_TICKS + (nextOxidationDelay == -1 ? 0 : nextOxidationDelay)) + ")");
+                oxidationTicks++;
+
+                if (oxidationTicks >= MINIMUM_OXIDATION_TICKS) {
+                    if (nextOxidationDelay == -1) {
+                        // Set a random delay once minimum has passed
+                        nextOxidationDelay = RANDOM_MIN_DELAY + random.nextInt(RANDOM_MAX_DELAY - RANDOM_MIN_DELAY + 1);
+                    }
+
+                    if (oxidationTicks >= MINIMUM_OXIDATION_TICKS + nextOxidationDelay) {
+                        // Advance oxidation stage
+                        advanceOxidation();
+
+                        // Reset for next stage
+                        oxidationTicks = 0;
+                        nextOxidationDelay = -1;
+                    }
                 }
             }
         }
