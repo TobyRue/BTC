@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.BTC;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -52,7 +53,7 @@ public class ModBlocks {
             true
     );
     public static final CopperButtonBlock UNOXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
             "copper_button_unoxidized",
             true
     );
@@ -62,7 +63,7 @@ public class ModBlocks {
             true
     );
     public static final CopperButtonBlock EXPOSED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.EXPOSED),
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.EXPOSED),
             "copper_button_exposed",
             true
     );
@@ -72,7 +73,7 @@ public class ModBlocks {
             true
     );
     public static final CopperButtonBlock WEATHERED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.WEATHERED),
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.WEATHERED),
             "copper_button_weathered",
             true
     );
@@ -81,7 +82,7 @@ public class ModBlocks {
             "waxed_copper_button_weathered",
             true
     );    public static final CopperButtonBlock OXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.OXIDIZED),
+            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.OXIDIZED),
             "copper_button_oxidized",
             true
     );

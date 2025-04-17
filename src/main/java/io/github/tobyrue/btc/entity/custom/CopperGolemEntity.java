@@ -355,10 +355,7 @@ public class CopperGolemEntity extends GolemEntity {
 //                }
 //            }
             if (!isWaxed() && this.getOxidation() != Oxidation.OXIDIZED ) {
-
-                System.out.println("Oxidation ticking... (" + oxidationTicks + "/" + (MINIMUM_OXIDATION_TICKS + (nextOxidationDelay == -1 ? 0 : nextOxidationDelay)) + ")");
                 oxidationTicks++;
-
                 if (oxidationTicks >= MINIMUM_OXIDATION_TICKS) {
                     if (nextOxidationDelay == -1) {
                         // Set a random delay once minimum has passed
