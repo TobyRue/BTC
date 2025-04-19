@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "waxed_copper_block",
+  "ingredients": [
+    {
+      "item": "btc:copper_button_unoxidized"
+    },
+    {
+      "item": "minecraft:honeycomb"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:waxed_copper_button_unoxidized"
+  }
+}
