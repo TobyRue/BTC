@@ -47,8 +47,8 @@ public class ModBlocks {
             true
     );
 
-    public static final PressurePlateBlock DUNGEON_PRESSURE_PLATE = (PressurePlateBlock) register(
-            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F).sounds(BlockSoundGroup.COPPER)),
+    public static final DungeonPressurePlateBlock DUNGEON_PRESSURE_PLATE = (DungeonPressurePlateBlock) register(
+            new DungeonPressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F).sounds(BlockSoundGroup.COPPER)),
             "dungeon_pressure_plate",
             true
     );

@@ -5,6 +5,51 @@
     {
       "weight": 1,
       "element": {
+        "location": "btc:better_trial_chambers/room/entrance_cap",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 5,
+      "element": {
+        "location": "btc:better_trial_chambers/room/hallway_closed_corner_extender",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 5,
+      "element": {
+        "location": "btc:better_trial_chambers/room/hallway_closed_extender",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 5,
+      "element": {
+        "location": "btc:better_trial_chambers/room/hallway_open_corner_extender",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 5,
+      "element": {
+        "location": "btc:better_trial_chambers/room/hallway_open_extender",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 15,
+      "element": {
         "location": "btc:better_trial_chambers/room/bridges",
         "processors": "minecraft:empty",
         "projection": "rigid",
@@ -12,7 +57,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/cliff",
         "processors": "minecraft:empty",
@@ -21,7 +66,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/corridor_1",
         "processors": "minecraft:empty",
@@ -30,7 +75,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/corridor_2_waterfall",
         "processors": "minecraft:empty",
@@ -39,7 +84,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/corridor_3",
         "processors": "minecraft:empty",
@@ -48,7 +93,16 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 20,
+      "element": {
+        "location": "btc:better_trial_chambers/room/flying_mover_copper_golem",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/hard_puzzle_room",
         "processors": "minecraft:empty",
@@ -57,7 +111,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/lava_room",
         "processors": "minecraft:empty",
@@ -66,7 +120,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 14,
       "element": {
         "location": "btc:better_trial_chambers/room/loot_room",
         "processors": "minecraft:empty",
@@ -75,7 +129,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/mansion",
         "processors": "minecraft:empty",
@@ -84,7 +138,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/ocean_pillar",
         "processors": "minecraft:empty",
@@ -93,7 +147,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/painting_traps",
         "processors": "minecraft:empty",
@@ -102,7 +156,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/parkour",
         "processors": "minecraft:empty",
@@ -111,7 +165,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/parkour_cylinder",
         "processors": "minecraft:empty",
@@ -120,7 +174,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/pillars",
         "processors": "minecraft:empty",
@@ -129,7 +183,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/plus_crossing",
         "processors": "minecraft:empty",
@@ -138,7 +192,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/prison",
         "processors": "minecraft:empty",
@@ -147,7 +201,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/spires",
         "processors": "minecraft:empty",
@@ -156,7 +210,7 @@
       }
     },
     {
-      "weight": 3,
+      "weight": 17,
       "element": {
         "location": "btc:better_trial_chambers/room/staff",
         "processors": "minecraft:empty",
@@ -165,7 +219,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 14,
       "element": {
         "location": "btc:better_trial_chambers/room/treasure_room",
         "processors": "minecraft:empty",
@@ -174,7 +228,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/trial_ocean_monument",
         "processors": "minecraft:empty",
@@ -183,7 +237,7 @@
       }
     },
     {
-      "weight": 1,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/room/waterfall",
         "processors": "minecraft:empty",
