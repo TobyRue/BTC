@@ -1,0 +1,34 @@
+{
+  "parent": "btc:story/obtain_all_staffs_advancment",
+  "criteria": {
+    "book": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:spell_book_item"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.btc.story.obtain_spell_book_advancment.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "btc:spell_book_item"
+    },
+    "title": {
+      "translate": "advancements.btc.story.obtain_spell_book_advancment.title"
+    },
+    "hidden": true
+  },
+  "requirements": [
+    [
+      "book"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

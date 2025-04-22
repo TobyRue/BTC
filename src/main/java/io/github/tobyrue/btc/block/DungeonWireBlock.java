@@ -2,6 +2,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.enums.Connection;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.util.BlockRotation;
 import org.jetbrains.annotations.Nullable;
 

@@ -122,7 +122,7 @@
       }
     },
     {
-      "weight": 10,
+      "weight": 11,
       "element": {
         "location": "btc:better_trial_chambers/hallway/hallway_open_unoxidized",
         "processors": "minecraft:empty",
@@ -131,7 +131,7 @@
       }
     },
     {
-      "weight": 10,
+      "weight": 8,
       "element": {
         "location": "btc:better_trial_chambers/hallway/hallway_open_unoxidized_corner",
         "processors": "minecraft:empty",
@@ -185,7 +185,7 @@
       }
     },
     {
-      "weight": 14,
+      "weight": 12,
       "element": {
         "location": "btc:better_trial_chambers/hallway/side_t_hallway_open_unoxidized",
         "processors": "minecraft:empty",
@@ -194,7 +194,7 @@
       }
     },
     {
-      "weight": 17,
+      "weight": 15,
       "element": {
         "location": "btc:better_trial_chambers/hallway/side_t_hallway_open_weathered",
         "processors": "minecraft:empty",

@@ -88,6 +88,7 @@ public class BTC implements ModInitializer {
             content.addAfter(Items.OMINOUS_TRIAL_KEY, ModItems.RUBY_TRIAL_KEY);
             content.addAfter(ModItems.RUBY_TRIAL_KEY, ModItems.STAFF);
             content.addAfter(ModItems.STAFF, ModItems.DRAGON_ROD);
+            content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);

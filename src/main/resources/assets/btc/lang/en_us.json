@@ -32,6 +32,7 @@
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
   "item.btc.tuff_golem_spawn_egg": "Tuff Golem Spawn Egg",
   "item.btc.water_blast": "Water Blast",
+  "item.btc.enchanted_paper": "Enchanted Paper",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
   "death.attack.wind_burst": "%1$s got blasted away",
@@ -70,5 +71,10 @@
   "subtitles.entity.btc.copper_golem.copper_head_spin": "Copper Golem wakes up",
   "subtitles.entity.btc.copper_golem.copper_ambient": "Copper Golem hums",
   "subtitles.entity.btc.copper_golem.copper_death": "Copper Golem Dies",
-  "subtitles.entity.btc.copper_golem.copper_hurt": "Copper Golem hurts"
+  "subtitles.entity.btc.copper_golem.copper_hurt": "Copper Golem hurts",
+
+  "advancements.btc.story.obtain_all_staffs_advancment.title": "Master of the Eldritch Arts",
+  "advancements.btc.story.obtain_all_staffs_advancment.description": "Obtain the Wind Staff, Fire Staff, and Dragon Staff.",
+  "advancements.btc.story.obtain_spell_book_advancment.title": "Pages of Power",
+  "advancements.btc.story.obtain_spell_book_advancment.description": "Craft the base spell book, the first step toward forbidden power."
 }

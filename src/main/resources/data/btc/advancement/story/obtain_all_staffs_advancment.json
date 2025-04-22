@@ -1,0 +1,40 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "staff": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:wind_staff"
+          },
+          {
+            "items": "btc:fire_staff"
+          },
+          {
+            "items": "btc:dragon_staff"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.btc.story.obtain_all_staffs_advancment.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "btc:staff"
+    },
+    "title": {
+      "translate": "advancements.btc.story.obtain_all_staffs_advancment.title"
+    },
+    "frame": "challenge"
+  },
+  "requirements": [
+    [
+      "staff"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

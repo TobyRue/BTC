@@ -37,6 +37,9 @@ public class ModItems {
     public static final Item DRAGON_ROD = register(new Item(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
             "dragon_rod"
     );
+    public static final Item ENCHANTED_PAPER = register(new Item(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
+            "enchanted_paper"
+    );
     public static final StaffItem STAFF = register(
             new StaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "staff"
