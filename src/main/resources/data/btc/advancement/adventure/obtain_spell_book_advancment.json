@@ -1,5 +1,5 @@
 {
-  "parent": "btc:story/obtain_all_staffs_advancment",
+  "parent": "btc:adventure/obtain_all_staffs_advancment",
   "criteria": {
     "book": {
       "conditions": {
@@ -14,14 +14,14 @@
   },
   "display": {
     "description": {
-      "translate": "advancements.btc.story.obtain_spell_book_advancment.description"
+      "translate": "advancements.btc.adventure.obtain_spell_book_advancment.description"
     },
     "icon": {
       "count": 1,
       "id": "btc:spell_book_item"
     },
     "title": {
-      "translate": "advancements.btc.story.obtain_spell_book_advancment.title"
+      "translate": "advancements.btc.adventure.obtain_spell_book_advancment.title"
     },
     "hidden": true
   },

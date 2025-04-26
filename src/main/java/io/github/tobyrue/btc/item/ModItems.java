@@ -2,12 +2,13 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
+import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.item.TridentItem;
+import net.minecraft.component.type.MapColorComponent;
+import net.minecraft.component.type.MapDecorationsComponent;
+import net.minecraft.item.*;
+import net.minecraft.item.map.MapDecoration;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -24,6 +25,7 @@ public class ModItems {
         // Return the registered item!
         return registeredItem;
     }
+
     public static final Item RUBY_TRIAL_KEY = register(
             new Item(new Item.Settings()),
             "ruby_trial_key"

@@ -1,5 +1,7 @@
 package io.github.tobyrue.btc;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.entity.ModEntities;
@@ -7,9 +9,8 @@ import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.regestries.ModCopperBlocks;
-import io.github.tobyrue.btc.regestries.ModPotions;
-import io.github.tobyrue.btc.regestries.ModSounds;
+//import io.github.tobyrue.btc.regestries.BetterTrialChambersMapTrade;
+import io.github.tobyrue.btc.regestries.*;
 import io.github.tobyrue.btc.status_effects.MinerMishapEffect;
 import io.github.tobyrue.btc.status_effects.BuilderBlunderEffect;
 import io.github.tobyrue.btc.status_effects.DragonScalesEffect;
@@ -19,19 +20,40 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.GustParticle;
+import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.*;
+import net.minecraft.item.map.MapDecorationType;
+import net.minecraft.item.map.MapDecorationTypes;
+import net.minecraft.item.map.MapState;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.LocateCommand;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradedItem;
+import net.minecraft.village.VillagerProfession;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.Structure;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
@@ -41,6 +63,9 @@ public class BTC implements ModInitializer {
     public static final StatusEffect DRAGON_SCALES;
     public static final StatusEffect DROWNING;
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
+
+    //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
+    public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
     static {
         BUILDER_BLUNDER = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "builder_blunder"), new BuilderBlunderEffect());
@@ -53,6 +78,13 @@ public class BTC implements ModInitializer {
     // Register our custom particle type in the mod initializer.
     @Override
     public void onInitialize() {
+
+        //Adds a trade in another class, BetterTrialChambersMapTrade
+        TradeOfferHelper.registerWanderingTraderOffers( 1, factories -> {
+            factories.add(new BetterTrialChambersMapTrade());
+        });
+
+        ModMapDecorationTypes.register();
         ModBlocks.initialize();
         ModItems.initialize();
         ModBlockEntities.initialize();
@@ -72,6 +104,13 @@ public class BTC implements ModInitializer {
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
         ModCopperBlocks.registerCopperBlocks();
+
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 3, factories -> {
+            factories.add((entity, random) -> new TradeOffer(
+                    new TradedItem(Items.EMERALD, 32),
+                    new ItemStack(Items.FILLED_MAP, 1), 2, 8, 0.04f));
+        });
+
 //        HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON);
 //        HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON);
 //        HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON);
@@ -190,6 +229,6 @@ public class BTC implements ModInitializer {
 //        ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register((itemGroup) -> itemGroup.add(ModBlocks.CHISELED_COPPER_BRICKS));
     }
     public static void println(Object... args) {
-        System.out.println(String.join(" ", java.util.Arrays.stream(args).map(Object::toString).toArray(String[]::new)));
+        System.out.println(String.join(" ", Arrays.stream(args).map(Object::toString).toArray(String[]::new)));
     }
 }
