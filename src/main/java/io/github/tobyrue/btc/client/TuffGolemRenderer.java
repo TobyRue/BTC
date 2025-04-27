@@ -27,7 +27,6 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
 
     public TuffGolemRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new TuffGolemEntityModel<>(ctx.getPart(ModModelLayers.TUFF_GOLEM)), 0.5f);
-        //TODO WORKS \/  DOES ADD A TEXTURE OVER TOP
         this.addFeature(new TuffGolemClothOverlay(this));
         this.addFeature(new TuffGolemClothRarityOverlay(this));
     }

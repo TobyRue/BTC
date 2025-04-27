@@ -14,7 +14,6 @@ import net.minecraft.util.Identifier;
 // Paste this class into your mod and generate all required imports
 public class WaterBlastEntityModel<T extends WaterBlastEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart waterBlast;
-	public static final EntityModelLayer WATER_BURST = new EntityModelLayer(Identifier.of(BTC.MOD_ID, "water_burst"), "main");
 
 	public WaterBlastEntityModel(ModelPart root) {
 		this.waterBlast = root.getChild("waterBlast");

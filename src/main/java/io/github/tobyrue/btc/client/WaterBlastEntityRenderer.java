@@ -22,7 +22,7 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
 
     public WaterBlastEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        this.model = new WaterBlastEntityModel(ctx.getPart(WaterBlastEntityModel.WATER_BURST));
+        this.model = new WaterBlastEntityModel(ctx.getPart(ModModelLayers.WATER_BURST));
     }
 
     @Override
@@ -31,19 +31,8 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     }
 
     @Override
-    public void render(WaterBlastEntity entity, float yaw, float tickDelta, MatrixStack matrices,
-                       VertexConsumerProvider vertexConsumers, int light) {
+    public void render(WaterBlastEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
-
-        // Interpolating yaw for smooth rotation
-//        float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
-
-        // Applying rotations
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(interpolatedYaw - 90.0F)); // Adjusting for Minecraft's coordinate system
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
-//        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())));
-
-
 
         // Applying rotations
         float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
@@ -55,15 +44,6 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
         this.model.getLayer(getTexture(entity)), false, false);
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
-//        if(!entity.isGrounded()) {
-//            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw())));
-//            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.getRenderingRotation() * 5f));
-//            matrices.translate(0, -1.0f, 0);
-//        } else {
-//            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.groundedOffset.getY()));
-//            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(entity.groundedOffset.getX()));
-//            matrices.translate(0, -1.0f, 0);
-//        }
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }

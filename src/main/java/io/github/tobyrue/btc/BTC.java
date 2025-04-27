@@ -90,6 +90,8 @@ public class BTC implements ModInitializer {
         ModBlockEntities.initialize();
         ModPotions.initialize();
         ModSounds.initialize();
+        ModCopperBlocks.registerCopperBlocks();
+
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
@@ -103,13 +105,8 @@ public class BTC implements ModInitializer {
             }
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
-        ModCopperBlocks.registerCopperBlocks();
 
-        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 3, factories -> {
-            factories.add((entity, random) -> new TradeOffer(
-                    new TradedItem(Items.EMERALD, 32),
-                    new ItemStack(Items.FILLED_MAP, 1), 2, 8, 0.04f));
-        });
+
 
 //        HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON);
 //        HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON);
