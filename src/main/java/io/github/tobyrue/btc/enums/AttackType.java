@@ -5,6 +5,9 @@ import net.minecraft.util.function.ValueLists;
 import java.util.function.IntFunction;
 
 public enum AttackType {
+
+    EARTH_SPIKE_L(8, 0.53, 0.54, 0.18),
+    EARTH_SPIKE_C(7, 0.31, 0.47, 0.26),
     REGENERATION(6, 1.0, 0.24, 0.23),
     WATER_BLAST(5, 0.15, 0.64, 1.0),
     INVISIBLE(4, 0.9, 0.9, 0.9),

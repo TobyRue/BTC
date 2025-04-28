@@ -1,21 +1,18 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
+import io.github.tobyrue.btc.regestries.ModModelLayers;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
 
 public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     protected WaterBlastEntityModel model;

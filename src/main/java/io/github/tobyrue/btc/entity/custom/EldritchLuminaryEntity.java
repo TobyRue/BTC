@@ -75,21 +75,22 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         super(entityType, world);
         this.experiencePoints = 15;
         this.attackType = AttackType.NONE;
-
     }
+
     public int getFireballStrength() {
         return 1;
     }
+
     private void setupAnimationStates() {
         if (this.idleAnimationTimeout <= 0) {
             this.idleAnimationTimeout = this.random.nextInt(40) + 80;
-            this.idleAnimationState.start(this.age);
+            this.idleAnimationState.startIfNotRunning(this.age);
         } else {
             --this.idleAnimationTimeout;
         }
         if(this.getAttack() != AttackType.NONE) {
             attackAnimationTimeout = 40;
-            attackAnimationState.start(this.age);
+            attackAnimationState.startIfNotRunning(this.age);
         } else {
             --this.attackAnimationTimeout;
         }
@@ -117,7 +118,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Override
     public void tick() {
         super.tick();
-
         if (this.getAttack() == AttackType.INVISIBLE && this.getDisappearDelay() > 600) {
             this.setAttack(AttackType.NONE);
             progress = 40;

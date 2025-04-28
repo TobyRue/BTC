@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.client;
 import io.github.tobyrue.btc.enums.AttackType;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import io.github.tobyrue.btc.regestries.ModModelLayers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

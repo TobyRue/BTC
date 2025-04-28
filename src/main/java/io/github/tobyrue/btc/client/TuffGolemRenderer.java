@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 
 import io.github.tobyrue.btc.entity.custom.TuffGolemClothOverlay;
 import io.github.tobyrue.btc.entity.custom.TuffGolemClothRarityOverlay;
+import io.github.tobyrue.btc.regestries.ModModelLayers;
 import net.fabricmc.api.EnvType;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import net.fabricmc.api.Environment;
@@ -11,7 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;

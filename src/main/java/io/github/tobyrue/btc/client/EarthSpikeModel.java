@@ -63,7 +63,6 @@ public class EarthSpikeModel<T extends EarthSpikeEntity> extends SinglePartEntit
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.updateAnimation(entity.attackAnimationState, EarthSpikeAnimation.SPIKE_UP_EARTH_SPIKE, animationProgress, 1f);
+
 	}
 }

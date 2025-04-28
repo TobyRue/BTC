@@ -1,9 +1,13 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -21,15 +25,20 @@ import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class SpellBookItem extends Item {
-    private static final List<String> ELEMENTS = List.of("Water Blast", "Fireball", "Dragon Fireball", "Wind Charge", "Regeneration");
+    private static final List<String> ELEMENTS = List.of("Water Blast", "Fireball", "Dragon Fireball", "Wind Charge", "Earth Spike", "Regeneration");
 
+    private static final Integer SPIKE_Y_RANGE = 12;
+    private static final Integer SPIKE_COUNT = 8;
 
     public SpellBookItem(Settings settings) {
         super(settings);
@@ -84,6 +93,9 @@ public class SpellBookItem extends Item {
                 player.getItemCooldownManager().set(this, 10);
                 world.spawnEntity(windCharge);
                 return TypedActionResult.success(stack);
+            } if (getElement(stack).equals("Earth Spike")) {
+                spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
+                return TypedActionResult.success(stack);
             } if (getElement(stack).equals("Regeneration")) {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
                 player.getItemCooldownManager().set(this, 150);
@@ -99,6 +111,68 @@ public class SpellBookItem extends Item {
 
         return super.use(world, player, hand);
     }
+
+    @Nullable
+    public BlockPos findSpawnableGround(World world, BlockPos centerPos, int yRange) {
+        int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
+        int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
+
+        System.out.println("Searching from Y " + topY + " to " + bottomY + " at XZ: " + centerPos.getX() + ", " + centerPos.getZ());
+
+        // Start from top and go downwards
+        for (int y = topY; y >= bottomY; y--) {
+            BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
+            // Improved block check to ensure solid block and air above or open space above
+            if (world.getBlockState(pos).isSolidBlock(world, pos) && !world.getBlockState(pos.up()).isSolidBlock(world, pos.up()) && !world.getBlockState(pos.up()).isOf(Blocks.CHEST)) {
+                System.out.println("Found spawnable ground at: " + pos);
+                return pos;
+            }
+        }
+
+        // Fallback if no valid ground is found
+        System.out.println("No ground found at XZ: " + centerPos.getX() + ", " + centerPos.getZ());
+        return null;
+    }
+
+
+
+    public void spawnEarthSpikesTowardsYaw(World world, LivingEntity caster, int yRange, int spikeCount) {
+        float yaw = caster.getYaw();
+        double rad = Math.toRadians(yaw);
+
+        double stepX = -Math.sin(rad) * 1.5;
+        double stepZ = Math.cos(rad) * 1.5;
+
+        double startX = caster.getX();
+        double startZ = caster.getZ();
+        double startY = caster.getY();
+
+        System.out.println("Spawning Earth Spikes — Yaw: " + yaw + ", rad: " + rad);
+        System.out.println("StepX: " + stepX + ", StepZ: " + stepZ);
+        System.out.println("Y Range: " + yRange + ", Max Spike Count: " + spikeCount);
+
+        for (int i = 0; i < spikeCount; i++) {
+            double x = startX + stepX * i;
+            double z = startZ + stepZ * i;
+            BlockPos searchPos = new BlockPos((int) x, (int) startY, (int) z);
+
+            System.out.println("Checking position: " + searchPos);
+
+            BlockPos groundPos = findSpawnableGround(world, searchPos, yRange);
+
+            if (groundPos != null) {
+                System.out.println("Found ground at: " + groundPos);
+
+                EarthSpikeEntity spike = new EarthSpikeEntity(world, groundPos.getX(), groundPos.getY(), groundPos.getZ(), yaw, caster);
+                caster.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(caster));
+                world.spawnEntity(spike);
+            } else {
+                System.out.println("No valid ground found for spike at: " + searchPos);
+            }
+        }
+    }
+
+
 
     private String getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);

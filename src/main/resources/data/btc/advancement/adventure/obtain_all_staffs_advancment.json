@@ -12,6 +12,12 @@
           },
           {
             "items": "btc:dragon_staff"
+          },
+          {
+            "items": "btc:water_staff"
+          },
+          {
+            "items": "btc:earth_staff"
           }
         ]
       },

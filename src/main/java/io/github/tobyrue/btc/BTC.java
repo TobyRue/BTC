@@ -120,6 +120,8 @@ public class BTC implements ModInitializer {
 
         Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
         ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
+
+
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.addAfter(Items.OMINOUS_TRIAL_KEY, ModItems.RUBY_TRIAL_KEY);
             content.addAfter(ModItems.RUBY_TRIAL_KEY, ModItems.STAFF);
@@ -142,7 +144,9 @@ public class BTC implements ModInitializer {
             content.addAfter(Items.MACE, ModItems.STAFF);
             content.addAfter(ModItems.STAFF, ModItems.WIND_STAFF);
             content.addAfter(ModItems.WIND_STAFF, ModItems.FIRE_STAFF);
-            content.addAfter(ModItems.FIRE_STAFF, ModItems.DRAGON_STAFF);
+            content.addAfter(ModItems.FIRE_STAFF, ModItems.EARTH_STAFF);
+            content.addAfter(ModItems.EARTH_STAFF, ModItems.WATER_STAFF);
+            content.addAfter(ModItems.WATER_STAFF, ModItems.DRAGON_STAFF);
             content.addAfter(ModItems.DRAGON_STAFF, ModItems.SPELL_BOOK);
             content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST);
         });

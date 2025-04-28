@@ -1,9 +1,11 @@
 package io.github.tobyrue.btc.entity.ai;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.AttackType;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -14,8 +16,11 @@ import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class EldritchLuminaryCastGoal extends Goal {
     private final EldritchLuminaryEntity luminary;
@@ -46,132 +51,238 @@ public class EldritchLuminaryCastGoal extends Goal {
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
         return this.luminary.distanceTo(eEnemy) >= 6f && this.luminary.distanceTo(eEnemy) <= 16f;
     }
+    private boolean isEnemyWithinSmallAttackDistance(LivingEntity eEnemy) {
+        return this.luminary.distanceTo(eEnemy) >= 0f && this.luminary.distanceTo(eEnemy) <= 6f;
+    }
     @Override
     public boolean shouldRunEveryTick() {
         return true;
     }
 
     @Override
+    public boolean shouldContinue() {
+        return this.luminary.getTarget() != null;
+    }
+
+    @Nullable
+    public BlockPos findSpawnableGround(World world, BlockPos centerPos, int yRange) {
+        int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
+        int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
+
+        System.out.println("Searching from Y " + topY + " to " + bottomY + " at XZ: " + centerPos.getX() + ", " + centerPos.getZ());
+
+        // Start from top and go downwards
+        for (int y = topY; y >= bottomY; y--) {
+            BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
+            // Improved block check to ensure solid block and air above or open space above
+            if (world.getBlockState(pos).isSolidBlock(world, pos) && !world.getBlockState(pos.up()).isSolidBlock(world, pos.up()) && !world.getBlockState(pos.up()).isOf(Blocks.CHEST)) {
+                System.out.println("Found spawnable ground at: " + pos);
+                return pos;
+            }
+        }
+
+        // Fallback if no valid ground is found
+        System.out.println("No ground found at XZ: " + centerPos.getX() + ", " + centerPos.getZ());
+        return null;
+    }
+
+    @Override
     public void tick() {
         LivingEntity eEnemy = this.luminary.getTarget();
-        if (isEnemyWithinAttackDistance(eEnemy)) {
-//            if (eEnemy == null) {
-//                this.ticksUntilNextAttack = 43;
-//                return;
-//            }
-//            if(/*isTimeToStartAttackAnimation() && */luminary.getAttack() == AttackType.NONE) {
-//                luminary.setAttack(AttackType.FIRE_BALL);
-//            }
-            if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
-                // First number of Random is the amount of outcomes, second number should never change and is the offset
-                int random = (int)(Math.random() * 5 + 1);
-                luminary.setAttack(AttackType.byId(random));
-            }
-            double maxDistance = 64.0;
-            if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.WIND_CHARGE) {
-                    World world = this.luminary.getWorld();
+        if (eEnemy != null) {
+            if (isEnemyWithinSmallAttackDistance(eEnemy)) {
+                if (this.luminary.squaredDistanceTo(eEnemy) < 6 * 6) {
 
-                    double speed = 1.5;
-                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+                    if (luminary.getHealth() <= 0.5 * luminary.getMaxHealth() && !luminary.hasStatusEffect(StatusEffects.REGENERATION)) {
+                        luminary.setAttack(AttackType.REGENERATION);
+                        if (isTimeToAttack() && luminary.getAttack() == AttackType.REGENERATION) {
+                            luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                        }
+                    } else {
+                        int randomE = (int) (Math.random() * 2);
 
-                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
-                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
-                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+                        if (randomE == 0) {
+                            luminary.setAttack(AttackType.EARTH_SPIKE_C);
+                        } else {
+                            luminary.setAttack(AttackType.EARTH_SPIKE_L);
+                        }
+                        if (isTimeToAttack() && luminary.getAttack() == AttackType.EARTH_SPIKE_C) {
+                            World world = this.luminary.getWorld();
 
-                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+                            double distance = this.luminary.distanceTo(eEnemy);
+                            int spikes = Math.max(8, (int) (distance * 4) + 8);  // number of spikes proportional to distance
+                            double radius = distance;
 
-                    WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, world);
-                    windChargeEntity.setVelocity(velocity);
-                    windChargeEntity.setPosition(
-                            this.luminary.getX() + vec3d.x * 1.5,
-                            this.luminary.getBodyY(0.5) + 0.5,
-                            this.luminary.getZ() + vec3d.z * 1.5
-                    );
-                    world.spawnEntity(windChargeEntity);
+                            for (int i = 0; i < spikes; i++) {
+                                double angle = 2 * Math.PI * i / spikes;
+                                double x = luminary.getX() + radius * Math.cos(angle);
+                                double z = luminary.getZ() + radius * Math.sin(angle);
+                                BlockPos groundPos = findSpawnableGround(world, new BlockPos((int) x, (int) luminary.getY(), (int) z), 8);
+
+                                if (groundPos != null) {
+                                    EarthSpikeEntity spike = new EarthSpikeEntity(world, x, groundPos.getY(), z, luminary.getYaw(), luminary);
+                                    luminary.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(luminary));
+                                    world.spawnEntity(spike);
+                                }
+                            }
+
+                            EarthSpikeEntity spike2 = new EarthSpikeEntity(world, eEnemy.getX(), eEnemy.getY() - 1, eEnemy.getZ(), luminary.getYaw(), luminary);
+                            luminary.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(eEnemy.getX(), eEnemy.getY(), eEnemy.getZ()), GameEvent.Emitter.of(luminary));
+                            world.spawnEntity(spike2);
+
+                        } else if (isTimeToAttack() && luminary.getAttack() == AttackType.EARTH_SPIKE_L) {
+                            World world = this.luminary.getWorld();
+                            Vec3d startPos = luminary.getPos();
+                            Vec3d targetPos = eEnemy.getPos();
+                            Vec3d direction = targetPos.subtract(startPos).normalize();
+
+                            int spikeCount = 8;    // how many spikes in the line
+
+                            for (int i = 1; i <= spikeCount; i++) {
+                                double x = startPos.x + direction.x * i;
+                                double z = startPos.z + direction.z * i;
+                                double y = world.getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (int) x, (int) z);
+                                BlockPos groundPos = findSpawnableGround(world, new BlockPos((int) x, (int) luminary.getY(), (int) z), 8);
+                                if (groundPos != null) {
+                                    EarthSpikeEntity spike = new EarthSpikeEntity(world, x, groundPos.getY(), z, luminary.getYaw(), luminary);
+                                    world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(luminary));
+                                    world.spawnEntity(spike);
+                                }
+                            }
+//                            World world = this.luminary.getWorld();
+//                            Vec3d startPos = luminary.getPos();
+//                            Vec3d targetPos = eEnemy.getPos();
+//                            Vec3d direction = targetPos.subtract(startPos).normalize();
+//
+//                            int spikeCount = 8;    // how many spikes in the line
+//
+//                            for (int i = 0; i <= spikeCount; i++) {
+//                                double x = startPos.x + direction.x * i;
+//                                double z = startPos.z + direction.z * i;
+//                                double y = world.getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (int) x, (int) z);
+//                                BlockPos groundPos = findSpawnableGround(world, new BlockPos((int) x, (int) luminary.getY(), (int) z), 8);
+//
+//                                if (groundPos != null) {
+//                                    EarthSpikeEntity spike = new EarthSpikeEntity(world, x, groundPos.getY(), z, luminary.getYaw(), luminary);
+//                                    luminary.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(luminary));
+//                                    world.spawnEntity(spike);
+//                                }
+//                            }
+                        }
+                    }
                 }
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
-                    World world = this.luminary.getWorld();
-                    double speed = 1.5;
-                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
-
-                    // More precise aim towards the center of the target
-                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
-                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
-                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
-
-                    Vec3d vec3d2 = new Vec3d(dx, dy, dz);
-
-                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
-
-                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, luminary, velocity);
-                    dragonFireballEntity.setVelocity(velocity);
-                    dragonFireballEntity.setPosition(
-                            this.luminary.getX() + vec3d.x * 1.5,
-                            this.luminary.getBodyY(0.5) + 0.5,
-                            this.luminary.getZ() + vec3d.z * 1.5
-                    );
-                    world.spawnEntity(dragonFireballEntity);
+            } else if (isEnemyWithinAttackDistance(eEnemy)) {
+                if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
+                    // First number of Random is the amount of outcomes, second number should never change and is the offset
+                    int random = (int) (Math.random() * 5 + 1);
+                    luminary.setAttack(AttackType.byId(random));
                 }
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.REGENERATION) {
-                    World world = this.luminary.getWorld();
-                    luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                double maxDistance = 64.0;
+                if (this.luminary.squaredDistanceTo(eEnemy) < maxDistance * maxDistance && this.luminary.canSee(eEnemy)) {
+                    if (isTimeToAttack() && luminary.getAttack() == AttackType.WIND_CHARGE) {
+                        World world = this.luminary.getWorld();
+
+                        double speed = 1.5;
+                        Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                        double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                        double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                        double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                        Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                        WindChargeEntity windChargeEntity = new WindChargeEntity(EntityType.WIND_CHARGE, world);
+                        windChargeEntity.setVelocity(velocity);
+                        windChargeEntity.setPosition(
+                                this.luminary.getX() + vec3d.x * 1.5,
+                                this.luminary.getBodyY(0.5) + 0.5,
+                                this.luminary.getZ() + vec3d.z * 1.5
+                        );
+                        world.spawnEntity(windChargeEntity);
+                    }
+                    if (isTimeToAttack() && luminary.getAttack() == AttackType.DRAGON_FIRE_BALL) {
+                        World world = this.luminary.getWorld();
+                        double speed = 1.5;
+                        Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                        // More precise aim towards the center of the target
+                        double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                        double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                        double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                        Vec3d vec3d2 = new Vec3d(dx, dy, dz);
+
+                        Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                        DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, luminary, velocity);
+                        dragonFireballEntity.setVelocity(velocity);
+                        dragonFireballEntity.setPosition(
+                                this.luminary.getX() + vec3d.x * 1.5,
+                                this.luminary.getBodyY(0.5) + 0.5,
+                                this.luminary.getZ() + vec3d.z * 1.5
+                        );
+                        world.spawnEntity(dragonFireballEntity);
+                    }
+                    if (isTimeToAttack() && luminary.getAttack() == AttackType.REGENERATION) {
+                        World world = this.luminary.getWorld();
+                        luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                    }
+                    if (isTimeToAttack() && luminary.getAttack() == AttackType.WATER_BLAST) {
+                        World world = this.luminary.getWorld();
+
+                        double speed = 1.5;
+                        Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                        // More precise aim towards the center of the target
+                        double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                        double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                        double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                        Vec3d vec3d2 = new Vec3d(dx, dy, dz);
+
+                        Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                        WaterBlastEntity waterBlast = new WaterBlastEntity(luminary, world, luminary.getX(), luminary.getY() + 1.25, luminary.getZ(), velocity);
+                        waterBlast.setVelocity(velocity);
+                        waterBlast.setPosition(
+                                this.luminary.getX() + vec3d.x * 1.5,
+                                this.luminary.getBodyY(0.5) + 0.5,
+                                this.luminary.getZ() + vec3d.z * 1.5
+                        );
+                        waterBlast.setNoGravity(true);
+                        world.spawnEntity(waterBlast);
+                    }
+                    if (isTimeToAttack() && luminary.getAttack() == AttackType.FIRE_BALL) {
+                        World world = this.luminary.getWorld();
+                        double speed = 1.5;
+                        Vec3d vec3d = this.luminary.getRotationVec(1.0F);
+
+                        // More precise aim towards the center of the target
+                        double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
+                        double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
+                        double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
+
+                        Vec3d vec3d2 = new Vec3d(dx, dy, dz);
+
+                        Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
+
+                        FireballEntity fireballEntity = new FireballEntity(world, this.luminary, vec3d2.normalize(), this.luminary.getFireballStrength());
+                        fireballEntity.setVelocity(velocity);
+                        fireballEntity.setPosition(
+                                this.luminary.getX() + vec3d.x * 1.5,
+                                this.luminary.getBodyY(0.5) + 0.5,
+                                this.luminary.getZ() + vec3d.z * 1.5
+                        );
+                        world.spawnEntity(fireballEntity);
+                    }
+                    if (isTimeToAttack() && luminary.getAttack() == AttackType.INVISIBLE && canDisappear() && !luminary.hasStatusEffect(StatusEffects.INVISIBILITY)) {
+                        this.luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
+                    }
                 }
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.WATER_BLAST) {
-                    World world = this.luminary.getWorld();
-
-                    double speed = 1.5;
-                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
-
-                    // More precise aim towards the center of the target
-                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
-                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
-                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
-
-                    Vec3d vec3d2 = new Vec3d(dx, dy, dz);
-
-                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
-
-                    WaterBlastEntity waterBlast = new WaterBlastEntity(luminary, world, luminary.getX(), luminary.getY() + 1.25, luminary.getZ(), velocity);
-                    waterBlast.setVelocity(velocity);
-                    waterBlast.setPosition(
-                            this.luminary.getX() + vec3d.x * 1.5,
-                            this.luminary.getBodyY(0.5) + 0.5,
-                            this.luminary.getZ() + vec3d.z * 1.5
-                    );
-                    waterBlast.setNoGravity(true);
-                    world.spawnEntity(waterBlast);
+            } else {
+                if (luminary.getAttack() != AttackType.NONE) {
+                    luminary.setAttack(AttackType.NONE);
                 }
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.FIRE_BALL) {
-                    World world = this.luminary.getWorld();
-                    double speed = 1.5;
-                    Vec3d vec3d = this.luminary.getRotationVec(1.0F);
-
-                    // More precise aim towards the center of the target
-                    double dx = eEnemy.getX() - (this.luminary.getX() + vec3d.x * 4.0);
-                    double dy = eEnemy.getBodyY(0.5) - (0.5 + this.luminary.getBodyY(0.5));
-                    double dz = eEnemy.getZ() - (this.luminary.getZ() + vec3d.z * 4.0);
-
-                    Vec3d vec3d2 = new Vec3d(dx, dy, dz);
-
-                    Vec3d velocity = new Vec3d(dx, dy, dz).normalize().multiply(speed);
-
-                    FireballEntity fireballEntity = new FireballEntity(world, this.luminary, vec3d2.normalize(), this.luminary.getFireballStrength());
-                    fireballEntity.setVelocity(velocity);
-                    fireballEntity.setPosition(
-                            this.luminary.getX() + vec3d.x * 1.5,
-                            this.luminary.getBodyY(0.5) + 0.5,
-                            this.luminary.getZ() + vec3d.z * 1.5
-                    );
-                    world.spawnEntity(fireballEntity);
-                }
-                if (isTimeToAttack() && luminary.getAttack() == AttackType.INVISIBLE && canDisappear() && !luminary.hasStatusEffect(StatusEffects.INVISIBILITY)) {
-                    this.luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
-                }
-            }
-        } else {
-            if (luminary.getAttack() != AttackType.NONE) {
-                luminary.setAttack(AttackType.NONE);
             }
         }
     }

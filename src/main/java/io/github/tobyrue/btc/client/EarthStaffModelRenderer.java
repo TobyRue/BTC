@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.item.ModItems;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
@@ -16,11 +14,10 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
-@Environment(EnvType.CLIENT)
-public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
-    public static final ItemStack HANDLE_FIRE = new ItemStack(ModItems.STAFF, 1);
-    public static final ItemStack FIRE_CHARGE = new ItemStack(Items.FIRE_CHARGE, 1);
-    public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/blaze_rods.png");
+public class EarthStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
+    public static final ItemStack HANDLE_EARTH = new ItemStack(ModItems.STAFF, 1);
+    public static final ItemStack DIRT = new ItemStack(Items.GRASS_BLOCK, 1);
+    public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/earth_rods.png");
     private static final String ELEMENT1 = "element1";
     private static final String ELEMENT2 = "element2";
     private static final String ELEMENT3 = "element3";
@@ -32,7 +29,7 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     private final ModelPart element4;
     private final ModelPart root;
 
-    public FireStaffModelRenderer(ModelPart root) {
+    public EarthStaffModelRenderer(ModelPart root) {
         this.root = root;
         this.element1 = root.getChild("element1");
         this.element2 = root.getChild("element2");
@@ -78,10 +75,10 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.translate(0.5, 1.4, 0.2);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle)); // Apply rotation on Y-axis
 
-        minecraft.getItemRenderer().renderItem(FIRE_CHARGE, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+        minecraft.getItemRenderer().renderItem(DIRT, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         matrices.pop();
     }
-        @Override
+    @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
@@ -92,7 +89,7 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
 
         matrices.translate(0.5, 0.5, 0.20);
 
-        minecraft.getItemRenderer().renderItem(HANDLE_FIRE, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+        minecraft.getItemRenderer().renderItem(HANDLE_EARTH, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
         VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
 

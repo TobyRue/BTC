@@ -129,17 +129,6 @@ public class FireStaffItem extends StaffItem {
                 double time2 = Math.abs(time1) * -1;
                 double time3 = time2 + SMALL_FIRE_TIME;
                 entity.setOnFireFor((float) time3);
-                // TODO             0 ^ 2 = 0 * -1 = 0 + 30 = 30
-
-                // TODO             1 ^ 2 = 1 * -1 = -1 + 30 = 29
-
-                // TODO             2 ^ 2 = 4 * -1 = -4 + 30 = 26
-
-                // TODO             3 ^ 2 = 9 * -1 = -9 + 30 = 21
-
-                // TODO             4 ^ 2 = 16 * -1 = -16 + 30 = 14
-
-                // TODO             5 ^ 2 = 25 * -1 = -25 + 30 = 5
                 user.getItemCooldownManager().set(this, (int) ((SMALL_FIRE_TIME + EXTRA_COOLDOWN) * 20));
             }
         }

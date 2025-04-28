@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.regestries;
 import io.github.tobyrue.btc.BTC;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;

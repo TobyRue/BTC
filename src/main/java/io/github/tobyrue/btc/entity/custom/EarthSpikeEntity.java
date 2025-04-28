@@ -16,7 +16,6 @@ public class EarthSpikeEntity extends Entity implements Ownable {
     private LivingEntity owner;
     @Nullable
     private UUID ownerUuid;
-    private int warmup;
     private int lifeTime = 0;
     private double baseY;
     private boolean setBaseY = false;
@@ -29,12 +28,12 @@ public class EarthSpikeEntity extends Entity implements Ownable {
         this.setPosition(this.getX(), this.getY(), this.getZ()); // Spawn lower
     }
 
-    public EarthSpikeEntity(World world, double x, double y, double z, float yaw, int warmup, LivingEntity owner) {
+    public EarthSpikeEntity(World world, double x, double y, double z, float yaw, LivingEntity owner) {
         this(ModEntities.EARTH_SPIKE, world);
-        this.warmup = warmup;
         this.setOwner(owner);
         this.setYaw(yaw * 57.295776F);
         this.attackAnimationState.start(age);
+        this.setPosition(x, y, z);
         //CALL this for the spawning and spawn the entity at top block pos
     }
 
@@ -53,15 +52,15 @@ public class EarthSpikeEntity extends Entity implements Ownable {
         if (lifeTime <= 30) {
             double yOffset = 0;
 
-            if (lifeTime <= 10) {
-                // Rising: 0 → 1.5 over 10 ticks
-                yOffset = 1 * (lifeTime / 10.0);
-            } else if (lifeTime < 20) {
+            if (lifeTime <= 5) {
+                // Rising: 0 → 1 over 10 ticks
+                yOffset = 1 * (lifeTime / 5.0);
+            } else if (lifeTime <= 15) {
                 // Pause at top
                 yOffset = 1;
             } else {
-                // Falling: 1.5 → 0 over 10 ticks
-                yOffset = 1 * (1.0 - ((lifeTime - 20) / 10.0));
+                // Falling: 1 → 0 over 10 ticks
+                yOffset = 1 * (1.0 - ((double) (lifeTime - 15) / 15));
             }
             if (!this.getWorld().isClient) {
                 if (!deltDamage) {
@@ -77,7 +76,6 @@ public class EarthSpikeEntity extends Entity implements Ownable {
             if (lifeTime == 30) {
                 this.kill();
             }
-            System.out.println("Earth Spikes lifeTime is:" + lifeTime + ", and position is: " + this.getPos());
 
             this.setPosition(this.getX(), baseY + yOffset, this.getZ());
             lifeTime++;
