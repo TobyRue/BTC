@@ -54,7 +54,7 @@ public class EldritchLuminaryCastGoal extends Goal {
     }
 
     private boolean isEnemyWithinAttackDistance(LivingEntity eEnemy) {
-        return this.luminary.distanceTo(eEnemy) >= 3f && this.luminary.distanceTo(eEnemy) <= 16f;
+        return this.luminary.distanceTo(eEnemy) >= 3f && this.luminary.distanceTo(eEnemy) <= 32f;
     }
     private boolean isEnemyWithinSmallAttackDistance(LivingEntity eEnemy) {
         return this.luminary.distanceTo(eEnemy) >= 0f && this.luminary.distanceTo(eEnemy) <= 6f;
@@ -130,7 +130,7 @@ public class EldritchLuminaryCastGoal extends Goal {
                         }
                         if (isTimeToAttack() && luminary.getAttack() == AttackType.REGENERATION) {
                             shootTargetAway(luminary, eEnemy, 1, 2);
-                            luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                            luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 4));
                         }
                     } else {
                         if (luminary.getAttack() == AttackType.NONE && luminary.getProgress() == 50) {
@@ -275,7 +275,7 @@ public class EldritchLuminaryCastGoal extends Goal {
                 world.spawnEntity(dragonFireball);
             }
             if (isTimeToAttack() && luminary.getAttack() == AttackType.REGENERATION) {
-                luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                luminary.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 4));
             }
             if (isTimeToAttack() && luminary.getAttack() == AttackType.WATER_BLAST) {
                 Vec3d shooterEye = luminary.getEyePos();

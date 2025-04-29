@@ -201,7 +201,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 .add(EntityAttributes.GENERIC_ARMOR, 8f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,2f)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48)
                 .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1.5)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.75f);
     }
