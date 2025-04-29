@@ -34,6 +34,7 @@ public class EldritchLuminaryStrafeGoal extends Goal {
     public void stop() {
         this.combatTicks = -1;
         this.targetSeeingTicker = 0;
+        this.actor.getNavigation().stop();
     }
 
     @Override

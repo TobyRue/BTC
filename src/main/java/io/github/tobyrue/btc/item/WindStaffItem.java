@@ -26,7 +26,7 @@ public class WindStaffItem extends StaffItem {
     private static final double PULL_RADIUS = 25.0;
     private static final double SHOOT_RADIUS = 15.0;
     private static final double PULL_STRENGTH = 3.0;
-    private static final double SHOOT_STRENGTH = 7.0;
+    private static final double SHOOT_STRENGTH = 5.0;
     private static final int PROJECTILE_COUNT = 7; // Number of projectiles to shoot
 
     public WindStaffItem(Settings settings) {

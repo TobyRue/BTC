@@ -78,7 +78,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     public int getFireballStrength() {
-        return 1;
+        return 3;
     }
 
     private void setupAnimationStates() {
