@@ -64,7 +64,7 @@ public class ModItems {
     );
     public static final StaffItem EARTH_STAFF = register(
             new EarthStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
-            "water_staff"
+            "earth_staff"
     );
     public static final Item ELDRITCH_LUMINARY_SPAWN_EGG = register(
             new SpawnEggItem(ModEntities.ELDRITCH_LUMINARY, 0x37BBDD, 0xCC9104, new Item.Settings()),
