@@ -41,12 +41,12 @@ public class CopperGolemEntity extends GolemEntity {
 
     private int oxidationTicks = 0;
     private int nextOxidationDelay = -1;
-//    private static final int MINIMUM_OXIDATION_TICKS = 20 * 60 * 6; // 6 minutes
-//    private static final int RANDOM_MIN_DELAY = 20 * 30;        // 30 seconds
-//    private static final int RANDOM_MAX_DELAY = 20 * 60 * 4;       // 4 minutes
-    private static final int MINIMUM_OXIDATION_TICKS = 20 ;
-    private static final int RANDOM_MIN_DELAY = 20 ;
-    private static final int RANDOM_MAX_DELAY = 20 ;
+    private static final int MINIMUM_OXIDATION_TICKS = 20 * 60 * 6; // 6 minutes
+    private static final int RANDOM_MIN_DELAY = 20 * 30;        // 30 seconds
+    private static final int RANDOM_MAX_DELAY = 20 * 60 * 4;       // 4 minutes
+//    private static final int MINIMUM_OXIDATION_TICKS = 20 ;
+//    private static final int RANDOM_MIN_DELAY = 20 ;
+//    private static final int RANDOM_MAX_DELAY = 20 ;
     protected double targetX;
     protected double targetY;
     protected double targetZ;
