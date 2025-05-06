@@ -8,6 +8,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
@@ -200,12 +201,11 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
     }
 
     @Override
-    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, Direction from, boolean powered) {
+    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
         if(state.get(WIRED)) {
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
             }
         }
     }
-
 }

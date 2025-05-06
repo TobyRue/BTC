@@ -1,6 +1,7 @@
 
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.IDungeonWireAction;
 import io.github.tobyrue.btc.enums.Connection;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.util.BlockRotation;
@@ -325,6 +326,12 @@ public class DungeonWireBlock extends Block {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
         }
+        BlockState pointedToState1 = world.getBlockState(blockPos.offset(Direction.NORTH));
+        BlockState other = world.getBlockState(blockPos);
+        if(pointedToState1.getBlock() instanceof IDungeonWireAction action) {
+            action.onDungeonWireChange(pointedToState1, world, blockPos.offset(Direction.NORTH), other.get(POWERED));
+        }
+
     }
     @Override
     public boolean hasComparatorOutput(BlockState state) {
