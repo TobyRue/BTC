@@ -336,12 +336,10 @@ public class DungeonWireBlock extends Block {
         BlockState other = world.getBlockState(blockPos);
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = blockPos.offset(direction);
-            BlockPos neighborPosOpposite = blockPos.offset(direction.getOpposite());
             BlockState neighborState = world.getBlockState(neighborPos);
-            BlockState neighborStateOpposite  = world.getBlockState(neighborPosOpposite);
 
             if (neighborState.getBlock() instanceof IDungeonWireAction action) {
-                action.onDungeonWireChange(neighborState, world, neighborPos, neighborStateOpposite, other.get(POWERED));
+                action.onDungeonWireChange(neighborState, world, neighborPos, other.get(POWERED));
             }
         }
 //        for (Direction direction : Direction.values()) {
@@ -366,7 +364,7 @@ public class DungeonWireBlock extends Block {
                 if (neighborState.getBlock() instanceof IDungeonWireAction action) {
                     // notify the neighbor block somehow or handle logic there
                     System.out.println("DungeonWireBlock was removed at: " + pos + " notifying neighbor at: " + neighborPos);
-                    action.onDungeonWireDestroy(neighborState, world, neighborPos, false);
+                    action.onDungeonWireChange(neighborState, world, neighborPos, false);
                 }
             }
         }

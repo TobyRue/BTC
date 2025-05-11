@@ -255,19 +255,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
     }
 
     @Override
-    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
-        if(state.get(WIRED)) {
-//            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
-            for (BlockPos offsetPos : findDoors(world, pos)) {
-                if (offset.getBlock() instanceof DungeonWireBlock) {
-                    setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered) {
+    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
         if(state.get(WIRED)) {
 //            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
             for (BlockPos offsetPos : findDoors(world, pos)) {
@@ -275,18 +263,4 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
             }
         }
     }
-
-    //    @Override
-//    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
-//        if(state.get(WIRED)) {
-//            System.out.println("");
-//            for (BlockPos offsetPos : findDoors(world, pos)) {
-//                if (offset.getBlock() instanceof DungeonWireBlock) {
-//                    setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
-//                } else {
-//                    setOpen(world.getBlockState(offsetPos), world, offsetPos, false);
-//                }
-//            }
-//        }
-//    }
 }

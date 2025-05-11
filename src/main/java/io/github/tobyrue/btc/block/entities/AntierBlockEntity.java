@@ -22,7 +22,7 @@ import java.util.List;
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 
-public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity>, IDungeonWireAction {
+public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity> {
 
     public AntierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ANTIER_BLOCK_ENTITY, pos, state);
@@ -82,17 +82,17 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
         }
     }
 
-    @Override
-    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
-        if (state.get(AntierBlock.DISABLE)) {
-
-        }
-    }
-
-    @Override
-    public void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered) {
-        if (state.get(AntierBlock.DISABLE)) {
-
-        }
-    }
+//    @Override
+//    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
+//        if (state.get(AntierBlock.DISABLE)) {
+//
+//        }
+//    }
+//
+//    @Override
+//    public void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered) {
+//        if (state.get(AntierBlock.DISABLE)) {
+//
+//        }
+//    }
 }

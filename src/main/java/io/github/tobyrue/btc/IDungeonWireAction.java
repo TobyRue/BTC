@@ -7,7 +7,6 @@ import net.minecraft.world.World;
 
 public interface IDungeonWireAction {
     //fix me moving block next to doors does not update them and cables don't do sound.
-    void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered);
-    void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered);
+    void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered);
 
 }
