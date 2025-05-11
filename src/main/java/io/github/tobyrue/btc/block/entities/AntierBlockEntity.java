@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.IDungeonWireAction;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.BTC;
@@ -21,7 +22,7 @@ import java.util.List;
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 
-public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity> {
+public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity>, IDungeonWireAction {
 
     public AntierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ANTIER_BLOCK_ENTITY, pos, state);
@@ -78,6 +79,20 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
                 // Call checkPlayersInRange with a range of 15 blocks
                 checkPlayersInRange(serverWorld, blockPos, state, 15.0);
             }
+        }
+    }
+
+    @Override
+    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
+        if (state.get(AntierBlock.DISABLE)) {
+
+        }
+    }
+
+    @Override
+    public void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered) {
+        if (state.get(AntierBlock.DISABLE)) {
+
         }
     }
 }

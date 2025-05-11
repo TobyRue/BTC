@@ -4,7 +4,12 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.IDungeonWireAction;
 import io.github.tobyrue.btc.enums.Connection;
 import net.minecraft.block.StairsBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -20,6 +25,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
+import java.util.Objects;
 
 import static io.github.tobyrue.btc.block.CopperWireBlock.*;
 
@@ -326,13 +333,45 @@ public class DungeonWireBlock extends Block {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
         }
-        BlockState pointedToState1 = world.getBlockState(blockPos.offset(Direction.NORTH));
         BlockState other = world.getBlockState(blockPos);
-        if(pointedToState1.getBlock() instanceof IDungeonWireAction action) {
-            action.onDungeonWireChange(pointedToState1, world, blockPos.offset(Direction.NORTH), other.get(POWERED));
+        for (Direction direction : Direction.values()) {
+            BlockPos neighborPos = blockPos.offset(direction);
+            BlockPos neighborPosOpposite = blockPos.offset(direction.getOpposite());
+            BlockState neighborState = world.getBlockState(neighborPos);
+            BlockState neighborStateOpposite  = world.getBlockState(neighborPosOpposite);
+
+            if (neighborState.getBlock() instanceof IDungeonWireAction action) {
+                action.onDungeonWireChange(neighborState, world, neighborPos, neighborStateOpposite, other.get(POWERED));
+            }
         }
+//        for (Direction direction : Direction.values()) {
+//            BlockPos neighborPos = blockPos.offset(direction);
+//            BlockState neighborState = world.getBlockState(neighborPos);
+//            System.out.println("Direction: " + direction + ", pos:" + neighborPos);
+//            if(neighborState.getBlock() instanceof IDungeonWireAction action) {
+//                action.onDungeonWireChange(neighborState, world, neighborPos, neighborState, other.get(POWERED));
+//            }
+//        }
 
     }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        super.onStateReplaced(state, world, pos, newState, moved);
+
+        if (!world.isClient && state.getBlock() instanceof DungeonWireBlock && state.getBlock() != newState.getBlock()) {
+            for (Direction direction : Direction.values()) {
+                BlockPos neighborPos = pos.offset(direction);
+                BlockState neighborState = world.getBlockState(neighborPos);
+                if (neighborState.getBlock() instanceof IDungeonWireAction action) {
+                    // notify the neighbor block somehow or handle logic there
+                    System.out.println("DungeonWireBlock was removed at: " + pos + " notifying neighbor at: " + neighborPos);
+                    action.onDungeonWireDestroy(neighborState, world, neighborPos, false);
+                }
+            }
+        }
+    }
+
     @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;

@@ -6,9 +6,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
@@ -16,6 +16,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -46,6 +47,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
                 .with(OPEN, false)
                 .with(WIRED, false));
     }
+
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
@@ -53,17 +55,55 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
                 .with(OPEN, false)
                 .with(WIRED, false);
     }
+
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
         builder.add(WIRED);
     }
-    @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        super.neighborUpdate(state, world, pos, block, fromPos, notify);
-        updateStateBasedOnNeighbors(state, world, pos);
-    }
-
+//    @Override
+//    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+//        super.neighborUpdate(state, world, pos, block, fromPos, notify);
+//
+//        System.out.println("Neighbor update triggered at: " + pos + " due to block at: " + fromPos);
+//
+//        // Update state based on neighbors (if you have any extra logic here)
+//        updateStateBasedOnNeighbors(state, world, pos);
+//
+//        // Get all surrounding wire positions
+//        List<BlockPos> wirePositions = getSurroundingWirePositions(world, pos);
+//        System.out.println("Surrounding wire positions: " + wirePositions);
+//
+//        // Check if the updated position was one of the expected wire positions
+//        boolean listsMatch = wirePositions.contains(fromPos);
+//        System.out.println("Was fromPos one of the expected wire positions? " + listsMatch);
+//
+//        // Get the state of the block that updated
+//        BlockState fromState = world.getBlockState(fromPos);
+//        System.out.println("Block state at fromPos: " + fromState);
+//
+//        // Check if it’s no longer a DungeonWireBlock, and if the door is open, and if it was a relevant position
+//        if (!(fromState.getBlock() instanceof DungeonWireBlock) && !listsMatch && !(fromState.getBlock() instanceof DungeonDoorBlock)) {
+//            System.out.println("Conditions met to close connected doors. Closing doors...");
+//
+//            for (BlockPos offsetPos : findDoors(world, pos)) {
+//                System.out.println("Closing door at: " + offsetPos);
+//                setOpen(world.getBlockState(offsetPos), world, offsetPos, false);
+//            }
+//        } else {
+//            System.out.println("No door state change needed.");
+//        }
+//    }
+//    @Override
+//    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+//        super.neighborUpdate(state, world, pos, block, fromPos, notify);
+//        List<BlockPos> wirePositions = getSurroundingWirePositions(world, pos);
+//        System.out.println("Surrounding wire positions: " + wirePositions);
+//        boolean listsMatch = wirePositions.contains(fromPos);
+//        System.out.println("Was fromPos one of the expected wire positions? " + !listsMatch);
+//        BlockState fromState = world.getBlockState(fromPos);
+//        System.out.println("Block state at fromPos: " + fromState);
+//    }
 //    @Override
 //    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 //        if (state.get(WIRED) && !state.get(OPEN)) {
@@ -116,6 +156,20 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
 
         return ActionResult.FAIL;
                 //super.onUse(state, world, pos, player, hit);
+    }
+
+    private List<BlockPos> getSurroundingWirePositions(World world, BlockPos pos) {
+        List<BlockPos> positions = new ArrayList<>();
+
+        for (Direction direction : Direction.values()) {
+            BlockPos neighborPos = pos.offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            if (neighborState.getBlock() instanceof DungeonWireBlock) {
+                positions.add(neighborPos);
+            }
+        }
+
+        return positions;
     }
 
     private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open) {
@@ -201,11 +255,38 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
     }
 
     @Override
-    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
+    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
         if(state.get(WIRED)) {
+//            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
+            for (BlockPos offsetPos : findDoors(world, pos)) {
+                if (offset.getBlock() instanceof DungeonWireBlock) {
+                    setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered) {
+        if(state.get(WIRED)) {
+//            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
             }
         }
     }
+
+    //    @Override
+//    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
+//        if(state.get(WIRED)) {
+//            System.out.println("");
+//            for (BlockPos offsetPos : findDoors(world, pos)) {
+//                if (offset.getBlock() instanceof DungeonWireBlock) {
+//                    setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
+//                } else {
+//                    setOpen(world.getBlockState(offsetPos), world, offsetPos, false);
+//                }
+//            }
+//        }
+//    }
 }
