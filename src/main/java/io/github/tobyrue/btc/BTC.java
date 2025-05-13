@@ -1,7 +1,5 @@
 package io.github.tobyrue.btc;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.entity.ModEntities;
@@ -24,36 +22,19 @@ import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.GustParticle;
-import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.*;
-import net.minecraft.item.map.MapDecorationType;
-import net.minecraft.item.map.MapDecorationTypes;
-import net.minecraft.item.map.MapState;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.LocateCommand;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradedItem;
-import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
 
-import java.awt.*;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class BTC implements ModInitializer {
     public static String MOD_ID = "btc";
@@ -63,6 +44,7 @@ public class BTC implements ModInitializer {
     public static final StatusEffect DRAGON_SCALES;
     public static final StatusEffect DROWNING;
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
+    public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
 
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
@@ -135,9 +117,9 @@ public class BTC implements ModInitializer {
             content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.ANTIER);
             content.addAfter(ModBlocks.ANTIER, ModBlocks.DUNGEON_DOOR);
             content.addAfter(ModBlocks.DUNGEON_DOOR, ModBlocks.FIRE_DISPENSER);
-            content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_WIRE);
-            content.addAfter(ModBlocks.DUNGEON_WIRE, ModBlocks.COPPER_WIRE);
-            content.addAfter(ModBlocks.COPPER_WIRE, ModItems.IRON_WRENCH);
+            content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_WIRE_LEGACY);
+            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
+            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModItems.IRON_WRENCH);
             content.addAfter(ModItems.IRON_WRENCH, ModItems.GOLD_WRENCH);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
@@ -151,13 +133,13 @@ public class BTC implements ModInitializer {
             content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
-            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE);
-            content.addAfter(ModBlocks.DUNGEON_WIRE, ModBlocks.COPPER_WIRE);
-            content.addAfter(ModBlocks.COPPER_WIRE, ModBlocks.KEY_DISPENSER_BLOCK);
+            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE_LEGACY);
+            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
+            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModBlocks.KEY_DISPENSER_BLOCK);
             content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.DUNGEON_DOOR);
             content.addAfter(ModBlocks.DUNGEON_DOOR, ModBlocks.FIRE_DISPENSER);
             content.addAfter(Blocks.STONE_PRESSURE_PLATE, ModBlocks.DUNGEON_PRESSURE_PLATE);
-            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE);
+            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE_LEGACY);
             content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON);
             content.addAfter(ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON);
             content.addAfter(ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON);
@@ -177,6 +159,9 @@ public class BTC implements ModInitializer {
             content.addAfter(ModBlocks.WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON);
             content.addAfter(ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.OXIDIZED_COPPER_BUTTON);
             content.addAfter(ModBlocks.OXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
+        });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
+            content.addAfter(Items.DEBUG_STICK, ModItems.CREATIVE_WRENCH);
         });
         //INGREDIENTS
 //        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register((itemGroup) -> itemGroup.add(ModItems.RUBY_TRIAL_KEY));

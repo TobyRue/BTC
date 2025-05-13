@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.tobyrue.btc.ICopperWireConnect;
+import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.enums.Connection;
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.Block;
@@ -29,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.*;
 
-public class CopperWireBlock extends Block {
+public class CopperWireBlock extends Block implements IDungeonWireConnect, ICopperWireConnect {
     public static final MapCodec<CopperWireBlock> CODEC = createCodec(CopperWireBlock::new);
 
     public static final DirectionProperty FACING = Properties.FACING;
@@ -105,12 +107,19 @@ public class CopperWireBlock extends Block {
     }
 
     private BlockState updateFacingState(BlockState blockState, World world, BlockPos blockPos) {
-        boolean up = world.getBlockState(blockPos.offset(Direction.UP)).isOf(this) || world.getBlockState(blockPos.offset(Direction.UP)).getBlock() instanceof DungeonWireBlock;
-        boolean down = world.getBlockState(blockPos.offset(Direction.DOWN)).isOf(this) || world.getBlockState(blockPos.offset(Direction.DOWN)).getBlock() instanceof DungeonWireBlock;
-        boolean north = world.getBlockState(blockPos.offset(Direction.NORTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.NORTH)).getBlock() instanceof DungeonWireBlock;
-        boolean east = world.getBlockState(blockPos.offset(Direction.EAST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.EAST)).getBlock() instanceof DungeonWireBlock;
-        boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.SOUTH)).getBlock() instanceof DungeonWireBlock;
-        boolean west = world.getBlockState(blockPos.offset(Direction.WEST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.WEST)).getBlock() instanceof DungeonWireBlock;
+        BlockState upState = world.getBlockState(blockPos.offset(Direction.UP));
+        BlockState downState = world.getBlockState(blockPos.offset(Direction.DOWN));
+        BlockState northState = world.getBlockState(blockPos.offset(Direction.NORTH));
+        BlockState eastState = world.getBlockState(blockPos.offset(Direction.EAST));
+        BlockState southState = world.getBlockState(blockPos.offset(Direction.SOUTH));
+        BlockState westState = world.getBlockState(blockPos.offset(Direction.WEST));
+        boolean up = world.getBlockState(blockPos.offset(Direction.UP)).getBlock() instanceof ICopperWireConnect connects && connects.shouldCopperConnect(upState, world, blockPos);
+        boolean down = world.getBlockState(blockPos.offset(Direction.DOWN)).getBlock() instanceof ICopperWireConnect connects && connects.shouldCopperConnect(downState, world, blockPos);
+        boolean north = world.getBlockState(blockPos.offset(Direction.NORTH)).getBlock() instanceof ICopperWireConnect connects && connects.shouldCopperConnect(northState, world, blockPos);
+        boolean east = world.getBlockState(blockPos.offset(Direction.EAST)).getBlock() instanceof ICopperWireConnect connects && connects.shouldCopperConnect(eastState, world, blockPos);
+        boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).getBlock() instanceof ICopperWireConnect connects && connects.shouldCopperConnect(southState, world, blockPos);
+        boolean west = world.getBlockState(blockPos.offset(Direction.WEST)).getBlock() instanceof ICopperWireConnect connects && connects.shouldCopperConnect(westState, world, blockPos);
+
 
         if(!up && !down && !north && !east && !south && !west) {
             return blockState;
@@ -294,6 +303,7 @@ public class CopperWireBlock extends Block {
     @Override
     public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         super.neighborUpdate(blockState, world, blockPos, sourceBlock, sourcePos, notify);
+//        System.out.println("Is receiving redstone on Client: " + world.isReceivingRedstonePower(blockPos));
 
         if(!world.isClient) {
             BlockState newState = blockState;
@@ -304,23 +314,45 @@ public class CopperWireBlock extends Block {
             if(!blockState.equals(newState)) {
                 world.setBlockState(blockPos, newState, (NOTIFY_NEIGHBORS | NOTIFY_LISTENERS));
             }
-            boolean bl = (Boolean)blockState.get(ROOT1);
-            if(blockState.get(POWERABLE_BY_REDSTONE)) {
-                if (bl != world.isReceivingRedstonePower(blockPos)) {
-                    if (bl) {
-                        world.scheduleBlockTick(blockPos, this, 4);
-                    } else {
-                        world.setBlockState(blockPos, (BlockState) blockState.cycle(ROOT1), 2);
+            BlockState sourceState = world.getBlockState(sourcePos);
+//            System.out.println("Is receiving redstone on Server: " + world.isReceivingRedstonePower(blockPos));
+            if(blockState.get(POWERABLE_BY_REDSTONE) && !(sourceState.getBlock() instanceof CopperWireBlock) && !(sourceState.getBlock() instanceof DungeonWireBlock)) {
+                BlockState newConnectionState = blockState.with(CONNECTION1, Connection.NONE);
+//                world.setBlockState(blockPos, newConnectionState, (Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS));
+                BlockState newRootStateTrue = blockState.with(ROOT1, true);
+                BlockState newRootStateFalse = blockState.with(ROOT1, false);
+//                world.setBlockState(blockPos, newRootState, (Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS));
+                boolean root = blockState.get(ROOT1);
+                if (root != world.isReceivingRedstonePower(blockPos)) {
+                    if (!root) {
+                        world.setBlockState(blockPos, newConnectionState);
+                        world.setBlockState(blockPos, blockState.cycle(POWERED1), 3);
                     }
+                    world.setBlockState(blockPos, blockState.cycle(ROOT1), 3);
                 }
             }
+//            boolean root = blockState.get(ROOT1);
+//            if(blockState.get(POWERABLE_BY_REDSTONE)) {
+//                if (root != world.isReceivingRedstonePower(blockPos)) {
+//                    System.out.println("Root value does not equal redstone value");
+//                    if (root) {
+//                        world.setBlockState(blockPos, newConnectionState);
+//                        world.scheduleBlockTick(blockPos, this, 10);
+//                        System.out.println("Root is on but redstone is not");
+//                    } else {
+//                        world.setBlockState(blockPos, blockState.cycle(ROOT1));
+//                        world.scheduleBlockTick(blockPos, this, 10);
+//                        System.out.println("Root is off but redstone is on");
+//                    }
+//                }
+//            }
         }
     }
+
+
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if ((Boolean)state.get(ROOT1) && !world.isReceivingRedstonePower(pos)) {
-            world.setBlockState(pos, (BlockState)state.cycle(ROOT1), 2);
-        }
+        world.updateNeighbors(pos, this);
     }
     @Override
     public boolean hasComparatorOutput(BlockState state) {
@@ -353,9 +385,17 @@ public class CopperWireBlock extends Block {
                 world.playSound(null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 8.0F, 1.0F);
             }
             return ItemActionResult.SUCCESS;
+        } else if (stack.getItem() == ModItems.CREATIVE_WRENCH && player.isCreative() && !player.isSneaking()) {
+            boolean currentState = state.get(ROOT1);
+            BlockState newState = state.with(ROOT1, !state.get(ROOT1));
+            String message = "Survival friendly: " + (!currentState ? "enabled" : "disabled");
+            player.sendMessage(Text.literal(message), true);
+            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+            return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.FAIL;
     }
+
     public static int getLuminance(BlockState currentBlockState) {
         // Get the value of the "activated" property.
         boolean activated = currentBlockState.get(CopperWireBlock.POWERED1);
@@ -364,4 +404,13 @@ public class CopperWireBlock extends Block {
         return activated ? 15 : 0;
     }
 
+    @Override
+    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldCopperConnect(BlockState state, World world, BlockPos pos) {
+        return true;
+    }
 }

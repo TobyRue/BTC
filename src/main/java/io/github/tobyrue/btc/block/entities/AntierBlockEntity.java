@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.block.entities;
 
-import io.github.tobyrue.btc.IDungeonWireAction;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.BTC;
@@ -82,8 +81,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
         }
     }
 
+
+
 //    @Override
-//    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, BlockState offset, boolean powered) {
+//    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
 //        if (state.get(AntierBlock.DISABLE)) {
 //
 //        }

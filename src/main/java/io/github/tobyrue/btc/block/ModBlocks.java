@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -31,6 +32,12 @@ public class ModBlocks {
             "chiseled_copper_bricks",
             true
     );
+    public static final Block DUNGEON_WIRE_V2 = register(
+            new WireBlock(AbstractBlock.Settings.create(), true),
+            "dungeon_wire_v2",
+            true
+    );
+
     public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
             new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().luminance((state) -> {
                 return 15;
@@ -115,7 +122,7 @@ public class ModBlocks {
             "key_dispenser",
             true
     );
-    public static final DungeonWireBlock DUNGEON_WIRE = (DungeonWireBlock) register(
+    public static final DungeonWireBlock DUNGEON_WIRE_LEGACY = (DungeonWireBlock) register(
             new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
                     DungeonWireBlock::getLuminance)
             ),
@@ -123,7 +130,7 @@ public class ModBlocks {
             "dungeon_wire",
             true
     );
-    public static final CopperWireBlock COPPER_WIRE = (CopperWireBlock) register(
+    public static final CopperWireBlock COPPER_WIRE_LEGACY = (CopperWireBlock) register(
             new CopperWireBlock(AbstractBlock.Settings.create().requiresTool().strength(8F, 3600000.0F).luminance(
                     CopperWireBlock::getLuminance)
             ),

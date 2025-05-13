@@ -1,5 +1,7 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.ICopperWireConnect;
+import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.block.entities.FireDispenserBlockEntity;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
@@ -24,7 +26,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class FireDispenserBlock extends Block implements ModBlockEntityProvider<FireDispenserBlockEntity>, ModTickBlockEntityProvider<FireDispenserBlockEntity> {
+public class FireDispenserBlock extends Block implements ModBlockEntityProvider<FireDispenserBlockEntity>, ModTickBlockEntityProvider<FireDispenserBlockEntity>, IDungeonWireConnect, ICopperWireConnect {
     public static final EnumProperty<FireDispenserType> FIRE_DISPENSER_TYPE = EnumProperty.of("fire_dispenser_type", FireDispenserType.class);
     public static final EnumProperty<FireSwich> FIRE_SWICH = EnumProperty.of("fire_swich", FireSwich.class);
     private static final VoxelShape TOP_SHAPE;
@@ -111,5 +113,15 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
 
         // Return 15 if the fire type is not NO_FIRE, otherwise return 0
         return fireType != FireDispenserType.NO_FIRE ? 15 : 0;
+    }
+
+    @Override
+    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldCopperConnect(BlockState state, World world, BlockPos pos) {
+        return true;
     }
 }

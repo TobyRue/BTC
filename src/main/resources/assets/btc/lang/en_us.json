@@ -21,6 +21,7 @@
 
   "item.btc.iron_wrench": "Iron Wrench",
   "item.btc.gold_wrench": "Gold Wrench",
+  "item.btc.creative_wrench": "Creative Wrench",
   "item.btc.dragon_rod": "Dragon Infused Rod",
   "item.btc.ruby_trial_key": "Ruby Trial Key",
   "item.btc.staff": "Staff of Eternal Harmony",
@@ -78,5 +79,29 @@
   "advancements.btc.adventure.obtain_spell_book_advancment.title": "Pages of Power",
   "advancements.btc.adventure.obtain_spell_book_advancment.description": "Craft the base spell book, the first step toward forbidden power.",
   "advancements.btc.adventure.enter_btc_trial_chambers.title": "Trial Chambers: Vault of Power",
-  "advancements.btc.adventure.enter_btc_trial_chambers.description": "Find and Enter the lost Eldritch Trial Chambers no one was meant to remember."
+  "advancements.btc.adventure.enter_btc_trial_chambers.description": "Find and Enter the lost Eldritch Trial Chambers no one was meant to remember.",
+
+
+
+  "block.btc.dungeon_wire_v2": "Dungeon Wire v2",
+  "block.btc.wire.change_operator": "Set operator to %s",
+  "block.btc.wire.operator.true": "TRUE",
+  "block.btc.wire.operator.false": "FALSE",
+  "block.btc.wire.operator.or": "OR",
+  "block.btc.wire.operator.and": "AND",
+  "block.btc.wire.operator.nor": "NOR",
+  "block.btc.wire.operator.nand": "NAND",
+  "block.btc.wire.operator.xor": "XOR",
+  "block.btc.wire.operator.xnor": "XNOR",
+  "block.btc.wire.change_connection": "Set %s connection to %s",
+  "block.btc.wire.connection.none": "NONE",
+  "block.btc.wire.connection.input": "INPUT",
+  "block.btc.wire.connection.output": "OUTPUT",
+  "block.btc.wire.face.up": "TOP",
+  "block.btc.wire.face.down": "BOTTOM",
+  "block.btc.wire.face.north": "NORTH",
+  "block.btc.wire.face.east": "EAST",
+  "block.btc.wire.face.south": "SOUTH",
+  "block.btc.wire.face.west": "WEST"
+
 }

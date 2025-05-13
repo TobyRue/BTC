@@ -1,22 +1,26 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.ICopperWireConnect;
 import io.github.tobyrue.btc.IDungeonWireAction;
+import io.github.tobyrue.btc.IDungeonWireConnect;
+import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -28,9 +32,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DungeonDoorBlock extends Block implements IDungeonWireAction {
+public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect {
     public static final BooleanProperty WIRED = BooleanProperty.of("wired");
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
+    public static final BooleanProperty CONNECTS = BooleanProperty.of("connects");
+    public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");
 
     // Define the 4x4x4 cube shape.
     private static final VoxelShape CUBE_SHAPE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
@@ -45,6 +51,8 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OPEN, false)
+                .with(CONNECTS, false)
+                .with(SURVIVAL, true)
                 .with(WIRED, false));
     }
 
@@ -53,12 +61,16 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(OPEN, false)
+                .with(CONNECTS, false)
+                .with(SURVIVAL, true)
                 .with(WIRED, false);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
+        builder.add(CONNECTS);
+        builder.add(SURVIVAL);
         builder.add(WIRED);
     }
 //    @Override
@@ -104,15 +116,37 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
 //        BlockState fromState = world.getBlockState(fromPos);
 //        System.out.println("Block state at fromPos: " + fromState);
 //    }
-//    @Override
-//    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-//        if (state.get(WIRED) && !state.get(OPEN)) {
-//            BlockState newState = state.with(OPEN, true);
-//            world.setBlockState(pos, newState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-//            return ItemActionResult.SUCCESS;
-//        }
-//        return ItemActionResult.FAIL;
-//    }
+    @Override
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!state.get(OPEN) && stack.getItem() == ModItems.IRON_WRENCH && state.get(SURVIVAL)) {
+            boolean currentState = state.get(WIRED);
+            BlockState newState = state.with(WIRED, !state.get(WIRED));
+            String message = "Wires Powering Doors has been: " + (!currentState ? "enabled" : "disabled");
+            player.sendMessage(Text.literal(message), true);
+            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+            return ItemActionResult.SUCCESS;
+        } else if (!state.get(OPEN) && stack.getItem() == ModItems.GOLD_WRENCH && state.get(SURVIVAL)) {
+            boolean currentState = state.get(CONNECTS);
+            BlockState newState = state.with(CONNECTS, !state.get(CONNECTS));
+            String message = "Wires Connecting has been: " + (!currentState ? "enabled" : "disabled");
+            player.sendMessage(Text.literal(message), true);
+            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+            return ItemActionResult.SUCCESS;
+        } else if (stack.getItem() == ModItems.CREATIVE_WRENCH && player.isCreative()) {
+            boolean currentState = state.get(SURVIVAL);
+            BlockState newState = state.with(SURVIVAL, !state.get(SURVIVAL));
+            String message = "Survival Friendly has been: " + (!currentState ? "enabled" : "disabled");
+            player.sendMessage(Text.literal(message), true);
+            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+            return ItemActionResult.SUCCESS;
+        } else if(!state.get(WIRED) && !state.get(OPEN) && stack.getItem() != ModItems.GOLD_WRENCH && stack.getItem() != ModItems.IRON_WRENCH && stack.getItem() != ModItems.CREATIVE_WRENCH) {
+            for (BlockPos offsetPos : findDoors(world, pos)) {
+                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
+            }
+            return ItemActionResult.SUCCESS;
+        }
+        return ItemActionResult.FAIL;
+    }
 
     private Set<BlockPos> findDoors(World world, BlockPos originPos) {
         HashSet<BlockPos> found = new HashSet<>();
@@ -142,35 +176,22 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
         return found;
     }
 
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-//        if(!state.get(WIRED)) {
-            //return open(state, world, pos);
+//    @Override
+//    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+////        if(!state.get(WIRED)) {
+//            //return open(state, world, pos);
+////        }
+//        if(!state.get(WIRED) && !state.get(OPEN)) {
+//            for (BlockPos offsetPos : findDoors(world, pos)) {
+//                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
+//            }
+//            return ActionResult.SUCCESS;
 //        }
-        if(!state.get(WIRED) && !state.get(OPEN)) {
-            for (BlockPos offsetPos : findDoors(world, pos)) {
-                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
-            }
-            return ActionResult.SUCCESS;
-        }
+//
+//        return ActionResult.FAIL;
+//                //super.onUse(state, world, pos, player, hit);
+//    }
 
-        return ActionResult.FAIL;
-                //super.onUse(state, world, pos, player, hit);
-    }
-
-    private List<BlockPos> getSurroundingWirePositions(World world, BlockPos pos) {
-        List<BlockPos> positions = new ArrayList<>();
-
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            if (neighborState.getBlock() instanceof DungeonWireBlock) {
-                positions.add(neighborPos);
-            }
-        }
-
-        return positions;
-    }
 
     private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open) {
         return setOpen(state, world, pos, open, null);
@@ -262,5 +283,20 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
             }
         }
+    }
+
+    @Override
+    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
+        if (state.get(DungeonDoorBlock.CONNECTS) && state.getBlock() instanceof DungeonDoorBlock) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean shouldCopperConnect(BlockState state, World world, BlockPos pos) {
+        //TODO
+        return true;
     }
 }

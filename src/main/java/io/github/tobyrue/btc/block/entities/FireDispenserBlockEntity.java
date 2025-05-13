@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.CopperWireBlock;
 import io.github.tobyrue.btc.enums.FireDispenserType;
 import io.github.tobyrue.btc.enums.FireSwich;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
@@ -25,7 +26,15 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
             BlockState neighborState = world.getBlockState(neighborPos);
 
             if (neighborState.getBlock() instanceof DungeonWireBlock) {
-                boolean isPowered = neighborState.get(POWERED);
+                boolean isPowered = neighborState.get(DungeonWireBlock.POWERED);
+                FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), isPowered);
+
+                if (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) != newType) {
+                    world.setBlockState(pos, state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, newType));
+                }
+            }
+            if (neighborState.getBlock() instanceof CopperWireBlock) {
+                boolean isPowered = neighborState.get(CopperWireBlock.POWERED1);
                 FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), isPowered);
 
                 if (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) != newType) {

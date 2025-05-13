@@ -1,15 +1,18 @@
 
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.ICopperWireConnect;
 import io.github.tobyrue.btc.IDungeonWireAction;
+import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.enums.Connection;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.block.entity.BlockEntity;
+import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
@@ -26,11 +29,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import java.util.Objects;
-
 import static io.github.tobyrue.btc.block.CopperWireBlock.*;
 
-public class DungeonWireBlock extends Block {
+public class DungeonWireBlock extends Block implements IDungeonWireConnect, ICopperWireConnect {
     public static final MapCodec<DungeonWireBlock> CODEC = createCodec(DungeonWireBlock::new);
 
     public static final DirectionProperty FACING = Properties.FACING;
@@ -117,12 +118,18 @@ public class DungeonWireBlock extends Block {
      * @return
      */
     private BlockState updateFacingState(BlockState blockState, World world, BlockPos blockPos) {
-        boolean up = world.getBlockState(blockPos.offset(Direction.UP)).isOf(this) || world.getBlockState(blockPos.offset(Direction.UP)).getBlock() instanceof CopperWireBlock;
-        boolean down = world.getBlockState(blockPos.offset(Direction.DOWN)).isOf(this) || world.getBlockState(blockPos.offset(Direction.DOWN)).getBlock() instanceof CopperWireBlock;
-        boolean north = world.getBlockState(blockPos.offset(Direction.NORTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.NORTH)).getBlock() instanceof CopperWireBlock;
-        boolean east = world.getBlockState(blockPos.offset(Direction.EAST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.EAST)).getBlock() instanceof CopperWireBlock;
-        boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).isOf(this) || world.getBlockState(blockPos.offset(Direction.SOUTH)).getBlock() instanceof CopperWireBlock;
-        boolean west = world.getBlockState(blockPos.offset(Direction.WEST)).isOf(this) || world.getBlockState(blockPos.offset(Direction.WEST)).getBlock() instanceof CopperWireBlock;
+        BlockState upState = world.getBlockState(blockPos.offset(Direction.UP));
+        BlockState downState = world.getBlockState(blockPos.offset(Direction.DOWN));
+        BlockState northState = world.getBlockState(blockPos.offset(Direction.NORTH));
+        BlockState eastState = world.getBlockState(blockPos.offset(Direction.EAST));
+        BlockState southState = world.getBlockState(blockPos.offset(Direction.SOUTH));
+        BlockState westState = world.getBlockState(blockPos.offset(Direction.WEST));
+        boolean up = world.getBlockState(blockPos.offset(Direction.UP)).getBlock() instanceof IDungeonWireConnect connects && connects.shouldConnect(upState, world, blockPos);
+        boolean down = world.getBlockState(blockPos.offset(Direction.DOWN)).getBlock() instanceof IDungeonWireConnect connects && connects.shouldConnect(downState, world, blockPos);
+        boolean north = world.getBlockState(blockPos.offset(Direction.NORTH)).getBlock() instanceof IDungeonWireConnect connects && connects.shouldConnect(northState, world, blockPos);
+        boolean east = world.getBlockState(blockPos.offset(Direction.EAST)).getBlock() instanceof IDungeonWireConnect connects && connects.shouldConnect(eastState, world, blockPos);
+        boolean south = world.getBlockState(blockPos.offset(Direction.SOUTH)).getBlock() instanceof IDungeonWireConnect connects && connects.shouldConnect(southState, world, blockPos);
+        boolean west = world.getBlockState(blockPos.offset(Direction.WEST)).getBlock() instanceof IDungeonWireConnect connects && connects.shouldConnect(westState, world, blockPos);
 
         if(!up && !down && !north && !east && !south && !west) {
             return blockState;
@@ -371,6 +378,19 @@ public class DungeonWireBlock extends Block {
     }
 
     @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (stack.getItem() == ModItems.CREATIVE_WRENCH && player.isCreative()) {
+            boolean currentState = state.get(ROOT);
+            BlockState newState = state.with(ROOT, !state.get(ROOT));
+            String message = "Root has been: " + (!currentState ? "enabled" : "disabled");
+            player.sendMessage(Text.literal(message), true);
+            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+            return ItemActionResult.SUCCESS;
+        }
+        return ItemActionResult.FAIL;
+    }
+
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
@@ -388,5 +408,16 @@ public class DungeonWireBlock extends Block {
 
         // Return a light level if activated = true
         return activated ? 15 : 0;
+    }
+
+
+    @Override
+    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldCopperConnect(BlockState state, World world, BlockPos pos) {
+        return true;
     }
 }

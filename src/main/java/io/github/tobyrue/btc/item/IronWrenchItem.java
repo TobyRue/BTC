@@ -1,6 +1,9 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.CopperWireBlock;
+import io.github.tobyrue.btc.block.DungeonDoorBlock;
+import io.github.tobyrue.btc.block.DungeonWireBlock;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,7 +25,7 @@ public class IronWrenchItem extends Item {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         var state = context.getWorld().getBlockState(context.getBlockPos());
-        if(!state.streamTags().anyMatch(t->t == BTC.WRENCH_BLACKLIST) && !(state.getBlock() instanceof PistonBlock && state.get(PistonBlock.EXTENDED))) {
+        if (!state.streamTags().anyMatch(t -> t == BTC.WRENCH_BLACKLIST) && !(state.getBlock() instanceof PistonBlock && state.get(PistonBlock.EXTENDED)) && (state.getBlock() instanceof CopperWireBlock && state.get(CopperWireBlock.SURVIVAL))) {
             context.getWorld().setBlockState(context.getBlockPos(), state.rotate(context.getPlayer().isSneaking() ? BlockRotation.CLOCKWISE_90 : BlockRotation.COUNTERCLOCKWISE_90));
             return ActionResult.SUCCESS;
         }

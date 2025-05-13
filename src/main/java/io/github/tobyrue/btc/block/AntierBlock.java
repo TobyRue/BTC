@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
@@ -17,9 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class AntierBlock extends Block implements ModBlockEntityProvider<AntierBlockEntity>, ModTickBlockEntityProvider<AntierBlockEntity> {
+public class AntierBlock extends Block implements ModBlockEntityProvider<AntierBlockEntity>, ModTickBlockEntityProvider<AntierBlockEntity>, IDungeonWireConnect {
     public static final EnumProperty<AntierType> ANTIER_TYPE = EnumProperty.of("antier_type", AntierType.class);
     public static final BooleanProperty DISABLE = BooleanProperty.of("disable");
     private static final VoxelShape MIDDLE;
@@ -75,4 +77,12 @@ public class AntierBlock extends Block implements ModBlockEntityProvider<AntierB
         return ModBlockEntities.ANTIER_BLOCK_ENTITY;
     }
 
+    @Override
+    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
+        if (state.get(AntierBlock.DISABLE) && state.getBlock() instanceof AntierBlock) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

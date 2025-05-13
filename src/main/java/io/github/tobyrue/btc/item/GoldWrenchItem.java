@@ -1,6 +1,9 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.CopperWireBlock;
+import io.github.tobyrue.btc.block.DungeonDoorBlock;
+import io.github.tobyrue.btc.block.DungeonWireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.item.Item;
@@ -24,11 +27,11 @@ public class GoldWrenchItem extends Item {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockState state = context.getWorld().getBlockState(context.getBlockPos());
-
         // Check if the block has the FACING property
         if (state.contains(Properties.FACING) &&
                 !state.streamTags().anyMatch(t -> t == BTC.WRENCH_BLACKLIST) &&
-                !(state.getBlock() instanceof PistonBlock && state.get(PistonBlock.EXTENDED))) {
+                !(state.getBlock() instanceof PistonBlock && state.get(PistonBlock.EXTENDED)) &&
+                (state.getBlock() instanceof CopperWireBlock && state.get(CopperWireBlock.SURVIVAL))) {
 
             Direction currentFacing = state.get(Properties.FACING);
             Direction newFacing;
@@ -61,12 +64,10 @@ public class GoldWrenchItem extends Item {
                     newFacing = rotationOrder[(index + 1) % rotationOrder.length];
                 }
             }
-
             // Apply the new facing direction to the block
             context.getWorld().setBlockState(context.getBlockPos(), state.with(Properties.FACING, newFacing));
             return ActionResult.SUCCESS;
         }
-
         // Return pass if the block does not have the FACING property
         return super.useOnBlock(context);
     }

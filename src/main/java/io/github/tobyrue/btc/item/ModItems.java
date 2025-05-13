@@ -36,6 +36,9 @@ public class ModItems {
     public static final Item GOLD_WRENCH = register(new GoldWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
             "gold_wrench"
     );
+    public static final Item CREATIVE_WRENCH = register(new CreativeWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
+            "creative_wrench"
+    );
     public static final Item DRAGON_ROD = register(new Item(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
             "dragon_rod"
     );
