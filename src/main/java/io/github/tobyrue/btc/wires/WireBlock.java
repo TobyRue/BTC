@@ -132,7 +132,25 @@ public class WireBlock extends Block implements IWireConnect {
             }
             return ItemActionResult.SUCCESS;
         }
+        if (world.isClient) {
+            player.sendMessage(Text.literal("Has power: " + hasPower(state, world, pos)));
+        }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+    }
+
+    protected boolean hasPower(BlockState state, World world, BlockPos pos) {
+        return state.get(OPERATOR).apply(
+            CONNECTION_TO_DIRECTION.get().entrySet().stream()
+                .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)
+                .map(entry -> {
+                    var offsetState = world.getBlockState(pos.offset(entry.getValue()));
+                    var oppositeConnection = CONNECTION_TO_DIRECTION.get().inverse().get(entry.getValue().getOpposite());
+                    return offsetState.contains(WireBlock.POWERED)
+                        && offsetState.contains(oppositeConnection)
+                        && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
+                        && offsetState.get(POWERED);
+                }).toArray(Boolean[]::new)
+        );
     }
 
     //    @Nullable
