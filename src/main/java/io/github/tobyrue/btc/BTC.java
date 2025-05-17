@@ -217,4 +217,7 @@ public class BTC implements ModInitializer {
     public static void println(Object... args) {
         System.out.println(String.join(" ", Arrays.stream(args).map(Object::toString).toArray(String[]::new)));
     }
+    public static Identifier identifierOf(String id) {
+        return Identifier.of(BTC.MOD_ID, id);
+    }
 }

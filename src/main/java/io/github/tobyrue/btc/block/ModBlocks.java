@@ -14,18 +14,18 @@ import net.minecraft.util.Identifier;
 
 public class ModBlocks {
     public static Block register(Block block, String name, boolean shouldRegisterItem) {
-    // Register the block and its item.
-        Identifier id = Identifier.of(BTC.MOD_ID, name);
+        // Register the block and its item.
+            Identifier id = Identifier.of(BTC.MOD_ID, name);
 
-    // Sometimes, you may not want to register an item for the block.
-    // Eg: if it's a technical block like `minecraft:air` or `minecraft:end_gateway`
-    if (shouldRegisterItem) {
-        BlockItem blockItem = new BlockItem(block, new Item.Settings());
-        Registry.register(Registries.ITEM, id, blockItem);
+        // Sometimes, you may not want to register an item for the block.
+        // Eg: if it's a technical block like `minecraft:air` or `minecraft:end_gateway`
+        if (shouldRegisterItem) {
+            BlockItem blockItem = new BlockItem(block, new Item.Settings());
+            Registry.register(Registries.ITEM, id, blockItem);
+        }
+
+        return Registry.register(Registries.BLOCK, id, block);
     }
-
-    return Registry.register(Registries.BLOCK, id, block);
-}
 
     public static final Block CHISELED_COPPER_BRICKS = register(
             new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.COPPER).mapColor(MapColor.TERRACOTTA_ORANGE).requiresTool().strength(1.5F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
