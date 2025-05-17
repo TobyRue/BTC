@@ -47,21 +47,23 @@ public class WireBlock extends Block implements IWireConnect {
     }
 
     public enum Operator implements StringIdentifiable, ApplyOperator {
-        TRUE("true", args -> true),
-        FALSE("false", args -> false),
-        OR("or", args -> Arrays.stream(args).anyMatch(b -> b)),
-        AND("and", args -> Arrays.stream(args).allMatch(b -> b)),
-        NOR("nor", args -> !OR.apply(args)),
-        NAND("nand", args ->  !AND.apply(args)),
-        XOR("xor", args -> Arrays.stream(args).filter(b -> b).toList().size() == 1), // 1 and only 1
-        XNOR("xnor", args -> !XOR.apply(args));
+        TRUE("true", 0x28CC3B /* Green */,args -> true),
+        FALSE("false", 0xD733C4 /* Magenta */, args -> false),
+        OR("or", 0xCCCC28 /* Yellow */,args -> Arrays.stream(args).anyMatch(b -> b)),
+        AND("and", 0xCC4128 /* Red */,args -> Arrays.stream(args).allMatch(b -> b)),
+        NOR("nor", 0x3333D7 /* Blue */,args -> !OR.apply(args)),
+        NAND("nand", 0x33BED7 /* Cyan */,args ->  !AND.apply(args)),
+        XOR("xor", 0xCC9528 /* Orange */,args -> Arrays.stream(args).filter(b -> b).toList().size() == 1), // 1 and only 1
+        XNOR("xnor", 0x8A28CC /* Purple */,args -> !XOR.apply(args));
 
         private final String name;
         private final ApplyOperator operator;
+        private final int color;
 
-        Operator(String name, ApplyOperator operator) {
+        Operator(String name, int color, ApplyOperator operator) {
             this.name = name;
             this.operator = operator;
+            this.color = color;
         }
 
         @Override
@@ -71,6 +73,10 @@ public class WireBlock extends Block implements IWireConnect {
 
         public boolean apply(Boolean ...values) {
             return this.operator.apply(values);
+        }
+
+        public int getColor() {
+            return color;
         }
     }
 
@@ -108,7 +114,6 @@ public class WireBlock extends Block implements IWireConnect {
                 }
         ));
     }
-
 
 
     @Override
