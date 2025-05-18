@@ -47,10 +47,13 @@ public class WireModel implements IBlockStateBakedModel {
         ImmutableMap.<Integer, Pair<SpriteIdentifier, Sprite>>builder()
             .put(0, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_base")), null))
             .put(1, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_overlay")), null))
-            .put(2, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection_overlay")), null))
-            .put(3, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_input")), null))
-            .put(4, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_output")), null))
-            .put(5, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_operator_overlay")), null))
+            .put(2, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection")), null))
+            .put(3, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection_overlay")), null))
+            .put(4, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection_input")), null))
+            .put(5, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection_output")), null))
+            .put(6, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_input")), null))
+            .put(7, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_output")), null))
+            .put(8, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_operator_overlay")), null))
             .build()
     );
 
@@ -85,6 +88,15 @@ public class WireModel implements IBlockStateBakedModel {
 
     protected static final Supplier<Map<BlendMode, RenderMaterial>> RENDER_MATERIALS = Suppliers.memoize(HashMap::new);
 
+    protected static int getBakeFlags(int rotation, boolean lockUv) {
+        return switch (rotation) {
+            case 90 -> MutableQuadView.BAKE_ROTATE_90;
+            case 180 -> MutableQuadView.BAKE_ROTATE_180;
+            case 270 -> MutableQuadView.BAKE_ROTATE_270;
+            default -> MutableQuadView.BAKE_ROTATE_NONE;
+        } | (lockUv ? MutableQuadView.BAKE_LOCK_UV : 0);
+    }
+
     protected static void addFaceLayer(QuadEmitter emitter, Direction direction, Sprite sprite, @Nullable Integer maybeTint, BlendMode mode, int bakeFlags) {
         var tint = (maybeTint == null ? 0xFFFFFF : maybeTint) | 0xFF000000;
         emitter.square(direction, 0, 0, 1, 1, 0)
@@ -94,29 +106,50 @@ public class WireModel implements IBlockStateBakedModel {
                 .emit();
     }
 
+    protected static int getRotation(Direction normal, Direction to) {
+        if (to.getAxis() == normal.getAxis()) return 0;
+
+        List<Direction> directions = switch (normal) {
+            case UP, DOWN -> List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+            case NORTH, SOUTH -> List.of(Direction.UP, Direction.EAST, Direction.DOWN, Direction.WEST);
+            case EAST, WEST -> List.of(Direction.UP, Direction.SOUTH, Direction.DOWN, Direction.NORTH);
+        };
+
+        int fromIndex = 0;
+        int toIndex = directions.indexOf(to);
+        if (toIndex == -1) return 0;
+
+        int rotationSteps = (toIndex - fromIndex + 4) % 4;
+        return rotationSteps * 90;
+    }
+
     @Override
     public void emitBlockQuads(@Nullable BlockRenderView blockRenderView, BlockState state, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
         QuadEmitter emitter = renderContext.getEmitter();
-        var tint = state.get(WireBlock.POWERED) ? 0xFD0000 : 0x480000;
+        var powerTint = state.get(WireBlock.POWERED) ? 0xFD0000 : 0x480000;
 //        var materialSolid = getRenderMaterial(BlendMode.SOLID);
 //        var materialCutout = getRenderMaterial(BlendMode.CUTOUT);
 
         for(Direction direction : Direction.values()) {
-            addFaceLayer(emitter, direction, getSprite(0), null, BlendMode.SOLID, MutableQuadView.BAKE_LOCK_UV);
-            addFaceLayer(emitter, direction, getSprite(1), tint, BlendMode.CUTOUT, MutableQuadView.BAKE_LOCK_UV);
+            addFaceLayer(emitter, direction, getSprite(0), null, BlendMode.SOLID, getBakeFlags(0, true));
+            addFaceLayer(emitter, direction, getSprite(1), powerTint, BlendMode.CUTOUT, getBakeFlags(0, true));
             switch (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction))) {
                 case NONE:
                     break;
                 case INPUT:
-                    addFaceLayer(emitter, direction, getSprite(3), null, BlendMode.CUTOUT, MutableQuadView.BAKE_LOCK_UV);
+                    addFaceLayer(emitter, direction, getSprite(6), null, BlendMode.CUTOUT, getBakeFlags(0, true));
                     break;
                 case OUTPUT:
-                    addFaceLayer(emitter, direction, getSprite(4), null, BlendMode.CUTOUT, MutableQuadView.BAKE_LOCK_UV);
+                    addFaceLayer(emitter, direction, getSprite(7), null, BlendMode.CUTOUT, getBakeFlags(0, true));
                     break;
             }
+            for (Direction connection : Direction.stream().filter(d -> d.getAxis() != direction.getAxis()).toList()) {
+                if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) != WireBlock.ConnectionType.NONE) {
+                    addFaceLayer(emitter, direction, getSprite(3), powerTint, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
+                }
+            }
 
-
-            addFaceLayer(emitter, direction, getSprite(5), state.get(WireBlock.OPERATOR).getColor(), BlendMode.CUTOUT, MutableQuadView.BAKE_LOCK_UV);
+            addFaceLayer(emitter, direction, getSprite(8), state.get(WireBlock.OPERATOR).getColor(), BlendMode.CUTOUT, getBakeFlags(0, true));
 
 //            var opColor = state.get(WireBlock.OPERATOR).getColor() | 0xFF000000;
             // Emit base quad
