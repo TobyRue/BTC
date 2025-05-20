@@ -11,8 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
@@ -73,8 +76,12 @@ public class WrenchItem extends Item {
         PlayerEntity player = context.getPlayer();
         Hand hand = context.getHand();
         World world = context.getWorld();
+        BlockPos pos = context.getBlockPos();
+        Direction hitSide = context.getSide();
 
-        if (player.isSneaking() && hand != Hand.OFF_HAND) {
+        if (state.getBlock() instanceof IHaveWrenchActions actions) {
+            return actions.onWrenchUse(stack, state, world, pos, player, hand, hitSide);
+        } else if (player.isSneaking() && hand != Hand.OFF_HAND) {
             stack.set(BTC.WRENCH_TYPE, nextWrench);
             if (world.isClient) {
                 player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
@@ -96,11 +103,30 @@ public class WrenchItem extends Item {
         } else if (type == WrenchType.ROTATE) {
             var stateRotate = context.getWorld().getBlockState(context.getBlockPos());
             if (!stateRotate.streamTags().anyMatch(t -> t == BTC.WRENCH_BLACKLIST) && !(stateRotate.getBlock() instanceof PistonBlock && stateRotate.get(PistonBlock.EXTENDED))) {
-                context.getWorld().setBlockState(context.getBlockPos(), stateRotate.rotate(BlockRotation.CLOCKWISE_90));
-                return ActionResult.SUCCESS;
+                Property<?> facingProperty = null;
+
+                if (stateRotate.contains(Properties.FACING)) {
+                    facingProperty = Properties.FACING;
+                } else if (stateRotate.contains(Properties.HORIZONTAL_FACING)) {
+                    facingProperty = Properties.HORIZONTAL_FACING;
+                } else if (stateRotate.contains(Properties.HORIZONTAL_AXIS)) {
+                    facingProperty = Properties.HORIZONTAL_AXIS;
+                } else if (stateRotate.contains(Properties.ORIENTATION)) {
+                    facingProperty = Properties.ORIENTATION;
+                } else if (stateRotate.contains(Properties.AXIS)) {
+                    facingProperty = Properties.AXIS;
+                }
+
+                if (facingProperty != null) {
+                    world.setBlockState(pos, stateRotate.cycle(facingProperty));
+                    return ActionResult.SUCCESS;
+                } else {
+                    world.setBlockState(pos, stateRotate.rotate(BlockRotation.CLOCKWISE_90));
+                    return ActionResult.SUCCESS;
+                }
             }
         }
-        // Return pass if the block does not have the FACING property
+
         return super.useOnBlock(context);
     }
 

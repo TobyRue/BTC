@@ -4,15 +4,17 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.WrenchType;
-import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DebugStickItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.StringIdentifiable;
@@ -24,7 +26,7 @@ import net.minecraft.world.World;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-public class WireBlock extends Block implements IWireConnect {
+public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions {
 
     public static final Supplier<ImmutableBiMap<EnumProperty<ConnectionType>, Direction>> CONNECTION_TO_DIRECTION = Suppliers.memoize(() ->
         ImmutableBiMap.<EnumProperty<ConnectionType>, Direction>builder()
@@ -111,12 +113,10 @@ public class WireBlock extends Block implements IWireConnect {
         ));
     }
 
-
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
         ItemStack heldItem = player.getStackInHand(hand);
         WrenchType type = stack.getOrDefault(BTC.WRENCH_TYPE, WrenchType.ROTATE);
-
         if (heldItem.isIn(BTC.WRENCHES) && (player.isCreative() || !this.IMMUTABLE)) {
             if (hand == Hand.OFF_HAND && type == WrenchType.WIRE) {
                 var newState = state.cycle(OPERATOR);
@@ -124,13 +124,15 @@ public class WireBlock extends Block implements IWireConnect {
                 if (world.isClient) {
                     player.sendMessage(Text.translatable("block.btc.wire.change_operator", Text.translatable("block.btc.wire.operator." + newState.get(OPERATOR).asString())), true);
                 }
+                return ActionResult.SUCCESS;
             } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE) {
-                var property = CONNECTION_TO_DIRECTION.get().inverse().get(hit.getSide());
+                var property = CONNECTION_TO_DIRECTION.get().inverse().get(hitSide);
                 var newState = state.cycle(property);
                 world.setBlockState(pos, newState);
                 if (world.isClient) {
-                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + hit.getSide().asString()), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
+                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + hitSide.asString()), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
                 }
+                return ActionResult.SUCCESS;
             } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
                 Direction dir = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
                 var property = switch (dir) {
@@ -146,14 +148,20 @@ public class WireBlock extends Block implements IWireConnect {
                 if (world.isClient) {
                     player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
                 }
+                return ActionResult.SUCCESS;
             }
-            return ItemActionResult.SUCCESS;
         }
         if (world.isClient) {
             player.sendMessage(Text.literal("Has power: " + hasPower(state, world, pos)));
         }
-        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        return ActionResult.FAIL;
     }
+
+//    @Override
+//    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+//
+//        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+//    }
 
     protected boolean hasPower(BlockState state, World world, BlockPos pos) {
         return state.get(OPERATOR).apply(
