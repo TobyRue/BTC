@@ -19,7 +19,7 @@
   "block.btc.copper_button_oxidized": "Oxidized Copper Button",
   "block.btc.waxed_copper_button_oxidized": "Waxed Oxidized Copper Button",
 
-  "item.btc.wire_wrench": "Wire Wrench",
+  "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",
   "item.btc.gold_wrench": "Gold Wrench",
   "item.btc.creative_wrench": "Creative Wrench",
@@ -103,6 +103,23 @@
   "block.btc.wire.face.north": "NORTH",
   "block.btc.wire.face.east": "EAST",
   "block.btc.wire.face.south": "SOUTH",
-  "block.btc.wire.face.west": "WEST"
+  "block.btc.wire.face.west": "WEST",
 
+  "item.btc.wrench.wire.face_label": "Wrench Face: %s",
+  "item.btc.wrench.description": "Modifies BTC Blocks",
+  "item.btc.wrench.action.click": " - Normal Click: Reserved for Wrench Type actions",
+  "item.btc.wrench.action.shift_click": " - Shift Click: Changes wrench type",
+  "item.btc.wrench.types.rotate": " - Rotate: Rotates Blocks in 4 directions",
+  "item.btc.wrench.types.warn": "WARN: The following only work for BTC Wire Blocks",
+  "item.btc.wrench.types.wire": " - Wire: Changes the clicked side's connection (Order of change: Input, Output, None)",
+  "item.btc.wrench.types.wire_offhand": "   -   Offhand: Changes the operator of the clicked Wire Block (ex: Or, And)",
+  "item.btc.wrench.types.wire_complex": " - Wire Complex: Changes the connection of the face that is stored",
+  "item.btc.wrench.types.wire_complex_offhand": "   -   Offhand: Changes the face that will be changed",
+  "item.btc.wrench.type.switch": "Wrench Type: %s",
+  "item.btc.wrench.type.rotate": "ROTATE",
+  "item.btc.wrench.type.wire": "WIRE",
+  "item.btc.wrench.type.wire_complex": "WIRE COMPLEX",
+
+
+  "tag.item.btc.wrenches": "Wrenches"
 }

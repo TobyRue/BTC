@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.wires;
 
+import com.google.common.base.Functions;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
@@ -154,6 +155,16 @@ public class WireModel implements IBlockStateBakedModel {
         };
     }
 
+    protected static final Map<ItemStack, BlockState> ITEM_STATE_CACHE = new HashMap<>();
+
+    protected static final Function<ItemStack, BlockState> ITEM_STATE = t -> ITEM_STATE_CACHE.computeIfAbsent(t, stack -> WireBlock.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
+        ((BlockItem) stack.getItem()).getBlock().getDefaultState(),
+        (acc, con) -> acc.with(con, WireBlock.ConnectionType.NONE),
+        (lhs, rhs) -> {
+            throw new RuntimeException("Don't fold in parallel");
+        }
+    ));
+
     @Override
     public void emitBlockQuads(@Nullable BlockRenderView blockRenderView, BlockState state, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
         QuadEmitter emitter = renderContext.getEmitter();
@@ -186,8 +197,9 @@ public class WireModel implements IBlockStateBakedModel {
         }
     }
 
+
     @Override
     public void emitItemQuads(ItemStack stack, Supplier<Random> supplier, RenderContext renderContext) {
-        this.emitBlockQuads(null, ((BlockItem) stack.getItem()).getBlock().getDefaultState(), new BlockPos(0, 0, 0), supplier, renderContext);
+        this.emitBlockQuads(null, ITEM_STATE.apply(stack), new BlockPos(0, 0, 0), supplier, renderContext);
     }
 }

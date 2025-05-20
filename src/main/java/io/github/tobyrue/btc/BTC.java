@@ -1,15 +1,13 @@
 package io.github.tobyrue.btc;
 
-import com.mojang.serialization.Codec;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
-import io.github.tobyrue.btc.enums.CycleDirection;
+import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
-import net.minecraft.util.dynamic.Codecs;
 import io.github.tobyrue.btc.regestries.*;
 import io.github.tobyrue.btc.status_effects.MinerMishapEffect;
 import io.github.tobyrue.btc.status_effects.BuilderBlunderEffect;
@@ -26,7 +24,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.*;
 import net.minecraft.particle.SimpleParticleType;
@@ -34,9 +31,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.Style;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
 
 import java.util.Arrays;
@@ -50,14 +47,20 @@ public class BTC implements ModInitializer {
     public static final StatusEffect DROWNING;
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
     public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
-    public static final ComponentType<CycleDirection> WRENCH_DIRECTION = Registry.register(
+    public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             identifierOf("wrench_direction"),
-            ComponentType.<CycleDirection>builder()
-                    .codec(CycleDirection.CODEC)
+            ComponentType.<Direction>builder()
+                    .codec(Direction.CODEC)
                     .build()
     );
-
+    public static final ComponentType<WrenchType> WRENCH_TYPE = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            identifierOf("wrench_type"),
+            ComponentType.<WrenchType>builder()
+                    .codec(WrenchType.CODEC)
+                    .build()
+    );
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
@@ -121,6 +124,9 @@ public class BTC implements ModInitializer {
             content.addAfter(ModItems.RUBY_TRIAL_KEY, ModItems.STAFF);
             content.addAfter(ModItems.STAFF, ModItems.DRAGON_ROD);
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
+        });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
+            content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);

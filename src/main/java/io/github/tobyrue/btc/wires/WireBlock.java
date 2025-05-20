@@ -1,16 +1,13 @@
 package io.github.tobyrue.btc.wires;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -23,7 +20,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -119,20 +115,36 @@ public class WireBlock extends Block implements IWireConnect {
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getStackInHand(hand);
+        WrenchType type = stack.getOrDefault(BTC.WRENCH_TYPE, WrenchType.ROTATE);
 
         if (heldItem.isIn(BTC.WRENCHES) && (player.isCreative() || !this.IMMUTABLE)) {
-            if (hand == Hand.OFF_HAND) {
+            if (hand == Hand.OFF_HAND && type == WrenchType.WIRE) {
                 var newState = state.cycle(OPERATOR);
                 world.setBlockState(pos, newState);
                 if (world.isClient) {
                     player.sendMessage(Text.translatable("block.btc.wire.change_operator", Text.translatable("block.btc.wire.operator." + newState.get(OPERATOR).asString())), true);
                 }
-            } else {
+            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE) {
                 var property = CONNECTION_TO_DIRECTION.get().inverse().get(hit.getSide());
                 var newState = state.cycle(property);
                 world.setBlockState(pos, newState);
                 if (world.isClient) {
                     player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + hit.getSide().asString()), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
+                }
+            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
+                Direction dir = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
+                var property = switch (dir) {
+                    case DOWN -> CONNECTION_TO_DIRECTION.get().inverse().get(Direction.DOWN);
+                    case UP ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.UP);
+                    case NORTH ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.NORTH);
+                    case EAST ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.EAST);
+                    case SOUTH ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.SOUTH);
+                    case WEST ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.WEST);
+                };
+                var newState = state.cycle(property);
+                world.setBlockState(pos, newState);
+                if (world.isClient) {
+                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
                 }
             }
             return ItemActionResult.SUCCESS;
