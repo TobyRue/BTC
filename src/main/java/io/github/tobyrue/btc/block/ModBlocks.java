@@ -33,13 +33,13 @@ public class ModBlocks {
             true
     );
     public static final Block DUNGEON_WIRE_V2 = register(
-            new WireBlock(AbstractBlock.Settings.create(), true),
+            new WireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
             "dungeon_wire_v2",
             true
     );
 
     public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
-            new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().luminance((state) -> {
+            new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
                 return 15;
             }).strength(3.5F, 3600000.0F)),
             "dungeon_fire",

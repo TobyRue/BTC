@@ -3,7 +3,7 @@ package io.github.tobyrue.btc.enums;
 import com.mojang.serialization.Codec;
 
 public enum WrenchType {
-    ROTATE("rotate"), WIRE("wire"), WIRE_COMPLEX("wire_complex");
+    ROTATE("rotate"), WIRE("wire"), WIRE_DELAY("wire_delay"), WIRE_COMPLEX("wire_complex");
 
     private final String name;
     public static final Codec<WrenchType> CODEC = Codec.STRING.xmap(

@@ -53,10 +53,10 @@ public class BetterTrialChambersMapTrade implements TradeOffers.Factory {
 
         // Add the decoration at the structure's location
         mapState.addDecorationsNbt(
-                mapStack, // Decoration type
-                pos, // X coordinate
-                "better_trial_chambers", // Z coordinate
-                markerType // Decoration name (optional)
+                mapStack, 
+                pos,
+                "better_trial_chambers",
+                markerType
         );
 
         // Log map creation

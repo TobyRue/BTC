@@ -190,6 +190,11 @@ public class WireModel implements IBlockStateBakedModel {
                 } else if ((state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) != WireBlock.ConnectionType.NONE || state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction)) != WireBlock.ConnectionType.NONE)) {
                     addFaceLayer(emitter, direction, getSprite(9), powerTint, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
                 }
+                if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlock.ConnectionType.INPUT) {
+                    addFaceLayer(emitter, direction, getSprite(4), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
+                } else if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlock.ConnectionType.OUTPUT) {
+                    addFaceLayer(emitter, direction, getSprite(5), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
+                }
             }
             if (!(Direction.stream().filter(d -> state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(d)) == WireBlock.ConnectionType.INPUT).count() == 1 && state.get(WireBlock.OPERATOR) == WireBlock.Operator.OR)) {
                 addFaceLayer(emitter, direction, getSprite(8), state.get(WireBlock.OPERATOR).getColor(), BlendMode.CUTOUT, getBakeFlags(0, true));

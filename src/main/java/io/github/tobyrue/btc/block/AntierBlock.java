@@ -32,7 +32,6 @@ public class AntierBlock extends Block implements ModBlockEntityProvider<AntierB
 
     static {
         MIDDLE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
-        //change top and bottom
         TOP = Block.createCuboidShape(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);
         BOTTOM = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
         FULL_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);

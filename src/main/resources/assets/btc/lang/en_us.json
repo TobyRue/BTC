@@ -104,6 +104,7 @@
   "block.btc.wire.face.east": "EAST",
   "block.btc.wire.face.south": "SOUTH",
   "block.btc.wire.face.west": "WEST",
+  "block.btc.wire.delay.change_delay": "Wire delay: %s",
 
   "item.btc.wrench.wire.face_label": "Wrench Face: %s",
   "item.btc.wrench.description": "Modifies BTC Blocks",
@@ -118,6 +119,7 @@
   "item.btc.wrench.type.switch": "Wrench Type: %s",
   "item.btc.wrench.type.rotate": "ROTATE",
   "item.btc.wrench.type.wire": "WIRE",
+  "item.btc.wrench.type.wire_delay": "WIRE DELAY",
   "item.btc.wrench.type.wire_complex": "WIRE COMPLEX",
 
 

@@ -10,18 +10,19 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DebugStickItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.tick.TickPriority;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -98,6 +99,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
     public static final EnumProperty<Operator> OPERATOR = EnumProperty.of("operator", Operator.class);
     public static final BooleanProperty LATCHED = BooleanProperty.of("latched");
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
+    public static final IntProperty DELAY = IntProperty.of("delay", 0 ,7);
 
     protected final boolean IMMUTABLE;
 
@@ -105,12 +107,34 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         super(settings);
         IMMUTABLE = immutable;
         this.setDefaultState(CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(POWERED, false),
+                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(POWERED, false).with(DELAY, 0),
                 (acc, con) -> acc.with(con, ConnectionType.INPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
                 }
         ));
+    }
+
+    @Override
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        super.scheduledTick(state, world, pos, random);
+        boolean newPoweredState = hasPower(state, world, pos);
+        if (state.get(POWERED) != newPoweredState) {
+            world.setBlockState(pos, state.with(POWERED, newPoweredState), 3);
+        }
+    }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if (state.get(DELAY) != 0) {
+            world.scheduleBlockTick(pos, this, state.get(DELAY));
+        } else {
+            boolean newPoweredState = hasPower(state, world, pos);
+            if (state.get(POWERED) != newPoweredState) {
+                world.setBlockState(pos, state.with(POWERED, newPoweredState), 3);
+            }
+        }
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
 
     @Override
@@ -133,7 +157,27 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
                     player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + hitSide.asString()), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
                 }
                 return ActionResult.SUCCESS;
-            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
+            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_DELAY) {
+                if (!player.isSneaking()) {
+                    var newState = state.cycle(DELAY);
+                    world.setBlockState(pos, newState);
+                    if (world.isClient) {
+                        if (state.get(DELAY) != 7) {
+                            player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", state.get(DELAY) + 1), true);
+                        } else {
+                            player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", 0), true);
+                        }
+                    }
+                    return ActionResult.SUCCESS;
+                } else {
+                    world.setBlockState(pos, state.with(DELAY, 0));
+                    if (world.isClient) {
+                        player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", 0), true);
+                    }
+                    return ActionResult.SUCCESS;
+                }
+
+                } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
                 Direction dir = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
                 var property = switch (dir) {
                     case DOWN -> CONNECTION_TO_DIRECTION.get().inverse().get(Direction.DOWN);
@@ -156,13 +200,66 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         }
         return ActionResult.FAIL;
     }
-
-//    @Override
-//    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-//
-//        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+//TODO make this work so structure blocks work
+//    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+//        return (BlockState)state.with(FACING, rotation.rotate((Direction)state.get(FACING)));
 //    }
 
+
+    @Override
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        ImmutableBiMap<EnumProperty<ConnectionType>, Direction> map = CONNECTION_TO_DIRECTION.get();
+
+        BlockState mirroredState = state;
+
+        for (var entry : map.entrySet()) {
+            EnumProperty<ConnectionType> property = entry.getKey();
+            Direction originalDir = entry.getValue();
+            Direction mirroredDir = getMirroredDirection(originalDir, mirror);
+            EnumProperty<ConnectionType> mirroredProperty = map.inverse().get(mirroredDir);
+
+            if (mirroredProperty != null) {
+                mirroredState = mirroredState.with(mirroredProperty, state.get(property));
+            }
+        }
+
+        return mirroredState;
+    }
+
+    private Direction getMirroredDirection(Direction direction, BlockMirror mirror) {
+        return switch (mirror) {
+            case LEFT_RIGHT -> switch (direction) {
+                case NORTH -> Direction.SOUTH;
+                case SOUTH -> Direction.NORTH;
+                default -> direction;
+            };
+            case FRONT_BACK -> switch (direction) {
+                case EAST -> Direction.WEST;
+                case WEST -> Direction.EAST;
+                default -> direction;
+            };
+            default -> direction;
+        };
+    }
+    @Override
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        ImmutableBiMap<EnumProperty<ConnectionType>, Direction> map = CONNECTION_TO_DIRECTION.get();
+
+        BlockState rotatedState = state;
+
+        for (var entry : map.entrySet()) {
+            EnumProperty<ConnectionType> property = entry.getKey();
+            Direction originalDir = entry.getValue();
+            Direction rotatedDir = rotation.rotate(originalDir);
+            EnumProperty<ConnectionType> rotatedProperty = map.inverse().get(rotatedDir);
+
+            if (rotatedProperty != null) {
+                rotatedState = rotatedState.with(rotatedProperty, state.get(property));
+            }
+        }
+
+        return rotatedState;
+    }
     protected boolean hasPower(BlockState state, World world, BlockPos pos) {
         return state.get(OPERATOR).apply(
             CONNECTION_TO_DIRECTION.get().entrySet().stream()
@@ -191,11 +288,22 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
 //    }
 
     @Override
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return state.get(POWERED) ? 15 : 0;
+    }
+
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPERATOR);
         for (var conn : CONNECTION_TO_DIRECTION.get().keySet())
             builder.add(conn);
         builder.add(LATCHED);
         builder.add(POWERED);
+        builder.add(DELAY);
     }
 }
