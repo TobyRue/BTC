@@ -60,32 +60,32 @@ public class ModBlocks {
             true
     );
     public static final CopperButtonBlock UNOXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
+            new CopperButtonBlock(BlockSetType.STONE, 10, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
             "copper_button_unoxidized",
             true
     );
     public static final ButtonBlock WAXED_UNOXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
-            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(UNOXIDIZED_COPPER_BUTTON)),
+            new ButtonBlock(BlockSetType.STONE, 10, AbstractBlock.Settings.copy(UNOXIDIZED_COPPER_BUTTON)),
             "waxed_copper_button_unoxidized",
             true
     );
     public static final CopperButtonBlock EXPOSED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.EXPOSED),
+            new CopperButtonBlock(BlockSetType.STONE, 20, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.EXPOSED),
             "copper_button_exposed",
             true
     );
     public static final ButtonBlock WAXED_EXPOSED_COPPER_BUTTON = (ButtonBlock) register(
-            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(EXPOSED_COPPER_BUTTON)),
+            new ButtonBlock(BlockSetType.STONE, 20, AbstractBlock.Settings.copy(EXPOSED_COPPER_BUTTON)),
             "waxed_copper_button_exposed",
             true
     );
     public static final CopperButtonBlock WEATHERED_COPPER_BUTTON = (CopperButtonBlock) register(
-            new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.WEATHERED),
+            new CopperButtonBlock(BlockSetType.STONE, 30, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.WEATHERED),
             "copper_button_weathered",
             true
     );
     public static final ButtonBlock WAXED_WEATHERED_COPPER_BUTTON = (ButtonBlock) register(
-            new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(WEATHERED_COPPER_BUTTON)),
+            new ButtonBlock(BlockSetType.STONE, 30, AbstractBlock.Settings.copy(WEATHERED_COPPER_BUTTON)),
             "waxed_copper_button_weathered",
             true
     );    public static final CopperButtonBlock OXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
