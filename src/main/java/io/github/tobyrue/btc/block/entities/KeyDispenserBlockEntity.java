@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
+import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -36,18 +38,23 @@ public class KeyDispenserBlockEntity extends BlockEntity {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         var uuid = player.getUuid().toString();
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
+
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
-            if (neighborState.getBlock() instanceof DungeonWireBlock && neighborState.get(POWERED)) {
-                if (!HASH_SET.contains(uuid)) {
-                    HASH_SET.add(uuid);
-                    world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
-                    if (!world.isClient) {
-                        player.getInventory().offerOrDrop(dropStack);
+            Direction dirFromNeighborToThis = direction.getOpposite();
+            if (neighborState.getBlock() instanceof WireBlock) {
+                var property = neighborState.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(dirFromNeighborToThis));
+                if (property == WireBlock.ConnectionType.OUTPUT && neighborState.get(WireBlock.POWERED)) {
+                    if (!HASH_SET.contains(uuid)) {
+                        HASH_SET.add(uuid);
+                        world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+                        if (!world.isClient) {
+                            player.getInventory().offerOrDrop(dropStack);
+                        }
+                        markDirty();
+                        return ActionResult.SUCCESS;
                     }
-                    markDirty();
-                    return ActionResult.SUCCESS;
                 }
             }
         }
