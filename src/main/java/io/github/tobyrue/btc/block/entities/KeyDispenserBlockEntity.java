@@ -2,10 +2,12 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
+import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -27,7 +29,7 @@ import java.util.HashSet;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
-public class KeyDispenserBlockEntity extends BlockEntity {
+public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWirePowered {
 
     public final HashSet<String> HASH_SET = new HashSet<>();
 
@@ -38,25 +40,15 @@ public class KeyDispenserBlockEntity extends BlockEntity {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         var uuid = player.getUuid().toString();
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
-
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            Direction dirFromNeighborToThis = direction.getOpposite();
-            if (neighborState.getBlock() instanceof WireBlock) {
-                var property = neighborState.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(dirFromNeighborToThis));
-                if (property == WireBlock.ConnectionType.OUTPUT && neighborState.get(WireBlock.POWERED)) {
-                    if (!HASH_SET.contains(uuid)) {
-                        HASH_SET.add(uuid);
-                        world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
-                        if (!world.isClient) {
-                            player.getInventory().offerOrDrop(dropStack);
-                        }
-                        markDirty();
-                        return ActionResult.SUCCESS;
-                    }
-                }
+        System.out.println(shouldWirePower(state, world, pos, false, true, false));
+        if (!HASH_SET.contains(uuid) && shouldWirePower(state, world, pos, false, true, false)) {
+            HASH_SET.add(uuid);
+            world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+            if (!world.isClient) {
+                player.getInventory().offerOrDrop(dropStack);
             }
+            markDirty();
+            return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
     }

@@ -1,42 +1,29 @@
 package io.github.tobyrue.btc.block.entities;
 
-import io.github.tobyrue.btc.block.CopperWireBlock;
 import io.github.tobyrue.btc.enums.FireDispenserType;
 import io.github.tobyrue.btc.enums.FireSwich;
-import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.block.FireDispenserBlock;
-import io.github.tobyrue.btc.wires.WireBlock;
+import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
-public class FireDispenserBlockEntity extends BlockEntity implements BlockEntityTicker<FireDispenserBlockEntity> {
+public class FireDispenserBlockEntity extends BlockEntity implements BlockEntityTicker<FireDispenserBlockEntity>, IDungeonWirePowered {
     public FireDispenserBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FIRE_DISPENSER_ENTITY, pos, state);
     }
 
     @Override
     public void tick(World world, BlockPos pos, BlockState state, FireDispenserBlockEntity blockEntity) {
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);;
-            Direction dirFromNeighborToThis = direction.getOpposite();
-            if (neighborState.getBlock() instanceof WireBlock) {
-                var property = neighborState.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(dirFromNeighborToThis));
-                if (property == WireBlock.ConnectionType.OUTPUT && neighborState.get(WireBlock.POWERED)) {
-                    boolean isPowered = neighborState.get(DungeonWireBlock.POWERED);
-                    FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), isPowered);
 
-                    if (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) != newType) {
-                        world.setBlockState(pos, state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, newType));
-                    }
-                }
-            }
+        FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), shouldWirePower(state, world, pos, false, true, true));
+        if (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) != newType) {
+            world.setBlockState(pos, state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, newType));
+        }
 //            if (neighborState.getBlock() instanceof DungeonWireBlock) {
 //                boolean isPowered = neighborState.get(DungeonWireBlock.POWERED);
 //                FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), isPowered);
@@ -53,7 +40,6 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
 //                    world.setBlockState(pos, state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, newType));
 //                }
 //            }
-        }
     }
 
     private FireDispenserType getFireTypeFromSwitch(FireSwich fireSwich, boolean isPowered) {
@@ -81,3 +67,6 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
         };
     }
 }
+
+
+

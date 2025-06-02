@@ -3,10 +3,10 @@ package io.github.tobyrue.btc.block;
 import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
-public class DungeonPressurePlateBlock extends PressurePlateBlock {
+public class DungeonPressurePlateBlock extends PressurePlateBlock  {
     private static final VoxelShape SHAPE;
 
     private static final VoxelShape DOWN_SHAPE;

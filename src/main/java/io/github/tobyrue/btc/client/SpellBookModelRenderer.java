@@ -99,7 +99,6 @@ public class SpellBookModelRenderer implements BuiltinItemRendererRegistry.Dynam
         var minecraft = MinecraftClient.getInstance();
 
 
-
         matrices.translate(0.5, 0.5, 0.20);
 
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);

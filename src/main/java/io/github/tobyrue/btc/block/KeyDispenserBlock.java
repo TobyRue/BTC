@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
+import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -21,7 +22,7 @@ import net.minecraft.world.World;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
-public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity> {
+public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>, IDungeonWirePowered {
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape TOP_MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
@@ -67,8 +68,6 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-
-
         int i;
         double d2;
         double e2;
@@ -77,12 +76,8 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
             d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
-            for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = pos.offset(direction);
-                BlockState neighborState = world.getBlockState(neighborPos);
-                if (neighborState.getBlock() instanceof DungeonWireBlock && neighborState.get(POWERED)) {
-                    world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
-                }
+            if (shouldWirePower(state, world, pos, false, true, false)) {
+                world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
             }
         }
         super.randomDisplayTick(state, world, pos, random);

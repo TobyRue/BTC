@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.wires;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import net.minecraft.block.Block;
@@ -200,11 +201,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         }
         return ActionResult.FAIL;
     }
-//TODO make this work so structure blocks work
-//    protected BlockState rotate(BlockState state, BlockRotation rotation) {
-//        return (BlockState)state.with(FACING, rotation.rotate((Direction)state.get(FACING)));
-//    }
-
 
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
@@ -261,7 +257,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         return rotatedState;
     }
     protected boolean hasPower(BlockState state, World world, BlockPos pos) {
-        return state.get(OPERATOR).apply(
+           return state.get(OPERATOR).apply(
             CONNECTION_TO_DIRECTION.get().entrySet().stream()
                 .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)
                 .map(entry -> {
