@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.wires;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.IDungeonWireAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
@@ -123,6 +124,16 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         if (state.get(POWERED) != newPoweredState) {
             world.setBlockState(pos, state.with(POWERED, newPoweredState), 3);
         }
+        for (Direction direction : Direction.values()) {
+            BlockPos neighborPos = pos.offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite()));
+
+            if (neighborState.getBlock() instanceof IDungeonWireAction action && property == WireBlock.ConnectionType.OUTPUT) {
+                action.onDungeonWireChange(neighborState, world, neighborPos, state.get(POWERED));
+                neighborUpdate(state, world, pos, this, pos, true);
+            }
+        }
     }
 
     @Override
@@ -133,6 +144,16 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
             boolean newPoweredState = hasPower(state, world, pos);
             if (state.get(POWERED) != newPoweredState) {
                 world.setBlockState(pos, state.with(POWERED, newPoweredState), 3);
+            }
+            for (Direction direction : Direction.values()) {
+                BlockPos neighborPos = pos.offset(direction);
+                BlockState neighborState = world.getBlockState(neighborPos);
+                var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite()));
+
+                if (neighborState.getBlock() instanceof IDungeonWireAction action && property == WireBlock.ConnectionType.OUTPUT) {
+                    action.onDungeonWireChange(neighborState, world, neighborPos, state.get(POWERED));
+                    neighborUpdate(state, world, pos, this, pos, true);
+                }
             }
         }
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);

@@ -4,6 +4,8 @@ import io.github.tobyrue.btc.ICopperWireConnect;
 import io.github.tobyrue.btc.IDungeonWireAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.wires.IDungeonWirePowered;
+import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,10 +34,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect {
+public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect, IDungeonWirePowered {
     public static final BooleanProperty WIRED = BooleanProperty.of("wired");
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
-    public static final BooleanProperty CONNECTS = BooleanProperty.of("connects");
     public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");
 
     // Define the 4x4x4 cube shape.
@@ -51,7 +52,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OPEN, false)
-                .with(CONNECTS, false)
                 .with(SURVIVAL, true)
                 .with(WIRED, false));
     }
@@ -61,7 +61,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(OPEN, false)
-                .with(CONNECTS, false)
                 .with(SURVIVAL, true)
                 .with(WIRED, false);
     }
@@ -69,7 +68,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
-        builder.add(CONNECTS);
         builder.add(SURVIVAL);
         builder.add(WIRED);
     }
@@ -122,13 +120,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
             boolean currentState = state.get(WIRED);
             BlockState newState = state.with(WIRED, !state.get(WIRED));
             String message = "Wires Powering Doors has been: " + (!currentState ? "enabled" : "disabled");
-            player.sendMessage(Text.literal(message), true);
-            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
-            return ItemActionResult.SUCCESS;
-        } else if (!state.get(OPEN) && stack.getItem() == ModItems.GOLD_WRENCH && state.get(SURVIVAL)) {
-            boolean currentState = state.get(CONNECTS);
-            BlockState newState = state.with(CONNECTS, !state.get(CONNECTS));
-            String message = "Wires Connecting has been: " + (!currentState ? "enabled" : "disabled");
             player.sendMessage(Text.literal(message), true);
             world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
             return ItemActionResult.SUCCESS;
@@ -275,6 +266,18 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         // Update the current block's state.
     }
 
+//    @Override
+//    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+//        if(state.get(WIRED)) {
+////            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
+//            for (BlockPos offsetPos : findDoors(world, pos)) {
+//                setOpen(world.getBlockState(offsetPos), world, offsetPos, shouldWirePower(state, world, pos, true, true, true));
+//            }
+//        }
+//        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+//    }
+
+
     @Override
     public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
         if(state.get(WIRED)) {
@@ -287,11 +290,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
 
     @Override
     public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
-        if (state.get(DungeonDoorBlock.CONNECTS) && state.getBlock() instanceof DungeonDoorBlock) {
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
 
     @Override
