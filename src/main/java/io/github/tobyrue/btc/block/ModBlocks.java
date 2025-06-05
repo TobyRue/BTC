@@ -122,6 +122,13 @@ public class ModBlocks {
             "key_dispenser",
             true
     );
+    public static final KeyAcceptorBlock KEY_ACCEPTOR = (KeyAcceptorBlock) register(
+            new KeyAcceptorBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
+                return 12;
+            }).strength(-1.0F, 3600000.0F)),
+            "key_acceptor",
+            true
+    );
     public static final DungeonWireBlock DUNGEON_WIRE_LEGACY = (DungeonWireBlock) register(
             new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
                     DungeonWireBlock::getLuminance)

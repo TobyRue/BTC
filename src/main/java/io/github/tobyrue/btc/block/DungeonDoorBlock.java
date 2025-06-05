@@ -1,11 +1,10 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.ICopperWireConnect;
-import io.github.tobyrue.btc.IDungeonWireAction;
+import io.github.tobyrue.btc.wires.IDungeonWireConstantAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.wires.IDungeonWirePowered;
-import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,7 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect, IDungeonWirePowered {
+public class DungeonDoorBlock extends Block implements IDungeonWireConstantAction, IDungeonWireConnect, ICopperWireConnect {
     public static final BooleanProperty WIRED = BooleanProperty.of("wired");
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
     public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");

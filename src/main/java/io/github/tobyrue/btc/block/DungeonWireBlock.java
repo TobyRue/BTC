@@ -2,7 +2,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.ICopperWireConnect;
-import io.github.tobyrue.btc.IDungeonWireAction;
+import io.github.tobyrue.btc.wires.IDungeonWireConstantAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.enums.Connection;
 import io.github.tobyrue.btc.item.ModItems;
@@ -345,7 +345,7 @@ public class DungeonWireBlock extends Block implements IDungeonWireConnect, ICop
             BlockPos neighborPos = blockPos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
 
-            if (neighborState.getBlock() instanceof IDungeonWireAction action) {
+            if (neighborState.getBlock() instanceof IDungeonWireConstantAction action) {
                 action.onDungeonWireChange(neighborState, world, neighborPos, other.get(POWERED));
             }
         }
@@ -353,7 +353,7 @@ public class DungeonWireBlock extends Block implements IDungeonWireConnect, ICop
 //            BlockPos neighborPos = blockPos.offset(direction);
 //            BlockState neighborState = world.getBlockState(neighborPos);
 //            System.out.println("Direction: " + direction + ", pos:" + neighborPos);
-//            if(neighborState.getBlock() instanceof IDungeonWireAction action) {
+//            if(neighborState.getBlock() instanceof IDungeonWireConstantAction action) {
 //                action.onDungeonWireChange(neighborState, world, neighborPos, neighborState, other.get(POWERED));
 //            }
 //        }
@@ -368,7 +368,7 @@ public class DungeonWireBlock extends Block implements IDungeonWireConnect, ICop
             for (Direction direction : Direction.values()) {
                 BlockPos neighborPos = pos.offset(direction);
                 BlockState neighborState = world.getBlockState(neighborPos);
-                if (neighborState.getBlock() instanceof IDungeonWireAction action) {
+                if (neighborState.getBlock() instanceof IDungeonWireConstantAction action) {
                     // notify the neighbor block somehow or handle logic there
                     System.out.println("DungeonWireBlock was removed at: " + pos + " notifying neighbor at: " + neighborPos);
                     action.onDungeonWireChange(neighborState, world, neighborPos, false);

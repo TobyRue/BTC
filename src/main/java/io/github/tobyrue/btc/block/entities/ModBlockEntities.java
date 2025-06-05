@@ -12,6 +12,7 @@ public class ModBlockEntities {
     public static BlockEntityType<OminousBeaconBlockEntity> OMINOUS_BEACON_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of("btc", "ominous_beacon"), BlockEntityType.Builder.create(OminousBeaconBlockEntity::new, ModBlocks.OMINOUS_BEACON).build());
     public static BlockEntityType<AntierBlockEntity> ANTIER_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of("btc", "antier"), BlockEntityType.Builder.create(AntierBlockEntity::new, ModBlocks.ANTIER).build());
     public static BlockEntityType<KeyDispenserBlockEntity> KEY_DISPENSER_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of("btc", "key_dispenser"), BlockEntityType.Builder.create(KeyDispenserBlockEntity::new, ModBlocks.KEY_DISPENSER_BLOCK).build());
+    public static BlockEntityType<KeyAcceptorBlockEntity> KEY_ACCEPTOR_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of("btc", "key_acceptor"), BlockEntityType.Builder.create(KeyAcceptorBlockEntity::new, ModBlocks.KEY_ACCEPTOR).build());
     public static BlockEntityType<FireDispenserBlockEntity> FIRE_DISPENSER_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of("btc", "fire_dispenser"), BlockEntityType.Builder.create(FireDispenserBlockEntity::new, ModBlocks.FIRE_DISPENSER).build());
     public static void initialize() {
     }

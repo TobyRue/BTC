@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
@@ -88,4 +89,6 @@ public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWire
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         return this.createNbt(registryLookup);
     }
+
+
 }
