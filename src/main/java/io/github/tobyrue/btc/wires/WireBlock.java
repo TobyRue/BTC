@@ -161,7 +161,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
             for (Direction direction : Direction.values()) {
                 BlockPos neighborPos = pos.offset(direction);
                 BlockState neighborState = world.getBlockState(neighborPos);
-                var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite()));
+                var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction));
 
                 if (neighborState.getBlock() instanceof IDungeonWireConstantAction action && property == WireBlock.ConnectionType.OUTPUT) {
                     action.onDungeonWireChange(neighborState, world, neighborPos, state.get(POWERED));

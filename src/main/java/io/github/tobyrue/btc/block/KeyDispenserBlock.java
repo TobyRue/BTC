@@ -74,7 +74,7 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
         double f2;
         for(i = 0; i < 3; ++i) {
             d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
-            e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
+            e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.9;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
             if (shouldWirePower(state, world, pos, false, true, false)) {
                 world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);

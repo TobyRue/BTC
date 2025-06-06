@@ -26,6 +26,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -130,6 +131,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
             world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
             return ItemActionResult.SUCCESS;
         } else if(!state.get(WIRED) && !state.get(OPEN) && stack.getItem() != ModItems.GOLD_WRENCH && stack.getItem() != ModItems.IRON_WRENCH && stack.getItem() != ModItems.CREATIVE_WRENCH) {
+            world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
             }
@@ -190,9 +192,11 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
     private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open, @Nullable Integer delay) {
         if(state.get(OPEN) != open) {
             world.setBlockState(pos, state.with(OPEN, open));
+
             world.playSound(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f, true);
 
             if(open && delay != null) {
+                world.emitGameEvent(GameEvent.BLOCK_OPEN, pos, GameEvent.Emitter.of(state));
                 // only executed on server so no sound played on client fix me
                 scheduler.schedule(() -> {
                    // world.getServer().execute(() -> {

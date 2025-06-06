@@ -3,9 +3,7 @@ package io.github.tobyrue.btc.block.entities;
 import io.github.tobyrue.btc.block.KeyAcceptorBlock;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.wires.IDungeonWirePowered;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ButtonBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +26,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -42,7 +42,8 @@ public class KeyAcceptorBlockEntity extends BlockEntity implements BlockEntityTi
 
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.getItem() == Items.TRIAL_KEY && delay == 0) {
-            world.setBlockState(pos, state.with(KeyAcceptorBlock.POWERED, true));
+            world.setBlockState(pos, state.with(KeyAcceptorBlock.POWERED, true), Block.NOTIFY_ALL);
+            world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
             if (!player.isCreative()) {
                 stack.decrement(1);
             }
@@ -52,31 +53,33 @@ public class KeyAcceptorBlockEntity extends BlockEntity implements BlockEntityTi
     }
 
     public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-        if (state.get(KeyAcceptorBlock.POWERED)) {
-            updateNeighbors(state, getWorld(), pos);
-            return 15;
-        }
-
-        return 0;
+        return state.get(KeyAcceptorBlock.POWERED) ? 15 : 0;
     }
 
     public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-        if (state.get(KeyAcceptorBlock.POWERED)) {
-            updateNeighbors(state, getWorld(), pos);
-            return 15;
-        }
-        return 0;
+        return state.get(KeyAcceptorBlock.POWERED) ? 15 : 0;
+
+//        if (state.get(KeyAcceptorBlock.POWERED)) {
+//            getWorld().updateNeighborsAlways(pos, state.getBlock());
+////            updateNeighbors(state, getWorld(), pos);
+//            return 15;
+//        }
+//        return 0;
     }
 
-    private void updateNeighbors(BlockState state, World world, BlockPos pos) {
-        for (Direction direction : Direction.values()) {
-            world.updateNeighborsAlways(pos, state.getBlock());
-            world.updateNeighborsAlways(pos.offset(direction), state.getBlock());
-        }
+    private void updateNeighbors(BlockState state, World world, BlockPos pos, Direction direction) {
+        world.updateNeighborsAlways(pos, state.getBlock());
+        world.updateNeighborsAlways(pos.offset(direction), state.getBlock());
     }
 
     @Override
     public void tick(World world, BlockPos pos, BlockState state, KeyAcceptorBlockEntity blockEntity) {
+//        if (world.getBlockState(pos.offset(Direction.DOWN, 2)).getBlock() == Blocks.STICKY_PISTON) {
+//            world.updateNeighborsAlways(pos.offset(Direction.DOWN), state.getBlock());
+//        }
+        for (Direction direction : Direction.values()) {
+            updateNeighbors(state, getWorld(), pos, direction);
+        }
         if (state.get(KeyAcceptorBlock.POWERED)) {
             ++delay;
             double random1 = Math.random();
@@ -92,10 +95,13 @@ public class KeyAcceptorBlockEntity extends BlockEntity implements BlockEntityTi
             System.out.println(d2 + " " + e2 + " " + f2);
             world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
             if (delay >= 40) {
-                this.updateNeighbors(state, world, pos);
+                getWorld().updateNeighborsAlways(pos, state.getBlock());
+//                this.updateNeighbors(state, world, pos);
                 world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 0, 0, 0);
                 delay = 0;
-                world.setBlockState(pos, state.with(KeyAcceptorBlock.POWERED, false));
+                world.setBlockState(pos, state.with(KeyAcceptorBlock.POWERED, false), Block.NOTIFY_ALL);
+//                world.emitGameEvent(player, GameEvent.BLOCK_DEACTIVATE, pos);
+                world.emitGameEvent(GameEvent.BLOCK_DEACTIVATE, pos, GameEvent.Emitter.of(state));
             }
         }
     }

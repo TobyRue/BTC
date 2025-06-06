@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
@@ -22,6 +23,7 @@ public class FireDispenserBlockEntity extends BlockEntity implements BlockEntity
 
         FireDispenserType newType = getFireTypeFromSwitch(state.get(FireDispenserBlock.FIRE_SWICH), shouldWirePower(state, world, pos, false, true, true));
         if (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) != newType) {
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             world.setBlockState(pos, state.with(FireDispenserBlock.FIRE_DISPENSER_TYPE, newType));
         }
 //            if (neighborState.getBlock() instanceof DungeonWireBlock) {

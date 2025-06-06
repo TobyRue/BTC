@@ -25,6 +25,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 import java.util.HashSet;
 
@@ -45,6 +46,7 @@ public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWire
         if (!HASH_SET.contains(uuid) && shouldWirePower(state, world, pos, false, true, false)) {
             HASH_SET.add(uuid);
             world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+            world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
             if (!world.isClient) {
                 player.getInventory().offerOrDrop(dropStack);
             }

@@ -21,6 +21,7 @@ import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -42,6 +43,8 @@ public class PedestalBlockEntity extends BlockEntity {
 
         if(stack.getItem() == ModItems.RUBY_TRIAL_KEY) {
             if(c >= 0 && c < 4) {
+                world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
+
                 HASH_MAP.put(uuid, c+1);
                 player.playSound(SoundEvents.BLOCK_VAULT_ACTIVATE);
                 // Add redstone particle effects
@@ -55,6 +58,7 @@ public class PedestalBlockEntity extends BlockEntity {
             }
         }
         if(c == 4) {
+            world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
             HASH_MAP.put(uuid, -1);
             player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
             ItemStack dropStack = new ItemStack(ModItems.STAFF);
@@ -66,9 +70,9 @@ public class PedestalBlockEntity extends BlockEntity {
             return ItemActionResult.SUCCESS;
         }
         if(c == -1 || !(stack.getItem() == ModItems.RUBY_TRIAL_KEY)) {
+            world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
             player.playSound(SoundEvents.BLOCK_VAULT_INSERT_ITEM_FAIL);
             world.addParticle(ParticleTypes.DUST_PLUME, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
-
         }
 
         return ItemActionResult.FAIL;
