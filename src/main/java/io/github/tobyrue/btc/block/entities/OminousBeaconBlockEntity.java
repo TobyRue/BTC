@@ -11,6 +11,9 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -19,6 +22,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -62,6 +66,17 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                     world.breakBlock(offsetPos, true);
                 }
             }
+            //TODO
+            Vec3d center = Vec3d.ofCenter(pos);
+            double radius = 25.0;
+            world.getNonSpectatingEntities(HostileEntity.class, new Box(
+                            pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius,
+                            pos.getX() + radius, pos.getY() + radius, pos.getZ() + radius))
+                    .forEach(entity -> {
+                        if (entity.getPos().distanceTo(center) <= radius) {
+                            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 200, 2));
+                        }
+                    });
             world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f));
             world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.setOnFireFor(3));
             if (this.beamLength > 0) {
