@@ -1,13 +1,21 @@
 package io.github.tobyrue.btc.client;
 
+import io.github.tobyrue.btc.block.KeyAcceptorBlock;
+import io.github.tobyrue.btc.block.OminousBeaconBlock;
 import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import io.github.tobyrue.btc.BTC;
+import net.minecraft.block.BeaconBlock;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+
+import java.util.List;
 
 public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBeaconBlockEntity> {
 
@@ -15,37 +23,120 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 
     public OminousBeaconBlockRenderer(BlockEntityRendererFactory.Context ctx) {}
 
-    /*@Override
-    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        matrices.push();
-        var minecraft = MinecraftClient.getInstance();
-        var texture = minecraft.getTextureManager().getTexture(OMINOUS_BEAM_TEXTURE);
-        double offset = Math.sin((entity.getWorld().getTime() + tickDelta) / 8.0) / 8.0;
-        // Move the item
-        matrices.translate(0.5, 1.25, 0.5);
-
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((entity.getWorld().getTime() + tickDelta)));
-        int lightAbove = WorldRenderer.getLightmapCoordinates(entity.getWorld(), entity.getPos().up());
-        vertexConsumers.getBuffer(RenderLayer.getBeaconBeam(OMINOUS_BEAM_TEXTURE, true)).light(lightAbove);
 
 
-        //MinecraftClient.getInstance().getItemRenderer().renderItem(OMINOUS_BEAM_TEXTURE, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 0);
-        // Mandatory call after GL calls
-        matrices.pop();
-    }
+//    @Override
+//    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+//        matrices.push();
+//        var minecraft = MinecraftClient.getInstance();
+//        var texture = minecraft.getTextureManager().getTexture(OMINOUS_BEAM_TEXTURE);
+//        double offset = Math.sin((entity.getWorld().getTime() + tickDelta) / 8.0) / 8.0;
+//        // Move the item
+//        matrices.translate(0.5, 1.25, 0.5);
+//
+//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((entity.getWorld().getTime() + tickDelta)));
+//        int lightAbove = WorldRenderer.getLightmapCoordinates(entity.getWorld(), entity.getPos().up());
+//        vertexConsumers.getBuffer(RenderLayer.getBeaconBeam(OMINOUS_BEAM_TEXTURE, true)).light(lightAbove);
+//
+//
+//        //MinecraftClient.getInstance().getItemRenderer().renderItem(OMINOUS_BEAM_TEXTURE, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 0);
+//        // Mandatory call after GL calls
+//        matrices.pop();
+//    }
+
     @Override
-    public void render(OminousBeaconBlockEntity ominousBeaconBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        long l = ominousBeaconBlockEntity.getWorld().getTime();
-        List<BeaconBlockEntity.BeamSegment> list = ominousBeaconBlockEntity.getBeamSegments();
-        int k = 0;
+    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        long l = entity.getWorld().getTime();
+        int k = entity.getBeamLength() != 0 ? -2 : 0;
 
-        for(int m = 0; m < list.size(); ++m) {
-            BeaconBlockEntity.BeamSegment beamSegment = (BeaconBlockEntity.BeamSegment)list.get(m);
-            renderBeam(matrixStack, vertexConsumerProvider, f, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
-            k += beamSegment.getHeight();
+        List<BeaconBlockEntity.BeamSegment> list = entity.getBeamSegments();
+        if (entity.getWorld().getBlockState(entity.getPos()).getBlock() instanceof OminousBeaconBlock) {
+            switch (entity.getWorld().getBlockState(entity.getPos()).get(OminousBeaconBlock.FACING)) {
+                case NORTH -> {
+                    matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90.0f));
+                    matrices.translate(0, 1, 0);
+                }
+                case SOUTH -> {
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
+                    matrices.translate(0, -1, 0);
+                }
+                case EAST -> {
+                    matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90.0f));
+                    matrices.translate(-1, 2, 0);
+                }
+                case WEST -> {
+                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
+                    matrices.translate( 1, -2, 0);
+                }
+                case UP, DOWN -> {
+                    matrices.translate( 0, 2, 0);
+                }
+            }
         }
+        for (int m = 0; m < list.size(); ++m) {
+            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
 
+            int segmentHeight = beamSegment.getHeight();
+
+            if (k + segmentHeight > entity.getBeamLength()) {
+                segmentHeight = entity.getBeamLength() - k;
+            }
+            if (segmentHeight > 0) {
+                renderBeam(matrices, vertexConsumers, tickDelta, l, k, segmentHeight, beamSegment.getColor());
+                k += segmentHeight;
+            }
+            if (k >= entity.getBeamLength()) {
+                break;
+            }
+        }
     }
+
+
+    //TODO EAST TO WEST BEAM
+
+//    @Override
+//    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+//        long l = entity.getWorld().getTime();
+//        List<BeaconBlockEntity.BeamSegment> list = entity.getBeamSegments();
+//        int k = 0;
+//        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
+//        matrices.translate(0, 1, 0);
+//        for(int m = 0; m < list.size(); ++m) {
+//            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
+//            renderBeam(matrices, vertexConsumers, tickDelta, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
+//            k += beamSegment.getHeight();
+//        }
+//    }
+
+//TODO EAST TO WEST BEAM
+
+//    @Override
+//    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+//        long l = entity.getWorld().getTime();
+//        List<BeaconBlockEntity.BeamSegment> list = entity.getBeamSegments();
+//        int k = 0;
+//        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
+//        for(int m = 0; m < list.size(); ++m) {
+//            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
+//            renderBeam(matrices, vertexConsumers, tickDelta, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
+//            k += beamSegment.getHeight();
+//        }
+//    }
+
+//TODO UP DOWN BEAM
+
+//    @Override
+//    public void render(OminousBeaconBlockEntity ominousBeaconBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+//        long l = ominousBeaconBlockEntity.getWorld().getTime();
+//        List<BeaconBlockEntity.BeamSegment> list = ominousBeaconBlockEntity.getBeamSegments();
+//        int k = 0;
+//
+//        for(int m = 0; m < list.size(); ++m) {
+//            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
+//            renderBeam(matrixStack, vertexConsumerProvider, f, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
+//            k += beamSegment.getHeight();
+//        }
+//    }
 
 
     private static void renderBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, long worldTime, int yOffset, int maxY, int color) {
@@ -59,7 +150,7 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
         matrices.translate(0.5, 0.0, 0.5);
         float f = (float)Math.floorMod(worldTime, 40) + tickDelta;
         float g = maxY < 0 ? f : -f;
-        float h = MathHelper.fractionalPart(g * 0.2F - (float)MathHelper.floor(g * 0.1F));
+        float h = MathHelper.fractionalPart(g * 0.2F - (float) MathHelper.floor(g * 0.1F));
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(f * 2.25F - 45.0F));
         float j = 0.0F;
@@ -109,11 +200,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 
     private static void renderBeamVertex(MatrixStack.Entry matrix, VertexConsumer vertices, int color, int y, float x, float z, float u, float v) {
         vertices.vertex(matrix, x, (float)y, z).color(color).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(15728880).normal(matrix, 0.0F, 1.0F, 0.0F);
-    } */
-
-    @Override
-    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-
     }
 
     @Override

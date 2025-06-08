@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "minecraft:item/ruby",
+		"0": "minecraft:block/copper_block",
 		"3": "minecraft:block/chiseled_tuff_bricks",
 		"4": "minecraft:block/chiseled_tuff_top",
 		"particle": "minecraft:block/chiseled_tuff_bricks"

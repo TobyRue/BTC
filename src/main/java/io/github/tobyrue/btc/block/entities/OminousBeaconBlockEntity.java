@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.block.OminousBeaconBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.component.ComponentMap;
@@ -20,6 +21,9 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntityTicker<OminousBeaconBlockEntity> {
     static final int MAX_LENGTH = 32;
     public OminousBeaconBlockEntity(BlockPos pos, BlockState state) {
@@ -27,6 +31,11 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
     }
 
     private int beamLength = 0;
+    private final List<BeaconBlockEntity.BeamSegment> beamSegments = new ArrayList<>();
+
+    public List<BeaconBlockEntity.BeamSegment> getBeamSegments() {
+        return this.beamSegments;
+    }
 
     public int getBeamLength() {
         return this.beamLength;
@@ -54,7 +63,12 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                 }
             }
             world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f));
+            world.getNonSpectatingEntities(LivingEntity.class, new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5)).forEach(entity -> entity.setOnFireFor(3));
+            if (this.beamLength > 0) {
+                this.beamSegments.add(new BeaconBlockEntity.BeamSegment(0xFFFFFF));
+            }
         } else {
+            this.beamSegments.clear();
             this.beamLength = 0;
         }
     }

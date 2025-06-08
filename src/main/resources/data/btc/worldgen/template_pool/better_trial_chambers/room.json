@@ -212,6 +212,24 @@
     {
       "weight": 15,
       "element": {
+        "location": "btc:better_trial_chambers/room/redstone_trap_puzzle_2",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 15,
+      "element": {
+        "location": "btc:better_trial_chambers/room/redstone_trap_puzzle_3",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 15,
+      "element": {
         "location": "btc:better_trial_chambers/room/spires",
         "processors": "minecraft:empty",
         "projection": "rigid",
