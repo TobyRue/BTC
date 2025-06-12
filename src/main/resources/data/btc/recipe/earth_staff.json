@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "minecraft:bone_meal"
+    },
+    "S": {
+      "item": "btc:staff"
+    },
+    "C": {
+      "item": "minecraft:grass_block"
+    },
+    "R": {
+      "item": "minecraft:flowering_azalea"
+    }
+  },
+  "pattern": [
+    "RCR",
+    "#S#",
+    "R#R"
+  ],
+  "result": {
+    "id": "btc:earth_staff"
+  },
+  "show_notification": true
+}

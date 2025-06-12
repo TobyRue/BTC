@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "S": {
+      "item": "btc:staff"
+    },
+    "C": {
+      "item": "btc:water_blast"
+    },
+    "R": {
+      "item": "minecraft:blue_ice"
+    }
+  },
+  "pattern": [
+    "RCR",
+    "#S#",
+    "R#R"
+  ],
+  "result": {
+    "id": "btc:earth_staff"
+  },
+  "show_notification": true
+}

@@ -13,7 +13,10 @@ import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> implements ModelWithArms {
 
 

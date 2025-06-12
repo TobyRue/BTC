@@ -11,7 +11,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class CopperGolemModel <T extends CopperGolemEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart copper_golem;
 	private final ModelPart head;

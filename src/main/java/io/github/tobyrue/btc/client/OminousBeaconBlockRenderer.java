@@ -16,7 +16,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
 import java.util.List;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBeaconBlockEntity> {
 
     public static final Identifier OMINOUS_BEAM_TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/ominous_beacon_beam.png");

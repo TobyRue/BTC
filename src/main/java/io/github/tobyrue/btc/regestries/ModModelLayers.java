@@ -15,4 +15,6 @@ public class ModModelLayers {
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "tuff_golem"), "main");
     public static final EntityModelLayer EARTH_SPIKE =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "earth_spike"), "main");
+    public static final EntityModelLayer CREEPER_PILLAR =
+            new EntityModelLayer(Identifier.of(BTC.MOD_ID, "creeper_pillar"), "main");
 }

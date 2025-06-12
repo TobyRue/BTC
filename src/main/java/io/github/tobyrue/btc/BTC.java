@@ -9,10 +9,7 @@ import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.*;
-import io.github.tobyrue.btc.status_effects.MinerMishapEffect;
-import io.github.tobyrue.btc.status_effects.BuilderBlunderEffect;
-import io.github.tobyrue.btc.status_effects.DragonScalesEffect;
-import io.github.tobyrue.btc.status_effects.DrowningEffect;
+import io.github.tobyrue.btc.status_effects.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -27,6 +24,7 @@ import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
 import net.minecraft.data.client.VariantSettings;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.*;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
@@ -50,6 +48,7 @@ public class BTC implements ModInitializer {
     public static final StatusEffect MINER_MISHAP;
     public static final StatusEffect DRAGON_SCALES;
     public static final StatusEffect DROWNING;
+    public static final StatusEffect NO_NATURAL_REGENERATION;
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
     public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
@@ -74,6 +73,7 @@ public class BTC implements ModInitializer {
         MINER_MISHAP = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "miner_mishap"), new MinerMishapEffect());
         DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "dragon_scales"), new DragonScalesEffect());
         DROWNING = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "drowning"), new DrowningEffect());
+        NO_NATURAL_REGENERATION = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "no_natural_regeneration"), new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
     }
     public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
 

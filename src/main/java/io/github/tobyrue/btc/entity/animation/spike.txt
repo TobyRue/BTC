@@ -1,0 +1,12 @@
+
+public static final Animation PILLAR_UP = Animation.Builder.create(7f)
+.addBoneAnimation("pillar",
+	new Transformation(Transformation.Targets.TRANSLATE, 
+		new Keyframe(0f, AnimationHelper.createTranslationalVector(0f, -32f, 0f),
+			Transformation.Interpolations.LINEAR), 
+		new Keyframe(0.5f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+			Transformation.Interpolations.LINEAR), 
+		new Keyframe(6.5f, AnimationHelper.createTranslationalVector(0f, 0f, 0f),
+			Transformation.Interpolations.LINEAR), 
+		new Keyframe(7f, AnimationHelper.createTranslationalVector(0f, -32f, 0f),
+			Transformation.Interpolations.LINEAR))).build();

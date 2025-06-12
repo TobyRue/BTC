@@ -12,6 +12,10 @@ import net.minecraft.util.Identifier;
 // Made with Blockbench 4.12.1
 // Exported for Minecraft version 1.17+ for Yarn
 // Paste this class into your mod and generate all required imports
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
+@Environment(EnvType.CLIENT)
 public class WaterBlastEntityModel<T extends WaterBlastEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart waterBlast;
 

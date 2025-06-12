@@ -30,6 +30,9 @@
   "item.btc.wind_staff": "Staff of the Breezebound",
   "item.btc.fire_staff": "Staff of the Blaze",
   "item.btc.dragon_staff": "Staff of the Dragonhearted",
+  "item.btc.earth_staff": "Staff of the Stonethorn  ",
+  "item.btc.water_staff": "Staff of the Drowned",
+
   "item.btc.spell_book_item": "Spell Book",
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
@@ -44,6 +47,7 @@
   "effect.btc.builder_blunder": "Builder’s Blunder",
   "effect.btc.dragon_scales": "Dragon Scales",
   "effect.btc.drowning": "Drowning",
+  "effect.btc.no_natural_regeneration": "No Regeneration",
 
   "item.minecraft.potion.effect.builder_blunder": "Potion of Builder’s Blunder",
   "item.minecraft.potion.effect.dragon_scales": "Potion of Dragon Scales",
@@ -69,6 +73,8 @@
   "entity.btc.copper_golem": "Copper Golem",
   "entity.btc.tuff_golem": "Tuff Golem",
   "entity.btc.water_blast": "Water Blast",
+  "entity.btc.earth_spike": "Earth Spike",
+  "entity.btc.creeper_pillar": "Creeper Pillar",
 
   "subtitles.entity.btc.copper_golem.copper_arm_move": "Copper Golem presses button",
   "subtitles.entity.btc.copper_golem.copper_head_spin": "Copper Golem wakes up",

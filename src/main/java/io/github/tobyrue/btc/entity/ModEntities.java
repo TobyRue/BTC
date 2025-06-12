@@ -33,4 +33,8 @@ public class ModEntities {
             Identifier.of(BTC.MOD_ID, "earth_spike"),
             EntityType.Builder.<EarthSpikeEntity>create(EarthSpikeEntity::new, SpawnGroup.MISC)
                     .dimensions(0.8f, 1.18f).eyeHeight(0.75f).build());
+    public static final EntityType<CreeperPillarEntity> CREEPER_PILLAR = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "creeper_pillar"),
+            EntityType.Builder.<CreeperPillarEntity>create(CreeperPillarEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.7f, 2f).eyeHeight(1.75f).makeFireImmune().build());
 }

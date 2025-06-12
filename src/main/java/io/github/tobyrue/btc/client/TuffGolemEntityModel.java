@@ -16,7 +16,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart tuff_golem;
 	private final ModelPart body;

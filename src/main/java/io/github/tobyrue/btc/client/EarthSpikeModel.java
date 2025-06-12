@@ -4,18 +4,15 @@
 
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.entity.animation.EarthSpikeAnimation;
-import io.github.tobyrue.btc.entity.animation.TuffGolemAnimations;
 import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
-import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.RotationAxis;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class EarthSpikeModel<T extends EarthSpikeEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart earth_spike;
 	private final ModelPart top;

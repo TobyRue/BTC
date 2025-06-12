@@ -13,7 +13,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class EarthStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
     public static final ItemStack HANDLE_EARTH = new ItemStack(ModItems.STAFF, 1);
     public static final ItemStack DIRT = new ItemStack(Items.GRASS_BLOCK, 1);

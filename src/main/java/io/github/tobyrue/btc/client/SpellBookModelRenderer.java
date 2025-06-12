@@ -11,7 +11,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class SpellBookModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
     public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/spell_book.png");
 

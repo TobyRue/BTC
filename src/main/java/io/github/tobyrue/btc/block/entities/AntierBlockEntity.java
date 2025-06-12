@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -28,7 +29,6 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
     }
     private int tickCounter = 0; // Counter to track ticks
     public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
-
         List<ServerPlayerEntity> players = world.getPlayers();
 
         for (ServerPlayerEntity player : players) {

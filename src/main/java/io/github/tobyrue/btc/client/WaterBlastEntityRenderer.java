@@ -13,7 +13,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     protected WaterBlastEntityModel model;
 
