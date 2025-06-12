@@ -83,27 +83,20 @@ public class EarthStaffItem extends StaffItem {
         double startZ = caster.getZ();
         double startY = caster.getY();
 
-        System.out.println("Spawning Earth Spikes — Yaw: " + yaw + ", rad: " + rad);
-        System.out.println("StepX: " + stepX + ", StepZ: " + stepZ);
-        System.out.println("Y Range: " + yRange + ", Max Spike Count: " + spikeCount);
 
         for (int i = 0; i < spikeCount; i++) {
             double x = startX + stepX * i;
             double z = startZ + stepZ * i;
             BlockPos searchPos = new BlockPos((int) x, (int) startY, (int) z);
 
-            System.out.println("Checking position: " + searchPos);
 
             BlockPos groundPos = findSpawnableGround(world, searchPos, yRange);
 
             if (groundPos != null) {
-                System.out.println("Found ground at: " + groundPos);
 
                 EarthSpikeEntity spike = new EarthSpikeEntity(world, groundPos.getX(), groundPos.getY(), groundPos.getZ(), yaw, caster);
                 caster.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(caster));
                 world.spawnEntity(spike);
-            } else {
-                System.out.println("No valid ground found for spike at: " + searchPos);
             }
         }
     }

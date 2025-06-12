@@ -34,7 +34,6 @@ public class BetterTrialChambersMapTrade implements TradeOffers.Factory {
 
         BlockPos pos = serverWorld.locateStructure(BTC.BETTER_TRIAL_CHAMBERS_TAG, entity.getBlockPos(), 10000, false);
 
-        System.out.println(pos);
         if (pos == null) {
             return null;
         }

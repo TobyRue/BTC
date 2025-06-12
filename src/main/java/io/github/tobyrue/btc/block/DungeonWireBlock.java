@@ -370,7 +370,6 @@ public class DungeonWireBlock extends Block implements IDungeonWireConnect, ICop
                 BlockState neighborState = world.getBlockState(neighborPos);
                 if (neighborState.getBlock() instanceof IDungeonWireConstantAction action) {
                     // notify the neighbor block somehow or handle logic there
-                    System.out.println("DungeonWireBlock was removed at: " + pos + " notifying neighbor at: " + neighborPos);
                     action.onDungeonWireChange(neighborState, world, neighborPos, false);
                 }
             }

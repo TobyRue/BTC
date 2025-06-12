@@ -74,20 +74,17 @@ public class EldritchLuminaryCastGoal extends Goal {
         int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
         int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
 
-        System.out.println("Searching from Y " + topY + " to " + bottomY + " at XZ: " + centerPos.getX() + ", " + centerPos.getZ());
 
         // Start from top and go downwards
         for (int y = topY; y >= bottomY; y--) {
             BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
             // Improved block check to ensure solid block and air above or open space above
             if (world.getBlockState(pos).isSolidBlock(world, pos) && !world.getBlockState(pos.up()).isSolidBlock(world, pos.up()) && !world.getBlockState(pos.up()).isOf(Blocks.CHEST)) {
-                System.out.println("Found spawnable ground at: " + pos);
                 return pos;
             }
         }
 
         // Fallback if no valid ground is found
-        System.out.println("No ground found at XZ: " + centerPos.getX() + ", " + centerPos.getZ());
         return null;
     }
 

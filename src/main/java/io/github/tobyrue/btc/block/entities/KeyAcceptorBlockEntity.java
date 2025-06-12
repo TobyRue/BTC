@@ -92,7 +92,6 @@ public class KeyAcceptorBlockEntity extends BlockEntity implements BlockEntityTi
             d2 = (double)pos.getX() + random1;
             e2 = (double)pos.getY() + random2 + 1;
             f2 = (double)pos.getZ() + random3;
-            System.out.println(d2 + " " + e2 + " " + f2);
             world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
             if (delay >= 40) {
                 getWorld().updateNeighborsAlways(pos, state.getBlock());

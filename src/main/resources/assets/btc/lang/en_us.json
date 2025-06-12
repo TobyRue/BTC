@@ -129,6 +129,16 @@
   "item.btc.wrench.type.wire_delay": "WIRE DELAY",
   "item.btc.wrench.type.wire_complex": "WIRE COMPLEX",
 
+  "item.btc.spell.context.current": "Current Spell: %s",
+
+  "item.btc.spell.book.set": "Spell Book set to: %s",
+  "item.btc.spell.book.water_blast": "Water Blast",
+  "item.btc.spell.book.fireball": "Fireball",
+  "item.btc.spell.book.dragon_fireball": "Dragon Fireball",
+  "item.btc.spell.book.wind_charge": "Wind Charge",
+  "item.btc.spell.book.earth_spike": "Earth Spike - Line",
+  "item.btc.spell.book.regeneration": "Regeneration",
+  "item.btc.spell.book.creeper_wall_circle": "Creeper Wall - Circle",
 
   "tag.item.btc.wrenches": "Wrenches"
 }

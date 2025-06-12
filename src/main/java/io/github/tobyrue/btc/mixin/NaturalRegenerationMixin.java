@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class NaturalRegenerationMixin {
     @Inject(method = "canFoodHeal", at = @At("TAIL"), cancellable = true)
     public void canFoodHeal(CallbackInfoReturnable<Boolean> cir) {
-        System.out.println(((PlayerEntity) ((Object) this)).hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.NO_NATURAL_REGENERATION)));
         cir.setReturnValue(cir.getReturnValue() && !((PlayerEntity) ((Object) this)).hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.NO_NATURAL_REGENERATION)));
     }
 }

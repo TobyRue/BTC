@@ -13,6 +13,8 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -28,12 +30,17 @@ public class CreeperPillarRenderer extends EntityRenderer<CreeperPillarEntity> {
         this.model = new CreeperPillarModel<>(ctx.getPart(ModModelLayers.CREEPER_PILLAR));
     }
 
-
-    @Override
     public Identifier getTexture(CreeperPillarEntity entity) {
-        return entity.getCreeperPillarType() == CreeperPillarType.EXPLOSIVE ? EXPLOSIVE : PILLAR;
-    }
+        CreeperPillarType type = entity.getCreeperPillarType();
+        if (type == null) {
+            type = CreeperPillarType.NORMAL;
+        }
 
+        return switch (type) {
+            case EXPLOSIVE -> EXPLOSIVE;
+            case NORMAL, RANDOM -> PILLAR;
+        };
+    }
     @Override
     public void render(CreeperPillarEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
