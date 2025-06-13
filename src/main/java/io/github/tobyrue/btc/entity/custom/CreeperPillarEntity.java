@@ -123,23 +123,23 @@ public class CreeperPillarEntity extends Entity implements Ownable {
             baseY = this.getY();
             setBaseY = true;
         }
-        if (lifeTime <= 140) {
+        if (lifeTime <= 140 && !getWorld().isClient()) {
             double yOffset = 0;
 
-            if (lifeTime <= 10) {
+            if (lifeTime <= 20) {
                 // Rising: 0 → 2 over 5 ticks
-                yOffset = 2 * (lifeTime / 10.0);
-            } else if (lifeTime <= 110) {
+                yOffset = 2 * (lifeTime / 20.0);
+            } else if (lifeTime <= 120) {
                 // Pause at top for 100 ticks or 5 seconds
                 yOffset = 2;
-                if (getCreeperPillarType() == CreeperPillarType.EXPLOSIVE && !hasExploded && lifeTime >= 100 && !this.getWorld().isClient()) {
+                if (getCreeperPillarType() == CreeperPillarType.EXPLOSIVE && !hasExploded && lifeTime == 60 && !this.getWorld().isClient()) {
                     this.getWorld().createExplosion(this, Explosion.createDamageSource(this.getWorld(), this), null, this.getX(), this.getBodyY(0.0625), this.getZ(), 3.0F, true, World.ExplosionSourceType.BLOCK);
                     hasExploded = true;
                     this.discard();
                 }
             } else {
-                // Falling: 2 → 0 over 30 ticks
-                yOffset = 2*(2.0- (double) (lifeTime - 80) / 30);
+                // Falling: 2 → 0 over 10 ticks
+                yOffset = 2*(2.0 - (double) (lifeTime - 100) / 20);
             }
             if (!this.getWorld().isClient) {
                 if (!deltDamage) {
@@ -151,7 +151,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
                     }
                 }
             }
-
+            System.out.println(yOffset);
             if (lifeTime == 140) {
                 this.kill();
             }
@@ -174,8 +174,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
                         source.getWeaponStack().damage(1, player, EquipmentSlot.MAINHAND);
                     }
                     if (pickaxeHitCount >= 3) {
-                        //TODO
-                        this.lifeTime = 110;
+                        lifeTime = 120;
                         return true;
                     }
 
