@@ -171,11 +171,9 @@ public class SpellBookItem extends Item {
         return super.use(world, player, hand);
     }
 
-
     public static @Nullable Vec3d rayTrace(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
-//        HitResult hit = client.crosshairTarget;
         Entity entity = getEntityLookedAt(player, range);
 
         switch (hitLong.getType()) {
@@ -203,6 +201,26 @@ public class SpellBookItem extends Item {
         return null;
     }
 
+
+    public static @Nullable Vec3d getBlockLookedAt(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
+        Entity entity = getEntityLookedAt(player, range);
+
+        switch (hitLong.getType()) {
+            case HitResult.Type.MISS:
+                return null;
+            case HitResult.Type.BLOCK:
+                BlockHitResult blockHit = (BlockHitResult) hitLong;
+                BlockPos blockPos = blockHit.getBlockPos();
+                assert client.world != null;
+                BlockState blockState = client.world.getBlockState(blockPos);
+                Block block = blockState.getBlock();
+                System.out.println("Block found is: " + block + ", which pos is: " + blockPos);
+                return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        }
+        return null;
+    }
 
     public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
