@@ -5,18 +5,19 @@ import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
 import io.github.tobyrue.btc.enums.CreeperPillarType;
 import io.github.tobyrue.btc.enums.SpellBookAttacks;
 import net.minecraft.block.AirBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,7 +26,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.util.Formatting;
@@ -36,9 +36,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -150,16 +148,13 @@ public class SpellBookItem extends Item {
                     }
                 }
                 case CREEPER_WALL_BLOCK -> {
-                    if (!world.isClient) {
-                        Entity entityLookedAt = getEntityLookedAt(player, 16);
-
-                        BlockPos groundPos = null;
-                        if (entityLookedAt != null) {
-                            groundPos = findSpawnableGroundPillar(world, new BlockPos((int) entityLookedAt.getX(), (int) entityLookedAt.getY(), (int) entityLookedAt.getZ()), 8);
-                        }
-                        if (groundPos != null && entityLookedAt instanceof LivingEntity) {
-                            CreeperPillarEntity pillar = new CreeperPillarEntity(world, entityLookedAt.getX(), groundPos.getY(), entityLookedAt.getZ(), entityLookedAt.getYaw(), player, CreeperPillarType.NORMAL);
-                            world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(entityLookedAt.getX(), groundPos.getY(), entityLookedAt.getZ()), GameEvent.Emitter.of(player));
+                    Vec3d pillarPos = rayTrace(player, 24, 1.0F, true);
+                    if (pillarPos != null) {
+                        System.out.println("Pos is: " + pillarPos);
+                        BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) pillarPos.getX(), (int) pillarPos.getY(), (int) pillarPos.getZ()), 8);
+                        if (groundPos != null) {
+                            CreeperPillarEntity pillar = new CreeperPillarEntity(world, pillarPos.getX(), groundPos.getY(), pillarPos.getZ(), player.getYaw(), player, CreeperPillarType.NORMAL);
+                            world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(pillarPos.getX(), groundPos.getY(), pillarPos.getZ()), GameEvent.Emitter.of(player));
                             world.spawnEntity(pillar);
                         }
                     }
@@ -176,6 +171,37 @@ public class SpellBookItem extends Item {
         return super.use(world, player, hand);
     }
 
+
+    public static @Nullable Vec3d rayTrace(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
+//        HitResult hit = client.crosshairTarget;
+        Entity entity = getEntityLookedAt(player, range);
+
+        switch (hitLong.getType()) {
+            case HitResult.Type.MISS:
+                //nothing near enough
+                if (entity instanceof LivingEntity) {
+                    System.out.println("Entity found is: " + entity + ", which pos is: " + entity.getPos());
+                    return entity.getPos();
+                }
+                return null;
+            case HitResult.Type.BLOCK:
+                if (entity instanceof LivingEntity) {
+                        System.out.println("Entity found is: " + entity + ", which pos is: " + entity.getPos());
+                        return entity.getPos();
+                } else {
+                    BlockHitResult blockHit = (BlockHitResult) hitLong;
+                    BlockPos blockPos = blockHit.getBlockPos();
+                    assert client.world != null;
+                    BlockState blockState = client.world.getBlockState(blockPos);
+                    Block block = blockState.getBlock();
+                    System.out.println("Block found is: " + block + ", which pos is: " + blockPos);
+                    return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                }
+        }
+        return null;
+    }
 
 
     public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range) {
