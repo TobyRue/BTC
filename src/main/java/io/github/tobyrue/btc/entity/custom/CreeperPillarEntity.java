@@ -151,7 +151,6 @@ public class CreeperPillarEntity extends Entity implements Ownable {
                     }
                 }
             }
-            System.out.println(yOffset);
             if (lifeTime == 140) {
                 this.kill();
             }

@@ -9,7 +9,9 @@ public enum SpellBookAttacks implements StringIdentifiable {
     WIND_CHARGE ("wind_charge"),
     EARTH_SPIKE ("earth_spike"),
     REGENERATION ("regeneration"),
-    CREEPER_WALL_CIRCLE ("creeper_wall_circle");
+    CREEPER_WALL_CIRCLE ("creeper_wall_circle"),
+    CREEPER_WALL_TRAP ("creeper_wall_trap"),
+    CREEPER_WALL_BLOCK ("creeper_wall_block");
 
     private final String name;
 

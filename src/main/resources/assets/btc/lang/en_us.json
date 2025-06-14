@@ -139,6 +139,8 @@
   "item.btc.spell.book.earth_spike": "Earth Spike - Line",
   "item.btc.spell.book.regeneration": "Regeneration",
   "item.btc.spell.book.creeper_wall_circle": "Creeper Wall - Circle",
+  "item.btc.spell.book.creeper_wall_trap": "Creeper Wall - Trap",
+  "item.btc.spell.book.creeper_wall_block": "Creeper Wall - Block",
 
   "tag.item.btc.wrenches": "Wrenches"
 }
