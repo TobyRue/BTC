@@ -64,7 +64,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
         }
     }
     private CreeperPillarType randomPillarType() {
-        return new java.util.Random().nextInt(2) == 0 ? CreeperPillarType.EXPLOSIVE : CreeperPillarType.NORMAL;
+        return new java.util.Random().nextInt(4) == 0 ? CreeperPillarType.EXPLOSIVE : CreeperPillarType.NORMAL;
     }
     public CreeperPillarType getCreeperPillarType() {
         return CreeperPillarType.valueOf(this.getDataTracker().get(PILLAR_TYPE));
@@ -133,7 +133,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
                 // Pause at top for 100 ticks or 5 seconds
                 yOffset = 2;
                 if (getCreeperPillarType() == CreeperPillarType.EXPLOSIVE && !hasExploded && lifeTime == 60 && !this.getWorld().isClient()) {
-                    this.getWorld().createExplosion(this, Explosion.createDamageSource(this.getWorld(), this), null, this.getX(), this.getBodyY(0.0625), this.getZ(), 3.0F, true, World.ExplosionSourceType.BLOCK);
+                    this.getWorld().createExplosion(this, Explosion.createDamageSource(this.getWorld(), this), null, this.getX(), this.getBodyY(0.0625), this.getZ(), 1.5F, true, World.ExplosionSourceType.BLOCK);
                     hasExploded = true;
                     this.discard();
                 }

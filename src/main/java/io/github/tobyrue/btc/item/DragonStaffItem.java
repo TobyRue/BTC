@@ -2,6 +2,8 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.BTCClient;
+import io.github.tobyrue.btc.enums.DragonStaffAttacks;
+import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
@@ -33,61 +35,67 @@ public class DragonStaffItem extends StaffItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
 
-        ItemStack itemStack = user.getStackInHand(hand);
-        String currentElement = getElement(stack);
-        int nextIndex = (ATTACKS.indexOf(currentElement) + 1) % ATTACKS.size();
-        String nextElement = ATTACKS.get(nextIndex);
-        if (!world.isClient && user.isSneaking()) {
-            user.sendMessage(Text.literal("Dragonhearted Staff set to - " + nextElement), true);
-            setElement(stack, nextElement);
+        DragonStaffAttacks current = getElement(stack);
+        DragonStaffAttacks next = DragonStaffAttacks.next(current);
+
+        if (!player.isSneaking()) {
+            switch (current) {
+                case ENDER_PEARL -> {
+                    EnderPearlEntity enderPearl = new EnderPearlEntity(world, player);
+                    enderPearl.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1.5F, 1.0F);
+
+                    world.spawnEntity(enderPearl);
+
+                    player.getItemCooldownManager().set(this, 30);
+
+                    return TypedActionResult.success(stack);
+                }
+                case DRAGONS_BREATH -> {
+                    Vec3d direction = player.getRotationVec(1.0F).normalize(); // Normalized direction vector
+
+                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, player, direction); // 1 is the explosion power
+
+                    dragonFireballEntity.setPos(player.getX() + direction.x * 1.5, player.getY() + 1.5, player.getZ() + direction.z * 1.5);
+
+                    // Set the fireball velocity (you can adjust the speed multiplier here)
+                    dragonFireballEntity.setVelocity(direction.multiply(1.5));
+
+                    world.spawnEntity(dragonFireballEntity);
+
+                    player.getItemCooldownManager().set(this, 100);
+                    return TypedActionResult.success(stack);
+                }
+                case LIFE_STEAL -> {
+                    applyLifesteal(world, player, 10);
+                    player.getItemCooldownManager().set(this, 20);
+                    return TypedActionResult.success(stack);
+                }
+                case DRAGON_SCALES_1 -> {
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 200, 0));
+                    player.getItemCooldownManager().set(this, 160);
+                    return TypedActionResult.success(stack);
+                }
+                case DRAGON_SCALES_3 -> {
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 600, 2));
+                    player.getItemCooldownManager().set(this, 640);
+                    return TypedActionResult.success(stack);
+                }
+                case DRAGON_SCALES_5 -> {
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 600, 4));
+                    player.getItemCooldownManager().set(this, 800);
+                    return TypedActionResult.success(stack);
+                }
+            }
+        }
+        if (!world.isClient && player.isSneaking()) {
+            player.sendMessage(Text.translatable("item.btc.spell.dragon.set", Text.translatable("item.btc.spell.dragon." + next.asString())), true);
+            setElement(stack, next);
             return TypedActionResult.success(stack);
         }
-        if (getElement(stack).equals("Ender Pearl") && !user.isSneaking()) {
-            // Create and spawn an Ender Pearl entity
-            EnderPearlEntity enderPearl = new EnderPearlEntity(world, user);
-            enderPearl.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
-
-            world.spawnEntity(enderPearl);
-
-            user.getItemCooldownManager().set(this, 30);
-
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Dragon Breath") && !user.isSneaking()) {
-            Vec3d direction = user.getRotationVec(1.0F).normalize(); // Normalized direction vector
-
-            DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, user, direction); // 1 is the explosion power
-
-            dragonFireballEntity.setPos(user.getX() + direction.x * 1.5, user.getY() + 1.5, user.getZ() + direction.z * 1.5);
-
-            // Set the fireball velocity (you can adjust the speed multiplier here)
-            dragonFireballEntity.setVelocity(direction.multiply(1.5));
-
-            world.spawnEntity(dragonFireballEntity);
-
-            user.getItemCooldownManager().set(this, 100);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Life Steal") && !user.isSneaking()) {
-            applyLifesteal(world, user, 10);
-            user.getItemCooldownManager().set(this, 20);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Dragon Scales - 1") && !user.isSneaking()) {
-            user.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 200, 0));
-            user.getItemCooldownManager().set(this, 160);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Dragon Scales - 3") && !user.isSneaking()) {
-            user.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 600, 2));
-            user.getItemCooldownManager().set(this, 640);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Dragon Scales - 5") && !user.isSneaking()) {
-            user.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 1200, 4));
-            user.getItemCooldownManager().set(this, 1200);
-            return TypedActionResult.success(itemStack);
-        }
-
-        return TypedActionResult.fail(itemStack);
+        return TypedActionResult.fail(stack);
     }
     private void applyLifesteal(World world, PlayerEntity player, double radius) {
         List<LivingEntity> targets = world.getEntitiesByClass(LivingEntity.class,
@@ -108,17 +116,13 @@ public class DragonStaffItem extends StaffItem {
         }
     }
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltip, TooltipType tooltipType) {
-        super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
-        tooltip.add(this.currentAttack(stack).formatted(Formatting.BLUE));
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        DragonStaffAttacks current = getElement(stack);
+        tooltip.add(Text.translatable("item.btc.spell.context.current", Text.translatable("item.btc.spell.dragon." + current.asString())).formatted(Formatting.BLUE));
         tooltip.add(this.attackTypes().formatted(Formatting.DARK_PURPLE));
-        tooltip.add(this.attack1().formatted(Formatting.WHITE));
-        tooltip.add(this.attack2().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3().formatted(Formatting.WHITE));
-        tooltip.add(this.attack4().formatted(Formatting.WHITE));
-        tooltip.add(this.attack5().formatted(Formatting.WHITE));
-        tooltip.add(this.attack6().formatted(Formatting.WHITE));
     }
+
 
     public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
     public MutableText attackTypes() {return Text.literal("Attack Types:");}
@@ -130,16 +134,22 @@ public class DragonStaffItem extends StaffItem {
     public MutableText attack6() {return Text.literal("Dragon Scales - 5 - for 60 Seconds at Level 5");}
 
 
-    private String getElement(ItemStack stack) {
+    private DragonStaffAttacks getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        return nbt.contains("Attack") ? nbt.getString("Attack") : ATTACKS.get(0);
+        NbtCompound nbt = component.copyNbt();
+        String name = nbt.getString("Element");
+        for (DragonStaffAttacks attack : DragonStaffAttacks.values()) {
+            if (attack.asString().equals(name)) {
+                return attack;
+            }
+        }
+        return DragonStaffAttacks.ENDER_PEARL;
     }
 
-    private void setElement(ItemStack stack, String attack) {
+    private void setElement(ItemStack stack, DragonStaffAttacks attack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        nbt.putString("Attack", attack); // Update the element
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt)); // Create a new immutable NbtComponent
+        NbtCompound nbt = component.copyNbt();
+        nbt.putString("Element", attack.asString());
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 }

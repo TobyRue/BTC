@@ -89,7 +89,7 @@
   "advancements.btc.adventure.enter_btc_trial_chambers.title": "Trial Chambers: Vault of Power",
   "advancements.btc.adventure.enter_btc_trial_chambers.description": "Find and Enter the lost Eldritch Trial Chambers no one was meant to remember.",
 
-
+  "enchantment.btc.infusion": "Infusion",
 
   "block.btc.dungeon_wire_v2": "Dungeon Wire v2",
   "block.btc.wire.change_operator": "Set operator to %s",
@@ -138,9 +138,36 @@
   "item.btc.spell.book.wind_charge": "Wind Charge",
   "item.btc.spell.book.earth_spike": "Earth Spike - Line",
   "item.btc.spell.book.regeneration": "Regeneration",
-  "item.btc.spell.book.creeper_wall_circle": "Creeper Wall - Circle",
-  "item.btc.spell.book.creeper_wall_trap": "Creeper Wall - Trap",
-  "item.btc.spell.book.creeper_wall_block": "Creeper Wall - Block",
+  "item.btc.spell.book.creeper_wall_block": "Creeper Pillar - Wall",
+
+  "item.btc.spell.earth.set": "Stonethorn Staff set to: %s",
+  "item.btc.spell.earth.earth_spike_line": "Earth Spike - Line",
+  "item.btc.spell.earth.creeper_wall_circle_and_regeneration": "Creeper Pillar - Circle",
+  "item.btc.spell.earth.creeper_wall_trap_with_explosive": "Creeper Pillar - Trap",
+  "item.btc.spell.earth.creeper_wall_block": "Creeper Pillar - Wall",
+  "item.btc.spell.earth.poison": "Poison AOE",
+
+  "item.btc.spell.fire.set": "Blaze Staff set to: %s",
+  "item.btc.spell.fire.weak_fireball": "Weak Fireball",
+  "item.btc.spell.fire.strong_fireball": "Strong Fireball",
+  "item.btc.spell.fire.concentrated_fire_storm": "Concentrated Fire Storm",
+  "item.btc.spell.fire.fire_storm": "Fire Storm",
+  "item.btc.spell.fire.strength": "Strength",
+  "item.btc.spell.fire.resistance": "Resistance",
+
+  "item.btc.spell.dragon.set": "Dragonhearted Staff set to: %s",
+  "item.btc.spell.dragon.ender_pearl": "Ender Pearl",
+  "item.btc.spell.dragon.dragons_breath": "Dragons Breath",
+  "item.btc.spell.dragon.life_steal": "Life Steal",
+  "item.btc.spell.dragon.dragon_scales_1": "Dragon Scales - 1",
+  "item.btc.spell.dragon.dragon_scales_3": "Dragon Scales - 3",
+  "item.btc.spell.dragon.dragon_scales_5": "Dragon Scales - 5",
+
+  "item.btc.spell.wind.set": "Breezebound Staff set to: %s",
+  "item.btc.spell.wind.wind_charge": "Wind Charge",
+  "item.btc.spell.wind.cluster_wind_charge": "Wind Cluster Shot",
+  "item.btc.spell.wind.tempests_call": "Tempest's Call",
+  "item.btc.spell.wind.storm_push": "Storm Push",
 
   "tag.item.btc.wrenches": "Wrenches"
 }

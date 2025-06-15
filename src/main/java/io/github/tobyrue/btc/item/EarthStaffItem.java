@@ -1,32 +1,53 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.entity.custom.CreeperPillarEntity;
 import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
+import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
+import io.github.tobyrue.btc.enums.CreeperPillarType;
+import io.github.tobyrue.btc.enums.EarthStaffAttacks;
+import io.github.tobyrue.btc.enums.SpellBookAttacks;
+import net.minecraft.block.AirBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EarthStaffItem extends StaffItem {
     private static final List<String> ATTACKS = List.of("Line of Earth Spikes", "2", "3", "4", "5", "6");
     private static final Integer SPIKE_Y_RANGE = 12;
     private static final Integer SPIKE_COUNT = 8;
+    private static final double POISON_RADIUS = 8.0;
 
     public EarthStaffItem(Settings settings) {
         super(settings);
@@ -48,30 +69,186 @@ public class EarthStaffItem extends StaffItem {
         return null;
     }
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        ItemStack itemStack = user.getStackInHand(hand);
-        String currentElement = getElement(stack);
-        int nextIndex = (ATTACKS.indexOf(currentElement) + 1) % ATTACKS.size();
-        String nextElement = ATTACKS.get(nextIndex);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
 
-        if (!world.isClient && user.isSneaking()) {
-            user.sendMessage(Text.literal("Earth Staff set to - " + nextElement), true);
-            setElement(stack, nextElement);
+        EarthStaffAttacks current = getElement(stack);
+        EarthStaffAttacks next = EarthStaffAttacks.next(current);
+
+        if (!player.isSneaking()) {
+            switch (current) {
+                case EARTH_SPIKES -> {
+                    spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
+                    player.getItemCooldownManager().set(this, 60);
+                    return TypedActionResult.success(stack);
+                }
+                case CREEPER_WALL_CIRCLE -> {
+                    int spikes = Math.max(8, (int) (3 * 3) + 8);
+                    double radius = 3;
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 2));
+                    for (int i = 0; i < spikes; i++) {
+                        double angle = 2 * Math.PI * i / spikes;
+                        double x = player.getX() + radius * Math.cos(angle);
+                        double z = player.getZ() + radius * Math.sin(angle);
+                        BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) player.getY(), (int) z), 10);
+                        if (groundPos != null) {
+                            CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, player.getYaw(), player, CreeperPillarType.NORMAL);
+                            world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
+                            world.spawnEntity(pillar);
+                        }
+                    }
+                    player.getItemCooldownManager().set(this, 200);
+                    return TypedActionResult.success(stack);
+                }
+                case CREEPER_WALL_TRAP_WITH_EXPLOSIVE -> {
+                    Entity entityLookedAt = getEntityLookedAt(player, 16, 0.3D);
+                    if (entityLookedAt != null) {
+                        int spikes = Math.max(8, (int) (3 * 3) + 8);
+                        double radius = 2;
+                        for (int i = 0; i < spikes; i++) {
+                            double angle = 2 * Math.PI * i / spikes;
+                            double x = entityLookedAt.getX() + radius * Math.cos(angle);
+                            double z = entityLookedAt.getZ() + radius * Math.sin(angle);
+                            BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), 10);
+                            if (entityLookedAt instanceof LivingEntity) {
+                                player.getItemCooldownManager().set(this, 80);
+                                if (groundPos != null) {
+                                    CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, entityLookedAt.getYaw(), player, CreeperPillarType.RANDOM);
+                                    world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
+                                    world.spawnEntity(pillar);
+                                }
+                            }
+                        }
+                        return TypedActionResult.success(stack);
+                    }
+                }
+                case CREEPER_WALL_BLOCK -> {
+                    @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
+                    @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24, 1.0F, true);
+                    if (pillarPosEntity instanceof LivingEntity) {
+                        // Entity case: 2 blocks toward player
+                        spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
+                        player.getItemCooldownManager().set(this, 30);
+                        return TypedActionResult.success(stack);
+                    } else if (pillarPosBlock != null) {
+                        // Block case: no offset
+                        spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
+                        player.getItemCooldownManager().set(this, 30);
+                        return TypedActionResult.success(stack);
+                    }
+                }
+                case POISON -> {
+                    List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(POISON_RADIUS),
+                            entity -> entity != player && entity instanceof LivingEntity); // Only affect hostile mobs
+                    for (LivingEntity entity : entities) {
+                        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 4));
+                        player.getItemCooldownManager().set(this, 80);
+                    }
+                    return TypedActionResult.success(stack);
+                }
+            }
+        }
+        if (!world.isClient && player.isSneaking()) {
+            player.sendMessage(Text.translatable("item.btc.spell.earth.set", Text.translatable("item.btc.spell.earth." + next.asString())), true);
+            setElement(stack, next);
             return TypedActionResult.success(stack);
         }
-        if (getElement(stack).equals("Line of Earth Spikes") && !user.isSneaking()) {
-            spawnEarthSpikesTowardsYaw(world, user, SPIKE_Y_RANGE, SPIKE_COUNT);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("2") && !user.isSneaking()) {
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("3") && !user.isSneaking()) {
-            return TypedActionResult.success(itemStack);
-        } else if(getElement(stack).equals("4") && !user.isSneaking()){
-            return TypedActionResult.success(itemStack);
-        }
-        return super.use(world, user, hand);
+        return super.use(world, player, hand);
     }
+    public static void spawnCreeperPillarWall(World world, Vec3d centerPos, PlayerEntity player, int count, double offsetTowardsPlayer) {
+        // Direction from player to centerPos
+        Vec3d direction = centerPos.subtract(player.getPos()).normalize();
+
+        // Apply offset toward player (if offset != 0)
+        Vec3d adjustedCenter = centerPos.add(direction.multiply(offsetTowardsPlayer * -1));
+
+        // Perpendicular vector to that direction (in XZ plane)
+        Vec3d perp = getPerpendicular2D(direction);
+
+        int halfCount = count / 2;
+
+        for (int i = -halfCount; i <= halfCount; i++) {
+            Vec3d spawnPos = adjustedCenter.add(perp.multiply(i));
+            BlockPos groundPos = findSpawnableGroundPillar(world, BlockPos.ofFloored(spawnPos), 10);
+            if (groundPos != null) {
+                CreeperPillarEntity pillar = new CreeperPillarEntity(
+                        world, spawnPos.x + 0.5, groundPos.getY(), spawnPos.z + 0.5, player.getYaw(), player, CreeperPillarType.NORMAL
+                );
+                world.emitGameEvent(GameEvent.ENTITY_PLACE, pillar.getPos(), GameEvent.Emitter.of(player));
+                world.spawnEntity(pillar);
+            }
+        }
+    }
+
+    public static Vec3d getPerpendicular2D(Vec3d vec) {
+        return new Vec3d(-vec.z, 0, vec.x).normalize();
+    }
+
+    public static @Nullable Vec3d getBlockLookedAt(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
+
+        switch (hitLong.getType()) {
+            case HitResult.Type.MISS:
+                return null;
+            case HitResult.Type.BLOCK:
+                BlockHitResult blockHit = (BlockHitResult) hitLong;
+                BlockPos blockPos = blockHit.getBlockPos();
+                assert client.world != null;
+                BlockState blockState = client.world.getBlockState(blockPos);
+                Block block = blockState.getBlock();
+                System.out.println("Block found is: " + block + ", which pos is: " + blockPos);
+                return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        }
+        return null;
+    }
+
+    public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimmingForgivness) {
+        Vec3d eyePos = player.getCameraPosVec(1.0F);
+        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
+        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
+
+        // Create a box from the eye position to the reach vector
+        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
+
+        // Find the closest entity intersecting that line
+        Entity hitEntity = null;
+        double closestDistanceSq = range * range;
+
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
+            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness); // slightly expanded hitbox
+            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
+
+            if (optionalHit.isPresent()) {
+                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    hitEntity = entity;
+                }
+            }
+        }
+        return hitEntity;
+    }
+
+    @Nullable
+    public static BlockPos findSpawnableGroundPillar(World world, BlockPos centerPos, int yRange) {
+        int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
+        int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
+
+
+        // Start from top and go downwards
+        for (int y = topY; y >= bottomY; y--) {
+            BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
+            // Improved block check to ensure solid block and air above or open space above
+            if (!(world.getBlockState(pos).getBlock() instanceof AirBlock) && world.getBlockState(pos.up()).isSolidBlock(world, pos.up())) {
+                return pos;
+            }
+        }
+
+        // Fallback if no valid ground is found
+        return null;
+    }
+
     public void spawnEarthSpikesTowardsYaw(World world, LivingEntity caster, int yRange, int spikeCount) {
         float yaw = caster.getYaw();
         double rad = Math.toRadians(yaw);
@@ -100,26 +277,34 @@ public class EarthStaffItem extends StaffItem {
             }
         }
     }
-    private String getElement(ItemStack stack) {
+
+    private EarthStaffAttacks getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        return nbt.contains("Attack") ? nbt.getString("Attack") : ATTACKS.get(0);
+        NbtCompound nbt = component.copyNbt();
+        String name = nbt.getString("Element");
+        for (EarthStaffAttacks attack : EarthStaffAttacks.values()) {
+            if (attack.asString().equals(name)) {
+                return attack;
+            }
+        }
+        return EarthStaffAttacks.EARTH_SPIKES;
     }
 
-    private void setElement(ItemStack stack, String attack) {
+    private void setElement(ItemStack stack, EarthStaffAttacks attack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        nbt.putString("Attack", attack); // Update the element
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt)); // Create a new immutable NbtComponent
+        NbtCompound nbt = component.copyNbt();
+        nbt.putString("Element", attack.asString());
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(this.currentAttack(stack).formatted(Formatting.BLUE));
+        EarthStaffAttacks current = getElement(stack);
+        tooltip.add(Text.translatable("item.btc.spell.context.current", Text.translatable("item.btc.spell.earth." + current.asString())).formatted(Formatting.BLUE));
         tooltip.add(this.attackTypes().formatted(Formatting.GRAY));
     }
-    public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
+    //TODO
     public MutableText attackTypes() {return Text.literal("Attack Types:");}
 
 }

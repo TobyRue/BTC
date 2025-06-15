@@ -23,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -36,6 +37,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -103,6 +105,7 @@ public class SpellBookItem extends Item {
                 }
                 case EARTH_SPIKE -> {
                     spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
+                    player.getItemCooldownManager().set(this, 30);
                     return TypedActionResult.success(stack);
                 }
                 case REGENERATION -> {
@@ -110,53 +113,19 @@ public class SpellBookItem extends Item {
                     player.getItemCooldownManager().set(this, 150);
                     return TypedActionResult.success(stack);
                 }
-                case CREEPER_WALL_CIRCLE -> {
-                    int spikes = Math.max(8, (int) (3 * 3) + 8);
-                    double radius = 3;
-                    for (int i = 0; i < spikes; i++) {
-                        double angle = 2 * Math.PI * i / spikes;
-                        double x = player.getX() + radius * Math.cos(angle);
-                        double z = player.getZ() + radius * Math.sin(angle);
-                        BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) player.getY(), (int) z), 8);
-                        if (groundPos != null) {
-                            CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, player.getYaw(), player, CreeperPillarType.NORMAL);
-                            world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
-                            world.spawnEntity(pillar);
-                        }
-                    }
-                    return TypedActionResult.success(stack);
-
-                }
-                case CREEPER_WALL_TRAP -> {
-                    Entity entityLookedAt = getEntityLookedAt(player, 16);
-                    if (entityLookedAt != null) {
-                        System.out.println("Entity Looked at: " + entityLookedAt + ", Which pos is: " + entityLookedAt.getPos());
-                        int spikes = Math.max(8, (int) (3 * 3) + 8);
-                        double radius = 2;
-                        for (int i = 0; i < spikes; i++) {
-                            double angle = 2 * Math.PI * i / spikes;
-                            double x = entityLookedAt.getX() + radius * Math.cos(angle);
-                            double z = entityLookedAt.getZ() + radius * Math.sin(angle);
-                            BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), 8);
-                            if (groundPos != null && entityLookedAt instanceof LivingEntity) {
-                                CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, entityLookedAt.getYaw(), player, CreeperPillarType.NORMAL);
-                                world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
-                                world.spawnEntity(pillar);
-                            }
-                        }
-                        return TypedActionResult.success(stack);
-                    }
-                }
                 case CREEPER_WALL_BLOCK -> {
-                    Vec3d pillarPos = rayTrace(player, 24, 1.0F, true);
-                    if (pillarPos != null) {
-                        System.out.println("Pos is: " + pillarPos);
-                        BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) pillarPos.getX(), (int) pillarPos.getY(), (int) pillarPos.getZ()), 8);
-                        if (groundPos != null) {
-                            CreeperPillarEntity pillar = new CreeperPillarEntity(world, pillarPos.getX(), groundPos.getY(), pillarPos.getZ(), player.getYaw(), player, CreeperPillarType.NORMAL);
-                            world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(pillarPos.getX(), groundPos.getY(), pillarPos.getZ()), GameEvent.Emitter.of(player));
-                            world.spawnEntity(pillar);
-                        }
+                    @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
+                    @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24, 1.0F, true);
+                    if (pillarPosEntity instanceof LivingEntity) {
+                        // Entity case: 2 blocks toward player
+                        spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
+                        player.getItemCooldownManager().set(this, 20);
+                        return TypedActionResult.success(stack);
+                    } else if (pillarPosBlock != null) {
+                        // Block case: no offset
+                        spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
+                        player.getItemCooldownManager().set(this, 20);
+                        return TypedActionResult.success(stack);
                     }
                 }
             }
@@ -171,10 +140,43 @@ public class SpellBookItem extends Item {
         return super.use(world, player, hand);
     }
 
+
+
+    public static void spawnCreeperPillarWall(World world, Vec3d centerPos, PlayerEntity player, int count, double offsetTowardsPlayer) {
+        // Direction from player to centerPos
+        Vec3d direction = centerPos.subtract(player.getPos()).normalize();
+
+        // Apply offset toward player (if offset != 0)
+        Vec3d adjustedCenter = centerPos.add(direction.multiply(offsetTowardsPlayer * -1));
+
+        // Perpendicular vector to that direction (in XZ plane)
+        Vec3d perp = getPerpendicular2D(direction);
+
+        int halfCount = count / 2;
+
+        for (int i = -halfCount; i <= halfCount; i++) {
+            Vec3d spawnPos = adjustedCenter.add(perp.multiply(i));
+            BlockPos groundPos = findSpawnableGroundPillar(world, BlockPos.ofFloored(spawnPos), 10);
+            if (groundPos != null) {
+                CreeperPillarEntity pillar = new CreeperPillarEntity(
+                        world, spawnPos.x + 0.5, groundPos.getY(), spawnPos.z + 0.5, player.getYaw(), player, CreeperPillarType.NORMAL
+                );
+                world.emitGameEvent(GameEvent.ENTITY_PLACE, pillar.getPos(), GameEvent.Emitter.of(player));
+                world.spawnEntity(pillar);
+            }
+        }
+    }
+
+
+    public static Vec3d getPerpendicular2D(Vec3d vec) {
+        return new Vec3d(-vec.z, 0, vec.x).normalize();
+    }
+
+
     public static @Nullable Vec3d rayTrace(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
-        Entity entity = getEntityLookedAt(player, range);
+        Entity entity = getEntityLookedAt(player, range, 0.3D);
 
         switch (hitLong.getType()) {
             case HitResult.Type.MISS:
@@ -205,7 +207,6 @@ public class SpellBookItem extends Item {
     public static @Nullable Vec3d getBlockLookedAt(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
-        Entity entity = getEntityLookedAt(player, range);
 
         switch (hitLong.getType()) {
             case HitResult.Type.MISS:
@@ -222,7 +223,7 @@ public class SpellBookItem extends Item {
         return null;
     }
 
-    public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range) {
+    public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimmingForgivness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
@@ -235,7 +236,7 @@ public class SpellBookItem extends Item {
         double closestDistanceSq = range * range;
 
         for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(0.3D); // slightly expanded hitbox
+            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness); // slightly expanded hitbox
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -267,8 +268,10 @@ public class SpellBookItem extends Item {
         // Fallback if no valid ground is found
         return null;
     }
+
+
     @Nullable
-    public BlockPos findSpawnableGroundPillar(World world, BlockPos centerPos, int yRange) {
+    public static BlockPos findSpawnableGroundPillar(World world, BlockPos centerPos, int yRange) {
         int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
         int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
 

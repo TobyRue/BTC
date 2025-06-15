@@ -23,6 +23,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
 import net.minecraft.data.client.VariantSettings;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.*;
@@ -108,6 +109,9 @@ public class BTC implements ModInitializer {
             }
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
+
+
+
 //        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
 //            if (!world.isClient && hand == Hand.MAIN_HAND) {
 //                if (player.getStackInHand(hand).getItem() == ModItems.COPPER_WRENCH) {

@@ -1,5 +1,7 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.enums.DragonStaffAttacks;
+import io.github.tobyrue.btc.enums.WindStaffAttacks;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.client.BTCClient;
 import net.minecraft.component.DataComponentTypes;
@@ -34,48 +36,52 @@ public class WindStaffItem extends StaffItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
 
-        ItemStack itemStack = user.getStackInHand(hand);
-        String currentElement = getElement(stack);
-        int nextIndex = (ATTACKS.indexOf(currentElement) + 1) % ATTACKS.size();
-        String nextElement = ATTACKS.get(nextIndex);
-        if (!world.isClient && user.isSneaking()) {
-            user.sendMessage(Text.literal("Breezebound Staff set to - " + nextElement), true);
-            setElement(stack, nextElement);
+        WindStaffAttacks current = getElement(stack);
+        WindStaffAttacks next = WindStaffAttacks.next(current);
+
+        if (!player.isSneaking()) {
+            switch (current) {
+                case WIND_CHARGE -> {
+                    WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
+                    Vec3d direction = player.getRotationVec(1.0f);
+                    windCharge.setVelocity(direction.multiply(1.5)); // Adjust speed as needed
+                    player.getItemCooldownManager().set(this, 20);
+                    world.spawnEntity(windCharge);
+                    return TypedActionResult.success(stack);
+                }
+                case CLUSTER_WIND_CHARGE -> {
+                    shootWindCharges(player, world);
+                    player.getItemCooldownManager().set(this, 40);
+                    return TypedActionResult.success(stack);
+                }
+                case TEMPESTS_CALL -> {
+                    pullMobsTowardsPlayer(world, player);
+                    return TypedActionResult.success(stack);
+                }
+                case STORM_PUSH -> {
+                    shootMobsAway(player, world);
+                    return TypedActionResult.success(stack);
+                }
+            }
+        }
+        if (!world.isClient && player.isSneaking()) {
+            player.sendMessage(Text.translatable("item.btc.spell.wind.set", Text.translatable("item.btc.spell.wind." + next.asString())), true);
+            setElement(stack, next);
             return TypedActionResult.success(stack);
         }
-        if (getElement(stack).equals("Wind Charge") && !user.isSneaking()) {
-
-            WindChargeEntity windCharge = new WindChargeEntity(user, world, user.getX(), user.getY() + 1.0, user.getZ());
-            Vec3d direction = user.getRotationVec(1.0f);
-            windCharge.setVelocity(direction.multiply(1.5)); // Adjust speed as needed
-            user.getItemCooldownManager().set(this, 10);
-            world.spawnEntity(windCharge);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Wind Cluster Shot") && !user.isSneaking()) {
-            shootWindCharges(user, world);
-            user.getItemCooldownManager().set(this, 20);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Tempest's Call") && !user.isSneaking()) {
-            pullMobsTowardsPlayer(world, user);
-            return TypedActionResult.success(itemStack);
-        } else if(getElement(stack).equals("Storm Push") && !user.isSneaking()){
-            shootMobsAway(user, world);
-            return TypedActionResult.success(itemStack);
-        }
-
-        return TypedActionResult.fail(itemStack);
+        return TypedActionResult.fail(stack);
     }
 
-    private void shootWindCharges(PlayerEntity user, World world) {
-        Vec3d baseDirection = user.getRotationVec(1.0f).normalize(); // Get the player's facing direction
+    private void shootWindCharges(PlayerEntity player, World world) {
+        Vec3d baseDirection = player.getRotationVec(1.0f).normalize(); // Get the player's facing direction
         double spreadFactor = 0.2; // Controls how much deviation there is from the forward direction
 
         for (int i = 0; i < PROJECTILE_COUNT; i++) {
             // Create a new WindChargeEntity
-            WindChargeEntity windCharge = new WindChargeEntity(user, world, user.getX(), user.getY() + 1.0, user.getZ());
+            WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
 
             // Apply random spread within a controlled cone
             double randomPitch = (Math.random() - 0.5) * spreadFactor;
@@ -85,7 +91,7 @@ public class WindStaffItem extends StaffItem {
             Vec3d scatterDirection = baseDirection.add(randomYaw, randomPitch, randomYaw).normalize();
 
             // Set the spawn position slightly in front of the player
-            Vec3d spawnPosition = user.getPos().add(baseDirection.multiply(1.5)).add(0, 1, 0);
+            Vec3d spawnPosition = player.getPos().add(baseDirection.multiply(1.5)).add(0, 1, 0);
             windCharge.setPos(spawnPosition.x, spawnPosition.y, spawnPosition.z);
 
             // Set the velocity of the wind charge
@@ -93,38 +99,38 @@ public class WindStaffItem extends StaffItem {
             world.spawnEntity(windCharge);
         }
     }
-    private void pullMobsTowardsPlayer(World world, PlayerEntity user) {
+    private void pullMobsTowardsPlayer(World world, PlayerEntity player) {
         // Use the PULL_RADIUS variable to define the radius
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(PULL_RADIUS), entity -> entity != user);
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(PULL_RADIUS), entity -> entity != player);
         // Log the number of entities found
-        // Pull all mobs towards the user
+        // Pull all mobs towards the player
         for (LivingEntity entity : entities) {
-            // Calculate the direction towards the user
-            double dx = user.getX() - entity.getX();
-            double dy = user.getY() - entity.getY();
-            double dz = user.getZ() - entity.getZ();
+            // Calculate the direction towards the player
+            double dx = player.getX() - entity.getX();
+            double dy = player.getY() - entity.getY();
+            double dz = player.getZ() - entity.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
             double strength = PULL_STRENGTH;
             if (entities != null) {
                 if (distance != 0) {
                     entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
                 }
-                user.getItemCooldownManager().set(this, 40);
+                player.getItemCooldownManager().set(this, 40);
             }
         }
     }
 
-    private void shootMobsAway(PlayerEntity user, World world) {
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(SHOOT_RADIUS), entity -> entity != user);
+    private void shootMobsAway(PlayerEntity player, World world) {
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(SHOOT_RADIUS), entity -> entity != player);
 
-        // Shoot all mobs away from the user
+        // Shoot all mobs away from the player
         for (LivingEntity entity : entities) {
-            double dx = entity.getX() - user.getX();
-            double dy = entity.getY() - user.getY();
-            double dz = entity.getZ() - user.getZ();
+            double dx = entity.getX() - player.getX();
+            double dy = entity.getY() - player.getY();
+            double dz = entity.getZ() - player.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-            // Apply velocity away from the user
+            // Apply velocity away from the player
             if (entities != null) {
                 double strength = SHOOT_STRENGTH;
                 if (distance != 0) {
@@ -137,27 +143,27 @@ public class WindStaffItem extends StaffItem {
                 } else {
                     entity.damage(world.getDamageSources().flyIntoWall(), 5);
                 }
-                user.getItemCooldownManager().set(this, 80);
+                player.getItemCooldownManager().set(this, 80);
             }
         }
     }
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltip, TooltipType tooltipType) {
         super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
-        tooltip.add(this.currentAttack(stack).formatted(Formatting.BLUE));
+        WindStaffAttacks current = getElement(stack);
+        tooltip.add(Text.translatable("item.btc.spell.context.current", Text.translatable("item.btc.spell.wind." + current.asString())).formatted(Formatting.BLUE));
         tooltip.add(this.attackTypes().formatted(Formatting.AQUA));
-        tooltip.add(this.attack1().formatted(Formatting.WHITE));
-        tooltip.add(this.attack2().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3().formatted(Formatting.WHITE));
-        tooltip.add(this.attack4().formatted(Formatting.WHITE));
+
         // Add custom tooltip text
     }
     public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
     public MutableText attackTypes() {
         return Text.literal("Attack Types:");
+
     }
     public MutableText attack1() {
         return Text.literal("Wind Charge");
+
     }
     public MutableText attack2() {
         return Text.literal("Wind Cluster Shot");
@@ -169,16 +175,22 @@ public class WindStaffItem extends StaffItem {
         return Text.literal("Storm Push - Blast Nearby Entities Away Dealing Damage");
     }
 
-    private String getElement(ItemStack stack) {
+    private WindStaffAttacks getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        return nbt.contains("Attack") ? nbt.getString("Attack") : ATTACKS.get(0);
+        NbtCompound nbt = component.copyNbt();
+        String name = nbt.getString("Element");
+        for (WindStaffAttacks attack : WindStaffAttacks.values()) {
+            if (attack.asString().equals(name)) {
+                return attack;
+            }
+        }
+        return WindStaffAttacks.WIND_CHARGE;
     }
 
-    private void setElement(ItemStack stack, String attack) {
+    private void setElement(ItemStack stack, WindStaffAttacks attack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        nbt.putString("Attack", attack); // Update the element
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt)); // Create a new immutable NbtComponent
+        NbtCompound nbt = component.copyNbt();
+        nbt.putString("Element", attack.asString());
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 }

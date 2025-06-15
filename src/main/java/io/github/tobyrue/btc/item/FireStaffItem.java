@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.client.BTCClient;
+import io.github.tobyrue.btc.enums.EarthStaffAttacks;
+import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
@@ -39,116 +41,120 @@ public class FireStaffItem extends StaffItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
 
-        ItemStack itemStack = user.getStackInHand(hand);
-        String currentElement = getElement(stack);
-        int nextIndex = (ATTACKS.indexOf(currentElement) + 1) % ATTACKS.size();
-        String nextElement = ATTACKS.get(nextIndex);
-        if (!world.isClient && user.isSneaking()) {
-            user.sendMessage(Text.literal("Blaze Staff set to - " + nextElement), true);
-            setElement(stack, nextElement);
+        FireStaffAttacks current = getElement(stack);
+        FireStaffAttacks next = FireStaffAttacks.next(current);
+
+        if (!player.isSneaking()) {
+            switch (current) {
+                case WEAK_FIREBALL -> {
+                    shootFireball(world, player, 1);
+                    player.getItemCooldownManager().set(this, 30);
+                    return TypedActionResult.success(stack);
+                }
+                case STRONG_FIREBALL -> {
+                    shootFireball(world, player, 5);
+                    player.getItemCooldownManager().set(this, 100);
+                    return TypedActionResult.success(stack);
+                }
+                case CONCENTRATED_FIRE_STORM -> {
+                    setMobsOnFireSmall(world, player);
+                    return TypedActionResult.success(stack);
+                }
+                case FIRE_STORM -> {
+                    setMobsOnFireHostile(world, player);
+                    return TypedActionResult.success(stack);
+                }
+                case STRENGTH -> {
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
+                    player.setOnFireForTicks(100);
+                    return TypedActionResult.success(stack);
+                }
+                case RESISTANCE -> {
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 2));
+                    player.getItemCooldownManager().set(this, 600);
+                    return TypedActionResult.success(stack);
+                }
+            }
+        }
+        if (!world.isClient && player.isSneaking()) {
+            player.sendMessage(Text.translatable("item.btc.spell.fire.set", Text.translatable("item.btc.spell.fire." + next.asString())), true);
+            setElement(stack, next);
             return TypedActionResult.success(stack);
         }
-        if (getElement(stack).equals("Weak Fire Ball") && !user.isSneaking()) {
-            shootFireball(world, user, 1);
-            user.getItemCooldownManager().set(this, 30);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Strong Fireball") && !user.isSneaking()) {
-            shootFireball(world, user, 5);
-            user.getItemCooldownManager().set(this, 100);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Concentrated Fire Storm") && !user.isSneaking()) {
-            setMobsOnFireSmall(world, user);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Fire Storm") && !user.isSneaking()) {
-            setMobsOnFireHostile(world, user);
-            return TypedActionResult.success(itemStack);
-        } else if (getElement(stack).equals("Strength") && !user.isSneaking()) {
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
-            user.setOnFireForTicks(100);
-            return TypedActionResult.success(itemStack);
-        } else if(getElement(stack).equals("Resistance") && !user.isSneaking()){
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 2));
-            user.getItemCooldownManager().set(this, 600);
-            return TypedActionResult.success(itemStack);
-        }
-
-        return TypedActionResult.fail(itemStack);
+        return TypedActionResult.fail(stack);
     }
-    private void shootFireball(World world, PlayerEntity user, int explosionPower) {
-        Vec3d direction = user.getRotationVec(1.0F).normalize();
+    private void shootFireball(World world, PlayerEntity player, int explosionPower) {
+        Vec3d direction = player.getRotationVec(1.0F).normalize();
 
-        FireballEntity fireball = new FireballEntity(world, user, direction, explosionPower);
+        FireballEntity fireball = new FireballEntity(world, player, direction, explosionPower);
 
-        fireball.setPos(user.getX() + direction.x * 1.5, user.getY() + 1.5, user.getZ() + direction.z * 1.5);
+        fireball.setPos(player.getX() + direction.x * 1.5, player.getY() + 1.5, player.getZ() + direction.z * 1.5);
 
         fireball.setVelocity(direction.multiply(1.5));
 
         world.spawnEntity(fireball);
     }
-    private void setMobsOnFireHostile(World world, PlayerEntity user) {
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(FIRE_RADIUS),
-                entity -> entity != user && entity instanceof HostileEntity); // Only affect hostile mobs
+    private void setMobsOnFireHostile(World world, PlayerEntity player) {
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(FIRE_RADIUS),
+                entity -> entity != player && entity instanceof HostileEntity); // Only affect hostile mobs
         for (LivingEntity entity : entities) {
-            double dx = user.getX() - entity.getX();
-            double dy = user.getY() - entity.getY();
-            double dz = user.getZ() - entity.getZ();
+            double dx = player.getX() - entity.getX();
+            double dy = player.getY() - entity.getY();
+            double dz = player.getZ() - entity.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
             if (entities != null) {
                 double timeNorm = (Math.abs(distance) * -1) + FIRE_TIME;
                 entity.setOnFireFor((float) timeNorm);
-                user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
-//                if (distance > 0) {
-//                    double time = distance * -1;
-//                    double time2 = time + FIRE_TIME;
-//                    entity.setOnFireFor((float) time2);
-//                    user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
-//                } else if (distance < 0) {
-//                    double time3 = distance + FIRE_TIME;
-//                    entity.setOnFireFor((float) time3);
-//                    user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
-//                } else if (distance == 0) {
-//                    entity.setOnFireFor((float) FIRE_TIME);
-//                    user.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
-//                }
+                player.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
             }
         }
     }
-    private void setMobsOnFireSmall(World world, PlayerEntity user) {
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(SMALL_FIRE_RADIUS), entity -> entity != user);
+    private void setMobsOnFireSmall(World world, PlayerEntity player) {
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(SMALL_FIRE_RADIUS), entity -> entity != player);
 
         for (LivingEntity entity : entities) {
-            double dx = user.getX() - entity.getX();
-            double dy = user.getY() - entity.getY();
-            double dz = user.getZ() - entity.getZ();
+            double dx = player.getX() - entity.getX();
+            double dy = player.getY() - entity.getY();
+            double dz = player.getZ() - entity.getZ();
             double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
             if (entities != null) {
                 double time1 = Math.pow(distance, 2);
                 double time2 = Math.abs(time1) * -1;
                 double time3 = time2 + SMALL_FIRE_TIME;
                 entity.setOnFireFor((float) time3);
-                user.getItemCooldownManager().set(this, (int) ((SMALL_FIRE_TIME + EXTRA_COOLDOWN) * 20));
+                player.getItemCooldownManager().set(this, (int) ((SMALL_FIRE_TIME + EXTRA_COOLDOWN) * 20));
             }
         }
     }
 
+    private FireStaffAttacks getElement(ItemStack stack) {
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
+        String name = nbt.getString("Element");
+        for (FireStaffAttacks attack : FireStaffAttacks.values()) {
+            if (attack.asString().equals(name)) {
+                return attack;
+            }
+        }
+        return FireStaffAttacks.WEAK_FIREBALL;
+    }
+
+    private void setElement(ItemStack stack, FireStaffAttacks attack) {
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
+        nbt.putString("Element", attack.asString());
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+    }
+
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltip, TooltipType tooltipType) {
-        super.appendTooltip(stack, tooltipContext, tooltip, tooltipType);
-        tooltip.add(this.currentAttack(stack).formatted(Formatting.BLUE));
-        tooltip.add(this.attackTypes().formatted(Formatting.RED));
-        tooltip.add(this.attack1().formatted(Formatting.WHITE));
-        tooltip.add(this.attack2().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3cont().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3cont2().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3small().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3contsmall().formatted(Formatting.WHITE));
-        tooltip.add(this.attack3cont2small().formatted(Formatting.WHITE));
-        tooltip.add(this.attack4().formatted(Formatting.WHITE));
-        tooltip.add(this.attack5().formatted(Formatting.WHITE));
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+        FireStaffAttacks current = getElement(stack);
+        tooltip.add(Text.translatable("item.btc.spell.context.current", Text.translatable("item.btc.spell.fire." + current.asString())).formatted(Formatting.BLUE));
+        tooltip.add(this.attackTypes().formatted(Formatting.GRAY));
     }
 
     public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
@@ -163,17 +169,4 @@ public class FireStaffItem extends StaffItem {
     public MutableText attack3cont2small() {return Text.literal("  - Closer to a Entity the Longer the Burn Time Is");}
     public MutableText attack4() {return Text.literal("Strength - Lvl 2 for 7 Seconds");}
     public MutableText attack5() {return Text.literal("Resistance - Lvl 3 for 5 Seconds");}
-
-    private String getElement(ItemStack stack) {
-        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        return nbt.contains("Attack") ? nbt.getString("Attack") : ATTACKS.get(0);
-    }
-
-    private void setElement(ItemStack stack, String attack) {
-        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt(); // Get a modifiable copy
-        nbt.putString("Attack", attack); // Update the element
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt)); // Create a new immutable NbtComponent
-    }
 }
