@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc;
 
-import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
@@ -18,8 +18,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
 import net.minecraft.data.client.VariantSettings;
@@ -103,12 +102,35 @@ public class BTC implements ModInitializer {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER)) && !player.isCreative()) {
                 ItemStack stack = player.getStackInHand(hand);
-                if (stack.getItem() instanceof BlockItem) {
+                Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+                boolean b = (block instanceof ChestBlock) || (block instanceof CraftingTableBlock) ||
+                        (block instanceof CrafterBlock) || (block instanceof AnvilBlock) || (block instanceof DispenserBlock) ||
+                        (block instanceof DropperBlock) || (block instanceof TrappedChestBlock) || (block instanceof BarrelBlock) ||
+                        (block instanceof GrindstoneBlock) || (block instanceof StonecutterBlock) || (block instanceof EnchantingTableBlock) ||
+                        (block instanceof FurnaceBlock) || (block instanceof BlastFurnaceBlock) || (block instanceof SmokerBlock) ||
+                        (block instanceof SmithingTableBlock) || (block instanceof LoomBlock) || (block instanceof ComposterBlock) ||
+                        (block instanceof CampfireBlock) || (block instanceof JukeboxBlock) || (block instanceof PedestalBlock) ||
+                        (block instanceof VaultBlock) || (block instanceof KeyAcceptorBlock) || (block instanceof KeyDispenserBlock)||
+                        (block instanceof DungeonDoorBlock) || (block instanceof LecternBlock) || (block instanceof EndPortalFrameBlock) ||
+                        (block instanceof DragonEggBlock) || (block instanceof BedBlock) || (block instanceof BeaconBlock) ||
+                        (block instanceof BellBlock) || (block instanceof BrewingStandBlock) || (block instanceof CauldronBlock) ||
+                        (block instanceof NoteBlock) || (block instanceof DecoratedPotBlock) || (block instanceof FlowerPotBlock) ||
+                        (block instanceof BeehiveBlock) || (block instanceof SignBlock) || (block instanceof HangingSignBlock) ||
+                        (block instanceof EnderChestBlock) || (block instanceof ShulkerBoxBlock)  || (block instanceof CartographyTableBlock) ||
+                        (block instanceof FletchingTableBlock) || (block instanceof ChiseledBookshelfBlock) || (block instanceof RepeaterBlock) ||
+                        (block instanceof ComparatorBlock) || (block instanceof LeverBlock) || (block instanceof ButtonBlock) ||
+                        (block instanceof HopperBlock) || (block instanceof TrapdoorBlock) || (block instanceof DoorBlock) ||
+                        (block instanceof FenceGateBlock) || (block instanceof CakeBlock) || (block instanceof FarmlandBlock);
+
+                if ((stack.getItem() instanceof BlockItem && !b) || ((b && player.isSneaking()) && stack.getItem() instanceof BlockItem) || stack.getItem() instanceof BoneMealItem || stack.getItem() instanceof BucketItem || stack.getItem() instanceof PowderSnowBucketItem || stack.getItem() instanceof EndCrystalItem) {
                     return ActionResult.FAIL; // Block placement is prevented
+                } else if (stack.getItem() instanceof BlockItem && (b && !player.isSneaking())) {
+                    return ActionResult.PASS;
                 }
             }
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
+
 
 
 
