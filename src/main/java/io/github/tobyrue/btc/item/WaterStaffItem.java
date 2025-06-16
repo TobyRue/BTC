@@ -88,7 +88,7 @@ public class WaterStaffItem extends StaffItem {
         }
 
         if (!world.isClient && player.isSneaking()) {
-            player.sendMessage(Text.translatable("item.btc.spell.earth.set", Text.translatable("item.btc.spell.earth." + next.asString())), true);
+            player.sendMessage(Text.translatable("item.btc.spell.water.set", Text.translatable("item.btc.spell.water." + next.asString())), true);
             setElement(stack, next);
             return TypedActionResult.success(stack);
         }
