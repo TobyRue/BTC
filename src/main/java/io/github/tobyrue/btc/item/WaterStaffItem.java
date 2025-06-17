@@ -31,10 +31,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -72,17 +72,20 @@ public class WaterStaffItem extends StaffItem {
                 }
                 case ICE_FREEZE -> {
                     freezeTargetArea(player, world);
-                    player.getItemCooldownManager().set(this, 160);
                     return TypedActionResult.success(stack);
                 }
                 case FROST_WALKER -> {
 
                 }
                 case DOLPHINS_GRACE -> {
-
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 0));
+                    player.getItemCooldownManager().set(this, 320);
+                    return TypedActionResult.success(stack);
                 }
                 case CONDUIT_POWER ->  {
-
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 400, 0));
+                    player.getItemCooldownManager().set(this, 480);
+                    return TypedActionResult.success(stack);
                 }
             }
         }
@@ -132,31 +135,34 @@ public class WaterStaffItem extends StaffItem {
 
         // Iterate in a 3x3x3 cube around the target's block position
         BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+        BlockPos.Mutable mutablePosClear = new BlockPos.Mutable();
         if (target instanceof LivingEntity) {
             ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 200, 4));
 
             BlockPos targetPos = target.getBlockPos();
             for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1; y++) {
+                for (int y = -2; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++) {
                         mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
 
                         // Only replace air or water blocks
                         BlockState state = world.getBlockState(mutablePos);
-                        if (state.isAir() || state.getFluidState().isStill()) {
+                        if (state.isReplaceable() || state.getFluidState().isStill()) {
+                            List<BlockPos> positions = new ArrayList<>();
+                            positions.add(new BlockPos(mutablePos));
                             world.setBlockState(mutablePos, Blocks.ICE.getDefaultState());
                             scheduler.schedule(() -> {
-                                // world.getServer().execute(() -> {
-                                BlockState currentState = world.getBlockState(mutablePos);
-                                if (currentState.getBlock() instanceof IceBlock) {
-                                    world.setBlockState(mutablePos, Blocks.AIR.getDefaultState());
+                                for (BlockPos pos : positions) {
+                                    if (world.getBlockState(pos).getBlock() instanceof IceBlock) {
+                                        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                                    }
                                 }
-                                //});
                             }, 10, TimeUnit.SECONDS);
                         }
                     }
                 }
             }
+            player.getItemCooldownManager().set(this, 160);
             world.playSound(null, targetPos, SoundEvents.BLOCK_GLASS_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
     }

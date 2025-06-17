@@ -32,8 +32,8 @@
   "item.btc.dragon_staff": "Staff of the Dragonhearted",
   "item.btc.earth_staff": "Staff of the Stonethorn  ",
   "item.btc.water_staff": "Staff of the Drowned",
-
   "item.btc.spell_book_item": "Spell Book",
+
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
   "item.btc.tuff_golem_spawn_egg": "Tuff Golem Spawn Egg",
@@ -168,6 +168,13 @@
   "item.btc.spell.wind.cluster_wind_charge": "Wind Cluster Shot",
   "item.btc.spell.wind.tempests_call": "Tempest's Call",
   "item.btc.spell.wind.storm_push": "Storm Push",
+
+  "item.btc.spell.water.set": "Drowned Staff set to: %s",
+  "item.btc.spell.water.water_blast": "Water Blast",
+  "item.btc.spell.water.ice_freeze": "Ice Freeze",
+  "item.btc.spell.water.frost_walker": "Frost Walker",
+  "item.btc.spell.water.dolphins_grace": "Dolphin's Grace",
+  "item.btc.spell.water.conduit_power": "Conduit Power",
 
   "tag.item.btc.wrenches": "Wrenches"
 }
