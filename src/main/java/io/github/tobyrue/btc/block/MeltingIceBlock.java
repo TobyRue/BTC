@@ -77,7 +77,7 @@ public class MeltingIceBlock extends TranslucentBlock {
         }
     }
 
-        protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
@@ -195,11 +195,35 @@ public class MeltingIceBlock extends TranslucentBlock {
             world.scheduleBlockTick(pos, this, MathHelper.nextInt(random, 20, 40));
         }
     }
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+
+        // Update connections for neighbors around this block being replaced
+        for (Direction dir : Direction.values()) {
+            BlockPos neighborPos = pos.offset(dir);
+            BlockState neighborState = world.getBlockState(neighborPos);
+            if (neighborState.getBlock() instanceof MeltingIceBlock) {
+                updateConnections(world, neighborPos, neighborState);
+            }
+        }
+
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
     protected void melt(BlockState state, World world, BlockPos pos) {
-        if (world.getDimension().ultrawarm()) {
+        if (world.getDimension().ultrawarm() && !world.isClient()) {
+            for (Direction dir : Direction.values()) {
+                if (world.getBlockState(pos.offset(dir)).getBlock() instanceof MeltingIceBlock && !world.isClient()) {
+                    updateConnections((World) world, pos.offset(dir), world.getBlockState(pos.offset(dir)));
+                }
+            }
             world.removeBlock(pos, false);
-        } else {
-            world.setBlockState(pos, getMeltedState());
+        } else if (!world.isClient()) {
+            for (Direction dir : Direction.values()) {
+                if (world.getBlockState(pos.offset(dir)).getBlock() instanceof MeltingIceBlock && !world.isClient()) {
+                    updateConnections((World) world, pos.offset(dir), world.getBlockState(pos.offset(dir)));
+                }
+            }
+            world.setBlockState(pos, getMeltedState(), 3);
             world.updateNeighbor(pos, getMeltedState().getBlock(), pos);
         }
     }
@@ -208,13 +232,15 @@ public class MeltingIceBlock extends TranslucentBlock {
     public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
         super.onBroken(world, pos, state);
         for (Direction dir : Direction.values()) {
-            //TODO
-            neighborUpdate(state, , pos.offset(dir));
+            if (world.getBlockState(pos.offset(dir)).getBlock() instanceof MeltingIceBlock && !world.isClient()) {
+                updateConnections((World) world, pos.offset(dir), world.getBlockState(pos.offset(dir)));
+            }
         }
     }
 
     private boolean increaseAge(BlockState state, World world, BlockPos pos) {
         int i = (Integer)state.get(AGE);
+        if (world.isClient()) return false;
         if (i < 3) {
             world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), 2);
             return false;
@@ -227,6 +253,7 @@ public class MeltingIceBlock extends TranslucentBlock {
         if (world.isClient) return;
 
         BlockState newState = state
+                .with(AGE, state.get(AGE))
                 .with(UP, !isSameBlock(world, pos.up()))
                 .with(DOWN, !isSameBlock(world, pos.down()))
                 .with(NORTH, !isSameBlock(world, pos.north()))
@@ -235,8 +262,10 @@ public class MeltingIceBlock extends TranslucentBlock {
                 .with(WEST, !isSameBlock(world, pos.west()));
 
 
+
         world.setBlockState(pos, newState, 3);
     }
+
 
 
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
@@ -245,9 +274,6 @@ public class MeltingIceBlock extends TranslucentBlock {
             BlockState neighborState = world.getBlockState(neighborPos);
             if (neighborState.getBlock() instanceof MeltingIceBlock) {
                 updateConnections(world, neighborPos, neighborState);
-                scheduler.schedule(() -> {
-                    updateConnections(world, neighborPos, neighborState);
-                }, 20, TimeUnit.MILLISECONDS);
             }
         }
         if (sourceBlock.getDefaultState().isOf(this) && state.get(AGE) > 3) {
