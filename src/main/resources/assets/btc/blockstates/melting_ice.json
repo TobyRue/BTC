@@ -1,0 +1,101 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "btc:block/melting_ice_side_0" },
+      "when": { "north": true, "age" : 0 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_0", "y": 180 },
+      "when": { "south": true, "age" : 0 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_0", "y": 90 },
+      "when": { "east": true, "age" : 0 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_0", "y": 270 },
+      "when": { "west": true, "age" : 0 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_0", "x": 270 },
+      "when": { "up": true, "age" : 0 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_0", "x": 90 },
+      "when": { "down": true, "age" : 0 }
+    },
+
+    {
+      "apply": { "model": "btc:block/melting_ice_side_1" },
+      "when": { "north": true, "age" : 1 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_1", "y": 180 },
+      "when": { "south": true, "age" : 1 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_1", "y": 90 },
+      "when": { "east": true, "age" : 1 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_1", "y": 270 },
+      "when": { "west": true, "age" : 1 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_1", "x": 270 },
+      "when": { "up": true, "age" : 1 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_1", "x": 90 },
+      "when": { "down": true, "age" : 1 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_2" },
+      "when": { "north": true, "age" : 2 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_2", "y": 180 },
+      "when": { "south": true, "age" : 2 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_2", "y": 90 },
+      "when": { "east": true, "age" : 2 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_2", "y": 270 },
+      "when": { "west": true, "age" : 2 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_2", "x": 270 },
+      "when": { "up": true, "age" : 2 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_2", "x": 90 },
+      "when": { "down": true, "age" : 2 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_3" },
+      "when": { "north": true, "age" : 3 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_3", "y": 180 },
+      "when": { "south": true, "age" : 3 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_3", "y": 90 },
+      "when": { "east": true, "age" : 3 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_3", "y": 270 },
+      "when": { "west": true, "age" : 3 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_3", "x": 270 },
+      "when": { "up": true, "age" : 3 }
+    },
+    {
+      "apply": { "model": "btc:block/melting_ice_side_3", "x": 90 },
+      "when": { "down": true, "age" : 3 }
+    }
+  ]
+}

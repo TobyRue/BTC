@@ -26,7 +26,11 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
-
+    public static final Block MELTING_ICE = register(
+            new MeltingIceBlock(AbstractBlock.Settings.create().mapColor(MapColor.WATER_BLUE).slipperiness(0.98F).strength(0.5F).sounds(BlockSoundGroup.GLASS).instrument(NoteBlockInstrument.SNARE).nonOpaque()),
+            "melting_ice",
+            true
+    );
     public static final Block CHISELED_COPPER_BRICKS = register(
             new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.COPPER).mapColor(MapColor.TERRACOTTA_ORANGE).requiresTool().strength(1.5F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
             "chiseled_copper_bricks",

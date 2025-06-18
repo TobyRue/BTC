@@ -28,10 +28,6 @@ public class DrowningEffect extends StatusEffect {
         int oxygenBonus = (int) entity.getAttributeInstance(EntityAttributes.GENERIC_OXYGEN_BONUS).getValue();
         if (!entity.hasStatusEffect(StatusEffects.WATER_BREATHING) && RANDOM.nextInt(oxygenBonus + 1) == 0) {
             entity.damage(entity.getWorld().getDamageSources().drown(), 4);
-//            ItemStack itemStack = entity.getEquippedStack(EquipmentSlot.HEAD);
-//            int level = itemStack.getEnchantments().getEnchantmentEntries().stream()
-//                    .filter(e->e.getKey() == Enchantments.RESPIRATION)
-//                    .map(e->EnchantmentHelper.getLevel(e.getKey(), itemStack)).findFirst().orElseGet(()->54);
             return true;
         }
         return true;

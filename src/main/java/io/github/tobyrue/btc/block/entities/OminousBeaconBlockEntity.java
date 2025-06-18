@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.block.OminousBeaconBlock;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.fabricmc.fabric.mixin.screenhandler.ServerPlayerEntityMixin;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -97,7 +98,7 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                                 beamPos.getX() + radiusS, beamPos.getY() + radiusS, beamPos.getZ() + radiusS))
                         .forEach(player -> {
                             if (player.getPos().distanceTo(beamCenter) <= radiusS) {
-                                player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.NO_NATURAL_REGENERATION), 200, 0));                            }
+                                player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.NO_NATURAL_REGENERATION), 200, 0));                            }
                         });
             }
 

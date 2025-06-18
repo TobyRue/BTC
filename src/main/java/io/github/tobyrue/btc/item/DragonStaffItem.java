@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.enums.DragonStaffAttacks;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
@@ -74,17 +75,17 @@ public class DragonStaffItem extends StaffItem {
                     return TypedActionResult.success(stack);
                 }
                 case DRAGON_SCALES_1 -> {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 200, 0));
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES), 200, 0));
                     player.getItemCooldownManager().set(this, 160);
                     return TypedActionResult.success(stack);
                 }
                 case DRAGON_SCALES_3 -> {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 600, 2));
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES), 600, 2));
                     player.getItemCooldownManager().set(this, 640);
                     return TypedActionResult.success(stack);
                 }
                 case DRAGON_SCALES_5 -> {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DRAGON_SCALES), 600, 4));
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES), 600, 4));
                     player.getItemCooldownManager().set(this, 800);
                     return TypedActionResult.success(stack);
                 }

@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.EarthStaffAttacks;
 import io.github.tobyrue.btc.enums.WaterStaffAttacks;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IceBlock;
@@ -18,6 +19,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -75,7 +77,9 @@ public class WaterStaffItem extends StaffItem {
                     return TypedActionResult.success(stack);
                 }
                 case FROST_WALKER -> {
-
+                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.FROST_WALKER), 500, 4));
+                    player.getItemCooldownManager().set(this, 480);
+                    return TypedActionResult.success(stack);
                 }
                 case DOLPHINS_GRACE -> {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 0));
@@ -99,7 +103,7 @@ public class WaterStaffItem extends StaffItem {
         return super.use(world, player, hand);
     }
 
-    public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimmingForgivness) {
+    public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimingForgiveness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
@@ -112,7 +116,7 @@ public class WaterStaffItem extends StaffItem {
         double closestDistanceSq = range * range;
 
         for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness); // slightly expanded hitbox
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness); // slightly expanded hitbox
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -135,7 +139,6 @@ public class WaterStaffItem extends StaffItem {
 
         // Iterate in a 3x3x3 cube around the target's block position
         BlockPos.Mutable mutablePos = new BlockPos.Mutable();
-        BlockPos.Mutable mutablePosClear = new BlockPos.Mutable();
         if (target instanceof LivingEntity) {
             ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 200, 4));
 
@@ -148,16 +151,7 @@ public class WaterStaffItem extends StaffItem {
                         // Only replace air or water blocks
                         BlockState state = world.getBlockState(mutablePos);
                         if (state.isReplaceable() || state.getFluidState().isStill()) {
-                            List<BlockPos> positions = new ArrayList<>();
-                            positions.add(new BlockPos(mutablePos));
-                            world.setBlockState(mutablePos, Blocks.ICE.getDefaultState());
-                            scheduler.schedule(() -> {
-                                for (BlockPos pos : positions) {
-                                    if (world.getBlockState(pos).getBlock() instanceof IceBlock) {
-                                        world.setBlockState(pos, Blocks.AIR.getDefaultState());
-                                    }
-                                }
-                            }, 10, TimeUnit.SECONDS);
+                            world.setBlockState(mutablePos, ModBlocks.MELTING_ICE.getDefaultState());
                         }
                     }
                 }

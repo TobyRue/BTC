@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -26,7 +27,7 @@ public class DrowningEffectOverlay {
         LivingEntity player = client.player;
 
         // Check if the player has the DrowningEffect
-        StatusEffectInstance drowningEffect = player.getStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.DROWNING));
+        StatusEffectInstance drowningEffect = player.getStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DROWNING));
         if (drowningEffect != null) {
             renderBlueScreen(drawContext);
         }
@@ -48,7 +49,7 @@ public class DrowningEffectOverlay {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.getWindow() == null) return;
 
-        int effectTicks = MinecraftClient.getInstance().player.getStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.DROWNING)).getDuration();
+        int effectTicks = MinecraftClient.getInstance().player.getStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DROWNING)).getDuration();
         double alpha = lerp(0, 0.5, inverseLerp(0, 5*20, clamp(0, 5*20, effectTicks)));
 
         int color = color(94d/255, 198d/255, 255d/255, alpha);

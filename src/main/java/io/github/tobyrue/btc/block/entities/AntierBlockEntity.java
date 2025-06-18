@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.AntierBlock;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -37,10 +38,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             if (distance <= range * range) {
                 if (!state.get(AntierBlock.DISABLE)) {
                     if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.MINER_MISHAP), 300, 100));
+                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.MINER_MISHAP), 300, 100));
                     }
                     if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER), 300, 100));
+                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER), 300, 100));
                     }
                 } else {
                     for(Direction direction : Direction.values()) {
@@ -50,10 +51,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
                         if (neighborState.getBlock() instanceof DungeonWireBlock) {
                             if (!neighborState.get(POWERED)) {
                                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.MINER_MISHAP), 300, 100));
+                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.MINER_MISHAP), 300, 100));
                                 }
                                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER), 300, 100));
+                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER), 300, 100));
                                 }
                             }
                         }

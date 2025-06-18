@@ -10,7 +10,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -43,6 +45,8 @@ public class AntierBlock extends Block implements ModBlockEntityProvider<AntierB
                 .with(ANTIER_TYPE, AntierType.NO_MINE)
                 .with(DISABLE, false));
     }
+
+
 
     @Nullable
     @Override

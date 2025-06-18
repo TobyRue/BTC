@@ -19,6 +19,7 @@
   "block.btc.waxed_copper_button_weathered": "Waxed Weathered Copper Button",
   "block.btc.copper_button_oxidized": "Oxidized Copper Button",
   "block.btc.waxed_copper_button_oxidized": "Waxed Oxidized Copper Button",
+  "block.btc.melting_ice": "Melting Ice",
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",
@@ -48,6 +49,7 @@
   "effect.btc.dragon_scales": "Dragon Scales",
   "effect.btc.drowning": "Drowning",
   "effect.btc.no_natural_regeneration": "No Regeneration",
+  "effect.btc.frost_walker": "Frost Walker",
 
   "item.minecraft.potion.effect.builder_blunder": "Potion of Builder’s Blunder",
   "item.minecraft.potion.effect.dragon_scales": "Potion of Dragon Scales",

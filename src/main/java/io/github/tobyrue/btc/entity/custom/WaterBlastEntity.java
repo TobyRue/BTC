@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -133,7 +134,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         Entity entity = entityHitResult.getEntity();
         entity.damage(this.getDamageSources().thrown(this, this.getOwner()), 2);
         if (entity instanceof LivingEntity livingEntity) {
-            livingEntity.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(BTC.DROWNING), 200, 1));
+            livingEntity.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DROWNING), 200, 1));
             // Extinguish fire if the entity is burning
             if (livingEntity.isOnFire()) {
                 livingEntity.extinguish();

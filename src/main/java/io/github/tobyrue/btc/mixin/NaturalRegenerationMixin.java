@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
@@ -19,6 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class NaturalRegenerationMixin {
     @Inject(method = "canFoodHeal", at = @At("TAIL"), cancellable = true)
     public void canFoodHeal(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValue() && !((PlayerEntity) ((Object) this)).hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.NO_NATURAL_REGENERATION)));
+        cir.setReturnValue(cir.getReturnValue() && !((PlayerEntity) ((Object) this)).hasStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.NO_NATURAL_REGENERATION)));
     }
 }

@@ -44,11 +44,7 @@ import java.util.Arrays;
 public class BTC implements ModInitializer {
 
     public static String MOD_ID = "btc";
-    public static final StatusEffect BUILDER_BLUNDER;
-    public static final StatusEffect MINER_MISHAP;
-    public static final StatusEffect DRAGON_SCALES;
-    public static final StatusEffect DROWNING;
-    public static final StatusEffect NO_NATURAL_REGENERATION;
+
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
     public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
@@ -68,13 +64,7 @@ public class BTC implements ModInitializer {
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
-    static {
-        BUILDER_BLUNDER = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "builder_blunder"), new BuilderBlunderEffect());
-        MINER_MISHAP = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "miner_mishap"), new MinerMishapEffect());
-        DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "dragon_scales"), new DragonScalesEffect());
-        DROWNING = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "drowning"), new DrowningEffect());
-        NO_NATURAL_REGENERATION = Registry.register(Registries.STATUS_EFFECT, Identifier.of(MOD_ID, "no_natural_regeneration"), new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
-    }
+
     public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
 
     // Register our custom particle type in the mod initializer.
@@ -100,7 +90,7 @@ public class BTC implements ModInitializer {
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(BTC.BUILDER_BLUNDER)) && !player.isCreative()) {
+            if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER)) && !player.isCreative()) {
                 ItemStack stack = player.getStackInHand(hand);
                 Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
                 boolean b = (block instanceof ChestBlock) || (block instanceof CraftingTableBlock) ||
