@@ -25,10 +25,13 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.ANTIER);
             content.addAfter(ModBlocks.ANTIER, ModBlocks.DUNGEON_DOOR);
             content.addAfter(ModBlocks.DUNGEON_DOOR, ModBlocks.FIRE_DISPENSER);
+            content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_FIRE);
             content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_WIRE_LEGACY);
             content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
             content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModItems.IRON_WRENCH);
             content.addAfter(ModItems.IRON_WRENCH, ModItems.GOLD_WRENCH);
+            content.addAfter(Blocks.VAULT, ModBlocks.MELTING_ICE);
+
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.MACE, ModItems.STAFF);

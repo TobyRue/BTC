@@ -16,8 +16,10 @@ import net.minecraft.entity.projectile.*;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.WaterFluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
@@ -31,6 +33,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class WaterBlastEntity extends ProjectileEntity {
+
+    private static double particalDelay = 10;
 
     public WaterBlastEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -58,6 +62,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         super.tick();
         this.setPosition(this.getPos().add(this.getVelocity()));
         this.applyGravity();
+        World world = this.getWorld();
 
         Vec3d velocity = this.getVelocity();
         double horizontalLength = velocity.horizontalLength();
@@ -69,6 +74,13 @@ public class WaterBlastEntity extends ProjectileEntity {
 
         this.updatePositionAndAngles(this.getX(), this.getY(), this.getZ(), yaw, pitch);
 
+        if (world.getRegistryKey() == World.NETHER) {
+            if (particalDelay >= 1) {
+                particalDelay--;
+                world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), MathHelper.nextBetween(random, -1.0F, 1.0F) * 0.083333336F, 0.05000000074505806, (double) (MathHelper.nextBetween(random, -1.0F, 1.0F) * 0.083333336F));
+            }
+            this.discard();
+        }
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             if (this.getWorld() instanceof ServerWorld serverWorld) {
                 serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
@@ -113,7 +125,7 @@ public class WaterBlastEntity extends ProjectileEntity {
                 world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, hitPos);
             } else {
                 BlockPos abovePos = hitPos.up();
-                if (world.getBlockState(abovePos).isReplaceable()) {
+                if (world.getBlockState(abovePos).isReplaceable() && world.getRegistryKey() != World.NETHER) {
                     BlockState water = Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, 8);
                     world.setBlockState(abovePos, water);
                 }

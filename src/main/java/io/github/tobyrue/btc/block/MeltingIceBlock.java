@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -85,7 +86,7 @@ public class MeltingIceBlock extends TranslucentBlock {
     protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
         if (!world.isClient && projectile instanceof ArrowEntity) {
             this.melt(state, world, hit.getBlockPos());
-            world.playSoundAtBlockCenter(hit.getBlockPos(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1, 1, true);
+            world.playSound(projectile, hit.getBlockPos(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 1, 1);
             projectile.discard(); // Optional: destroy arrow on hit
         }
         super.onProjectileHit(world, state, hit, projectile);
@@ -163,7 +164,9 @@ public class MeltingIceBlock extends TranslucentBlock {
     @Override
     protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity) || entity.getBlockStateAtPos().isOf(this)) {
-            entity.slowMovement(state, new Vec3d(0.8999999761581421, 1.5, 0.8999999761581421));
+            if (!(entity instanceof BoatEntity)) {
+                entity.slowMovement(state, new Vec3d(0.8999999761581421, 1.5, 0.8999999761581421));
+            }
             if (world.isClient) {
                 Random random = world.getRandom();
                 boolean bl = entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ();
@@ -224,7 +227,6 @@ public class MeltingIceBlock extends TranslucentBlock {
                 }
             }
             world.setBlockState(pos, getMeltedState(), 3);
-            world.updateNeighbor(pos, getMeltedState().getBlock(), pos);
         }
     }
 
@@ -269,13 +271,8 @@ public class MeltingIceBlock extends TranslucentBlock {
 
 
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        for (Direction dir : Direction.values()) {
-            BlockPos neighborPos = pos.offset(dir);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            if (neighborState.getBlock() instanceof MeltingIceBlock) {
-                updateConnections(world, neighborPos, neighborState);
-            }
-        }
+
+        updateConnections(world, pos, state);
         if (sourceBlock.getDefaultState().isOf(this) && state.get(AGE) > 3) {
             this.melt(state, world, pos);
         }
@@ -311,10 +308,6 @@ public class MeltingIceBlock extends TranslucentBlock {
         builder.add(EAST);
         builder.add(SOUTH);
         builder.add(WEST);
-    }
-
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        return ItemStack.EMPTY;
     }
 
     static {

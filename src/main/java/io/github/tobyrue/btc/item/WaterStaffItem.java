@@ -82,12 +82,12 @@ public class WaterStaffItem extends StaffItem {
                     return TypedActionResult.success(stack);
                 }
                 case DOLPHINS_GRACE -> {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 0));
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 1));
                     player.getItemCooldownManager().set(this, 320);
                     return TypedActionResult.success(stack);
                 }
                 case CONDUIT_POWER ->  {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 400, 0));
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 400, 1));
                     player.getItemCooldownManager().set(this, 480);
                     return TypedActionResult.success(stack);
                 }

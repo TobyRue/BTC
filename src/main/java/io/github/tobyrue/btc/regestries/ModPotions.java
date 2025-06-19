@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.regestries;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
@@ -12,7 +13,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModPotions {
-
     public static final Potion BUILDER_BLUNDER =
             Registry.register(
                     Registries.POTION,
@@ -49,6 +49,16 @@ public class ModPotions {
                                     Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES),
                                     2400,
                                     1)));
+    public static final Potion FROST_WALKER =
+            Registry.register(
+                    Registries.POTION,
+                    Identifier.of(BTC.MOD_ID, "frost_walker"),
+                    new Potion(
+                            new StatusEffectInstance(
+                                    Registries.STATUS_EFFECT.getEntry(ModStatusEffects.FROST_WALKER),
+                                    3600,
+                                    0)));
+
     public static void initialize() {
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
             builder.registerPotionRecipe(
@@ -88,6 +98,16 @@ public class ModPotions {
                     Items.GLOWSTONE_DUST,
                     // Output potion.
                     Registries.POTION.getEntry(STRONG_DRAGON_SCALES)
+            );
+        });
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> {
+            builder.registerPotionRecipe(
+                    // Input potion.
+                    Potions.WATER,
+                    // Ingredient
+                    Items.BLUE_ICE,
+                    // Output potion.
+                    Registries.POTION.getEntry(FROST_WALKER)
             );
         });
     }

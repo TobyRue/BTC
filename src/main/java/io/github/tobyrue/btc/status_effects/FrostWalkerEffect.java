@@ -37,8 +37,7 @@ public class FrostWalkerEffect extends StatusEffect {
                 || aboveHeadBlock.getFluidState().isStill())) {
 
 
-            int radius = amplifier;
-                    Math.min(Math.max(amplifier, 4), 128);
+            int radius = Math.min(Math.max(amplifier, 4), 128);
             BlockPos.Mutable pos = new BlockPos.Mutable();
 
             for (int dx = -radius; dx <= radius; dx++) {
