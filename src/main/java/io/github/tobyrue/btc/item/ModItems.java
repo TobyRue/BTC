@@ -25,6 +25,10 @@ public class ModItems {
         // Return the registered item!
         return registeredItem;
     }
+    public static final Item TEST = register(
+            new ScreenTestItem(new Item.Settings()),
+            "test_screen"
+    );
     public static final Item RUBY_TRIAL_KEY = register(
             new Item(new Item.Settings()),
             "ruby_trial_key"

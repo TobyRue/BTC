@@ -2,6 +2,9 @@ package io.github.tobyrue.btc.status_effects;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.screen.ingame.BookEditScreen;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
+import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -35,7 +38,6 @@ public class FrostWalkerEffect extends StatusEffect {
         if (!(!standingBlock.isSolid()
                 || headBlock.getFluidState().isStill()
                 || aboveHeadBlock.getFluidState().isStill())) {
-
 
             int radius = Math.min(Math.max(amplifier, 4), 128);
             BlockPos.Mutable pos = new BlockPos.Mutable();
