@@ -12,7 +12,7 @@ public final class XMLException extends Exception {
     }
 
     public XMLException appendLocation(final int line, final int col) {
-        if (this.line != -1 && this.col != -1) {
+        if (this.line == -1 && this.col == -1) {
             this.line = line;
             this.col = col;
         }
