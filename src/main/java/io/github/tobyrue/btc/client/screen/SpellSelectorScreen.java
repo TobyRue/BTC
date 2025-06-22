@@ -96,6 +96,7 @@ public class SpellSelectorScreen extends Screen {
         addCurrentPageWidgets();
         refreshWidgets();
     }
+
     private void addAllPageWidgets() {
         int i = (this.width) / 2;
         int k = (this.height) / 2;

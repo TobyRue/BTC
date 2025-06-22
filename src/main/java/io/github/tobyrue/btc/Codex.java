@@ -4,32 +4,80 @@ import io.github.tobyrue.xml.XML;
 import io.github.tobyrue.xml.XMLNode;
 import io.github.tobyrue.xml.XMLNodeCollection;
 import io.github.tobyrue.xml.XMLTextNode;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 @XML.Root
-public record Codex(@XML.Children(allow = {CodexContent.class}) XMLNodeCollection<?> children) {
-    public interface CodexContent extends XMLNode {}
-    public interface PageContent extends XMLNode {}
+public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> children) implements XMLNode {
     public interface TextContent extends XMLNode {
         net.minecraft.text.Text toText();
     }
-    public interface ConditionalTag {}
+    public interface ConditionalNode {
+        Identifier getAdvancement();
+    }
 
-    public record Page(@XML.Children(allow = {PageContent.class}) XMLNodeCollection<?> children) implements CodexContent {
-        public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children) implements PageContent {
+    public interface Render {
+        void render(DrawContext context, int width, int height, float delta);
+    }
 
+    public Page getPage(int n) {
+        return this.children.getChildren().get(n);
+    }
+
+    public static net.minecraft.text.MutableText concat(final XMLNodeCollection<?> nodes) {
+        var text = net.minecraft.text.Text.empty();
+        for (var node : nodes) {
+            if (node instanceof XMLTextNode) {
+                text.append(net.minecraft.text.Text.literal(((XMLTextNode) node).text()));
+            } else if (node instanceof TextContent) {
+                text.append(((TextContent) node).toText());
+            }
+        }
+        return text;
+    }
+
+
+
+    public record Page(@XML.Children(allow = {Line.class}) XMLNodeCollection<?> children, @XML.Attribute String requires) implements ConditionalNode, XMLNode, Render  {
+        @Override
+        public Identifier getAdvancement() {
+            if (requires != null) {
+                return Identifier.of(requires);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public void render(DrawContext context, int width, int height, float delta) {
+            context.drawText()
+        }
+
+        public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute String requires) implements XMLNode, Codex.TextContent, ConditionalNode {
+            @Override
+            public net.minecraft.text.Text toText() {
+                return concat(this.children);
+            }
+
+            @Override
+            public Identifier getAdvancement() {
+                if (requires != null) {
+                    return Identifier.of(requires);
+                } else {
+                    return null;
+                }
+            }
         }
     }
 
-    public record If(@XML.Children(allow = {PageContent.class, CodexContent.class}) XMLNodeCollection<?> children, String predicate) {
 
-    }
-    public record Unless(@XML.Children(allow = {PageContent.class, CodexContent.class}) XMLNodeCollection<?> children, String predicate) {
 
-    }
+
+
 
     @XML.Root
-    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children) implements TextContent {
+    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute String requires) implements TextContent, ConditionalNode {
         public static net.minecraft.text.MutableText concat(final XMLNodeCollection<?> nodes) {
             var text = net.minecraft.text.Text.empty();
             for (var node : nodes) {
@@ -41,7 +89,14 @@ public record Codex(@XML.Children(allow = {CodexContent.class}) XMLNodeCollectio
             }
             return text;
         }
-
+        @Override
+        public Identifier getAdvancement() {
+            if (requires != null) {
+                return Identifier.of(requires);
+            } else {
+                return null;
+            }
+        }
         @Override
         public net.minecraft.text.Text toText() {
             return concat(this.children);

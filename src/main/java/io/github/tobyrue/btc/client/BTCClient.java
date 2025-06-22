@@ -31,6 +31,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.world.gen.stateprovider.PredicatedStateProvider;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -45,6 +46,8 @@ public class BTCClient implements ClientModInitializer {
     public static final EntityModelLayer EARTH_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "earth_staff"), "main");
 
     public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
+
+
 
     static {
         try {

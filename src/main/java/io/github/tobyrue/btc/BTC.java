@@ -18,6 +18,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.block.*;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
@@ -26,6 +27,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.*;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -50,6 +53,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.io.File;
+import java.util.function.Predicate;
 
 public class BTC implements ModInitializer {
 
@@ -73,7 +77,6 @@ public class BTC implements ModInitializer {
     );
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
-
 
     public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
 
