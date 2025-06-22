@@ -33,24 +33,45 @@ public record Codex() {
         }
 
         @XML.Name("b")
-        public record Bold(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
+        public record BoldText(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
             @Override
             public net.minecraft.text.Text toText() {
                 return concat(this.children).formatted(Formatting.BOLD);
             }
         }
         @XML.Name("i")
-        public record Italic(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
+        public record ItalicText(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
             @Override
             public net.minecraft.text.Text toText() {
                 return concat(this.children).formatted(Formatting.ITALIC);
             }
         }
-
-        public record Font(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "black") String color) implements TextNode {
+        @XML.Name("obf")
+        public record ObfuscatedText(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
             @Override
             public net.minecraft.text.Text toText() {
-                return concat(this.children).formatted(Formatting.RED);
+                return concat(this.children).formatted(Formatting.OBFUSCATED);
+            }
+        }
+        @XML.Name("u")
+        public record UnderlinedText(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
+            @Override
+            public net.minecraft.text.Text toText() {
+                return concat(this.children).formatted(Formatting.UNDERLINE);
+            }
+        }
+        @XML.Name("s")
+        public record StrikethroughText(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children) implements TextNode {
+            @Override
+            public net.minecraft.text.Text toText() {
+                return concat(this.children).formatted(Formatting.STRIKETHROUGH);
+            }
+        }
+        @XML.Name("fmt")
+        public record FormatedText(@XML.Children(allow = {XMLTextNode.class, TextNode.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "reset") String style) implements TextNode {
+            @Override
+            public net.minecraft.text.Text toText() {
+                return concat(this.children).formatted(Formatting.byName(style));
             }
         }
     }

@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 @SuppressWarnings("unused")
@@ -46,41 +47,45 @@ public class XMLParser<T extends Record & XMLNode> {
             final Stack<XMLNode> stack = new Stack<>();
             var stream = XMLInputFactory.newFactory().createXMLStreamReader(new BufferedReader(reader));
             try {
-                while (stream.hasNext()) {
-                    switch (stream.getEventType()) {
-                        case XMLStreamReader.START_ELEMENT -> {
-                            final var attributes = new HashMap<String, String>();
-                            for (int i = 0; i < stream.getAttributeCount(); i++) {
-                                attributes.put(normalize(stream.getAttributeLocalName(i)), stream.getAttributeValue(i));
-                            }
-                            final var d = Objects.requireNonNull(data.getByK1(normalize(stream.getLocalName())),
-                                    () -> String.format("No class found to deserialize tag '%s'", normalize(stream.getLocalName()))
-                            );
-                            final var parent = stack.isEmpty() ? null : stack.peek();
-                            final var node = d.create(parent, attributes);
+                try {
+                    while (stream.hasNext()) {
+                        switch (stream.getEventType()) {
+                            case XMLStreamReader.START_ELEMENT -> {
+                                final var attributes = new HashMap<String, String>();
+                                for (int i = 0; i < stream.getAttributeCount(); i++) {
+                                    attributes.put(normalize(stream.getAttributeLocalName(i)), stream.getAttributeValue(i));
+                                }
+                                final var d = requireNonNull(data.getByK1(normalize(stream.getLocalName())),
+                                        () -> String.format("No class found to deserialize tag '%s'", normalize(stream.getLocalName()))
+                                );
+                                final var parent = stack.isEmpty() ? null : stack.peek();
+                                final var node = d.create(parent, attributes);
 
-                            if (parent != null) {
-                                data.getByK2(parent.getClass()).addChild(parent, node);
-                            }
+                                if (parent != null) {
+                                    data.getByK2(parent.getClass()).addChild(parent, node);
+                                }
 
-                            stack.add(node);
-                        }
-                        case XMLStreamReader.END_ELEMENT -> {
-                            var t = stack.pop();
-                            if (stack.empty()) {
-                                stream.close();
-                                return (T) t;
+                                stack.add(node);
+                            }
+                            case XMLStreamReader.END_ELEMENT -> {
+                                var t = stack.pop();
+                                if (stack.empty()) {
+                                    stream.close();
+                                    return (T) t;
+                                }
+                            }
+                            case XMLStreamReader.CHARACTERS -> {
+                                data.getByK2(stack.peek().getClass()).addChild(stack.peek(), new XMLTextNode(stream.getText()));
+                            }
+                            case XMLStreamReader.ATTRIBUTE, XMLStreamReader.DTD, XMLStreamReader.CDATA, XMLStreamReader.COMMENT, XMLStreamReader.START_DOCUMENT,
+                                 XMLStreamReader.END_DOCUMENT, XMLStreamReader.ENTITY_DECLARATION, XMLStreamReader.ENTITY_REFERENCE, XMLStreamReader.NAMESPACE,
+                                 XMLStreamReader.NOTATION_DECLARATION, XMLStreamReader.PROCESSING_INSTRUCTION, XMLStreamReader.SPACE-> {
                             }
                         }
-                        case XMLStreamReader.CHARACTERS -> {
-                            data.getByK2(stack.peek().getClass()).addChild(stack.peek(), new XMLTextNode(stream.getText()));
-                        }
-                        case XMLStreamReader.ATTRIBUTE, XMLStreamReader.DTD, XMLStreamReader.CDATA, XMLStreamReader.COMMENT, XMLStreamReader.START_DOCUMENT,
-                             XMLStreamReader.END_DOCUMENT, XMLStreamReader.ENTITY_DECLARATION, XMLStreamReader.ENTITY_REFERENCE, XMLStreamReader.NAMESPACE,
-                             XMLStreamReader.NOTATION_DECLARATION, XMLStreamReader.PROCESSING_INSTRUCTION, XMLStreamReader.SPACE-> {
-                        }
+                        stream.next();
                     }
-                    stream.next();
+                } catch (XMLStreamException e) {
+                    throw new XMLException("Parse error", e);
                 }
             } catch (XMLException e) {
                 throw e.appendLocation(stream.getLocation().getLineNumber(), stream.getLocation().getColumnNumber());
@@ -89,6 +94,12 @@ public class XMLParser<T extends Record & XMLNode> {
             throw new XMLException("Unable to create stream", e);
         }
         throw new XMLException("Unknown Error");
+    }
+    private static <T> T requireNonNull(T obj, Supplier<String> messageSupplier) throws XMLException {
+        if (obj == null)
+            throw new XMLException(messageSupplier == null ?
+                    null : messageSupplier.get(), new NullPointerException());
+        return obj;
     }
 
     public static <T extends Record & XMLNode> T parse(final Reader reader, final Class<T> clazz) throws XMLException {
