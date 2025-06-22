@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.client;
 
+import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.entity.ModEntities;
@@ -9,6 +10,8 @@ import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.regestries.ModPackets;
+import io.github.tobyrue.xml.XMLException;
+import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
@@ -44,33 +47,37 @@ public class BTCClient implements ClientModInitializer {
     public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
 
     static {
-        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-            var s = message.getContent().getString();
-            sender.sendMessage(Text.literal("Git Gud"), true);
-            if (s.startsWith("!")) {
-                try {
-                    var c = s.substring(1).split(" ");
+        try {
+            final var parser = new XMLParser<>(Codex.Text.class);
+            ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+                var text = message.getContent().getString();
+                sender.sendMessage(Text.literal("Git Gud"), true);
+                if (text.startsWith("!")) {
+                    try {
+                        var strings = text.substring(1).split(" ");
 
-                    if (c.length < 1) {
-                        throw new Exception("Missing command after '!'");
+                        if (strings.length < 1) {
+                            throw new Exception("Missing command after '!'");
+                        }
+
+                        var command = strings[0].toLowerCase();
+                        var args = Arrays.copyOfRange(strings, 1, strings.length);
+
+                        switch (command) {
+                            case "say":
+                                sender.sendMessage(parser.parse(text.substring(5)).toText());
+                                break;
+                            default:
+                                throw new Exception("Unknown command '" + command + "'");
+                        }
+                    } catch (Throwable t) {
+                        sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
                     }
-
-                    var command = c[0].toLowerCase();
-                    var args = Arrays.copyOfRange(c, 1, c.length);
-
-                    switch (command) {
-                        case "say":
-
-                            sender.sendMessage(Text.literal("t_x = " + t_x));
-                            break;
-                        default:
-                            throw new Exception("Unknown command '" + command + "'");
-                    }
-                } catch (Throwable t) {
-                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
                 }
-            }
-        });
+            });
+        } catch (XMLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
