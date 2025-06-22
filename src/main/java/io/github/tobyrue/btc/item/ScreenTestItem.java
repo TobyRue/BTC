@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
@@ -22,6 +23,7 @@ public class ScreenTestItem extends Item {
         if (player.isSneaking()) {
             if (world.isClient) {
                 MinecraftClient.getInstance().setScreen(new SpellSelectorScreen(Text.empty()));
+                Text.literal("Spell Selector");
             }
             return TypedActionResult.success(player.getStackInHand(hand));
         }

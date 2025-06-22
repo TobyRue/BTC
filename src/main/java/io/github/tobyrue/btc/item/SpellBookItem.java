@@ -182,13 +182,11 @@ public class SpellBookItem extends Item {
             case HitResult.Type.MISS:
                 //nothing near enough
                 if (entity instanceof LivingEntity) {
-                    System.out.println("Entity found is: " + entity + ", which pos is: " + entity.getPos());
                     return entity.getPos();
                 }
                 return null;
             case HitResult.Type.BLOCK:
                 if (entity instanceof LivingEntity) {
-                        System.out.println("Entity found is: " + entity + ", which pos is: " + entity.getPos());
                         return entity.getPos();
                 } else {
                     BlockHitResult blockHit = (BlockHitResult) hitLong;
@@ -196,7 +194,6 @@ public class SpellBookItem extends Item {
                     assert client.world != null;
                     BlockState blockState = client.world.getBlockState(blockPos);
                     Block block = blockState.getBlock();
-                    System.out.println("Block found is: " + block + ", which pos is: " + blockPos);
                     return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 }
         }
@@ -217,7 +214,6 @@ public class SpellBookItem extends Item {
                 assert client.world != null;
                 BlockState blockState = client.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
-                System.out.println("Block found is: " + block + ", which pos is: " + blockPos);
                 return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
         return null;

@@ -1,0 +1,17 @@
+<codex>
+    <page id="main">
+        <line align="center" size="">--- <t key="title.codex"/> ---</line>
+        <if predicate="btc:has_fire_spell"><line>- <a href="#fire_spells"><t key="spell.type.fire"/></a></line></if>
+        <unless predicate="btc:has_fire_spell"><line><t key="nothing_here"/></line></unless>
+    </page>
+    <page id="fire_spells">
+        <line align="center">--- <t key="title.fire"/> ---</line>
+        <if predicate="btc:fire_ball"><line>- <a onclick="set_spell(0)"><t key="spell.type.attack.fireball"/></a></line></if>
+        <line>- <a href="#credits"><t key="credit.button"/></a></line>
+        <unless predicate="btc:has_fire_spell"><line><t key="nothing_here"/></line></unless>
+    </page>
+    <page id="credits">
+        <line>All Hail <font color="magenta">SianaBeeblebrox</font></line>
+    </page>
+</codex>
+<!--<b>(Bold) <i>(Italicized) <u>(Underline) <s>(Strike-Through) <obf>(Obfuscated) <img height="50%" width="50%" src="btc:textures/book/"/>(Image - Different type of line) -->

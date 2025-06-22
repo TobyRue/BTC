@@ -38,8 +38,18 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
+import java.io.File;
 
 public class BTC implements ModInitializer {
 
@@ -70,6 +80,51 @@ public class BTC implements ModInitializer {
     // Register our custom particle type in the mod initializer.
     @Override
     public void onInitialize() {
+        System.out.println(SpellBookXMLParser.loadResource());
+
+
+//        var xmlFilePath = "test.xml";
+
+        var builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = builderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+
+        var xmlString = SpellBookXMLParser.loadResource();
+        var reader = new StringReader(xmlString);
+        var inputSource = new InputSource(reader);
+        Document document;
+        try {
+            document = builder.parse(inputSource);
+        } catch (SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        var root = document.getDocumentElement();
+        var pages = root.getElementsByTagName("page");
+
+        for (int i = 0; i < pages.getLength(); i++) {
+            var page = (Element) pages.item(i);
+
+            // Get attribute id
+
+            var id = page.getAttribute("id");
+            System.out.println("Page ID: " + id);
+
+            // Get all <line> elements inside this page
+            var lines = page.getElementsByTagName("line");
+
+            for (int j = 0; j < lines.getLength(); j++) {
+                var line = (Element) lines.item(j);
+                String align = line.hasAttribute("align") ? line.getAttribute("align") : "left";
+                String textContent = line.getTextContent().trim();
+                System.out.println("  Line (align=" + align + "): " + textContent);
+            }
+        }
+
 
         //Adds a trade in another class, BetterTrialChambersMapTrade
         TradeOfferHelper.registerWanderingTraderOffers( 1, factories -> {

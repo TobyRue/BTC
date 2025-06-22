@@ -1,0 +1,10 @@
+<employees>
+    <employee id="1">
+        <name>John Doe</name>
+        <department>Engineering</department>
+    </employee>
+    <employee id="2">
+        <name>Jane Smith</name>
+        <department>Marketing</department>
+    </employee>
+</employees>
