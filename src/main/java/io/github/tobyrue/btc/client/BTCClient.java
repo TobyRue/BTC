@@ -17,15 +17,19 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.Entity;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
@@ -38,6 +42,36 @@ public class BTCClient implements ClientModInitializer {
     public static final EntityModelLayer EARTH_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "earth_staff"), "main");
 
     public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
+
+    static {
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+            var s = message.getContent().getString();
+            sender.sendMessage(Text.literal("Git Gud"), true);
+            if (s.startsWith("!")) {
+                try {
+                    var c = s.substring(1).split(" ");
+
+                    if (c.length < 1) {
+                        throw new Exception("Missing command after '!'");
+                    }
+
+                    var command = c[0].toLowerCase();
+                    var args = Arrays.copyOfRange(c, 1, c.length);
+
+                    switch (command) {
+                        case "say":
+
+                            sender.sendMessage(Text.literal("t_x = " + t_x));
+                            break;
+                        default:
+                            throw new Exception("Unknown command '" + command + "'");
+                    }
+                } catch (Throwable t) {
+                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
+                }
+            }
+        });
+    }
 
     @Override
     public void onInitializeClient() {

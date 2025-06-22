@@ -77,39 +77,6 @@ public class SpellSelectorScreen extends Screen {
     public SpellSelectorScreen(Text title) {
         super(title);
     }
-    static {
-        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-            var s = message.getContent().getString();
-            sender.sendMessage(Text.literal("Git Gud"), true);
-            if (s.startsWith("!")) {
-                try {
-                    var c = s.substring(1).split(" ");
-
-                    if (c.length < 1) {
-                        throw new Exception("Missing command after '!'");
-                    }
-
-                    var command = c[0].toLowerCase();
-                    var args = Arrays.copyOfRange(c, 1, c.length);
-
-                    switch (command) {
-                        case "setx":
-                            t_x = Integer.parseInt(args[0], 10);
-                            sender.sendMessage(Text.literal("t_x = " + t_x));
-                            break;
-                        case "sety":
-                            t_y = Integer.parseInt(args[0], 10);
-                            sender.sendMessage(Text.literal("t_y = " + t_y));
-                            break;
-                        default:
-                            throw new Exception("Unknown command '" + command + "'");
-                    }
-                } catch (Throwable t) {
-                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
-                }
-            }
-        });
-    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
