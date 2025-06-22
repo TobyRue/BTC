@@ -182,10 +182,11 @@
   "item.btc.spell.water.dolphins_grace": "Dolphin's Grace",
   "item.btc.spell.water.conduit_power": "Conduit Power",
 
-  "item.btc.spell.codex.title.codex": "Codex of the Void",
-  "item.btc.spell.codex.spell.type.fire": "• Fire Spells",
-  "item.btc.spell.codex.title.fire_spells": "Fire Spells",
-  "item.btc.spell.codex.fire.fireball": "• Fire Ball",
+  "item.btc.codex.title.codex": "Codex of the Void",
+  "item.btc.codex.title.fire_spells": "Fire Spells",
+  "item.btc.codex.spell.type.fire.": "• Fire Spells",
+  "item.btc.codex.spell.type.fire.fireball_weak": "• Weak Fire Ball",
+  "item.btc.codex.spell.type.fire.fireball_strong": "• Strong Fire Ball",
 
 
   "tag.item.btc.wrenches": "Wrenches"
