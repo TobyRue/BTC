@@ -74,5 +74,12 @@ public record Codex() {
                 return concat(this.children).formatted(Formatting.byName(style));
             }
         }
+        @XML.Name("t")
+        public record TranslatedText(String key) implements TextNode {
+            @Override
+            public net.minecraft.text.Text toText() {
+                return net.minecraft.text.Text.translatable(key);
+            }
+        }
     }
 }
