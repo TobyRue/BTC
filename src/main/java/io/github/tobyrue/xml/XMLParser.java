@@ -220,8 +220,8 @@ public class XMLParser<T extends Record & XMLNode> {
                         throw new XMLException(String.format("Parameter '%s' marked as XML.Children must be of type XMLNodeCollection", name));
                     }
                 } else {
-                    final var fallback = p.isAnnotationPresent(XML.Attribute.class) ? p.getAnnotation(XML.Attribute.class).fallBack() : "";
-                    this.attributes.add(new AttributeData<>(name, p.getType(), i, "".equals(fallback) ? null : fallback));
+                    final var fallback = p.isAnnotationPresent(XML.Attribute.class) ? p.getAnnotation(XML.Attribute.class).fallBack() : XML.Attribute.NO_FALLBACK_VALUE;
+                    this.attributes.add(new AttributeData<>(name, p.getType(), i, XML.Attribute.NO_FALLBACK_VALUE.equals(fallback) ? null : fallback));
                 }
             }
 
@@ -293,6 +293,7 @@ public class XMLParser<T extends Record & XMLNode> {
         }
     }
     public static final class AttributeParser {
+
         @FunctionalInterface
         public interface AttributeTypeParser<T> extends Serializable {
             T parse(final String text) throws XMLException;

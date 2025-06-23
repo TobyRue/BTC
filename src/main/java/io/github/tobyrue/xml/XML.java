@@ -35,6 +35,7 @@ public @interface XML {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.PARAMETER})
     @interface Attribute {
-        String fallBack() default "";
+        String fallBack() default NO_FALLBACK_VALUE;
+        String NO_FALLBACK_VALUE = "\0";
     }
 }
