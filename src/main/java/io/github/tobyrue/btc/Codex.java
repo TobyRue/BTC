@@ -60,6 +60,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     isInvertedAdvancementPage = true;
                     namespace = requires.substring(1, colonIndex);
                 } else {
+                    isInvertedAdvancementPage = false;
                     namespace = requires.substring(0, colonIndex);
                 }
                 String path = requires.substring(colonIndex + 1);
@@ -108,6 +109,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                         isInvertedAdvancementLine = true;
                         namespace = requires.substring(1, colonIndex);
                     } else {
+                        isInvertedAdvancementLine = false;
                         namespace = requires.substring(0, colonIndex);
                     }
                     String path = requires.substring(colonIndex + 1);
@@ -165,6 +167,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     isInvertedAdvancementText = true;
                     namespace = requires.substring(1, colonIndex);
                 } else {
+                    isInvertedAdvancementText = false;
                     namespace = requires.substring(0, colonIndex);
                 }
                 String path = requires.substring(colonIndex + 1);

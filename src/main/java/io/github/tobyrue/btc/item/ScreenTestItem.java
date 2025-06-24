@@ -101,15 +101,16 @@ public class ScreenTestItem extends Item {
             }
             try {
                 var otherParser = parser.parse(string);
-                player.sendMessage(otherParser.toText(), false);
                 var advancement = serverPlayer.getServer().getAdvancementLoader().get(otherParser.getAdvancement());
                 if (advancement != null) {
                     var progress = serverPlayer.getAdvancementTracker().getProgress(advancement);
-                    System.out.println(otherParser.getAdvancement() + " Advancement, progress " + progress + " Inverted " + Codex.Text.isInvertedAdvancementText());
-                    if (progress.isDone()) {
-                        BTC.println(otherParser.getAdvancement() + " is " + Codex.Text.isInvertedAdvancementText() + " and/but did complete");
-                    } else {
-                        BTC.println(otherParser.getAdvancement() + " is " + Codex.Text.isInvertedAdvancementText() + " and/but did not complete");
+                    boolean inverted = Codex.Text.isInvertedAdvancementText();
+                    if ((progress.isDone() && !inverted) || (!progress.isDone() && inverted)) {
+                        player.sendMessage(Text.of("Show something"), false);
+                        player.sendMessage(otherParser.toText(), false);
+                    } else if ((progress.isDone() && inverted) || (!progress.isDone() && !inverted)) {
+                        player.sendMessage(Text.of("Don't show something"), false);
+                        player.sendMessage(otherParser.toText(), false);
                     }
                 }
             } catch (XMLException e) {
