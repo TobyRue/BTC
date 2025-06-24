@@ -110,8 +110,10 @@ public class ScreenTestItem extends Item {
                         player.sendMessage(otherParser.toText(), false);
                     } else if ((progress.isDone() && inverted) || (!progress.isDone() && !inverted)) {
                         player.sendMessage(Text.of("Don't show something"), false);
-                        player.sendMessage(otherParser.toText(), false);
                     }
+                } else {
+                    player.sendMessage(Text.of("Show something because no advancement was found"), false);
+                    player.sendMessage(otherParser.toText(), false);
                 }
             } catch (XMLException e) {
                 throw new RuntimeException(e);
