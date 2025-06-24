@@ -2,6 +2,7 @@ package io.github.tobyrue.btc;
 
 import io.github.tobyrue.xml.*;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -28,7 +29,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         return this.children.getChildren().get(n);
     }
 
-    public static net.minecraft.text.MutableText concat(final XMLNodeCollection<?> nodes) {
+    public static MutableText concat(final XMLNodeCollection<?> nodes) {
         var text = net.minecraft.text.Text.empty();
         for (var node : nodes) {
             if (node instanceof XMLTextNode) {
@@ -41,28 +42,40 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     }
 
     public record Page(@XML.Children(allow = {Line.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements ConditionalNode, XMLNode, Render  {
+        static boolean isInvertedAdvancementPage = false;
         @Override
         public Identifier getAdvancement() {
             if (!Objects.equals(requires, "")) {
                 int colonIndex = requires.indexOf(':');
                 if (colonIndex == -1) {
-                    // No namespace, default to "minecraft"
                     System.err.println("§c[ERROR] Invalid advancement ID '" + requires + "': missing namespace. Defaulting to 'minecraft'");
-                    return Identifier.of("minecraft", requires);
+                    if (requires.startsWith("!")) {
+                        return Identifier.of("minecraft", requires.substring(1));
+                    } else {
+                        return Identifier.of("minecraft", requires);
+                    }
                 }
-
-                String namespace = requires.substring(0, colonIndex);
+                String namespace;
+                if (requires.startsWith("!")) {
+                    isInvertedAdvancementPage = true;
+                    namespace = requires.substring(1, colonIndex);
+                } else {
+                    namespace = requires.substring(0, colonIndex);
+                }
                 String path = requires.substring(colonIndex + 1);
 
                 System.out.println("Namespace detected: " + namespace);
                 System.out.println("Path detected: " + path);
+                System.out.println("Is inverted: " + isInvertedAdvancementPage());
 
                 return Identifier.of(namespace, path);
             } else {
                 return null;
             }
         }
-
+        public static boolean isInvertedAdvancementPage() {
+            return isInvertedAdvancementPage;
+        }
 
         @Override
         public void render(DrawContext context, int width, int height, float delta) {
@@ -71,6 +84,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
 
         public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements XMLNode, TextContent, ConditionalNode {
+            static boolean isInvertedAdvancementLine = false;
+
             @Override
             public net.minecraft.text.Text toText() {
                 return concat(this.children);
@@ -81,21 +96,33 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 if (!Objects.equals(requires, "")) {
                     int colonIndex = requires.indexOf(':');
                     if (colonIndex == -1) {
-                        // No namespace, default to "minecraft"
                         System.err.println("§c[ERROR] Invalid advancement ID '" + requires + "': missing namespace. Defaulting to 'minecraft'");
-                        return Identifier.of("minecraft", requires);
+                        if (requires.startsWith("!")) {
+                            return Identifier.of("minecraft", requires.substring(1));
+                        } else {
+                            return Identifier.of("minecraft", requires);
+                        }
                     }
-
-                    String namespace = requires.substring(0, colonIndex);
+                    String namespace;
+                    if (requires.startsWith("!")) {
+                        isInvertedAdvancementLine = true;
+                        namespace = requires.substring(1, colonIndex);
+                    } else {
+                        namespace = requires.substring(0, colonIndex);
+                    }
                     String path = requires.substring(colonIndex + 1);
 
                     System.out.println("Namespace detected: " + namespace);
                     System.out.println("Path detected: " + path);
+                    System.out.println("Is inverted: " + isInvertedAdvancementLine());
 
                     return Identifier.of(namespace, path);
                 } else {
                     return null;
                 }
+            }
+            public static boolean isInvertedAdvancementLine() {
+                return isInvertedAdvancementLine;
             }
         }
     }
@@ -107,7 +134,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
     @XML.Root
     public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements TextContent, ConditionalNode {
-        public static net.minecraft.text.MutableText concat(final XMLNodeCollection<?> nodes) {
+        static boolean isInvertedAdvancementText = false;
+
+        public static MutableText concat(final XMLNodeCollection<?> nodes) {
             var text = net.minecraft.text.Text.empty();
             for (var node : nodes) {
                 if (node instanceof XMLTextNode) {
@@ -124,16 +153,25 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             if (!Objects.equals(requires, "")) {
                 int colonIndex = requires.indexOf(':');
                 if (colonIndex == -1) {
-                    // No namespace, default to "minecraft"
                     System.err.println("§c[ERROR] Invalid advancement ID '" + requires + "': missing namespace. Defaulting to 'minecraft'");
-                    return Identifier.of("minecraft", requires);
+                    if (requires.startsWith("!")) {
+                        return Identifier.of("minecraft", requires.substring(1));
+                    } else {
+                        return Identifier.of("minecraft", requires);
+                    }
                 }
-
-                String namespace = requires.substring(0, colonIndex);
+                String namespace;
+                if (requires.startsWith("!")) {
+                    isInvertedAdvancementText = true;
+                    namespace = requires.substring(1, colonIndex);
+                } else {
+                    namespace = requires.substring(0, colonIndex);
+                }
                 String path = requires.substring(colonIndex + 1);
 
                 System.out.println("Namespace detected: " + namespace);
                 System.out.println("Path detected: " + path);
+                System.out.println("Is inverted: " + isInvertedAdvancementText());
 
                 return Identifier.of(namespace, path);
             } else {
@@ -141,10 +179,13 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             }
         }
 
+        public static boolean isInvertedAdvancementText() {
+            return isInvertedAdvancementText;
+        }
+
         @Override
         public net.minecraft.text.Text toText() {
             getAdvancement();
-            System.out.println(requires);
             return concat(this.children);
         }
 

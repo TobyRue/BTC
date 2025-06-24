@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc.client.screen;
+package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
@@ -21,22 +21,22 @@ public class CodexScreen extends Screen {
     }
 
 
-    protected static final Codex CODEX;
+    protected static final Codex.Text CODEX;
 
     static {
         try {
-            CODEX = XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/codex.xml"))), Codex.class);
+            CODEX = XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class);
         } catch (XMLException e) {
             throw new RuntimeException(e);
         }
     }
 
-
     @Override
-    public void render(DrawContext context, int height, int width, float delta) {
-        context.drawText(this.textRenderer, Text.literal(, this.width / 2, this.height / 2, 0x000000, false);
-        super.render(context, height, width, delta);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        context.drawText(this.textRenderer, CODEX.toText(), this.width / 2, this.height / 2, 0xFFFFFF, false);
     }
+
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {

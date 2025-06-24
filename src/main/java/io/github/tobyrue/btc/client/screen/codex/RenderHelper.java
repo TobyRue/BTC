@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc.client.screen;
+package io.github.tobyrue.btc.client.screen.codex;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -12,7 +12,8 @@ public final class RenderHelper {
         this.textRenderer = textRenderer;
     }
 
-    void f() {
-        context.drawText()
-    }
+    //TODO
+//    void f() {
+//        context.drawText()
+//    }
 }

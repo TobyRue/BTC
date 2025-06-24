@@ -4,18 +4,14 @@ import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.entity.ModEntities;
-import io.github.tobyrue.btc.entity.custom.CreeperPillarEntity;
-import io.github.tobyrue.btc.enums.CreeperPillarType;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
-import io.github.tobyrue.btc.regestries.ModPackets;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -25,16 +21,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.entity.Entity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.gen.stateprovider.PredicatedStateProvider;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
 public class BTCClient implements ClientModInitializer {
@@ -68,6 +61,9 @@ public class BTCClient implements ClientModInitializer {
 
                         switch (command) {
                             case "say":
+//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
+
+//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
                                 sender.sendMessage(parser.parse(text.substring(5)).toText());
                                 break;
                             default:

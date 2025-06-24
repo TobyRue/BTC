@@ -1,6 +1,7 @@
 <codex>
     <page id="main">
-
+        <line>Hello World</line>
+        <line><b>Hello World</b></line>
     </page>
     <page id="credits">
 
