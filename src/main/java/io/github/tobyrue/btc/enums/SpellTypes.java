@@ -19,4 +19,8 @@ public enum SpellTypes implements StringIdentifiable {
     public String asString() {
         return this.name;
     }
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

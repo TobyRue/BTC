@@ -188,6 +188,22 @@
   "item.btc.codex.spell.type.fire.fireball_weak": "• Weak Fire Ball",
   "item.btc.codex.spell.type.fire.fireball_strong": "• Strong Fire Ball",
 
+  "entity.btc.text.tuff_golem.home_set": "Tuff Golem home set!",
+  "entity.btc.text.tuff_golem.home_cleared": "Tuff Golem home cleared!",
+
+
+  "item.btc.dragon_fireball_scroll": "Dragon Fireball Scroll",
+  "item.btc.fireball_strong_scroll": "Strong Fireball Scroll",
+  "item.btc.earth_spike_scroll": "Earth Spike Scroll",
+  "item.btc.frost_walker_scroll": "Frost Walker Scroll",
+  "item.btc.cluster_wind_shot_scroll": "Cluster Wind Shot Scroll",
+
+  "item.btc.scroll.gained": "You gained the %s scroll!",
+  "item.btc.scroll.gained.fireball_strong": "Strong Fireball",
+  "item.btc.scroll.gained.earth_spike": "Earth Spike Line",
+  "item.btc.scroll.gained.dragon_fireball": "Dragon Fireball",
+  "item.btc.scroll.gained.frost_walker": "Frost Walker",
+  "item.btc.scroll.gained.cluster_wind_shot": "Cluster Wind Shot",
 
   "tag.item.btc.wrenches": "Wrenches"
 }

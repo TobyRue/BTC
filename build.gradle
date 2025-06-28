@@ -17,7 +17,9 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
 }
-
+fabricApi {
+    configureDataGeneration()
+}
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"

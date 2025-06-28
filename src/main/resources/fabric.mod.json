@@ -14,6 +14,9 @@
   "icon": "assets/btc/icon.png",
   "environment": "*",
   "entrypoints": {
+    "fabric-datagen": [
+      "io.github.tobyrue.btc.ExampleModDataGenerator"
+    ],
     "client": [
       "io.github.tobyrue.btc.client.BTCClient"
     ],

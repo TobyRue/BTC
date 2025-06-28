@@ -201,8 +201,9 @@ public class BTC implements ModInitializer {
 //            }
 //            return ActionResult.PASS;
 //        });
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
-        ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
+        //TODO COMMENT THESE BACK IN WHEN NOT DOING DATA GEN WITH THESE IT BREAKS IT
+//        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
+//        ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
     }
     public static void println(Object... args) {
         System.out.println(String.join(" ", Arrays.stream(args).map(Object::toString).toArray(String[]::new)));

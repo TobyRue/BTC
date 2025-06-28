@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "btc:item/dragon_fireball_scroll"
+  }
+}

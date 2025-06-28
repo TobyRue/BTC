@@ -269,11 +269,11 @@ public class TuffGolemEntity extends GolemEntity {
         if (player.isSneaking() && handStack.getItem() == Items.COMPASS) {
             Vec3d pos = this.getPos();
             this.setHome(pos, this.getHeadYaw());
-            player.sendMessage(Text.literal("Tuff Golem home set!"), true);
+            player.sendMessage(Text.translatable("entity.btc.text.tuff_golem.home_set"));
             return ActionResult.SUCCESS;
         } else if (this.getHomePosition() != null && handStack.isIn(ItemTags.AXES) && player.isSneaking()) {
             setHomePos(null);
-            player.sendMessage(Text.literal("Tuff Golem home cleared!"), true);
+            player.sendMessage(Text.translatable("entity.btc.text.tuff_golem.home_cleared"));
             if (!player.getAbilities().creativeMode) {
                 handStack.damage(1, player, EquipmentSlot.MAINHAND);
             }

@@ -1,7 +1,9 @@
 package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.SpellScrollItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemGroups;
@@ -14,6 +16,11 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModItems.RUBY_TRIAL_KEY, ModItems.STAFF);
             content.addAfter(ModItems.STAFF, ModItems.DRAGON_ROD);
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
+            for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
+                if (!spell.spellType.isStartingSpell) {
+                    content.addAfter(ModItems.ENCHANTED_PAPER, spell);
+                }
+            }
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);

@@ -2,19 +2,20 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
-import net.minecraft.advancement.criterion.VillagerTradeCriterion;
-import net.minecraft.client.render.entity.TridentEntityRenderer;
+import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.MapColorComponent;
-import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.item.*;
-import net.minecraft.item.map.MapDecoration;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ModItems {
+    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
+
     public static<T extends Item> T register(T item, String id) {
         // Create the identifier for the item.
         Identifier itemID = Identifier.of(BTC.MOD_ID, id);
@@ -25,6 +26,16 @@ public class ModItems {
         // Return the registered item!
         return registeredItem;
     }
+
+    static {
+        for (SpellRegistryEnum spell : SpellRegistryEnum.values()) {
+            if (!spell.isStartingSpell) {
+                SpellScrollItem item = new SpellScrollItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).maxCount(1), spell);
+                SPELL_ITEMS.put(spell, register(item, spell.toString() + "_scroll"));
+            }
+        }
+    }
+
     public static final Item TEST = register(
             new ScreenTestItem(new Item.Settings()),
             "test_screen"

@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
+import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
@@ -92,6 +93,7 @@ public class ScreenTestItem extends Item {
     }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        System.out.println(SpellRegistryEnum.byId(0).getSpellType().asString());
         if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
             final XMLParser<Codex.Text> parser;
             try {
