@@ -21,6 +21,7 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpyglassItem;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.EnchantmentScreenHandler;
@@ -113,6 +114,7 @@ public class SpellBookItem extends Item {
                     player.getItemCooldownManager().set(this, 150);
                     return TypedActionResult.success(stack);
                 }
+
                 case CREEPER_WALL_BLOCK -> {
                     @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
                     @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24, 1.0F, true);

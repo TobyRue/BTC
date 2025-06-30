@@ -95,6 +95,23 @@
   "advancements.btc.adventure.enter_btc_trial_chambers.title": "Trial Chambers: Vault of Power",
   "advancements.btc.adventure.enter_btc_trial_chambers.description": "Find and Enter the lost Eldritch Trial Chambers no one was meant to remember.",
 
+  "advancements.btc.adventure.get_cluster_wind_shot_scroll.title": "Gale Barrage",
+  "advancements.btc.adventure.get_cluster_wind_shot_scroll.description": "Unleash a cluster of wind blasts to pummel everything in your path.",
+  "advancements.btc.adventure.get_dragon_fireball_scroll.title": "Dragon’s Breath",
+  "advancements.btc.adventure.get_dragon_fireball_scroll.description": "Wield the ferocious flame of a dragon in the palm of your hand.",
+  "advancements.btc.adventure.get_earth_spike_scroll.title": "Roots of Wrath",
+  "advancements.btc.adventure.get_earth_spike_scroll.description": "Call forth jagged spikes of earth to impale your enemies.",
+  "advancements.btc.adventure.get_fireball_strong_scroll.title": "Blazing Mastery",
+  "advancements.btc.adventure.get_fireball_strong_scroll.description": "Harness a more powerful fireball to scorch your foes.",
+  "advancements.btc.adventure.get_frost_walker_scroll.title": "Chill Step",
+  "advancements.btc.adventure.get_frost_walker_scroll.description": "Tread across water, freezing the surface beneath your feet.",
+  "advancements.btc.adventure.get_storm_push_scroll.title": "Force of the Storm",
+  "advancements.btc.adventure.get_storm_push_scroll.description": "Unleash a violent gust to send enemies flying.",
+  "advancements.btc.adventure.get_tempests_call_scroll.title": "Tempest’s Wrath",
+  "advancements.btc.adventure.get_tempests_call_scroll.description": "Summon the full force of a storm to wreak havoc upon the world.",
+
+
+
   "enchantment.btc.infusion": "Infusion",
 
   "block.btc.dungeon_wire_v2": "Dungeon Wire v2",
@@ -197,6 +214,8 @@
   "item.btc.earth_spike_scroll": "Earth Spike Scroll",
   "item.btc.frost_walker_scroll": "Frost Walker Scroll",
   "item.btc.cluster_wind_shot_scroll": "Cluster Wind Shot Scroll",
+  "item.btc.storm_push_scroll": "Storm Push Scroll",
+  "item.btc.tempests_call_scroll": "Tempests Call Scroll",
 
   "item.btc.scroll.gained": "You gained the %s scroll!",
   "item.btc.scroll.gained.fireball_strong": "Strong Fireball",
@@ -204,6 +223,8 @@
   "item.btc.scroll.gained.dragon_fireball": "Dragon Fireball",
   "item.btc.scroll.gained.frost_walker": "Frost Walker",
   "item.btc.scroll.gained.cluster_wind_shot": "Cluster Wind Shot",
+  "item.btc.scroll.gained.storm_push": "Storm Push",
+  "item.btc.scroll.gained.tempests_call": "Tempests Call",
 
   "tag.item.btc.wrenches": "Wrenches"
 }

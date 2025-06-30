@@ -91,32 +91,63 @@ public class ScreenTestItem extends Item {
             throw new RuntimeException(e);
         }
     }
+//    @Override
+//    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+//        System.out.println(SpellRegistryEnum.byId(0).getSpellType().asString());
+//        if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
+//            final XMLParser<Codex.Text> parser;
+//            try {
+//                parser = new XMLParser<>(Codex.Text.class);
+//            } catch (XMLException e) {
+//                throw new RuntimeException(e);
+//            }
+//            try {
+//                var otherParser = parser.parse(string);
+//                var advancement = serverPlayer.getServer().getAdvancementLoader().get(otherParser.getAdvancement());
+//                if (advancement != null) {
+//                    var progress = serverPlayer.getAdvancementTracker().getProgress(advancement);
+//                    boolean inverted = Codex.Text.isInvertedAdvancementText();
+//                    if ((progress.isDone() && !inverted) || (!progress.isDone() && inverted)) {
+//                        player.sendMessage(Text.of("Show something"), false);
+//                        player.sendMessage(otherParser.toText(), false);
+//                    } else if ((progress.isDone() && inverted) || (!progress.isDone() && !inverted)) {
+//                        player.sendMessage(Text.of("Don't show something"), false);
+//                    }
+//                } else {
+//                    player.sendMessage(Text.of("Show something because no advancement was found"), false);
+//                    player.sendMessage(otherParser.toText(), false);
+//                }
+//            } catch (XMLException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//
+//        return TypedActionResult.success(player.getStackInHand(hand));
+//    }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         System.out.println(SpellRegistryEnum.byId(0).getSpellType().asString());
+
         if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
             final XMLParser<Codex.Text> parser;
+
             try {
                 parser = new XMLParser<>(Codex.Text.class);
             } catch (XMLException e) {
                 throw new RuntimeException(e);
             }
+
             try {
                 var otherParser = parser.parse(string);
-                var advancement = serverPlayer.getServer().getAdvancementLoader().get(otherParser.getAdvancement());
-                if (advancement != null) {
-                    var progress = serverPlayer.getAdvancementTracker().getProgress(advancement);
-                    boolean inverted = Codex.Text.isInvertedAdvancementText();
-                    if ((progress.isDone() && !inverted) || (!progress.isDone() && inverted)) {
-                        player.sendMessage(Text.of("Show something"), false);
-                        player.sendMessage(otherParser.toText(), false);
-                    } else if ((progress.isDone() && inverted) || (!progress.isDone() && !inverted)) {
-                        player.sendMessage(Text.of("Don't show something"), false);
-                    }
-                } else {
-                    player.sendMessage(Text.of("Show something because no advancement was found"), false);
+
+                // use new method here — fully handles null requires, inversion, multi-condition logic
+                if (otherParser.isRequirementMet(serverPlayer)) {
+                    player.sendMessage(Text.of("Requirement met! Showing text..."), false);
                     player.sendMessage(otherParser.toText(), false);
+                } else {
+                    player.sendMessage(Text.of("Requirement NOT met!"), false);
                 }
+
             } catch (XMLException e) {
                 throw new RuntimeException(e);
             }
@@ -124,5 +155,4 @@ public class ScreenTestItem extends Item {
 
         return TypedActionResult.success(player.getStackInHand(hand));
     }
-
 }

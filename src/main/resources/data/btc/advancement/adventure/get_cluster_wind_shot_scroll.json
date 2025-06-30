@@ -1,0 +1,29 @@
+{
+  "parent": "btc:adventure/obtain_spell_book_advancment",
+  "display": {
+    "icon": {
+      "id": "btc:cluster_wind_shot_scroll",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.btc.adventure.get_cluster_wind_shot_scroll.title"
+    },
+    "description": {
+      "translate": "advancements.btc.adventure.get_cluster_wind_shot_scroll.description"
+    },
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "scroll": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "scroll"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

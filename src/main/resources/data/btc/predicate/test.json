@@ -1,9 +1,0 @@
-{
-  "condition": "minecraft:entity_properties",
-  "entity": "this",
-  "predicate": {
-    "advancements": {
-      "btc:enter_btc_trial_chambers": true
-    }
-  }
-}

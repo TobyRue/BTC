@@ -11,7 +11,9 @@ public enum SpellRegistryEnum implements StringIdentifiable {
     EARTH_SPIKES(2, "earth_spike", 60, SpellTypes.EARTH, false),
     DRAGON_FIREBALL(3, "dragon_fireball", 80, SpellTypes.ENDER, false),
     FROST_WALKER(4, "frost_walker", 80, SpellTypes.WATER, false),
-    CLUSTER_WIND_SHOT(5, "cluster_wind_shot", 80, SpellTypes.WIND, false);
+    CLUSTER_WIND_SHOT(5, "cluster_wind_shot", 80, SpellTypes.WIND, false),
+    TEMPESTS_CALL(6, "tempests_call", 100, SpellTypes.WIND, false),
+    STORM_PUSH(7, "storm_push", 100, SpellTypes.WIND, false);
 
 
 
