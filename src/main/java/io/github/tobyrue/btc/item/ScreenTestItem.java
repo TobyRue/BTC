@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
+import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
@@ -18,7 +19,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ScreenTestItem extends Item {
     public String string;
@@ -57,39 +63,50 @@ public class ScreenTestItem extends Item {
 
 
     {
-        try {
-            final var parser = new XMLParser<>(Codex.Text.class);
-            ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-                var text = message.getContent().getString();
-                sender.sendMessage(Text.literal("Git Gud"), true);
-                if (text.startsWith("!")) {
-                    try {
-                        var strings = text.substring(1).split(" ");
+        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+            var text = message.getContent().getString();
+            sender.sendMessage(Text.literal("Git Gud"), true);
+            if (text.startsWith("!")) {
+                try {
+                    var strings = text.substring(1).split(" ");
 
-                        if (strings.length < 1) {
-                            throw new Exception("Missing command after '!'");
-                        }
-
-                        var command = strings[0].toLowerCase();
-                        var args = Arrays.copyOfRange(strings, 1, strings.length);
-
-                        switch (command) {
-                            case "say":
-//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
-                                this.string = text.substring(5);
-//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
-                                break;
-                            default:
-                                throw new Exception("Unknown command '" + command + "'");
-                        }
-                    } catch (Throwable t) {
-                        sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
+                    if (strings.length < 1) {
+                        throw new Exception("Missing command after '!'");
                     }
+
+                    var command = strings[0].toLowerCase();
+                    var args = Arrays.copyOfRange(strings, 1, strings.length);
+
+                    switch (command) {
+                        case "say":
+                            this.string = text.substring(5);
+//TODO This should replace things in xml file with things that work in parser
+//                            InputStream inputStream = CodexScreen.class.getResourceAsStream("/text.xml");
+//                            if (inputStream == null) throw new IllegalStateException("Text resource not found!");
+//                            String xmlText;
+//                            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+//                                xmlText = reader.lines().collect(Collectors.joining("\n"));
+//                            }
+//                            // Do your replacement for the requires attribute values
+//                            xmlText = xmlText
+//                                    .replace(":", ".")
+//                                    .replace("&", "-and-")
+//                                    .replace("|", "-or-");
+//                            // Now parse the adjusted XML string
+//                            Codex.Text parsedText = XMLParser.parse(xmlText, Codex.Text.class);
+//                            // Finally send the message
+//                            sender.sendMessage(parsedText.toText());
+
+//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
+                            break;
+                        default:
+                            throw new Exception("Unknown command '" + command + "'");
+                    }
+                } catch (Throwable t) {
+                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0x0000FF)).append(Text.literal(t.toString())));
                 }
-            });
-        } catch (XMLException e) {
-            throw new RuntimeException(e);
-        }
+            }
+        });
     }
 //    @Override
 //    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
@@ -124,10 +141,9 @@ public class ScreenTestItem extends Item {
 //
 //        return TypedActionResult.success(player.getStackInHand(hand));
 //    }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        System.out.println(SpellRegistryEnum.byId(0).getSpellType().asString());
-
         if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
             final XMLParser<Codex.Text> parser;
 

@@ -42,42 +42,42 @@ public class BTCClient implements ClientModInitializer {
 
 
 
-    static {
-        try {
-            final var parser = new XMLParser<>(Codex.Text.class);
-            ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-                var text = message.getContent().getString();
-                sender.sendMessage(Text.literal("Git Gud"), true);
-                if (text.startsWith("!")) {
-                    try {
-                        var strings = text.substring(1).split(" ");
-
-                        if (strings.length < 1) {
-                            throw new Exception("Missing command after '!'");
-                        }
-
-                        var command = strings[0].toLowerCase();
-                        var args = Arrays.copyOfRange(strings, 1, strings.length);
-
-                        switch (command) {
-                            case "say":
-//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
-
-//                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
-                                sender.sendMessage(parser.parse(text.substring(5)).toText());
-                                break;
-                            default:
-                                throw new Exception("Unknown command '" + command + "'");
-                        }
-                    } catch (Throwable t) {
-                        sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
-                    }
-                }
-            });
-        } catch (XMLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    static {
+//        try {
+//            final var parser = new XMLParser<>(Codex.Text.class);
+//            ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+//                var text = message.getContent().getString();
+//                sender.sendMessage(Text.literal("Git Gud"), true);
+//                if (text.startsWith("!")) {
+//                    try {
+//                        var strings = text.substring(1).split(" ");
+//
+//                        if (strings.length < 1) {
+//                            throw new Exception("Missing command after '!'");
+//                        }
+//
+//                        var command = strings[0].toLowerCase();
+//                        var args = Arrays.copyOfRange(strings, 1, strings.length);
+//
+//                        switch (command) {
+//                            case "say":
+////                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
+//
+////                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
+//                                sender.sendMessage(parser.parse(text.substring(5)).toText());
+//                                break;
+//                            default:
+//                                throw new Exception("Unknown command '" + command + "'");
+//                        }
+//                    } catch (Throwable t) {
+//                        sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
+//                    }
+//                }
+//            });
+//        } catch (XMLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     public void onInitializeClient() {

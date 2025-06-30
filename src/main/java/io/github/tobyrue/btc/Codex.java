@@ -45,7 +45,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     }
 
     public record Page(@XML.Children(allow = {Line.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements ConditionalNode, XMLNode, Render  {
-        @Override public String getRequires() { return requires; }
+        @Override public String getRequires() { return requires.replace(':', '.').replace("&", "-and-").replace("|", "-or-"); }
         static boolean isInvertedAdvancementPage = false;
         @Override
         public Identifier getAdvancement() {
@@ -80,48 +80,48 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
 
 
-        //TODO MAKE isRequirementMet work for all
         public boolean isRequirementMet(ServerPlayerEntity player) {
             String reqStr = getRequires();
-            System.out.println("Raw requires string: " + reqStr);
-            for (int i = 0; i < reqStr.length(); i++) {
-                System.out.println(i + ": '" + reqStr.charAt(i) + "' (code " + (int)reqStr.charAt(i) + ")");
-            }
-            if (reqStr == null || reqStr.isEmpty()) {
-                // No requirement means always true
-                return true;
-            }
 
-            // Split by OR groups ("|")
-            String[] orGroups = reqStr.split("\\|");
+            if (reqStr == null || reqStr.isEmpty()) return true;
+
+            String[] orGroups = reqStr.split("-or-");
             for (String orGroup : orGroups) {
                 boolean allAndPassed = true;
+                String[] andConditions = orGroup.split("-and-");
 
-                // Split each OR group into AND conditions ("&")
-                String[] andConditions = orGroup.split("&");
                 for (String cond : andConditions) {
                     cond = cond.trim();
                     if (cond.isEmpty()) continue;
 
-                    // Support inversion with "!" prefix
                     boolean inverted = cond.startsWith("!");
-                    String idString = inverted ? cond.substring(1) : cond;
+                    String idStr = inverted ? cond.substring(1) : cond;
 
-                    // Ensure namespace present, default to minecraft if missing
-                    int colonIndex = idString.indexOf(':');
-                    if (colonIndex == -1) {
-                        idString = "minecraft:" + idString;
-                        colonIndex = idString.indexOf(':');
+                    System.out.println("Condition: " + idStr);
+
+                    if (!idStr.contains(".")) {
+                        idStr = "minecraft." + idStr;
                     }
 
-                    String namespace = idString.substring(0, colonIndex);
-                    String path = idString.substring(colonIndex + 1);
+                    // Re-split each condition at .
+                    String[] parts = idStr.split("\\.", 2);
+                    if (parts.length != 2) {
+                        System.err.println("[ERROR] Malformed advancement identifier: '" + idStr + "'");
+                        allAndPassed = false;
+                        break;
+                    }
+
+                    String namespace = parts[0];
+                    String path = parts[1];
+
+                    System.out.println("Namespace detected: " + namespace);
+                    System.out.println("Path detected: " + path);
 
                     Identifier id;
                     try {
                         id = Identifier.of(namespace, path);
                     } catch (Exception e) {
-                        System.err.println("[ERROR] Invalid advancement ID: " + idString + " (" + e.getMessage() + ")");
+                        System.err.println("[ERROR] Invalid advancement ID: " + idStr + " (" + e.getMessage() + ")");
                         allAndPassed = false;
                         break;
                     }
@@ -134,17 +134,15 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
                     if (!hasAdvancement) {
                         allAndPassed = false;
-                        break; // AND condition failed, no need to check further
+                        break;
                     }
                 }
 
                 if (allAndPassed) {
-                    // One OR group fully satisfied means requirement met
                     return true;
                 }
             }
 
-            // No OR group satisfied
             return false;
         }
 
@@ -160,7 +158,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
 
         public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements XMLNode, TextContent, ConditionalNode {
-            @Override public String getRequires() { return requires; }
+            @Override public String getRequires() { return requires.replace(':', '.').replace("&", "-and-").replace("|", "-or-"); }
             static boolean isInvertedAdvancementLine = false;
 
             @Override
@@ -204,41 +202,46 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             }
             public boolean isRequirementMet(ServerPlayerEntity player) {
                 String reqStr = getRequires();
-                if (reqStr == null || reqStr.isEmpty()) {
-                    // No requirement means always true
-                    return true;
-                }
 
-                // Split by OR groups ("|")
-                String[] orGroups = reqStr.split("\\|");
+                if (reqStr == null || reqStr.isEmpty()) return true;
+
+                String[] orGroups = reqStr.split("-or-");
                 for (String orGroup : orGroups) {
                     boolean allAndPassed = true;
+                    String[] andConditions = orGroup.split("-and-");
 
-                    // Split each OR group into AND conditions ("&")
-                    String[] andConditions = orGroup.split("&");
                     for (String cond : andConditions) {
                         cond = cond.trim();
                         if (cond.isEmpty()) continue;
 
-                        // Support inversion with "!" prefix
                         boolean inverted = cond.startsWith("!");
-                        String idString = inverted ? cond.substring(1) : cond;
+                        String idStr = inverted ? cond.substring(1) : cond;
 
-                        // Ensure namespace present, default to minecraft if missing
-                        int colonIndex = idString.indexOf(':');
-                        if (colonIndex == -1) {
-                            idString = "minecraft:" + idString;
-                            colonIndex = idString.indexOf(':');
+                        System.out.println("Condition: " + idStr);
+
+                        if (!idStr.contains(".")) {
+                            idStr = "minecraft." + idStr;
                         }
 
-                        String namespace = idString.substring(0, colonIndex);
-                        String path = idString.substring(colonIndex + 1);
+                        // Re-split each condition at .
+                        String[] parts = idStr.split("\\.", 2);
+                        if (parts.length != 2) {
+                            System.err.println("[ERROR] Malformed advancement identifier: '" + idStr + "'");
+                            allAndPassed = false;
+                            break;
+                        }
+
+                        String namespace = parts[0];
+                        String path = parts[1];
+
+                        System.out.println("Namespace detected: " + namespace);
+                        System.out.println("Path detected: " + path);
 
                         Identifier id;
                         try {
                             id = Identifier.of(namespace, path);
                         } catch (Exception e) {
-                            System.err.println("[ERROR] Invalid advancement ID: " + idString + " (" + e.getMessage() + ")");
+                            System.err.println("[ERROR] Invalid advancement ID: " + idStr + " (" + e.getMessage() + ")");
                             allAndPassed = false;
                             break;
                         }
@@ -251,19 +254,18 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
                         if (!hasAdvancement) {
                             allAndPassed = false;
-                            break; // AND condition failed, no need to check further
+                            break;
                         }
                     }
 
                     if (allAndPassed) {
-                        // One OR group fully satisfied means requirement met
                         return true;
                     }
                 }
 
-                // No OR group satisfied
                 return false;
             }
+
 
         }
     }
@@ -276,45 +278,50 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     @XML.Root
     public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements TextContent, ConditionalNode {
         static boolean isInvertedAdvancementText = false;
-        @Override public String getRequires() { return requires; }
+        @Override public String getRequires() { return requires.replace(':', '.'); }
 
         public boolean isRequirementMet(ServerPlayerEntity player) {
             String reqStr = getRequires();
-            if (reqStr == null || reqStr.isEmpty()) {
-                // No requirement means always true
-                return true;
-            }
 
-            // Split by OR groups ("|")
-            String[] orGroups = reqStr.split("\\|");
+            if (reqStr == null || reqStr.isEmpty()) return true;
+
+            String[] orGroups = reqStr.split("-or-");
             for (String orGroup : orGroups) {
                 boolean allAndPassed = true;
+                String[] andConditions = orGroup.split("-and-");
 
-                // Split each OR group into AND conditions ("&")
-                String[] andConditions = orGroup.split("&");
                 for (String cond : andConditions) {
                     cond = cond.trim();
                     if (cond.isEmpty()) continue;
 
-                    // Support inversion with "!" prefix
                     boolean inverted = cond.startsWith("!");
-                    String idString = inverted ? cond.substring(1) : cond;
+                    String idStr = inverted ? cond.substring(1) : cond;
 
-                    // Ensure namespace present, default to minecraft if missing
-                    int colonIndex = idString.indexOf(':');
-                    if (colonIndex == -1) {
-                        idString = "minecraft:" + idString;
-                        colonIndex = idString.indexOf(':');
+                    System.out.println("Condition: " + idStr);
+
+                    if (!idStr.contains(".")) {
+                        idStr = "minecraft." + idStr;
                     }
 
-                    String namespace = idString.substring(0, colonIndex);
-                    String path = idString.substring(colonIndex + 1);
+                    // Re-split each condition at .
+                    String[] parts = idStr.split("\\.", 2);
+                    if (parts.length != 2) {
+                        System.err.println("[ERROR] Malformed advancement identifier: '" + idStr + "'");
+                        allAndPassed = false;
+                        break;
+                    }
+
+                    String namespace = parts[0];
+                    String path = parts[1];
+
+                    System.out.println("Namespace detected: " + namespace);
+                    System.out.println("Path detected: " + path);
 
                     Identifier id;
                     try {
                         id = Identifier.of(namespace, path);
                     } catch (Exception e) {
-                        System.err.println("[ERROR] Invalid advancement ID: " + idString + " (" + e.getMessage() + ")");
+                        System.err.println("[ERROR] Invalid advancement ID: " + idStr + " (" + e.getMessage() + ")");
                         allAndPassed = false;
                         break;
                     }
@@ -327,20 +334,17 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
                     if (!hasAdvancement) {
                         allAndPassed = false;
-                        break; // AND condition failed, no need to check further
+                        break;
                     }
                 }
 
                 if (allAndPassed) {
-                    // One OR group fully satisfied means requirement met
                     return true;
                 }
             }
 
-            // No OR group satisfied
             return false;
         }
-
 
 
         public static MutableText concat(final XMLNodeCollection<?> nodes) {
@@ -393,7 +397,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @Override
         public net.minecraft.text.Text toText() {
-            getAdvancement();
             return concat(this.children);
         }
 
