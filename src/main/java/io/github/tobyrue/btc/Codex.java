@@ -208,7 +208,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 String[] orGroups = reqStr.split("-or-");
                 for (String orGroup : orGroups) {
                     boolean allAndPassed = true;
-                    String[] andConditions = orGroup.split("-and-");
+                    String[] andConditions = orGroup.split("\\*");
 
                     for (String cond : andConditions) {
                         cond = cond.trim();
@@ -230,6 +230,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                             allAndPassed = false;
                             break;
                         }
+
+
 
                         String namespace = parts[0];
                         String path = parts[1];
