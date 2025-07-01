@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.Objects;
+import java.util.*;
 
 @XML.Root
 public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> children) implements XMLNode {
@@ -21,6 +21,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     public interface ConditionalNode {
         Identifier getAdvancement();
         boolean isRequirementMet(ServerPlayerEntity player);
+        boolean requirementMet(ServerPlayerEntity player) throws Exception;
         String getRequires();
     }
 
@@ -79,71 +80,111 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             }
         }
 
+        @Override
+        public boolean requirementMet(ServerPlayerEntity player) throws Exception {
+            var parsed = PredicateParser.parse(requires);
+            return parsed.evaluate(player);
+        }
 
         public boolean isRequirementMet(ServerPlayerEntity player) {
             String reqStr = getRequires();
+            if (reqStr == null || reqStr.isEmpty()) {
+                System.out.println("[Codex] No requirements — returning true.");
+                return true;
+            }
 
-            if (reqStr == null || reqStr.isEmpty()) return true;
+            System.out.println("[Codex] Requirement string: " + reqStr);
 
-            String[] orGroups = reqStr.split("-or-");
-            for (String orGroup : orGroups) {
-                boolean allAndPassed = true;
-                String[] andConditions = orGroup.split("-and-");
+            List<Boolean> values = new ArrayList<>();
+            List<String> operators = new ArrayList<>();
 
-                for (String cond : andConditions) {
-                    cond = cond.trim();
-                    if (cond.isEmpty()) continue;
-
-                    boolean inverted = cond.startsWith("!");
-                    String idStr = inverted ? cond.substring(1) : cond;
-
-                    System.out.println("Condition: " + idStr);
-
-                    if (!idStr.contains(".")) {
-                        idStr = "minecraft." + idStr;
-                    }
-
-                    // Re-split each condition at .
-                    String[] parts = idStr.split("\\.", 2);
-                    if (parts.length != 2) {
-                        System.err.println("[ERROR] Malformed advancement identifier: '" + idStr + "'");
-                        allAndPassed = false;
-                        break;
-                    }
-
-                    String namespace = parts[0];
-                    String path = parts[1];
-
-                    System.out.println("Namespace detected: " + namespace);
-                    System.out.println("Path detected: " + path);
-
-                    Identifier id;
-                    try {
-                        id = Identifier.of(namespace, path);
-                    } catch (Exception e) {
-                        System.err.println("[ERROR] Invalid advancement ID: " + idStr + " (" + e.getMessage() + ")");
-                        allAndPassed = false;
-                        break;
-                    }
-
-                    var advancement = player.server.getAdvancementLoader().get(id);
-                    boolean hasAdvancement = advancement != null &&
-                            player.getAdvancementTracker().getProgress(advancement).isDone();
-
-                    if (inverted) hasAdvancement = !hasAdvancement;
-
-                    if (!hasAdvancement) {
-                        allAndPassed = false;
-                        break;
-                    }
-                }
-
-                if (allAndPassed) {
-                    return true;
+            // Collect operators in order
+            for (int i = 0; i < reqStr.length(); i++) {
+                char c = reqStr.charAt(i);
+                if (c == '*') {
+                    operators.add("*");
+                    System.out.println("[Codex] Found AND operator '*'");
+                } else if (c == '+') {
+                    operators.add("+");
+                    System.out.println("[Codex] Found OR operator '+'");
                 }
             }
 
-            return false;
+            // Split string into individual advancement checks using regex
+            String[] parts = reqStr.split("[*+]");
+
+            // Parse each advancement requirement
+            for (String part : parts) {
+                part = part.trim();
+                if (part.isEmpty()) continue;
+
+                boolean inverted = part.startsWith("!");
+                if (inverted) {
+                    part = part.substring(1);
+                    System.out.println("[Codex] Inversion detected for: " + part);
+                }
+
+                int colonIndex = part.indexOf(':');
+                if (colonIndex == -1) {
+                    part = "minecraft:" + part;
+                    colonIndex = part.indexOf(':');
+                    System.out.println("[Codex] No namespace — defaulted to minecraft: " + part);
+                }
+
+                String namespace = part.substring(0, colonIndex);
+                String path = part.substring(colonIndex + 1);
+
+                System.out.println("[Codex] Checking advancement: " + namespace + ":" + path);
+
+                Identifier id;
+                try {
+                    id = Identifier.of(namespace, path);
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
+                    values.add(false); // fail-safe: treat invalid as false
+                    continue;
+                }
+
+                var advancement = player.server.getAdvancementLoader().get(id);
+                boolean hasAdvancement = advancement != null && player.getAdvancementTracker().getProgress(advancement).isDone();
+
+                System.out.println("[Codex] " + id + " advancement is " + (hasAdvancement ? "complete" : "incomplete"));
+
+                if (inverted) {
+                    hasAdvancement = !hasAdvancement;
+                    System.out.println("[Codex] Inverted result: " + hasAdvancement);
+                }
+
+                values.add(hasAdvancement);
+            }
+
+            System.out.println("[Codex] Values collected: " + values);
+            System.out.println("[Codex] Operators collected: " + operators);
+
+            // Now combine the results according to the operators
+            while (values.size() > 1) {
+                String op = operators.remove(0);
+                boolean left = values.remove(0);
+                boolean right = values.remove(0);
+
+                boolean result;
+                if (op.equals("*")) {
+                    result = left && right;
+                    System.out.println("[Codex] Evaluating: " + left + " AND " + right + " = " + result);
+                } else if (op.equals("+")) {
+                    result = left || right;
+                    System.out.println("[Codex] Evaluating: " + left + " OR " + right + " = " + result);
+                } else {
+                    throw new IllegalStateException("[Codex] Unknown operator: " + op);
+                }
+
+                // Put result back at the front of the list
+                values.add(0, result);
+                System.out.println("[Codex] Intermediate values: " + values);
+            }
+
+            System.out.println("[Codex] Final requirement result: " + values.get(0));
+            return values.get(0);
         }
 
 
@@ -200,72 +241,112 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             public static boolean isInvertedAdvancementLine() {
                 return isInvertedAdvancementLine;
             }
+
+            @Override
+            public boolean requirementMet(ServerPlayerEntity player) throws Exception {
+                var parsed = PredicateParser.parse(requires);
+                return parsed.evaluate(player);
+            }
+
             public boolean isRequirementMet(ServerPlayerEntity player) {
                 String reqStr = getRequires();
+                if (reqStr == null || reqStr.isEmpty()) {
+                    System.out.println("[Codex] No requirements — returning true.");
+                    return true;
+                }
 
-                if (reqStr == null || reqStr.isEmpty()) return true;
+                System.out.println("[Codex] Requirement string: " + reqStr);
 
-                String[] orGroups = reqStr.split("-or-");
-                for (String orGroup : orGroups) {
-                    boolean allAndPassed = true;
-                    String[] andConditions = orGroup.split("\\*");
+                List<Boolean> values = new ArrayList<>();
+                List<String> operators = new ArrayList<>();
 
-                    for (String cond : andConditions) {
-                        cond = cond.trim();
-                        if (cond.isEmpty()) continue;
-
-                        boolean inverted = cond.startsWith("!");
-                        String idStr = inverted ? cond.substring(1) : cond;
-
-                        System.out.println("Condition: " + idStr);
-
-                        if (!idStr.contains(".")) {
-                            idStr = "minecraft." + idStr;
-                        }
-
-                        // Re-split each condition at .
-                        String[] parts = idStr.split("\\.", 2);
-                        if (parts.length != 2) {
-                            System.err.println("[ERROR] Malformed advancement identifier: '" + idStr + "'");
-                            allAndPassed = false;
-                            break;
-                        }
-
-
-
-                        String namespace = parts[0];
-                        String path = parts[1];
-
-                        System.out.println("Namespace detected: " + namespace);
-                        System.out.println("Path detected: " + path);
-
-                        Identifier id;
-                        try {
-                            id = Identifier.of(namespace, path);
-                        } catch (Exception e) {
-                            System.err.println("[ERROR] Invalid advancement ID: " + idStr + " (" + e.getMessage() + ")");
-                            allAndPassed = false;
-                            break;
-                        }
-
-                        var advancement = player.server.getAdvancementLoader().get(id);
-                        boolean hasAdvancement = advancement != null &&
-                                player.getAdvancementTracker().getProgress(advancement).isDone();
-
-                        if (inverted) hasAdvancement = !hasAdvancement;
-
-                        if (!hasAdvancement) {
-                            allAndPassed = false;
-                            break;
-                        }
-                    }
-
-                    if (allAndPassed) {
-                        return true;
+                // Collect operators in order
+                for (int i = 0; i < reqStr.length(); i++) {
+                    char c = reqStr.charAt(i);
+                    if (c == '*') {
+                        operators.add("*");
+                        System.out.println("[Codex] Found AND operator '*'");
+                    } else if (c == '+') {
+                        operators.add("+");
+                        System.out.println("[Codex] Found OR operator '+'");
                     }
                 }
 
-                return false;
+                // Split string into individual advancement checks using regex
+                String[] parts = reqStr.split("[*+]");
+
+                // Parse each advancement requirement
+                for (String part : parts) {
+                    part = part.trim();
+                    if (part.isEmpty()) continue;
+
+                    boolean inverted = part.startsWith("!");
+                    if (inverted) {
+                        part = part.substring(1);
+                        System.out.println("[Codex] Inversion detected for: " + part);
+                    }
+
+                    int colonIndex = part.indexOf(':');
+                    if (colonIndex == -1) {
+                        part = "minecraft:" + part;
+                        colonIndex = part.indexOf(':');
+                        System.out.println("[Codex] No namespace — defaulted to minecraft: " + part);
+                    }
+
+                    String namespace = part.substring(0, colonIndex);
+                    String path = part.substring(colonIndex + 1);
+
+                    System.out.println("[Codex] Checking advancement: " + namespace + ":" + path);
+
+                    Identifier id;
+                    try {
+                        id = Identifier.of(namespace, path);
+                    } catch (Exception e) {
+                        System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
+                        values.add(false); // fail-safe: treat invalid as false
+                        continue;
+                    }
+
+                    var advancement = player.server.getAdvancementLoader().get(id);
+                    boolean hasAdvancement = advancement != null && player.getAdvancementTracker().getProgress(advancement).isDone();
+
+                    System.out.println("[Codex] " + id + " advancement is " + (hasAdvancement ? "complete" : "incomplete"));
+
+                    if (inverted) {
+                        hasAdvancement = !hasAdvancement;
+                        System.out.println("[Codex] Inverted result: " + hasAdvancement);
+                    }
+
+                    values.add(hasAdvancement);
+                }
+
+                System.out.println("[Codex] Values collected: " + values);
+                System.out.println("[Codex] Operators collected: " + operators);
+
+                // Now combine the results according to the operators
+                while (values.size() > 1) {
+                    String op = operators.remove(0);
+                    boolean left = values.remove(0);
+                    boolean right = values.remove(0);
+
+                    boolean result;
+                    if (op.equals("*")) {
+                        result = left && right;
+                        System.out.println("[Codex] Evaluating: " + left + " AND " + right + " = " + result);
+                    } else if (op.equals("+")) {
+                        result = left || right;
+                        System.out.println("[Codex] Evaluating: " + left + " OR " + right + " = " + result);
+                    } else {
+                        throw new IllegalStateException("[Codex] Unknown operator: " + op);
+                    }
+
+                    // Put result back at the front of the list
+                    values.add(0, result);
+                    System.out.println("[Codex] Intermediate values: " + values);
+                }
+
+                System.out.println("[Codex] Final requirement result: " + values.get(0));
+                return values.get(0);
             }
 
 
@@ -282,70 +363,111 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         static boolean isInvertedAdvancementText = false;
         @Override public String getRequires() { return requires.replace(':', '.'); }
 
+        @Override
+        public boolean requirementMet(ServerPlayerEntity player) throws Exception {
+            var parsed = PredicateParser.parse(requires);
+            return parsed.evaluate(player);
+        }
+
         public boolean isRequirementMet(ServerPlayerEntity player) {
             String reqStr = getRequires();
+            if (reqStr == null || reqStr.isEmpty()) {
+                System.out.println("[Codex] No requirements — returning true.");
+                return true;
+            }
 
-            if (reqStr == null || reqStr.isEmpty()) return true;
+            System.out.println("[Codex] Requirement string: " + reqStr);
 
-            String[] orGroups = reqStr.split("-or-");
-            for (String orGroup : orGroups) {
-                boolean allAndPassed = true;
-                String[] andConditions = orGroup.split("-and-");
+            List<Boolean> values = new ArrayList<>();
+            List<String> operators = new ArrayList<>();
 
-                for (String cond : andConditions) {
-                    cond = cond.trim();
-                    if (cond.isEmpty()) continue;
-
-                    boolean inverted = cond.startsWith("!");
-                    String idStr = inverted ? cond.substring(1) : cond;
-
-                    System.out.println("Condition: " + idStr);
-
-                    if (!idStr.contains(".")) {
-                        idStr = "minecraft." + idStr;
-                    }
-
-                    // Re-split each condition at .
-                    String[] parts = idStr.split("\\.", 2);
-                    if (parts.length != 2) {
-                        System.err.println("[ERROR] Malformed advancement identifier: '" + idStr + "'");
-                        allAndPassed = false;
-                        break;
-                    }
-
-                    String namespace = parts[0];
-                    String path = parts[1];
-
-                    System.out.println("Namespace detected: " + namespace);
-                    System.out.println("Path detected: " + path);
-
-                    Identifier id;
-                    try {
-                        id = Identifier.of(namespace, path);
-                    } catch (Exception e) {
-                        System.err.println("[ERROR] Invalid advancement ID: " + idStr + " (" + e.getMessage() + ")");
-                        allAndPassed = false;
-                        break;
-                    }
-
-                    var advancement = player.server.getAdvancementLoader().get(id);
-                    boolean hasAdvancement = advancement != null &&
-                            player.getAdvancementTracker().getProgress(advancement).isDone();
-
-                    if (inverted) hasAdvancement = !hasAdvancement;
-
-                    if (!hasAdvancement) {
-                        allAndPassed = false;
-                        break;
-                    }
-                }
-
-                if (allAndPassed) {
-                    return true;
+            // Collect operators in order
+            for (int i = 0; i < reqStr.length(); i++) {
+                char c = reqStr.charAt(i);
+                if (c == '*') {
+                    operators.add("*");
+                    System.out.println("[Codex] Found AND operator '*'");
+                } else if (c == '+') {
+                    operators.add("+");
+                    System.out.println("[Codex] Found OR operator '+'");
                 }
             }
 
-            return false;
+            // Split string into individual advancement checks using regex
+            String[] parts = reqStr.split("[*+]");
+
+            // Parse each advancement requirement
+            for (String part : parts) {
+                part = part.trim();
+                if (part.isEmpty()) continue;
+
+                boolean inverted = part.startsWith("!");
+                if (inverted) {
+                    part = part.substring(1);
+                    System.out.println("[Codex] Inversion detected for: " + part);
+                }
+
+                int colonIndex = part.indexOf(':');
+                if (colonIndex == -1) {
+                    part = "minecraft:" + part;
+                    colonIndex = part.indexOf(':');
+                    System.out.println("[Codex] No namespace — defaulted to minecraft: " + part);
+                }
+
+                String namespace = part.substring(0, colonIndex);
+                String path = part.substring(colonIndex + 1);
+
+                System.out.println("[Codex] Checking advancement: " + namespace + ":" + path);
+
+                Identifier id;
+                try {
+                    id = Identifier.of(namespace, path);
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
+                    values.add(false); // fail-safe: treat invalid as false
+                    continue;
+                }
+
+                var advancement = player.server.getAdvancementLoader().get(id);
+                boolean hasAdvancement = advancement != null && player.getAdvancementTracker().getProgress(advancement).isDone();
+
+                System.out.println("[Codex] " + id + " advancement is " + (hasAdvancement ? "complete" : "incomplete"));
+
+                if (inverted) {
+                    hasAdvancement = !hasAdvancement;
+                    System.out.println("[Codex] Inverted result: " + hasAdvancement);
+                }
+
+                values.add(hasAdvancement);
+            }
+
+            System.out.println("[Codex] Values collected: " + values);
+            System.out.println("[Codex] Operators collected: " + operators);
+
+            // Now combine the results according to the operators
+            while (values.size() > 1) {
+                String op = operators.remove(0);
+                boolean left = values.remove(0);
+                boolean right = values.remove(0);
+
+                boolean result;
+                if (op.equals("*")) {
+                    result = left && right;
+                    System.out.println("[Codex] Evaluating: " + left + " AND " + right + " = " + result);
+                } else if (op.equals("+")) {
+                    result = left || right;
+                    System.out.println("[Codex] Evaluating: " + left + " OR " + right + " = " + result);
+                } else {
+                    throw new IllegalStateException("[Codex] Unknown operator: " + op);
+                }
+
+                // Put result back at the front of the list
+                values.add(0, result);
+                System.out.println("[Codex] Intermediate values: " + values);
+            }
+
+            System.out.println("[Codex] Final requirement result: " + values.get(0));
+            return values.get(0);
         }
 
 

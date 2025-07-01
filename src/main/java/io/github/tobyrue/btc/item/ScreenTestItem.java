@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
+import io.github.tobyrue.btc.PredicateParser;
 import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.xml.XMLException;
@@ -99,11 +100,16 @@ public class ScreenTestItem extends Item {
 
 //                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
                             break;
+                        case "run":
+                            var parsed = PredicateParser.parse(text.substring(5));
+                            System.out.println(String.format("%s: %s", parsed, parsed.evaluate(sender)));
+                            break;
                         default:
                             throw new Exception("Unknown command '" + command + "'");
                     }
                 } catch (Throwable t) {
-                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0x0000FF)).append(Text.literal(t.toString())));
+                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
+                    t.printStackTrace();
                 }
             }
         });
@@ -157,14 +163,14 @@ public class ScreenTestItem extends Item {
                 var otherParser = parser.parse(string);
 
                 // use new method here — fully handles null requires, inversion, multi-condition logic
-                if (otherParser.isRequirementMet(serverPlayer)) {
+                if (otherParser.requirementMet(serverPlayer)) {
                     player.sendMessage(Text.of("Requirement met! Showing text..."), false);
                     player.sendMessage(otherParser.toText(), false);
                 } else {
                     player.sendMessage(Text.of("Requirement NOT met!"), false);
                 }
 
-            } catch (XMLException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
