@@ -1,14 +1,10 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
-import io.github.tobyrue.btc.PredicateParser;
-import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
-import io.github.tobyrue.btc.enums.SpellRegistryEnum;
+import io.github.tobyrue.btc.AdvancementParser;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,16 +12,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ScreenTestItem extends Item {
     public String string;
@@ -101,7 +91,7 @@ public class ScreenTestItem extends Item {
 //                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
                             break;
                         case "run":
-                            var parsed = PredicateParser.parse(text.substring(5));
+                            var parsed = AdvancementParser.parse(text.substring(5));
                             System.out.println(String.format("%s: %s", parsed, parsed.evaluate(sender)));
                             break;
                         default:

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PredicateParser {
+public class AdvancementParser {
     public interface Expression {
         boolean evaluate(ServerPlayerEntity player);
     }
@@ -80,7 +80,7 @@ public class PredicateParser {
         if (text.contains("$")) {
             throw new Exception("Expression can not contain '$'");
         }
-        return parse(text.replace("\\s+", ""), new ArrayList<>());
+        return parse(text.toLowerCase().replace("\\s+", ""), new ArrayList<>());
     }
     private static final Pattern GROUP_PATTERN = Pattern.compile("\\((?<contents>[^(]*?)\\)");
 

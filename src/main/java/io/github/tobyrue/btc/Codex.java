@@ -4,7 +4,6 @@ import io.github.tobyrue.xml.*;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -82,7 +81,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @Override
         public boolean requirementMet(ServerPlayerEntity player) throws Exception {
-            var parsed = PredicateParser.parse(requires);
+            var parsed = AdvancementParser.parse(requires);
             return parsed.evaluate(player);
         }
 
@@ -244,7 +243,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
             @Override
             public boolean requirementMet(ServerPlayerEntity player) throws Exception {
-                var parsed = PredicateParser.parse(requires);
+                var parsed = AdvancementParser.parse(requires);
                 return parsed.evaluate(player);
             }
 
@@ -365,10 +364,10 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @Override
         public boolean requirementMet(ServerPlayerEntity player) throws Exception {
-            var parsed = PredicateParser.parse(requires);
+            var parsed = AdvancementParser.parse(requires);
             return parsed.evaluate(player);
         }
-
+        
         public boolean isRequirementMet(ServerPlayerEntity player) {
             String reqStr = getRequires();
             if (reqStr == null || reqStr.isEmpty()) {
