@@ -117,7 +117,7 @@ public class SpellBookItem extends Item {
 
                 case CREEPER_WALL_BLOCK -> {
                     @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
-                    @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24, 1.0F, true);
+                    @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24,  1.0F, true);
                     if (pillarPosEntity instanceof LivingEntity) {
                         // Entity case: 2 blocks toward player
                         spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
