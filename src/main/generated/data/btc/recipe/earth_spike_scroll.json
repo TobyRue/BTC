@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:stone"
+    },
+    "b": {
+      "item": "btc:empty_scroll"
+    },
+    "c": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "pattern": [
+    "aca",
+    "cbc",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:earth_spike_scroll"
+  }
+}

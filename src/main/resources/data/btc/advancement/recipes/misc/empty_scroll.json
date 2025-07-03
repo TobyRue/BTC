@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_enchanted_paper": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:enchanted_paper"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:empty_scroll"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_enchanted_paper"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:empty_scroll"
+    ]
+  }
+}

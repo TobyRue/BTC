@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:wind_charge"
+    },
+    "b": {
+      "item": "btc:empty_scroll"
+    },
+    "c": {
+      "item": "minecraft:breeze_rod"
+    }
+  },
+  "pattern": [
+    "aca",
+    "cbc",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:cluster_wind_shot_scroll"
+  }
+}

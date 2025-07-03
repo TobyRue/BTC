@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dragon_rod": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:dragon_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_empty_scroll": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:empty_scroll"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:dragon_fireball_scroll"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dragon_rod",
+      "has_empty_scroll"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:dragon_fireball_scroll"
+    ]
+  }
+}

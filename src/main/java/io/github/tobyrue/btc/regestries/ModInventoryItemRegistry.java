@@ -16,6 +16,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModItems.RUBY_TRIAL_KEY, ModItems.STAFF);
             content.addAfter(ModItems.STAFF, ModItems.DRAGON_ROD);
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
+            content.addAfter(ModItems.ENCHANTED_PAPER, ModItems.EMPTY_SCROLL);
             for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
                 if (!spell.spellType.isStartingSpell) {
                     content.addAfter(ModItems.ENCHANTED_PAPER, spell);

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "btc:enchanted_paper"
+    },
+    "c": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "aba",
+    "cbc",
+    "aba"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:empty_scroll"
+  }
+}

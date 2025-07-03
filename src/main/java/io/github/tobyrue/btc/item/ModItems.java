@@ -36,6 +36,10 @@ public class ModItems {
         }
     }
 
+    public static final Item EMPTY_SCROLL = register(
+            new Item(new Item.Settings()),
+            "empty_scroll"
+    );
     public static final Item TEST = register(
             new ScreenTestItem(new Item.Settings()),
             "test_screen"

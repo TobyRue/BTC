@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:water_bucket"
+    },
+    "b": {
+      "item": "btc:empty_scroll"
+    },
+    "c": {
+      "item": "minecraft:blue_ice"
+    }
+  },
+  "pattern": [
+    "aca",
+    "cbc",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:frost_walker_scroll"
+  }
+}

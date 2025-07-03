@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:blaze_rod"
+    },
+    "b": {
+      "item": "btc:empty_scroll"
+    },
+    "c": {
+      "item": "minecraft:fire_charge"
+    }
+  },
+  "pattern": [
+    "aca",
+    "cbc",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:fireball_strong_scroll"
+  }
+}
