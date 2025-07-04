@@ -3,13 +3,13 @@
   "category": "equipment",
   "key": {
     "a": {
-      "item": "minecraft:blaze_rod"
+      "item": "minecraft:magma_cream"
     },
     "b": {
       "item": "btc:empty_scroll"
     },
     "c": {
-      "item": "minecraft:fire_charge"
+      "item": "minecraft:blaze_rod"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:fireball_strong_scroll"
+    "id": "btc:fire_storm_scroll"
   }
 }

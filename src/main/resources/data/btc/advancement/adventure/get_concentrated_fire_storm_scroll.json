@@ -1,0 +1,29 @@
+{
+  "parent": "btc:adventure/obtain_spell_book_advancment",
+  "display": {
+    "icon": {
+      "id": "btc:concentrated_fire_storm_scroll",
+      "count": 1
+    },
+    "title": {
+      "translate": "advancements.btc.adventure.get_concentrated_fire_storm_scroll.title"
+    },
+    "description": {
+      "translate": "advancements.btc.adventure.get_concentrated_fire_storm_scroll.description"
+    },
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "scroll": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "scroll"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

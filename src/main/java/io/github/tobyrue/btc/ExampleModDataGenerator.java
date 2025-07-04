@@ -35,7 +35,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
     public void onInitializeDataGenerator(FabricDataGenerator generator) {
         FabricDataGenerator.Pack pack = generator.createPack();
 //        pack.addProvider(ModModelProvider::new);
-        pack.addProvider(CraftingRecipeProvider::new);
+//        pack.addProvider(CraftingRecipeProvider::new);
 //        pack.addProvider(AdvancementsProvider::new);
 
         // Adding a provider example:
@@ -173,6 +173,38 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .input('c', Items.PHANTOM_MEMBRANE)
                             .criterion(FabricRecipeProvider.hasItem(Items.FEATHER),
                                     FabricRecipeProvider.conditionsFromItem(Items.FEATHER))
+                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+                            .offerTo(exporter);
+                }
+                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.FIRE_STORM) {
+                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+                            .pattern("aca")
+                            .pattern("cbc")
+                            .pattern("aca")
+                            .input('a', Items.MAGMA_CREAM)
+                            .input('b', ModItems.EMPTY_SCROLL)
+                            .input('c', Items.BLAZE_ROD)
+                            .criterion(FabricRecipeProvider.hasItem(Items.MAGMA_CREAM),
+                                    FabricRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM))
+                            .criterion(FabricRecipeProvider.hasItem(Items.BLAZE_ROD),
+                                    FabricRecipeProvider.conditionsFromItem(Items.BLAZE_ROD))
+                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+                            .offerTo(exporter);
+                }
+                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.CONCENTRATED_FIRE_STORM) {
+                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+                            .pattern("aca")
+                            .pattern("cbc")
+                            .pattern("aca")
+                            .input('a', Items.MAGMA_CREAM)
+                            .input('b', ModItems.EMPTY_SCROLL)
+                            .input('c', Items.GHAST_TEAR)
+                            .criterion(FabricRecipeProvider.hasItem(Items.MAGMA_CREAM),
+                                    FabricRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM))
+                            .criterion(FabricRecipeProvider.hasItem(Items.GHAST_TEAR),
+                                    FabricRecipeProvider.conditionsFromItem(Items.GHAST_TEAR))
                             .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
                                     FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
                             .offerTo(exporter);

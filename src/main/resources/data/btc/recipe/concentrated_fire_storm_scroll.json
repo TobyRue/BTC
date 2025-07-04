@@ -3,13 +3,13 @@
   "category": "equipment",
   "key": {
     "a": {
-      "item": "minecraft:stone"
+      "item": "minecraft:magma_cream"
     },
     "b": {
       "item": "btc:empty_scroll"
     },
     "c": {
-      "item": "minecraft:emerald"
+      "item": "minecraft:ghast_tear"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:earth_spike_scroll"
+    "id": "btc:concentrated_fire_storm_scroll"
   }
 }

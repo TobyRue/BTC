@@ -1,6 +1,16 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
+    "has_blaze_rod": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:blaze_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_empty_scroll": {
       "conditions": {
         "items": [
@@ -11,11 +21,11 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_phantom_membrane": {
+    "has_magma_cream": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:phantom_membrane"
+            "items": "minecraft:magma_cream"
           }
         ]
       },
@@ -23,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:tempests_call_scroll"
+        "recipe": "btc:fire_storm_scroll"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -31,13 +41,14 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_phantom_membrane",
+      "has_magma_cream",
+      "has_blaze_rod",
       "has_empty_scroll"
     ]
   ],
   "rewards": {
     "recipes": [
-      "btc:tempests_call_scroll"
+      "btc:fire_storm_scroll"
     ]
   }
 }

@@ -8,13 +8,15 @@ import java.util.function.IntFunction;
 public enum SpellRegistryEnum implements StringIdentifiable {
     FIREBALL_WEAK(0, "fireball_weak", 20, SpellTypes.FIRE, true),
     FIREBALL_STRONG(1, "fireball_strong", 40, SpellTypes.FIRE, false),
-    EARTH_SPIKES(2, "earth_spike", 60, SpellTypes.EARTH, false),
-    DRAGON_FIREBALL(3, "dragon_fireball", 80, SpellTypes.ENDER, false),
-    FROST_WALKER(4, "frost_walker", 80, SpellTypes.WATER, false),
-    CLUSTER_WIND_SHOT(5, "cluster_wind_shot", 80, SpellTypes.WIND, false),
-    TEMPESTS_CALL(6, "tempests_call", 100, SpellTypes.WIND, false),
-    STORM_PUSH(7, "storm_push", 100, SpellTypes.WIND, false);
-
+    FIRE_STORM(2, "fire_storm", 60, SpellTypes.FIRE, false),
+    CONCENTRATED_FIRE_STORM(3, "concentrated_fire_storm", 80, SpellTypes.FIRE, false),
+    EARTH_SPIKES(4, "earth_spike", 60, SpellTypes.EARTH, false),
+    DRAGON_FIREBALL(5, "dragon_fireball", 80, SpellTypes.ENDER, false),
+    FROST_WALKER(6, "frost_walker", 80, SpellTypes.WATER, false),
+    CLUSTER_WIND_SHOT(7, "cluster_wind_shot", 80, SpellTypes.WIND, false),
+    TEMPESTS_CALL(8, "tempests_call", 100, SpellTypes.WIND, false),
+    STORM_PUSH(9, "storm_push", 100, SpellTypes.WIND, false);
+    //TODO ADD LANG FOR FIRE STORM AND CONCENTRATED FIRE STORM ADVANCEMENTS
 
 
     private static final IntFunction<SpellRegistryEnum> BY_ID = ValueLists.createIdToValueFunction((SpellRegistryEnum attackType) -> {
@@ -23,6 +25,7 @@ public enum SpellRegistryEnum implements StringIdentifiable {
 
     public final int id;
     public final String name;
+
     public final double cooldown;
     public final SpellTypes spellTypes;
     public final boolean isStartingSpell;
@@ -33,6 +36,10 @@ public enum SpellRegistryEnum implements StringIdentifiable {
         this.cooldown = cooldown;
         this.spellTypes = spellTypes;
         this.isStartingSpell = isStartingSpell;
+    }
+
+    public double getCooldown() {
+        return cooldown;
     }
 
     public SpellTypes getSpellType() {

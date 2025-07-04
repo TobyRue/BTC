@@ -1,4 +1,5 @@
-// 1.21	2025-07-03T15:06:23.5433558	BTC/Recipes
+// 1.21	2025-07-03T17:43:25.7170882	BTC/Recipes
+093c4aa2af78c8847f17262edc5104fe2b9b16b4 data\btc\advancement\recipes\combat\concentrated_fire_storm_scroll.json
 bb543c43b9c260d5b18c80b93c7157fa56858d7c data\btc\advancement\recipes\combat\dragon_fireball_scroll.json
 f38b3047fd96c01903fb5b1d364df999934ffc75 data\btc\advancement\recipes\combat\tempests_call_scroll.json
 3cf2aa736091bc4483defa52b76b15c15b9a2894 data\btc\recipe\fireball_strong_scroll.json
@@ -6,10 +7,13 @@ b7adccc9581f2af85d6c29465e1a97accb34800d data\btc\advancement\recipes\combat\fir
 c6cbdee73f369534464b714038cc52e8a64667c2 data\btc\recipe\dragon_fireball_scroll.json
 62f961934b879edb224deeaa301242cf346bf409 data\btc\advancement\recipes\combat\frost_walker_scroll.json
 14d039d4c03dee2eb096cc7aff8cfcb21d44612a data\btc\recipe\storm_push_scroll.json
-7ecf8eb4e673a446f905cfe4aefd8d9f4290dc02 data\btc\recipe\earth_spike_scroll.json
 ec96471e6406cf8b26aea4a5bb174098d03de3ad data\btc\recipe\cluster_wind_shot_scroll.json
+7ecf8eb4e673a446f905cfe4aefd8d9f4290dc02 data\btc\recipe\earth_spike_scroll.json
 3089af8a8491e1dc7b957591fcdcdebf0054d144 data\btc\advancement\recipes\combat\earth_spike_scroll.json
 babeef5dc590947dc7673eb783243d5cbe33c87c data\btc\advancement\recipes\combat\storm_push_scroll.json
 e7df869c0e5d3b3138b9faa05a3c1d3e8568147e data\btc\advancement\recipes\combat\cluster_wind_shot_scroll.json
 464f6d16e1ff71ebfeaf19f798d6912a57de234b data\btc\recipe\tempests_call_scroll.json
+2f5ded6b215ad515dc15efd63ac4b1d3a6db26ff data\btc\recipe\fire_storm_scroll.json
+5f773cac1cadc426f8c471ed465c58a996ec2d07 data\btc\recipe\concentrated_fire_storm_scroll.json
+4998dc0203b97316bc36bc25e3e7fe5ea295a239 data\btc\advancement\recipes\combat\fire_storm_scroll.json
 d5a24a7e569e2a765618d35a83a48be3a2af6065 data\btc\recipe\frost_walker_scroll.json

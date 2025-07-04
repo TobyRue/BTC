@@ -34,6 +34,7 @@
   "item.btc.earth_staff": "Staff of the Stonethorn  ",
   "item.btc.water_staff": "Staff of the Drowned",
   "item.btc.spell_book_item": "Spell Book",
+  "item.btc.empty_scroll": "Empty Scroll",
 
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
@@ -216,6 +217,8 @@
   "item.btc.cluster_wind_shot_scroll": "Cluster Wind Shot Scroll",
   "item.btc.storm_push_scroll": "Storm Push Scroll",
   "item.btc.tempests_call_scroll": "Tempests Call Scroll",
+  "item.btc.fire_storm_scroll": "Fire Storm Scroll",
+  "item.btc.concentrated_fire_storm_scroll": "Concentrated Fire Storm Scroll",
 
   "item.btc.scroll.gained": "You gained the %s scroll!",
   "item.btc.scroll.gained.fireball_strong": "Strong Fireball",
@@ -225,6 +228,32 @@
   "item.btc.scroll.gained.cluster_wind_shot": "Cluster Wind Shot",
   "item.btc.scroll.gained.storm_push": "Storm Push",
   "item.btc.scroll.gained.tempests_call": "Tempests Call",
+  "item.btc.scroll.gained.fire_storm": "Fire Storm",
+  "item.btc.scroll.gained.concentrated_fire_storm": "Concentrated Fire Storm",
+
+
+
+  "item.btc.scroll.cooldown": "Cooldown: %d Seconds",
+  "item.btc.scroll.type": "Spell Type: %s",
+  "item.btc.scroll.attack": "Spell: %s",
+
+  "item.btc.scroll.type.fire": "Fire",
+  "item.btc.scroll.type.wind": "Wind",
+  "item.btc.scroll.type.water": "Water",
+  "item.btc.scroll.type.earth": "Earth",
+  "item.btc.scroll.type.ender": "Ender",
+
+  "item.btc.scroll.attack.fireball_strong": "Fireball Strong",
+  "item.btc.scroll.attack.fire_storm": "Fire Storm",
+  "item.btc.scroll.attack.concentrated_fire_storm": "Concentrated Fire Storm",
+  "item.btc.scroll.attack.earth_spike": "Earth Spikes",
+  "item.btc.scroll.attack.dragon_fireball": "Dragon Fireball",
+  "item.btc.scroll.attack.frost_walker": "Frost Walker",
+  "item.btc.scroll.attack.cluster_wind_shot": "Cluster Wind Shot",
+  "item.btc.scroll.attack.tempests_call": "Tempest's Call",
+  "item.btc.scroll.attack.storm_push": "Storm Push",
+
+
 
   "tag.item.btc.wrenches": "Wrenches"
 }
