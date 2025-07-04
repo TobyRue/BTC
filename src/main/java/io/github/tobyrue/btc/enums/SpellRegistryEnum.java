@@ -16,7 +16,6 @@ public enum SpellRegistryEnum implements StringIdentifiable {
     CLUSTER_WIND_SHOT(7, "cluster_wind_shot", 80, SpellTypes.WIND, false),
     TEMPESTS_CALL(8, "tempests_call", 100, SpellTypes.WIND, false),
     STORM_PUSH(9, "storm_push", 100, SpellTypes.WIND, false);
-    //TODO ADD LANG FOR FIRE STORM AND CONCENTRATED FIRE STORM ADVANCEMENTS
 
 
     private static final IntFunction<SpellRegistryEnum> BY_ID = ValueLists.createIdToValueFunction((SpellRegistryEnum attackType) -> {

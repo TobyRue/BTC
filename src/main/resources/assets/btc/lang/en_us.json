@@ -110,8 +110,10 @@
   "advancements.btc.adventure.get_storm_push_scroll.description": "Unleash a violent gust to send enemies flying.",
   "advancements.btc.adventure.get_tempests_call_scroll.title": "Tempest’s Wrath",
   "advancements.btc.adventure.get_tempests_call_scroll.description": "Summon the full force of a storm to wreak havoc upon the world.",
-
-
+  "advancements.btc.adventure.get_fire_storm_scroll.title": "Blazing Tempest",
+  "advancements.btc.adventure.get_fire_storm_scroll.description": "Ignite nearby foes in a fiery storm — the closer they are, the longer they burn.",
+  "advancements.btc.adventure.get_concentrated_fire_storm_scroll.title": "Inferno's Core",
+  "advancements.btc.adventure.get_concentrated_fire_storm_scroll.description": "Focus searing flame into a tight radius, incinerating nearby enemies with relentless fire.",
 
   "enchantment.btc.infusion": "Infusion",
 
