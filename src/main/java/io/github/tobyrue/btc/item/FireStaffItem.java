@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.item;
 import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.enums.EarthStaffAttacks;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
@@ -60,16 +61,15 @@ public class FireStaffItem extends StaffItem {
                     return TypedActionResult.success(stack);
                 }
                 case CONCENTRATED_FIRE_STORM -> {
-                    setMobsOnFireSmall(world, player);
+                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FIRE_BURST, 8, 1));
                     return TypedActionResult.success(stack);
                 }
                 case FIRE_STORM -> {
-                    setMobsOnFireHostile(world, player);
+                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FIRE_BURST, 12, 3));
                     return TypedActionResult.success(stack);
                 }
                 case STRENGTH -> {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
-                    player.setOnFireForTicks(100);
                     return TypedActionResult.success(stack);
                 }
                 case RESISTANCE -> {
@@ -114,7 +114,6 @@ public class FireStaffItem extends StaffItem {
     }
     private void setMobsOnFireSmall(World world, PlayerEntity player) {
         List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(SMALL_FIRE_RADIUS), entity -> entity != player);
-
         for (LivingEntity entity : entities) {
             double dx = player.getX() - entity.getX();
             double dy = player.getY() - entity.getY();

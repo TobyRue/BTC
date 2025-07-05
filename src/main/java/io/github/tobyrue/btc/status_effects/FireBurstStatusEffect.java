@@ -48,7 +48,7 @@ public class FireBurstStatusEffect extends StatusEffect {
                 double radius = maxRadius * progress;
 
 
-                int count = 40;
+                int count = (int) (40 * (Math.min(32, amplifier + 1)));
 
                 for (int i = 0; i < count; i++) {
                     double angle = (2 * Math.PI / count) * i;
@@ -64,13 +64,13 @@ public class FireBurstStatusEffect extends StatusEffect {
 
                     serverWorld.spawnParticles(ParticleTypes.FLAME, x, y, z, 0, xSpeed, 0.0, zSpeed, 0);
                 }
-                double leeway = 0.2;
                 Vec3d origin = storedPos;
 
                 for (LivingEntity target : serverWorld.getEntitiesByClass(LivingEntity.class, entity.getBoundingBox().expand(maxRadius), e -> e.isAlive() && e != entity)) {
                     double dist = target.getPos().distanceTo(origin);
 
-                    if (Math.abs(dist - radius) <= leeway) {
+                    double stepSize = maxRadius / durationLock;
+                    if (dist <= radius && dist > (radius - stepSize)) {
                         target.setOnFireFor((float) ((radius * -1) + maxRadius));
                         target.damage(entity.getDamageSources().inFire(), Math.min(8, (float) ((radius * -1) + maxRadius)));
                     }
