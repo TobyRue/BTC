@@ -27,7 +27,7 @@ public class DrowningEffectOverlay {
         LivingEntity player = client.player;
 
         // Check if the player has the DrowningEffect
-        StatusEffectInstance drowningEffect = player.getStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DROWNING));
+        StatusEffectInstance drowningEffect = player.getStatusEffect(ModStatusEffects.DROWNING);
         if (drowningEffect != null) {
             renderBlueScreen(drawContext);
         }
@@ -49,7 +49,7 @@ public class DrowningEffectOverlay {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.getWindow() == null) return;
 
-        int effectTicks = MinecraftClient.getInstance().player.getStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DROWNING)).getDuration();
+        int effectTicks = MinecraftClient.getInstance().player.getStatusEffect(ModStatusEffects.DROWNING).getDuration();
         double alpha = lerp(0, 0.5, inverseLerp(0, 5*20, clamp(0, 5*20, effectTicks)));
 
         int color = color(94d/255, 198d/255, 255d/255, alpha);

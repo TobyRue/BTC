@@ -6,21 +6,28 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 
 public class ModStatusEffects {
-    public static final StatusEffect BUILDER_BLUNDER;
-    public static final StatusEffect MINER_MISHAP;
-    public static final StatusEffect DRAGON_SCALES;
-    public static final StatusEffect DROWNING;
-    public static final StatusEffect NO_NATURAL_REGENERATION;
-    public static final StatusEffect FROST_WALKER;
+    public static final RegistryEntry<StatusEffect> BUILDER_BLUNDER;
+    public static final RegistryEntry<StatusEffect> MINER_MISHAP;
+    public static final RegistryEntry<StatusEffect> DRAGON_SCALES;
+    public static final RegistryEntry<StatusEffect> DROWNING;
+    public static final RegistryEntry<StatusEffect> NO_NATURAL_REGENERATION;
+    public static final RegistryEntry<StatusEffect> FROST_WALKER;
+    public static final RegistryEntry<StatusEffect> FIRE_BURST;
 
     static {
-        BUILDER_BLUNDER = Registry.register(Registries.STATUS_EFFECT, BTC.identifierOf("builder_blunder"), new BuilderBlunderEffect());
-        MINER_MISHAP = Registry.register(Registries.STATUS_EFFECT, BTC.identifierOf("miner_mishap"), new MinerMishapEffect());
-        DRAGON_SCALES = Registry.register(Registries.STATUS_EFFECT, BTC.identifierOf("dragon_scales"), new DragonScalesEffect());
-        DROWNING = Registry.register(Registries.STATUS_EFFECT, BTC.identifierOf("drowning"), new DrowningEffect());
-        NO_NATURAL_REGENERATION = Registry.register(Registries.STATUS_EFFECT, BTC.identifierOf("no_natural_regeneration"), new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
-        FROST_WALKER = Registry.register(Registries.STATUS_EFFECT, BTC.identifierOf("frost_walker"), new FrostWalkerEffect());
+        BUILDER_BLUNDER = ModStatusEffects.register("builder_blunder", new BuilderBlunderEffect());
+        MINER_MISHAP = ModStatusEffects.register("miner_mishap", new MinerMishapEffect());
+        DRAGON_SCALES = ModStatusEffects.register("dragon_scales", new DragonScalesEffect());
+        DROWNING = ModStatusEffects.register("drowning", new DrowningEffect());
+        NO_NATURAL_REGENERATION = ModStatusEffects.register("no_natural_regeneration", new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
+        FROST_WALKER = ModStatusEffects.register("frost_walker", new FrostWalkerEffect());
+        FIRE_BURST = ModStatusEffects.register("fire_burst", new FireBurstStatusEffect());
+    }
+    private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
+        return Registry.registerReference(Registries.STATUS_EFFECT, BTC.identifierOf(id), statusEffect);
     }
 }

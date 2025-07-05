@@ -19,7 +19,7 @@ public class ModPotions {
                     Identifier.of(BTC.MOD_ID, "builder_blunder"),
                     new Potion(
                             new StatusEffectInstance(
-                                    Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER),
+                                    ModStatusEffects.BUILDER_BLUNDER,
                                     3600,
                                     0)));
     public static final Potion DRAGON_SCALES =
@@ -28,7 +28,7 @@ public class ModPotions {
                     Identifier.of(BTC.MOD_ID, "dragon_scales"),
                     new Potion(
                             new StatusEffectInstance(
-                                    Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES),
+                                    ModStatusEffects.DRAGON_SCALES,
                                     2400,
                                     0)));
     public static final Potion LONG_DRAGON_SCALES =
@@ -37,7 +37,7 @@ public class ModPotions {
                     Identifier.of(BTC.MOD_ID, "long_dragon_scales"),
                     new Potion(
                             new StatusEffectInstance(
-                                    Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES),
+                                    ModStatusEffects.DRAGON_SCALES,
                                     4800,
                                     0)));
     public static final Potion STRONG_DRAGON_SCALES =
@@ -46,7 +46,7 @@ public class ModPotions {
                     Identifier.of(BTC.MOD_ID, "strong_dragon_scales"),
                     new Potion(
                             new StatusEffectInstance(
-                                    Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES),
+                                    ModStatusEffects.DRAGON_SCALES,
                                     2400,
                                     1)));
     public static final Potion FROST_WALKER =
@@ -55,7 +55,7 @@ public class ModPotions {
                     Identifier.of(BTC.MOD_ID, "frost_walker"),
                     new Potion(
                             new StatusEffectInstance(
-                                    Registries.STATUS_EFFECT.getEntry(ModStatusEffects.FROST_WALKER),
+                                    ModStatusEffects.FROST_WALKER,
                                     3600,
                                     0)));
 

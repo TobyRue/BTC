@@ -77,7 +77,7 @@ public class WaterStaffItem extends StaffItem {
                     return TypedActionResult.success(stack);
                 }
                 case FROST_WALKER -> {
-                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.FROST_WALKER), 500, 4));
+                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FROST_WALKER, 500, 4));
                     player.getItemCooldownManager().set(this, 480);
                     return TypedActionResult.success(stack);
                 }

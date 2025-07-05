@@ -38,10 +38,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             if (distance <= range * range) {
                 if (!state.get(AntierBlock.DISABLE)) {
                     if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.MINER_MISHAP), 300, 100));
+                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
                     }
                     if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER), 300, 100));
+                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
                     }
                 } else {
                     for(Direction direction : Direction.values()) {
@@ -51,10 +51,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
                         if (neighborState.getBlock() instanceof DungeonWireBlock) {
                             if (!neighborState.get(POWERED)) {
                                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.MINER_MISHAP), 300, 100));
+                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
                                 }
                                 if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER), 300, 100));
+                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
                                 }
                             }
                         }

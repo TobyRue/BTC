@@ -148,7 +148,7 @@ public class BTC implements ModInitializer {
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (player.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.BUILDER_BLUNDER)) && !player.isCreative()) {
+            if (player.hasStatusEffect(ModStatusEffects.BUILDER_BLUNDER) && !player.isCreative()) {
                 ItemStack stack = player.getStackInHand(hand);
                 Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
                 boolean b = (block instanceof ChestBlock) || (block instanceof CraftingTableBlock) ||

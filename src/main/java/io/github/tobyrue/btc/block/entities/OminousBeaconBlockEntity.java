@@ -98,7 +98,7 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                                 beamPos.getX() + radiusS, beamPos.getY() + radiusS, beamPos.getZ() + radiusS))
                         .forEach(player -> {
                             if (player.getPos().distanceTo(beamCenter) <= radiusS && this.beamLength != 0) {
-                                player.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.NO_NATURAL_REGENERATION), 200, 0));                            }
+                                player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.NO_NATURAL_REGENERATION, 200, 0));                            }
                         });
             }
 

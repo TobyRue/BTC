@@ -22,9 +22,9 @@ public class DragonScalesEffect extends StatusEffect {
         super.onEntityDamage(entity, amplifier, source, amount);
 
         // Check if the attacked entity has this status effect
-        if (entity.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES))) {
+        if (entity.hasStatusEffect(ModStatusEffects.DRAGON_SCALES)) {
             // Get the level of the effect (higher level = more damage reflection & protection)
-            int level = Objects.requireNonNull(entity.getStatusEffect(Registries.STATUS_EFFECT.getEntry(ModStatusEffects.DRAGON_SCALES))).getAmplifier() + 1;
+            int level = Objects.requireNonNull(entity.getStatusEffect(ModStatusEffects.DRAGON_SCALES)).getAmplifier() + 1;
             // Reflect damage to the attacker
             if (source.getAttacker() instanceof LivingEntity attacker) {
                 float reflectionDamage = amount * (0.25f * level); // Reflect 25% of damage per level
