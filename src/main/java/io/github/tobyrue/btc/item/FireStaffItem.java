@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.enums.EarthStaffAttacks;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
@@ -16,6 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -61,11 +64,11 @@ public class FireStaffItem extends StaffItem {
                     return TypedActionResult.success(stack);
                 }
                 case CONCENTRATED_FIRE_STORM -> {
-                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FIRE_BURST, 8, 1));
+                    fireBurst(player, world, 8, 8);
                     return TypedActionResult.success(stack);
                 }
                 case FIRE_STORM -> {
-                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FIRE_BURST, 12, 3));
+                    fireBurst(player, world, 12, 16);
                     return TypedActionResult.success(stack);
                 }
                 case STRENGTH -> {
@@ -86,6 +89,46 @@ public class FireStaffItem extends StaffItem {
         }
         return TypedActionResult.fail(stack);
     }
+
+    private void fireBurst(LivingEntity entity, World world, int duration, double maxRadius) {
+        Vec3d storedPos = entity.getPos();
+        ((Ticker.TickerTarget) entity).add(Ticker.forSeconds((ticks) -> {
+            if (world instanceof ServerWorld serverWorld) {
+                double progress = ticks / (double) (duration * 20);
+                double radius = maxRadius * progress;
+
+
+                int count = (int) (maxRadius/64d*1280d);
+                System.out.printf("Radius: %f", radius);
+                for (int i = 0; i < count; i++) {
+
+                    double angle = (2 * Math.PI / count) * i;
+
+                    double x = storedPos.getX() + Math.sin(angle) * radius;
+                    double z = storedPos.getZ() + Math.cos(angle) * radius;
+
+                    double yOffset = 0.0;
+                    double y = storedPos.getY() + 1.0 + yOffset;
+
+                    double xSpeed = Math.sin(angle) * 0.2;
+                    double zSpeed = Math.cos(angle) * 0.2;
+
+                    serverWorld.spawnParticles(ParticleTypes.FLAME, x, y, z, 0, xSpeed, 0.0, zSpeed, 0);
+                }
+
+                for (LivingEntity target : serverWorld.getEntitiesByClass(LivingEntity.class, entity.getBoundingBox().expand(maxRadius), e -> e.isAlive() && e != entity)) {
+                    double dist = target.getPos().distanceTo(storedPos);
+
+                    double stepSize = maxRadius / duration;
+                    if (dist <= radius && dist > (radius - stepSize)) {
+                        target.setOnFireFor((float) ((radius * -1) + maxRadius));
+                        target.damage(entity.getDamageSources().inFire(), Math.min(8, (float) ((radius * -1) + maxRadius)));
+                    }
+                }
+            }
+        }, duration));
+    }
+
     private void shootFireball(World world, PlayerEntity player, int explosionPower) {
         Vec3d direction = player.getRotationVec(1.0F).normalize();
 

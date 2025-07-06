@@ -27,6 +27,8 @@ public class FireBurstStatusEffect extends StatusEffect {
         super(StatusEffectCategory.HARMFUL, 0xFF4500); // Orange-red color
     }
 
+    //TODO GET RID OF THIS EFFECT
+
     @Override
     public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
         World world = entity.getWorld();
@@ -79,6 +81,7 @@ public class FireBurstStatusEffect extends StatusEffect {
         }
         return true;
     }
+
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
         return true; // Runs every tick while active
