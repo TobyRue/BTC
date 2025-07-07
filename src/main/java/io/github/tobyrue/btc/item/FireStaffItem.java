@@ -1,10 +1,8 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.Ticker;
-import io.github.tobyrue.btc.client.BTCClient;
-import io.github.tobyrue.btc.enums.EarthStaffAttacks;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
-import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
@@ -13,7 +11,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
@@ -27,10 +24,10 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.List;
+import java.util.*;
 
-public class FireStaffItem extends StaffItem {
-    private static final List<String> ATTACKS = List.of("Weak Fire Ball", "Strong Fireball", "Concentrated Fire Storm", "Fire Storm", "Strength", "Resistance");
+//TODO do what was done in this class for cooldowns in the others staffs / spell books
+public class FireStaffItem extends StaffItem implements CooldownProvider {
     private static final double FIRE_RADIUS = 10.0;
     private static final double FIRE_TIME_CHANGE = 10.0;
     private static final double MIN_TIME = 2.0;
@@ -43,6 +40,30 @@ public class FireStaffItem extends StaffItem {
     public FireStaffItem(Settings settings) {
         super(settings);
     }
+    @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            return cp.getVisibleCooldownKey(stack) != null;
+        }
+        return false;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            String key = cp.getVisibleCooldownKey(stack);
+            if (key != null) {
+                float progress = cp.getCooldownProgressInverse(stack, key);
+                return Math.round(13 * progress);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xE5531D;
+    }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
@@ -50,35 +71,51 @@ public class FireStaffItem extends StaffItem {
 
         FireStaffAttacks current = getElement(stack);
         FireStaffAttacks next = FireStaffAttacks.next(current);
+        String cooldownKey = current.getCooldownKey();
 
         if (!player.isSneaking()) {
             switch (current) {
                 case WEAK_FIREBALL -> {
-                    shootFireball(world, player, 1);
-                    player.getItemCooldownManager().set(this, 30);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        setCooldown(player, stack, cooldownKey, 30, true);
+                        shootFireball(world, player, 1);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case STRONG_FIREBALL -> {
-                    shootFireball(world, player, 5);
-                    player.getItemCooldownManager().set(this, 100);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        setCooldown(player, stack, cooldownKey, 60, true);
+                        shootFireball(world, player, 5);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case CONCENTRATED_FIRE_STORM -> {
-                    fireBurst(player, world, 8, 8);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        fireBurst(player, world, stack, 4, 8);
+                        setCooldown(player, stack, cooldownKey, 80, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case FIRE_STORM -> {
-                    fireBurst(player, world, 12, 16);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        fireBurst(player, world, stack, 8, 16);
+                        setCooldown(player, stack, cooldownKey, 100, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case STRENGTH -> {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
+                        setCooldown(player, stack, cooldownKey, 400, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case RESISTANCE -> {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 2));
-                    player.getItemCooldownManager().set(this, 600);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 0));
+                        setCooldown(player, stack, cooldownKey, 600, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
             }
         }
@@ -90,7 +127,7 @@ public class FireStaffItem extends StaffItem {
         return TypedActionResult.fail(stack);
     }
 
-    private void fireBurst(LivingEntity entity, World world, int duration, double maxRadius) {
+    private void fireBurst(LivingEntity entity, World world, ItemStack stack, int duration, double maxRadius) {
         Vec3d storedPos = entity.getPos();
         ((Ticker.TickerTarget) entity).add(Ticker.forSeconds((ticks) -> {
             if (world instanceof ServerWorld serverWorld) {
@@ -99,7 +136,6 @@ public class FireStaffItem extends StaffItem {
 
 
                 int count = (int) (maxRadius/64d*1280d);
-                System.out.printf("Radius: %f", radius);
                 for (int i = 0; i < count; i++) {
 
                     double angle = (2 * Math.PI / count) * i;
@@ -107,8 +143,8 @@ public class FireStaffItem extends StaffItem {
                     double x = storedPos.getX() + Math.sin(angle) * radius;
                     double z = storedPos.getZ() + Math.cos(angle) * radius;
 
-                    double yOffset = 0.0;
-                    double y = storedPos.getY() + 1.0 + yOffset;
+                    double yOffset = 0.2;
+                    double y = storedPos.getY() + yOffset;
 
                     double xSpeed = Math.sin(angle) * 0.2;
                     double zSpeed = Math.cos(angle) * 0.2;
@@ -188,6 +224,33 @@ public class FireStaffItem extends StaffItem {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
+
+        // Manage cooldown bar visibility on element swap
+        NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+        String activeKey = attack.getCooldownKey();
+
+        boolean found = false;
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound entry = cooldowns.getCompound(key);
+            if (key.equals(activeKey)) {
+                entry.putBoolean("visible", true);
+                found = true;
+            } else {
+                entry.remove("visible");
+            }
+            cooldowns.put(key, entry);
+        }
+
+        // If no active cooldown for new element, hide all bars
+        if (!found) {
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.remove("visible");
+                cooldowns.put(key, entry);
+            }
+        }
+
+        nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
