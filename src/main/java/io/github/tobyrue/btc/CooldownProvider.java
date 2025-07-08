@@ -67,7 +67,23 @@ public interface CooldownProvider {
             });
         }
     }
+    default void resetAllCooldowns(ItemStack stack) {
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
 
+        if (nbt.contains("Cooldowns")) {
+            NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.putInt("value", 0);  // Reset cooldown value to 0
+                cooldowns.put(key, entry);
+            }
+
+            nbt.put("Cooldowns", cooldowns);
+            stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+        }
+    }
     // Check if a cooldown is active
     default boolean isCooldownActive(ItemStack stack, String key) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);

@@ -37,4 +37,8 @@ public class ModEntities {
             Identifier.of(BTC.MOD_ID, "creeper_pillar"),
             EntityType.Builder.<CreeperPillarEntity>create(CreeperPillarEntity::new, SpawnGroup.MISC)
                     .dimensions(0.7f, 2f).eyeHeight(1.75f).makeFireImmune().build());
+    public static final EntityType<WindTornadoEntity> WIND_TORNADO = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "wind_tornado"),
+            EntityType.Builder.<WindTornadoEntity>create(WindTornadoEntity::new, SpawnGroup.MISC)
+                    .dimensions(1f, 1f).eyeHeight(0.75f).makeFireImmune().build());
 }

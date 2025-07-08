@@ -1,8 +1,10 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.EarthStaffAttacks;
+import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.WaterStaffAttacks;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.block.BlockState;
@@ -41,16 +43,35 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class WaterStaffItem extends StaffItem {
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+public class WaterStaffItem extends StaffItem implements CooldownProvider {
 
     public WaterStaffItem(Settings settings) {
         super(settings);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            return cp.getVisibleCooldownKey(stack) != null;
+        }
+        return false;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            String key = cp.getVisibleCooldownKey(stack);
+            if (key != null) {
+                float progress = cp.getCooldownProgressInverse(stack, key);
+                return Math.round(13 * progress);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xE5531D;
     }
 
     @Override
@@ -58,38 +79,50 @@ public class WaterStaffItem extends StaffItem {
         ItemStack stack = player.getStackInHand(hand);
         WaterStaffAttacks current = getElement(stack);
         WaterStaffAttacks next = WaterStaffAttacks.next(current);
+        String cooldownKey = current.getCooldownKey();
 
         if (!player.isSneaking()) {
             switch (current) {
                 case WATER_BLAST -> {
-                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
-                    Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
-                    if (!world.isClient) {
-                        WaterBlastEntity waterBlast = new WaterBlastEntity(player, world, player.getX(), player.getY() + 1.25, player.getZ(), velocity);
-                        world.spawnEntity(waterBlast);
-                        player.getItemCooldownManager().set(this, 15);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
+                        Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
+                        if (!world.isClient) {
+                            WaterBlastEntity waterBlast = new WaterBlastEntity(player, world, player.getX(), player.getY() + 1.25, player.getZ(), velocity);
+                            world.spawnEntity(waterBlast);
+                        }
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        setCooldown(player, stack, cooldownKey, 80, true);
+                        return TypedActionResult.success(stack);
                     }
-                    player.incrementStat(Stats.USED.getOrCreateStat(this));
-                    return TypedActionResult.success(stack);
                 }
                 case ICE_FREEZE -> {
-                    freezeTargetArea(player, world);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        freezeTargetArea(player, world);
+                        setCooldown(player, stack, cooldownKey, 320, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case FROST_WALKER -> {
-                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FROST_WALKER, 500, 4));
-                    player.getItemCooldownManager().set(this, 480);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FROST_WALKER, 500, 4));
+                        setCooldown(player, stack, cooldownKey, 960, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case DOLPHINS_GRACE -> {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 1));
-                    player.getItemCooldownManager().set(this, 320);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 1));
+                        setCooldown(player, stack, cooldownKey, 600, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case CONDUIT_POWER ->  {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 400, 1));
-                    player.getItemCooldownManager().set(this, 480);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 400, 1));
+                        setCooldown(player, stack, cooldownKey, 600, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
             }
         }
@@ -177,8 +210,36 @@ public class WaterStaffItem extends StaffItem {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
+
+        // Manage cooldown bar visibility on element swap
+        NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+        String activeKey = attack.getCooldownKey();
+
+        boolean found = false;
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound entry = cooldowns.getCompound(key);
+            if (key.equals(activeKey)) {
+                entry.putBoolean("visible", true);
+                found = true;
+            } else {
+                entry.remove("visible");
+            }
+            cooldowns.put(key, entry);
+        }
+
+        // If no active cooldown for new element, hide all bars
+        if (!found) {
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.remove("visible");
+                cooldowns.put(key, entry);
+            }
+        }
+
+        nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
+
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {

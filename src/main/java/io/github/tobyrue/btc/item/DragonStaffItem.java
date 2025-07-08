@@ -1,9 +1,11 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.enums.DragonStaffAttacks;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
+import io.github.tobyrue.btc.enums.WindStaffAttacks;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -28,66 +30,99 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class DragonStaffItem extends StaffItem {
-    private static final List<String> ATTACKS = List.of("Ender Pearl", "Dragon Breath", "Life Steal", "Dragon Scales - 1", "Dragon Scales - 3", "Dragon Scales - 5");
+public class DragonStaffItem extends StaffItem implements CooldownProvider {
 
     public DragonStaffItem(Settings settings) {
         super(settings);
     }
+    @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            return cp.getVisibleCooldownKey(stack) != null;
+        }
+        return false;
+    }
 
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            String key = cp.getVisibleCooldownKey(stack);
+            if (key != null) {
+                float progress = cp.getCooldownProgressInverse(stack, key);
+                return Math.round(13 * progress);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xE5531D;
+    }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         DragonStaffAttacks current = getElement(stack);
         DragonStaffAttacks next = DragonStaffAttacks.next(current);
+        String cooldownKey = current.getCooldownKey();
 
         if (!player.isSneaking()) {
             switch (current) {
                 case ENDER_PEARL -> {
-                    EnderPearlEntity enderPearl = new EnderPearlEntity(world, player);
-                    enderPearl.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1.5F, 1.0F);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        EnderPearlEntity enderPearl = new EnderPearlEntity(world, player);
+                        enderPearl.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1.5F, 1.0F);
 
-                    world.spawnEntity(enderPearl);
-
-                    player.getItemCooldownManager().set(this, 30);
-
-                    return TypedActionResult.success(stack);
+                        world.spawnEntity(enderPearl);
+                        setCooldown(player, stack, cooldownKey, 40, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case DRAGONS_BREATH -> {
-                    Vec3d direction = player.getRotationVec(1.0F).normalize(); // Normalized direction vector
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        Vec3d direction = player.getRotationVec(1.0F).normalize(); // Normalized direction vector
 
-                    DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, player, direction); // 1 is the explosion power
+                        DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, player, direction); // 1 is the explosion power
 
-                    dragonFireballEntity.setPos(player.getX() + direction.x * 1.5, player.getY() + 1.5, player.getZ() + direction.z * 1.5);
+                        dragonFireballEntity.setPos(player.getX() + direction.x * 1.5, player.getY() + 1.5, player.getZ() + direction.z * 1.5);
 
-                    // Set the fireball velocity (you can adjust the speed multiplier here)
-                    dragonFireballEntity.setVelocity(direction.multiply(1.5));
+                        // Set the fireball velocity (you can adjust the speed multiplier here)
+                        dragonFireballEntity.setVelocity(direction.multiply(1.5));
 
-                    world.spawnEntity(dragonFireballEntity);
+                        world.spawnEntity(dragonFireballEntity);
 
-                    player.getItemCooldownManager().set(this, 100);
-                    return TypedActionResult.success(stack);
+                        setCooldown(player, stack, cooldownKey, 400, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case LIFE_STEAL -> {
-                    applyLifesteal(world, player, 10);
-                    player.getItemCooldownManager().set(this, 20);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        applyLifesteal(world, player, 10);
+                        setCooldown(player, stack, cooldownKey, 20, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case DRAGON_SCALES_1 -> {
-                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 200, 0));
-                    player.getItemCooldownManager().set(this, 160);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 200, 0));
+                        setCooldown(player, stack, cooldownKey, 600, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case DRAGON_SCALES_3 -> {
-                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 600, 2));
-                    player.getItemCooldownManager().set(this, 640);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 600, 2));
+                        setCooldown(player, stack, cooldownKey, 800, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case DRAGON_SCALES_5 -> {
-                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 600, 4));
-                    player.getItemCooldownManager().set(this, 800);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 600, 4));
+                        setCooldown(player, stack, cooldownKey, 1000, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
             }
         }
@@ -151,6 +186,33 @@ public class DragonStaffItem extends StaffItem {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
+
+        // Manage cooldown bar visibility on element swap
+        NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+        String activeKey = attack.getCooldownKey();
+
+        boolean found = false;
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound entry = cooldowns.getCompound(key);
+            if (key.equals(activeKey)) {
+                entry.putBoolean("visible", true);
+                found = true;
+            } else {
+                entry.remove("visible");
+            }
+            cooldowns.put(key, entry);
+        }
+
+        // If no active cooldown for new element, hide all bars
+        if (!found) {
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.remove("visible");
+                cooldowns.put(key, entry);
+            }
+        }
+
+        nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 }

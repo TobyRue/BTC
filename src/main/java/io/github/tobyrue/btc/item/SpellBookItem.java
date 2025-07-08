@@ -1,8 +1,10 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.entity.custom.CreeperPillarEntity;
 import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
 import io.github.tobyrue.btc.enums.CreeperPillarType;
+import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.SpellBookAttacks;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -47,87 +49,125 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class SpellBookItem extends Item {
+public class SpellBookItem extends Item implements CooldownProvider {
     private static final Integer SPIKE_Y_RANGE = 12;
     private static final Integer SPIKE_COUNT = 8;
 
     public SpellBookItem(Settings settings) {
         super(settings);
     }
+    @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            return cp.getVisibleCooldownKey(stack) != null;
+        }
+        return false;
+    }
 
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            String key = cp.getVisibleCooldownKey(stack);
+            if (key != null) {
+                float progress = cp.getCooldownProgressInverse(stack, key);
+                return Math.round(13 * progress);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xE5531D;
+    }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         SpellBookAttacks current = getElement(stack);
         SpellBookAttacks next = SpellBookAttacks.next(current);
+        String cooldownKey = current.getCooldownKey();
 
         if (!player.isSneaking()) {
             switch (current) {
                 case WATER_BLAST -> {
-                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
-                    Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
-                    if (!world.isClient) {
-                        WaterBlastEntity waterBlast = new WaterBlastEntity(player, world, player.getX(), player.getY() + 1.25, player.getZ(), velocity);
-                        world.spawnEntity(waterBlast);
-                        player.getItemCooldownManager().set(this, 15);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
+                        Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
+                        if (!world.isClient) {
+                            WaterBlastEntity waterBlast = new WaterBlastEntity(player, world, player.getX(), player.getY() + 1.25, player.getZ(), velocity);
+                            world.spawnEntity(waterBlast);
+                        }
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        setCooldown(player, stack, cooldownKey, 160, true);
+                        return TypedActionResult.success(stack);
                     }
-                    player.incrementStat(Stats.USED.getOrCreateStat(this));
-                    return TypedActionResult.success(stack);
                 }
                 case FIREBALL -> {
-                    Vec3d velocity = player.getRotationVec(1.0f).multiply(5.5f);
-                    if (!world.isClient) {
-                        FireballEntity fireball = new FireballEntity(world, player, velocity, 1);
-                        world.spawnEntity(fireball);
-                        player.getItemCooldownManager().set(this, 15);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        Vec3d velocity = player.getRotationVec(1.0f).multiply(5.5f);
+                        if (!world.isClient) {
+                            FireballEntity fireball = new FireballEntity(world, player, velocity, 1);
+                            world.spawnEntity(fireball);
+                        }
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        setCooldown(player, stack, cooldownKey, 40, true);
+                        return TypedActionResult.success(stack);
                     }
-                    player.incrementStat(Stats.USED.getOrCreateStat(this));
-                    return TypedActionResult.success(stack);
                 }
                 case DRAGON_FIREBALL -> {
-                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
-                    Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
-                    if (!world.isClient) {
-                        DragonFireballEntity dragonFireball = new DragonFireballEntity(world, player, velocity);
-                        world.spawnEntity(dragonFireball);
-                        player.getItemCooldownManager().set(this, 15);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
+                        Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
+                        if (!world.isClient) {
+                            DragonFireballEntity dragonFireball = new DragonFireballEntity(world, player, velocity);
+                            world.spawnEntity(dragonFireball);
+                        }
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        setCooldown(player, stack, cooldownKey, 200, true);
+                        return TypedActionResult.success(stack);
                     }
-                    player.incrementStat(Stats.USED.getOrCreateStat(this));
-                    return TypedActionResult.success(stack);
                 }
                 case WIND_CHARGE -> {
-                    world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
-                    WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
-                    windCharge.setVelocity(player.getRotationVec(1.0f).multiply(1.5));
-                    player.getItemCooldownManager().set(this, 10);
-                    world.spawnEntity(windCharge);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.8f + world.getRandom().nextFloat() * 0.4f);
+                        WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
+                        windCharge.setVelocity(player.getRotationVec(1.0f).multiply(1.5));
+                        world.spawnEntity(windCharge);
+                        setCooldown(player, stack, cooldownKey, 20, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case EARTH_SPIKE -> {
-                    spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
-                    player.getItemCooldownManager().set(this, 30);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
+                        setCooldown(player, stack, cooldownKey, 200, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case REGENERATION -> {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
-                    player.getItemCooldownManager().set(this, 150);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
+                        setCooldown(player, stack, cooldownKey, 400, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
 
                 case CREEPER_WALL_BLOCK -> {
-                    @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
-                    @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24,  1.0F, true);
-                    if (pillarPosEntity instanceof LivingEntity) {
-                        // Entity case: 2 blocks toward player
-                        spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
-                        player.getItemCooldownManager().set(this, 20);
-                        return TypedActionResult.success(stack);
-                    } else if (pillarPosBlock != null) {
-                        // Block case: no offset
-                        spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
-                        player.getItemCooldownManager().set(this, 20);
-                        return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
+                        @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24,  1.0F, true);
+                        if (pillarPosEntity instanceof LivingEntity) {
+                            // Entity case: 2 blocks toward player
+                            spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
+                            setCooldown(player, stack, cooldownKey, 200, true);
+                            return TypedActionResult.success(stack);
+                        } else if (pillarPosBlock != null) {
+                            // Block case: no offset
+                            spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
+                            setCooldown(player, stack, cooldownKey, 200, true);
+                            return TypedActionResult.success(stack);
+                        }
                     }
                 }
             }
@@ -335,6 +375,33 @@ public class SpellBookItem extends Item {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
+
+        // Manage cooldown bar visibility on element swap
+        NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+        String activeKey = attack.getCooldownKey();
+
+        boolean found = false;
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound entry = cooldowns.getCompound(key);
+            if (key.equals(activeKey)) {
+                entry.putBoolean("visible", true);
+                found = true;
+            } else {
+                entry.remove("visible");
+            }
+            cooldowns.put(key, entry);
+        }
+
+        // If no active cooldown for new element, hide all bars
+        if (!found) {
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.remove("visible");
+                cooldowns.put(key, entry);
+            }
+        }
+
+        nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 

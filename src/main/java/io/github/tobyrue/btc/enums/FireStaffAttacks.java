@@ -7,8 +7,9 @@ public enum FireStaffAttacks implements StringIdentifiable {
     STRONG_FIREBALL ("strong_fireball", "fireball"),
     CONCENTRATED_FIRE_STORM ("concentrated_fire_storm", "fire_storm"),
     FIRE_STORM ("fire_storm", "fire_storm"),
-    STRENGTH ("strength", "strength"),
-    RESISTANCE ("resistance", "resistance");
+    ETERNAL_FIRE ("eternal_fire", "eternal_fire"),
+    STRENGTH ("strength", "strong_effect"),
+    RESISTANCE ("resistance", "strong_effect");
 
     private final String name;
 

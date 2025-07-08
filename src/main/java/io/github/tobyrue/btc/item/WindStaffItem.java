@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.enums.DragonStaffAttacks;
+import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.WindStaffAttacks;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.client.BTCClient;
@@ -22,7 +24,7 @@ import net.minecraft.entity.LivingEntity;
 
 import java.util.List;
 
-public class WindStaffItem extends StaffItem {
+public class WindStaffItem extends StaffItem implements CooldownProvider {
     private static final List<String> ATTACKS = List.of("Wind Charge", "Wind Cluster Shot", "Tempest's Call", "Storm Push");
     // Configurable pull range (in blocks)
     private static final double PULL_RADIUS = 25.0;
@@ -36,34 +38,71 @@ public class WindStaffItem extends StaffItem {
     }
 
     @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            return cp.getVisibleCooldownKey(stack) != null;
+        }
+        return false;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            String key = cp.getVisibleCooldownKey(stack);
+            if (key != null) {
+                float progress = cp.getCooldownProgressInverse(stack, key);
+                return Math.round(13 * progress);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        return 0xE5531D;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         WindStaffAttacks current = getElement(stack);
         WindStaffAttacks next = WindStaffAttacks.next(current);
+        String cooldownKey = current.getCooldownKey();
 
         if (!player.isSneaking()) {
             switch (current) {
                 case WIND_CHARGE -> {
-                    WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
-                    Vec3d direction = player.getRotationVec(1.0f);
-                    windCharge.setVelocity(direction.multiply(1.5)); // Adjust speed as needed
-                    player.getItemCooldownManager().set(this, 20);
-                    world.spawnEntity(windCharge);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
+                        Vec3d direction = player.getRotationVec(1.0f);
+                        windCharge.setVelocity(direction.multiply(1.5));
+                        player.getItemCooldownManager().set(this, 20);
+                        world.spawnEntity(windCharge);
+                        setCooldown(player, stack, cooldownKey, 20, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case CLUSTER_WIND_CHARGE -> {
-                    shootWindCharges(player, world);
-                    player.getItemCooldownManager().set(this, 40);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        shootWindCharges(player, world);
+                        setCooldown(player, stack, cooldownKey, 160, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case TEMPESTS_CALL -> {
-                    pullMobsTowardsPlayer(world, player);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        pullMobsTowardsPlayer(world, player);
+                        setCooldown(player, stack, cooldownKey, 80, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case STORM_PUSH -> {
-                    shootMobsAway(player, world);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        shootMobsAway(player, world);
+                        setCooldown(player, stack, cooldownKey, 100, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
             }
         }
@@ -115,7 +154,6 @@ public class WindStaffItem extends StaffItem {
                 if (distance != 0) {
                     entity.setVelocity(dx / distance * strength, dy / distance * strength, dz / distance * strength);
                 }
-                player.getItemCooldownManager().set(this, 40);
             }
         }
     }
@@ -143,7 +181,6 @@ public class WindStaffItem extends StaffItem {
                 } else {
                     entity.damage(world.getDamageSources().flyIntoWall(), 5);
                 }
-                player.getItemCooldownManager().set(this, 80);
             }
         }
     }
@@ -191,6 +228,34 @@ public class WindStaffItem extends StaffItem {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
+
+        // Manage cooldown bar visibility on element swap
+        NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+        String activeKey = attack.getCooldownKey();
+
+        boolean found = false;
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound entry = cooldowns.getCompound(key);
+            if (key.equals(activeKey)) {
+                entry.putBoolean("visible", true);
+                found = true;
+            } else {
+                entry.remove("visible");
+            }
+            cooldowns.put(key, entry);
+        }
+
+        // If no active cooldown for new element, hide all bars
+        if (!found) {
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.remove("visible");
+                cooldowns.put(key, entry);
+            }
+        }
+
+        nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
+
 }

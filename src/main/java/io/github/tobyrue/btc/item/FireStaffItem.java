@@ -5,10 +5,10 @@ import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.ItemStack;
@@ -21,45 +21,62 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-//TODO do what was done in this class for cooldowns in the others staffs / spell books
 public class FireStaffItem extends StaffItem implements CooldownProvider {
-    private static final double FIRE_RADIUS = 10.0;
-    private static final double FIRE_TIME_CHANGE = 10.0;
-    private static final double MIN_TIME = 2.0;
-    private static final double FIRE_TIME = FIRE_TIME_CHANGE + MIN_TIME;
-    private static final double SMALL_FIRE_RADIUS = FIRE_RADIUS / 2;
-    private static final double SMALL_MIN_TIME = 10;
-    private static final double SMALL_FIRE_TIME = (FIRE_TIME_CHANGE * 2) + SMALL_MIN_TIME;
-    private static final double EXTRA_COOLDOWN = 2;
-
+    World world2 = null;
     public FireStaffItem(Settings settings) {
         super(settings);
     }
+
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            return cp.getVisibleCooldownKey(stack) != null;
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
+        FireStaffAttacks current = getElement(stack);
+        if (current != FireStaffAttacks.ETERNAL_FIRE) {
+            if (this instanceof CooldownProvider cp) {
+                return cp.getVisibleCooldownKey(stack) != null;
+            }
+        } else {
+            return nbt.containsUuid("TargetEternalFire");
         }
         return false;
     }
-
+    //TODO BUG IF YOU DROP ITEM COOLDOWN STOPS
     @Override
     public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            String key = cp.getVisibleCooldownKey(stack);
-            if (key != null) {
-                float progress = cp.getCooldownProgressInverse(stack, key);
-                return Math.round(13 * progress);
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
+        FireStaffAttacks current = getElement(stack);
+
+        if (current != FireStaffAttacks.ETERNAL_FIRE) {
+            if (this instanceof CooldownProvider cp) {
+                String key = cp.getVisibleCooldownKey(stack);
+                if (key != null) {
+                    float progress = cp.getCooldownProgressInverse(stack, key);
+                    return Math.round(13 * progress);
+                }
             }
+        } else {
+            if (nbt.containsUuid("TargetEternalFire")) {
+                if (nbt.contains("TargetEternalFireHealth") && nbt.contains("TargetEternalFireMaxHealth")) {
+                    float health = nbt.getFloat("TargetEternalFireHealth");
+                    float maxHealth = nbt.getFloat("TargetEternalFireMaxHealth");
+                    return Math.round(13 * (health / maxHealth));
+                } else {
+                    return 0; // No health stored yet
+                }
+            }
+            return 0; // No target
         }
         return 0;
     }
-
     @Override
     public int getItemBarColor(ItemStack stack) {
         return 0xE5531D;
@@ -68,10 +85,12 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-
+        world2 = world;
         FireStaffAttacks current = getElement(stack);
         FireStaffAttacks next = FireStaffAttacks.next(current);
         String cooldownKey = current.getCooldownKey();
+
+
 
         if (!player.isSneaking()) {
             switch (current) {
@@ -91,16 +110,46 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
                 }
                 case CONCENTRATED_FIRE_STORM -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
-                        fireBurst(player, world, stack, 4, 8);
+                        fireBurst(player, world, stack, 2, 8);
                         setCooldown(player, stack, cooldownKey, 80, true);
                         return TypedActionResult.success(stack);
                     }
                 }
                 case FIRE_STORM -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
-                        fireBurst(player, world, stack, 8, 16);
+                        fireBurst(player, world, stack, 4, 16);
                         setCooldown(player, stack, cooldownKey, 100, true);
                         return TypedActionResult.success(stack);
+                    }
+                }
+                case ETERNAL_FIRE -> {
+                    NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+                    NbtCompound nbt = component.copyNbt();
+                    if (!nbt.containsUuid("TargetEternalFire")) {
+                        Entity entity = getEntityLookedAt(player,24, 0.4D);
+                        if (entity instanceof LivingEntity livingEntity) {
+                            ((Ticker.TickerTarget) entity).add((ticks) -> {
+                                livingEntity.setOnFire(true);
+                                livingEntity.setOnFireFor(5);
+
+                                // Store target's health in NBT
+                                nbt.putUuid("TargetEternalFire", livingEntity.getUuid());
+                                nbt.putFloat("TargetEternalFireHealth", livingEntity.getHealth());
+                                nbt.putFloat("TargetEternalFireMaxHealth", livingEntity.getMaxHealth());
+
+                                // Remove if dead
+                                if (!livingEntity.isAlive()) {
+                                    nbt.remove("TargetEternalFire");
+                                    nbt.remove("TargetEternalFireHealth");
+                                    nbt.remove("TargetEternalFireMaxHealth");
+                                }
+
+                                stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+
+                                return !livingEntity.isAlive();
+                            });
+                            return TypedActionResult.success(stack);
+                        }
                     }
                 }
                 case STRENGTH -> {
@@ -117,6 +166,7 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
                         return TypedActionResult.success(stack);
                     }
                 }
+                default -> throw new IllegalStateException("Unexpected value: " + current);
             }
         }
         if (!world.isClient && player.isSneaking()) {
@@ -126,7 +176,32 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
         }
         return TypedActionResult.fail(stack);
     }
+    private static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimmingForgivness) {
+        Vec3d eyePos = player.getCameraPosVec(1.0F);
+        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
+        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
 
+        // Create a box from the eye position to the reach vector
+        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
+
+        // Find the closest entity intersecting that line
+        Entity hitEntity = null;
+        double closestDistanceSq = range * range;
+
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
+            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness); // slightly expanded hitbox
+            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
+
+            if (optionalHit.isPresent()) {
+                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    hitEntity = entity;
+                }
+            }
+        }
+        return hitEntity;
+    }
     private void fireBurst(LivingEntity entity, World world, ItemStack stack, int duration, double maxRadius) {
         Vec3d storedPos = entity.getPos();
         ((Ticker.TickerTarget) entity).add(Ticker.forSeconds((ticks) -> {
@@ -176,38 +251,15 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
 
         world.spawnEntity(fireball);
     }
-    private void setMobsOnFireHostile(World world, PlayerEntity player) {
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(FIRE_RADIUS),
-                entity -> entity != player && entity instanceof HostileEntity); // Only affect hostile mobs
-        for (LivingEntity entity : entities) {
-            double dx = player.getX() - entity.getX();
-            double dy = player.getY() - entity.getY();
-            double dz = player.getZ() - entity.getZ();
-            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            if (entities != null) {
-                double timeNorm = (Math.abs(distance) * -1) + FIRE_TIME;
-                entity.setOnFireFor((float) timeNorm);
-                player.getItemCooldownManager().set(this, (int) ((FIRE_TIME + EXTRA_COOLDOWN) * 20));
-            }
+    private Entity getEntity(ItemStack stack) {
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
+        UUID name = nbt.getUuid("EternalFireTarget");
+        if (stack.getHolder().getEntityWorld() instanceof ServerWorld serverWorld) {
+            return serverWorld.getEntity(name);
         }
+        return null;
     }
-    private void setMobsOnFireSmall(World world, PlayerEntity player) {
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(SMALL_FIRE_RADIUS), entity -> entity != player);
-        for (LivingEntity entity : entities) {
-            double dx = player.getX() - entity.getX();
-            double dy = player.getY() - entity.getY();
-            double dz = player.getZ() - entity.getZ();
-            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            if (entities != null) {
-                double time1 = Math.pow(distance, 2);
-                double time2 = Math.abs(time1) * -1;
-                double time3 = time2 + SMALL_FIRE_TIME;
-                entity.setOnFireFor((float) time3);
-                player.getItemCooldownManager().set(this, (int) ((SMALL_FIRE_TIME + EXTRA_COOLDOWN) * 20));
-            }
-        }
-    }
-
     private FireStaffAttacks getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
@@ -264,14 +316,5 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
 
     public MutableText currentAttack(ItemStack stack) {return Text.literal("Current Spell: " + getElement(stack));}
     public MutableText attackTypes() {return Text.literal("Attack Types:");}
-    public MutableText attack1() {return Text.literal("Weak Fire Ball");}
-    public MutableText attack2() {return Text.literal("Strong Fireball");}
-    public MutableText attack3() {return Text.literal("Fire Storm - Set  Hostile Mobs on Fire Within a " +  FIRE_RADIUS + " Block Radius");}
-    public MutableText attack3cont() {return Text.literal("  - With a Minimum of " + MIN_TIME + " Seconds of Burning and Max of " + FIRE_TIME);}
-    public MutableText attack3cont2() {return Text.literal("  - Closer to a Hostile Entity the Longer the Burn Time Is");}
-    public MutableText attack3small() {return Text.literal("Concentrated Fire Storm - Set All Mobs on Fire Within a " +  SMALL_FIRE_RADIUS + " Block Radius");}
-    public MutableText attack3contsmall() {return Text.literal("  - With a Minimum of " + 5.0 + " Seconds of Burning and Max of " + SMALL_FIRE_TIME);}
-    public MutableText attack3cont2small() {return Text.literal("  - Closer to a Entity the Longer the Burn Time Is");}
-    public MutableText attack4() {return Text.literal("Strength - Lvl 2 for 7 Seconds");}
-    public MutableText attack5() {return Text.literal("Resistance - Lvl 3 for 5 Seconds");}
+
 }

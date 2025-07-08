@@ -1,10 +1,12 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.entity.custom.CreeperPillarEntity;
 import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.CreeperPillarType;
 import io.github.tobyrue.btc.enums.EarthStaffAttacks;
+import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.SpellBookAttacks;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -43,8 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class EarthStaffItem extends StaffItem {
-    private static final List<String> ATTACKS = List.of("Line of Earth Spikes", "2", "3", "4", "5", "6");
+public class EarthStaffItem extends StaffItem implements CooldownProvider {
     private static final Integer SPIKE_Y_RANGE = 12;
     private static final Integer SPIKE_COUNT = 8;
     private static final double POISON_RADIUS = 8.0;
@@ -52,6 +53,33 @@ public class EarthStaffItem extends StaffItem {
     public EarthStaffItem(Settings settings) {
         super(settings);
     }
+
+    @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            return cp.getVisibleCooldownKey(stack) != null;
+        }
+        return false;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        if (this instanceof CooldownProvider cp) {
+            String key = cp.getVisibleCooldownKey(stack);
+            if (key != null) {
+                float progress = cp.getCooldownProgressInverse(stack, key);
+                return Math.round(13 * progress);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        //TODO COLOR
+        return 0xE5531D;
+    }
+
     @Nullable
     public BlockPos findSpawnableGround(World world, BlockPos centerPos, int yRange) {
         int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
@@ -74,77 +102,86 @@ public class EarthStaffItem extends StaffItem {
 
         EarthStaffAttacks current = getElement(stack);
         EarthStaffAttacks next = EarthStaffAttacks.next(current);
+        String cooldownKey = current.getCooldownKey();
 
         if (!player.isSneaking()) {
             switch (current) {
                 case EARTH_SPIKES -> {
-                    spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
-                    player.getItemCooldownManager().set(this, 60);
-                    return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
+                        setCooldown(player, stack, cooldownKey, 100, true);
+                        return TypedActionResult.success(stack);
+                    }
                 }
                 case CREEPER_WALL_CIRCLE -> {
-                    int spikes = Math.max(8, (int) (3 * 3) + 8);
-                    double radius = 3;
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 2));
-                    for (int i = 0; i < spikes; i++) {
-                        double angle = 2 * Math.PI * i / spikes;
-                        double x = player.getX() + radius * Math.cos(angle);
-                        double z = player.getZ() + radius * Math.sin(angle);
-                        BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) player.getY(), (int) z), 10);
-                        if (groundPos != null) {
-                            CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, player.getYaw(), player, CreeperPillarType.NORMAL);
-                            world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
-                            world.spawnEntity(pillar);
-                        }
-                    }
-                    player.getItemCooldownManager().set(this, 200);
-                    return TypedActionResult.success(stack);
-                }
-                case CREEPER_WALL_TRAP_WITH_EXPLOSIVE -> {
-                    Entity entityLookedAt = getEntityLookedAt(player, 16, 0.3D);
-                    if (entityLookedAt != null) {
+                    if (!isCooldownActive(stack, cooldownKey)) {
                         int spikes = Math.max(8, (int) (3 * 3) + 8);
-                        double radius = 2;
+                        double radius = 3;
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 2));
                         for (int i = 0; i < spikes; i++) {
                             double angle = 2 * Math.PI * i / spikes;
-                            double x = entityLookedAt.getX() + radius * Math.cos(angle);
-                            double z = entityLookedAt.getZ() + radius * Math.sin(angle);
-                            BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), 10);
-                            if (entityLookedAt instanceof LivingEntity) {
-                                player.getItemCooldownManager().set(this, 80);
-                                if (groundPos != null) {
-                                    CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, entityLookedAt.getYaw(), player, CreeperPillarType.RANDOM);
-                                    world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
-                                    world.spawnEntity(pillar);
-                                }
+                            double x = player.getX() + radius * Math.cos(angle);
+                            double z = player.getZ() + radius * Math.sin(angle);
+                            BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) player.getY(), (int) z), 10);
+                            if (groundPos != null) {
+                                CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, player.getYaw(), player, CreeperPillarType.NORMAL);
+                                world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
+                                world.spawnEntity(pillar);
                             }
                         }
+                        setCooldown(player, stack, cooldownKey, 400, true);
                         return TypedActionResult.success(stack);
+                    }
+                }
+                case CREEPER_WALL_TRAP_WITH_EXPLOSIVE -> {
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        Entity entityLookedAt = getEntityLookedAt(player, 16, 0.3D);
+                        if (entityLookedAt != null) {
+                            int spikes = Math.max(8, (int) (3 * 3) + 8);
+                            double radius = 2;
+                            for (int i = 0; i < spikes; i++) {
+                                double angle = 2 * Math.PI * i / spikes;
+                                double x = entityLookedAt.getX() + radius * Math.cos(angle);
+                                double z = entityLookedAt.getZ() + radius * Math.sin(angle);
+                                BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), 10);
+                                if (entityLookedAt instanceof LivingEntity) {
+                                    setCooldown(player, stack, cooldownKey, 320, true);
+                                    if (groundPos != null) {
+                                        CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, entityLookedAt.getYaw(), player, CreeperPillarType.RANDOM);
+                                        world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
+                                        world.spawnEntity(pillar);
+                                    }
+                                }
+                            }
+                            return TypedActionResult.success(stack);
+                        }
                     }
                 }
                 case CREEPER_WALL_BLOCK -> {
-                    @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
-                    @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24, 1.0F, true);
-                    if (pillarPosEntity instanceof LivingEntity) {
-                        // Entity case: 2 blocks toward player
-                        spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
-                        player.getItemCooldownManager().set(this, 30);
-                        return TypedActionResult.success(stack);
-                    } else if (pillarPosBlock != null) {
-                        // Block case: no offset
-                        spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
-                        player.getItemCooldownManager().set(this, 30);
-                        return TypedActionResult.success(stack);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        @Nullable Entity pillarPosEntity = getEntityLookedAt(player, 24, 0.3D);
+                        @Nullable Vec3d pillarPosBlock = getBlockLookedAt(player, 24, 1.0F, true);
+                        if (pillarPosEntity instanceof LivingEntity) {
+                            spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
+                            setCooldown(player, stack, cooldownKey, 50, true);
+                            return TypedActionResult.success(stack);
+                        } else if (pillarPosBlock != null) {
+                            spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
+                            setCooldown(player, stack, cooldownKey, 50, true);
+                            return TypedActionResult.success(stack);
+                        }
                     }
                 }
                 case POISON -> {
-                    List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(POISON_RADIUS),
-                            entity -> entity != player && entity instanceof LivingEntity); // Only affect hostile mobs
-                    for (LivingEntity entity : entities) {
-                        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 4));
-                        player.getItemCooldownManager().set(this, 80);
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(POISON_RADIUS),
+                                entity -> entity != player && entity instanceof LivingEntity); // Only affect hostile mobs
+                        for (LivingEntity entity : entities) {
+                            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 4));
+                            setCooldown(player, stack, cooldownKey, 100, true);
+                        }
+                        return TypedActionResult.success(stack);
                     }
-                    return TypedActionResult.success(stack);
                 }
             }
         }
@@ -290,10 +327,38 @@ public class EarthStaffItem extends StaffItem {
         return EarthStaffAttacks.EARTH_SPIKES;
     }
 
+
     private void setElement(ItemStack stack, EarthStaffAttacks attack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
+
+        // Manage cooldown bar visibility on element swap
+        NbtCompound cooldowns = nbt.getCompound("Cooldowns");
+        String activeKey = attack.getCooldownKey();
+
+        boolean found = false;
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound entry = cooldowns.getCompound(key);
+            if (key.equals(activeKey)) {
+                entry.putBoolean("visible", true);
+                found = true;
+            } else {
+                entry.remove("visible");
+            }
+            cooldowns.put(key, entry);
+        }
+
+        // If no active cooldown for new element, hide all bars
+        if (!found) {
+            for (String key : cooldowns.getKeys()) {
+                NbtCompound entry = cooldowns.getCompound(key);
+                entry.remove("visible");
+                cooldowns.put(key, entry);
+            }
+        }
+
+        nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
