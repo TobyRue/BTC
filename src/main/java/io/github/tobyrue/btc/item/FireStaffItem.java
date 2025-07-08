@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -28,8 +30,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class FireStaffItem extends StaffItem implements CooldownProvider {
+public class FireStaffItem extends StaffItem {
     World world2 = null;
+
     public FireStaffItem(Settings settings) {
         super(settings);
     }
@@ -48,7 +51,7 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
         }
         return false;
     }
-    //TODO BUG IF YOU DROP ITEM COOLDOWN STOPS
+
     @Override
     public int getItemBarStep(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
@@ -77,9 +80,50 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
         }
         return 0;
     }
+
     @Override
     public int getItemBarColor(ItemStack stack) {
         return 0xE5531D;
+    }
+
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
+
+        if (!world.isClient) {
+            // Always tick cooldowns no matter where the item is (player or item entity)
+            this.tickCooldowns(stack);
+
+            // Eternal Fire tracking logic
+            NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+            NbtCompound nbt = component.copyNbt();
+
+            if (nbt.containsUuid("TargetEternalFire") && world instanceof ServerWorld serverWorld) {
+                UUID targetId = nbt.getUuid("TargetEternalFire");
+                Entity targetEntity = serverWorld.getEntity(targetId);
+
+                if (targetEntity instanceof LivingEntity living) {
+                    if (living.isAlive()) {
+                        nbt.putFloat("TargetEternalFireHealth", living.getHealth());
+                        nbt.putFloat("TargetEternalFireMaxHealth", living.getMaxHealth());
+                        living.setOnFireFor(5);
+                    } else {
+                        // Remove if dead
+                        nbt.remove("TargetEternalFire");
+                        nbt.remove("TargetEternalFireHealth");
+                        nbt.remove("TargetEternalFireMaxHealth");
+                    }
+                } else {
+                    // Remove if not found
+                    nbt.remove("TargetEternalFire");
+                    nbt.remove("TargetEternalFireHealth");
+                    nbt.remove("TargetEternalFireMaxHealth");
+                }
+
+                stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+            }
+        }
     }
 
     @Override
@@ -97,6 +141,7 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
                 case WEAK_FIREBALL -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         setCooldown(player, stack, cooldownKey, 30, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         shootFireball(world, player, 1);
                         return TypedActionResult.success(stack);
                     }
@@ -104,6 +149,7 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
                 case STRONG_FIREBALL -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         setCooldown(player, stack, cooldownKey, 60, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         shootFireball(world, player, 5);
                         return TypedActionResult.success(stack);
                     }
@@ -111,49 +157,32 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
                 case CONCENTRATED_FIRE_STORM -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         fireBurst(player, world, stack, 2, 8);
-                        setCooldown(player, stack, cooldownKey, 80, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        setCooldown(player, stack, cooldownKey, 200, true);
                         return TypedActionResult.success(stack);
                     }
                 }
                 case FIRE_STORM -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         fireBurst(player, world, stack, 4, 16);
-                        setCooldown(player, stack, cooldownKey, 100, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        setCooldown(player, stack, cooldownKey, 400, true);
                         return TypedActionResult.success(stack);
                     }
                 }
                 case ETERNAL_FIRE -> {
-                    NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-                    NbtCompound nbt = component.copyNbt();
-                    if (!nbt.containsUuid("TargetEternalFire")) {
-                        Entity entity = getEntityLookedAt(player,24, 0.4D);
-                        if (entity instanceof LivingEntity livingEntity) {
-                            ((Ticker.TickerTarget) entity).add((ticks) -> {
-                                livingEntity.setOnFire(true);
-                                livingEntity.setOnFireFor(5);
-
-                                // Store target's health in NBT
-                                nbt.putUuid("TargetEternalFire", livingEntity.getUuid());
-                                nbt.putFloat("TargetEternalFireHealth", livingEntity.getHealth());
-                                nbt.putFloat("TargetEternalFireMaxHealth", livingEntity.getMaxHealth());
-
-                                // Remove if dead
-                                if (!livingEntity.isAlive()) {
-                                    nbt.remove("TargetEternalFire");
-                                    nbt.remove("TargetEternalFireHealth");
-                                    nbt.remove("TargetEternalFireMaxHealth");
-                                }
-
-                                stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
-
-                                return !livingEntity.isAlive();
-                            });
+                    Entity target = getEntityLookedAt(player, 24, 0.4D);
+                    if (target != null) {
+                        boolean applied = applyEternalFireToEntity(stack, target);
+                        if (applied) {
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
                             return TypedActionResult.success(stack);
                         }
                     }
                 }
                 case STRENGTH -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 140, 0));
                         setCooldown(player, stack, cooldownKey, 400, true);
                         return TypedActionResult.success(stack);
@@ -161,6 +190,7 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
                 }
                 case RESISTANCE -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 0));
                         setCooldown(player, stack, cooldownKey, 600, true);
                         return TypedActionResult.success(stack);
@@ -175,6 +205,28 @@ public class FireStaffItem extends StaffItem implements CooldownProvider {
             return TypedActionResult.success(stack);
         }
         return TypedActionResult.fail(stack);
+    }
+    private boolean applyEternalFireToEntity(ItemStack stack, Entity entity) {
+        if (!(entity instanceof LivingEntity livingEntity)) return false;
+        if (livingEntity.isFireImmune()) return false;
+        if (livingEntity instanceof WitchEntity) return false;
+
+        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+        NbtCompound nbt = component.copyNbt();
+
+        if (nbt.containsUuid("TargetEternalFire")) return false; // already tracking a target
+
+        // Store target's UUID and current health info
+        nbt.putUuid("TargetEternalFire", livingEntity.getUuid());
+        nbt.putFloat("TargetEternalFireHealth", livingEntity.getHealth());
+        nbt.putFloat("TargetEternalFireMaxHealth", livingEntity.getMaxHealth());
+
+        // Immediately set them on fire so it starts right away
+        livingEntity.setOnFireFor(5);
+
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+
+        return true;
     }
     private static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimmingForgivness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);

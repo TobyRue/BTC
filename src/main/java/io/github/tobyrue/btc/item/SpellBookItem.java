@@ -56,6 +56,7 @@ public class SpellBookItem extends Item implements CooldownProvider {
     public SpellBookItem(Settings settings) {
         super(settings);
     }
+
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
         if (this instanceof CooldownProvider cp) {
@@ -78,8 +79,17 @@ public class SpellBookItem extends Item implements CooldownProvider {
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        return 0xE5531D;
+        return 0xEFBF04;
     }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
+        if (!world.isClient && entity instanceof LivingEntity) {
+            this.tickCooldowns(stack);
+        }
+    }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
@@ -105,12 +115,17 @@ public class SpellBookItem extends Item implements CooldownProvider {
                 }
                 case FIREBALL -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
-                        Vec3d velocity = player.getRotationVec(1.0f).multiply(5.5f);
                         if (!world.isClient) {
-                            FireballEntity fireball = new FireballEntity(world, player, velocity, 1);
+                            Vec3d direction = player.getRotationVec(1.0F).normalize();
+
+                            FireballEntity fireball = new FireballEntity(world, player, direction, 1);
+
+                            fireball.setPos(player.getX() + direction.x * 1.5, player.getY() + 1.5, player.getZ() + direction.z * 1.5);
+
+                            fireball.setVelocity(direction.multiply(1.5));
+
                             world.spawnEntity(fireball);
                         }
-                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 40, true);
                         return TypedActionResult.success(stack);
                     }
@@ -134,6 +149,7 @@ public class SpellBookItem extends Item implements CooldownProvider {
                         WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
                         windCharge.setVelocity(player.getRotationVec(1.0f).multiply(1.5));
                         world.spawnEntity(windCharge);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 20, true);
                         return TypedActionResult.success(stack);
                     }
@@ -142,6 +158,7 @@ public class SpellBookItem extends Item implements CooldownProvider {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
                         setCooldown(player, stack, cooldownKey, 200, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
                 }
@@ -149,6 +166,7 @@ public class SpellBookItem extends Item implements CooldownProvider {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
                         setCooldown(player, stack, cooldownKey, 400, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
                 }
@@ -161,11 +179,13 @@ public class SpellBookItem extends Item implements CooldownProvider {
                             // Entity case: 2 blocks toward player
                             spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
                             setCooldown(player, stack, cooldownKey, 200, true);
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
                             return TypedActionResult.success(stack);
                         } else if (pillarPosBlock != null) {
                             // Block case: no offset
                             spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
                             setCooldown(player, stack, cooldownKey, 200, true);
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
                             return TypedActionResult.success(stack);
                         }
                     }

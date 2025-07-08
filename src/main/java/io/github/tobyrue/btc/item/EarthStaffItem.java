@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class EarthStaffItem extends StaffItem implements CooldownProvider {
+public class EarthStaffItem extends StaffItem {
     private static final Integer SPIKE_Y_RANGE = 12;
     private static final Integer SPIKE_COUNT = 8;
     private static final double POISON_RADIUS = 8.0;
@@ -55,29 +55,8 @@ public class EarthStaffItem extends StaffItem implements CooldownProvider {
     }
 
     @Override
-    public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            return cp.getVisibleCooldownKey(stack) != null;
-        }
-        return false;
-    }
-
-    @Override
-    public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            String key = cp.getVisibleCooldownKey(stack);
-            if (key != null) {
-                float progress = cp.getCooldownProgressInverse(stack, key);
-                return Math.round(13 * progress);
-            }
-        }
-        return 0;
-    }
-
-    @Override
     public int getItemBarColor(ItemStack stack) {
-        //TODO COLOR
-        return 0xE5531D;
+        return 0x5D9C59;
     }
 
     @Nullable
@@ -108,6 +87,7 @@ public class EarthStaffItem extends StaffItem implements CooldownProvider {
             switch (current) {
                 case EARTH_SPIKES -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         spawnEarthSpikesTowardsYaw(world, player, SPIKE_Y_RANGE, SPIKE_COUNT);
                         setCooldown(player, stack, cooldownKey, 100, true);
                         return TypedActionResult.success(stack);
@@ -129,6 +109,7 @@ public class EarthStaffItem extends StaffItem implements CooldownProvider {
                                 world.spawnEntity(pillar);
                             }
                         }
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 400, true);
                         return TypedActionResult.success(stack);
                     }
@@ -146,6 +127,7 @@ public class EarthStaffItem extends StaffItem implements CooldownProvider {
                                 BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), 10);
                                 if (entityLookedAt instanceof LivingEntity) {
                                     setCooldown(player, stack, cooldownKey, 320, true);
+                                    player.incrementStat(Stats.USED.getOrCreateStat(this));
                                     if (groundPos != null) {
                                         CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, entityLookedAt.getYaw(), player, CreeperPillarType.RANDOM);
                                         world.emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(player));
@@ -164,10 +146,12 @@ public class EarthStaffItem extends StaffItem implements CooldownProvider {
                         if (pillarPosEntity instanceof LivingEntity) {
                             spawnCreeperPillarWall(world, pillarPosEntity.getPos(), player, 5, 2.0);
                             setCooldown(player, stack, cooldownKey, 50, true);
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
                             return TypedActionResult.success(stack);
                         } else if (pillarPosBlock != null) {
                             spawnCreeperPillarWall(world, pillarPosBlock, player, 5, 0.0);
                             setCooldown(player, stack, cooldownKey, 50, true);
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
                             return TypedActionResult.success(stack);
                         }
                     }
@@ -179,6 +163,7 @@ public class EarthStaffItem extends StaffItem implements CooldownProvider {
                         for (LivingEntity entity : entities) {
                             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 4));
                             setCooldown(player, stack, cooldownKey, 100, true);
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
                         }
                         return TypedActionResult.success(stack);
                     }

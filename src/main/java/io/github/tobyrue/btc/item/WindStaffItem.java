@@ -13,6 +13,7 @@ import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -24,8 +25,7 @@ import net.minecraft.entity.LivingEntity;
 
 import java.util.List;
 
-public class WindStaffItem extends StaffItem implements CooldownProvider {
-    private static final List<String> ATTACKS = List.of("Wind Charge", "Wind Cluster Shot", "Tempest's Call", "Storm Push");
+public class WindStaffItem extends StaffItem {
     // Configurable pull range (in blocks)
     private static final double PULL_RADIUS = 25.0;
     private static final double SHOOT_RADIUS = 15.0;
@@ -38,28 +38,8 @@ public class WindStaffItem extends StaffItem implements CooldownProvider {
     }
 
     @Override
-    public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            return cp.getVisibleCooldownKey(stack) != null;
-        }
-        return false;
-    }
-
-    @Override
-    public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            String key = cp.getVisibleCooldownKey(stack);
-            if (key != null) {
-                float progress = cp.getCooldownProgressInverse(stack, key);
-                return Math.round(13 * progress);
-            }
-        }
-        return 0;
-    }
-
-    @Override
     public int getItemBarColor(ItemStack stack) {
-        return 0xE5531D;
+        return 0xA0F4C5;
     }
 
     @Override
@@ -77,9 +57,9 @@ public class WindStaffItem extends StaffItem implements CooldownProvider {
                         WindChargeEntity windCharge = new WindChargeEntity(player, world, player.getX(), player.getY() + 1.0, player.getZ());
                         Vec3d direction = player.getRotationVec(1.0f);
                         windCharge.setVelocity(direction.multiply(1.5));
-                        player.getItemCooldownManager().set(this, 20);
                         world.spawnEntity(windCharge);
                         setCooldown(player, stack, cooldownKey, 20, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
                 }
@@ -87,6 +67,7 @@ public class WindStaffItem extends StaffItem implements CooldownProvider {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         shootWindCharges(player, world);
                         setCooldown(player, stack, cooldownKey, 160, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
                 }
@@ -94,6 +75,7 @@ public class WindStaffItem extends StaffItem implements CooldownProvider {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         pullMobsTowardsPlayer(world, player);
                         setCooldown(player, stack, cooldownKey, 80, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
                 }
@@ -101,6 +83,7 @@ public class WindStaffItem extends StaffItem implements CooldownProvider {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         shootMobsAway(player, world);
                         setCooldown(player, stack, cooldownKey, 100, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
                 }

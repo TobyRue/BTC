@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -30,35 +31,17 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class DragonStaffItem extends StaffItem implements CooldownProvider {
+public class DragonStaffItem extends StaffItem {
 
     public DragonStaffItem(Settings settings) {
         super(settings);
     }
-    @Override
-    public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            return cp.getVisibleCooldownKey(stack) != null;
-        }
-        return false;
-    }
-
-    @Override
-    public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            String key = cp.getVisibleCooldownKey(stack);
-            if (key != null) {
-                float progress = cp.getCooldownProgressInverse(stack, key);
-                return Math.round(13 * progress);
-            }
-        }
-        return 0;
-    }
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        return 0xE5531D;
+        return 0x9E00ED;
     }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
@@ -73,7 +56,7 @@ public class DragonStaffItem extends StaffItem implements CooldownProvider {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         EnderPearlEntity enderPearl = new EnderPearlEntity(world, player);
                         enderPearl.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1.5F, 1.0F);
-
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         world.spawnEntity(enderPearl);
                         setCooldown(player, stack, cooldownKey, 40, true);
                         return TypedActionResult.success(stack);
@@ -92,6 +75,7 @@ public class DragonStaffItem extends StaffItem implements CooldownProvider {
 
                         world.spawnEntity(dragonFireballEntity);
 
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 400, true);
                         return TypedActionResult.success(stack);
                     }
@@ -99,12 +83,14 @@ public class DragonStaffItem extends StaffItem implements CooldownProvider {
                 case LIFE_STEAL -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         applyLifesteal(world, player, 10);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 20, true);
                         return TypedActionResult.success(stack);
                     }
                 }
                 case DRAGON_SCALES_1 -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 200, 0));
                         setCooldown(player, stack, cooldownKey, 600, true);
                         return TypedActionResult.success(stack);
@@ -112,12 +98,14 @@ public class DragonStaffItem extends StaffItem implements CooldownProvider {
                 }
                 case DRAGON_SCALES_3 -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 600, 2));
                         setCooldown(player, stack, cooldownKey, 800, true);
                         return TypedActionResult.success(stack);
                     }
                 }
                 case DRAGON_SCALES_5 -> {
+                    player.incrementStat(Stats.USED.getOrCreateStat(this));
                     if (!isCooldownActive(stack, cooldownKey)) {
                         player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DRAGON_SCALES, 600, 4));
                         setCooldown(player, stack, cooldownKey, 1000, true);

@@ -43,35 +43,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class WaterStaffItem extends StaffItem implements CooldownProvider {
+public class WaterStaffItem extends StaffItem {
 
     public WaterStaffItem(Settings settings) {
         super(settings);
     }
 
-    @Override
-    public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            return cp.getVisibleCooldownKey(stack) != null;
-        }
-        return false;
-    }
-
-    @Override
-    public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
-            String key = cp.getVisibleCooldownKey(stack);
-            if (key != null) {
-                float progress = cp.getCooldownProgressInverse(stack, key);
-                return Math.round(13 * progress);
-            }
-        }
-        return 0;
-    }
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        return 0xE5531D;
+        return 0x1E90FF;
     }
 
     @Override
@@ -98,14 +79,18 @@ public class WaterStaffItem extends StaffItem implements CooldownProvider {
                 }
                 case ICE_FREEZE -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
-                        freezeTargetArea(player, world);
-                        setCooldown(player, stack, cooldownKey, 320, true);
+                        if (freezeTargetArea(player, world) != null) {
+                            // Method above does all the logic
+                            player.incrementStat(Stats.USED.getOrCreateStat(this));
+                            setCooldown(player, stack, cooldownKey, 320, true);
+                        }
                         return TypedActionResult.success(stack);
                     }
                 }
                 case FROST_WALKER -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.FROST_WALKER, 500, 4));
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 960, true);
                         return TypedActionResult.success(stack);
                     }
@@ -113,6 +98,7 @@ public class WaterStaffItem extends StaffItem implements CooldownProvider {
                 case DOLPHINS_GRACE -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 400, 1));
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 600, true);
                         return TypedActionResult.success(stack);
                     }
@@ -120,6 +106,7 @@ public class WaterStaffItem extends StaffItem implements CooldownProvider {
                 case CONDUIT_POWER ->  {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 400, 1));
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
                         setCooldown(player, stack, cooldownKey, 600, true);
                         return TypedActionResult.success(stack);
                     }
@@ -163,35 +150,34 @@ public class WaterStaffItem extends StaffItem implements CooldownProvider {
         return hitEntity;
     }
 
-    public void freezeTargetArea(PlayerEntity player, World world) {
+    public Entity freezeTargetArea(PlayerEntity player, World world) {
         // Only run server-side
-        if (world.isClient) return;
+        if (!world.isClient) {
+            Entity target = getEntityLookedAt(player, 16, 0.3D);
+            // Iterate in a 3x3x3 cube around the target's block position
+            BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+            if (target instanceof LivingEntity) {
+                ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 200, 4));
 
+                BlockPos targetPos = target.getBlockPos();
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -2; y <= 1; y++) {
+                        for (int z = -1; z <= 1; z++) {
+                            mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
 
-        Entity target = getEntityLookedAt(player, 16, 0.3D);
-
-        // Iterate in a 3x3x3 cube around the target's block position
-        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
-        if (target instanceof LivingEntity) {
-            ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 200, 4));
-
-            BlockPos targetPos = target.getBlockPos();
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -2; y <= 1; y++) {
-                    for (int z = -1; z <= 1; z++) {
-                        mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
-
-                        // Only replace air or water blocks
-                        BlockState state = world.getBlockState(mutablePos);
-                        if (state.isReplaceable() || state.getFluidState().isStill()) {
-                            world.setBlockState(mutablePos, ModBlocks.MELTING_ICE.getDefaultState());
+                            // Only replace air or water blocks
+                            BlockState state = world.getBlockState(mutablePos);
+                            if (state.isReplaceable() || state.getFluidState().isStill()) {
+                                world.setBlockState(mutablePos, ModBlocks.MELTING_ICE.getDefaultState());
+                            }
                         }
                     }
                 }
+                world.playSound(null, targetPos, SoundEvents.BLOCK_GLASS_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                return target;
             }
-            player.getItemCooldownManager().set(this, 160);
-            world.playSound(null, targetPos, SoundEvents.BLOCK_GLASS_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
+        return null;
     }
 
     private WaterStaffAttacks getElement(ItemStack stack) {

@@ -12,6 +12,7 @@ import io.github.tobyrue.btc.regestries.*;
 import io.github.tobyrue.btc.status_effects.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
