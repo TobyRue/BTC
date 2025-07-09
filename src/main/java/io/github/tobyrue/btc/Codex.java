@@ -1,9 +1,15 @@
 package io.github.tobyrue.btc;
 
+import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.xml.*;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.entity.EntityType;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -44,7 +50,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         return text;
     }
 
-    public record Page(@XML.Children(allow = {Line.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements ConditionalNode, XMLNode, Render  {
+    public record Page(@XML.Children(allow = {Line.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires) implements ConditionalNode, XMLNode, Render  {
         @Override public String getRequires() { return requires.replace(':', '.').replace("&", "-and-").replace("|", "-or-"); }
         static boolean isInvertedAdvancementPage = false;
         @Override
@@ -197,7 +203,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 //            context.drawText()
         }
 
-        public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements XMLNode, TextContent, ConditionalNode {
+        public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires) implements XMLNode, TextContent, ConditionalNode {
             @Override public String getRequires() { return requires.replace(':', '.').replace("&", "-and-").replace("|", "-or-"); }
             static boolean isInvertedAdvancementLine = false;
 
@@ -358,7 +364,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
 
     @XML.Root
-    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "") String requires) implements TextContent, ConditionalNode {
+    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires) implements TextContent, ConditionalNode {
         static boolean isInvertedAdvancementText = false;
         @Override public String getRequires() { return requires.replace(':', '.'); }
 
@@ -522,6 +528,119 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         public net.minecraft.text.Text toText() {
             return concat(this.children);
         }
+
+        @XML.Name("a")
+        public record LinkText(
+                @XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children,
+
+                @XML.Attribute(fallBack = "") String open,
+                @XML.Attribute(fallBack = "") String run,
+                @XML.Attribute(fallBack = "") String suggest,
+                @XML.Attribute(fallBack = "") String page,
+                @XML.Attribute(fallBack = "") String copy,
+                @XML.Attribute(fallBack = "blue") String color
+        ) implements TextContent {
+            @Override
+            public net.minecraft.text.Text toText() {
+                MutableText linkText = Codex.Text.concat(this.children);
+
+                ClickEvent event;
+                String hoverText;
+
+                if (!open.isEmpty()) {
+                    event = new ClickEvent(ClickEvent.Action.OPEN_URL, open);
+                    hoverText = "Open link";
+                } else if (!run.isEmpty()) {
+                    event = new ClickEvent(ClickEvent.Action.RUN_COMMAND, run);
+                    hoverText = "Run command";
+                } else if (!suggest.isEmpty()) {
+                    event = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, suggest);
+                    hoverText = "Suggest command";
+                } else if (!page.isEmpty()) {
+                    event = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page);
+                    hoverText = "Go to page";
+                } else if (!copy.isEmpty()) {
+                    event = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy);
+                    hoverText = "Copy text";
+                } else {
+                    event = null;
+                    hoverText = null;
+                }
+                // Apply link-specific style to the whole text chain — preserving child formatting
+                linkText = linkText.copy().styled(style -> style
+                        .withColor(Formatting.byName(color.toUpperCase()))
+                        .withUnderline(true)
+                        .withClickEvent(event)
+                        .withHoverEvent(hoverText != null ? new HoverEvent(HoverEvent.Action.SHOW_TEXT, net.minecraft.text.Text.literal(hoverText)) : null)
+                );
+
+                return linkText;
+            }
+        }
+        @XML.Name("h")
+        public record HoverText(
+                @XML.Children(allow = {XMLTextNode.class, Codex.TextContent.class}) XMLNodeCollection<?> children,
+                // Attributes for hover actions
+                @XML.Attribute(fallBack = "") String text,
+                @XML.Attribute(fallBack = "") String item,
+                @XML.Attribute(fallBack = "") String entityType,
+                @XML.Attribute(fallBack = "") String entityUUID,
+                @XML.Attribute(fallBack = "") String name
+        ) implements Codex.TextContent {
+            @Override
+            public net.minecraft.text.Text toText() {
+                MutableText baseText = Codex.Text.concat(this.children);
+
+                HoverEvent hoverEvent;
+
+                if (!text.isEmpty()) {
+                    hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, net.minecraft.text.Text.literal(text));
+
+                } else if (!item.isEmpty()) {
+                    var itemObj = Registries.ITEM.get(Identifier.of(item));
+                    if (itemObj != null) {
+                        hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackContent(itemObj.getDefaultStack()));
+                    } else {
+                        hoverEvent = null;
+                        System.err.println("[Codex] Invalid item ID for <h item=\"" + item + "\">");
+                    }
+
+                } else if (!entityUUID.isEmpty()) {
+                    UUID uuid;
+                    try {
+                        uuid = UUID.fromString(entityUUID);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("[Codex] Invalid UUID for <h entityUUID=\"" + entityUUID + "\">");
+                        uuid = null;
+                    }
+
+                    if (uuid != null) {
+                        EntityType<?> type = null;
+                        if (!entityType.isEmpty()) {
+                            type = Registries.ENTITY_TYPE.get(Identifier.of(entityType));
+                            if (type == null) {
+                                System.err.println("[Codex] Invalid entity type for <h entityType=\"" + entityType + "\">");
+                            }
+                        }
+
+                        MutableText displayName = name.isEmpty() ? null : net.minecraft.text.Text.literal(name);
+                        hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new HoverEvent.EntityContent(type, uuid, displayName));
+                    } else {
+                        hoverEvent = null;
+                    }
+                } else {
+                    hoverEvent = null;
+                }
+
+                if (hoverEvent != null) {
+                    baseText = baseText.styled(style -> style.withHoverEvent(hoverEvent));
+                }
+
+                return baseText;
+            }
+        }
+
+
 
         @XML.Name("b")
         public record BoldText(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children) implements TextContent {

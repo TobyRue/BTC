@@ -4,8 +4,10 @@
 
 package io.github.tobyrue.btc.client;
 
+import io.github.tobyrue.btc.AdvancementUtils;
 import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.entity.custom.WindTornadoEntity;
+import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.WindChargeEntityRenderer;
@@ -26,6 +28,7 @@ public class WindTornadoEntityModel<T extends WindTornadoEntity> extends SingleP
 		this.outside = tornado.getChild("outside");
 	}
 	public static TexturedModelData getTexturedModelData() {
+
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData tornado = modelPartData.addChild("tornado", ModelPartBuilder.create(), ModelTransform.of(0.0F, 7.0F, 0.0F, 3.1416F, 0.0F, 0.0F));
