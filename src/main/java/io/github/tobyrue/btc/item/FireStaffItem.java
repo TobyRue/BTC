@@ -7,6 +7,9 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.WitchEntity;
@@ -108,6 +111,10 @@ public class FireStaffItem extends StaffItem {
                         nbt.putFloat("TargetEternalFireHealth", living.getHealth());
                         nbt.putFloat("TargetEternalFireMaxHealth", living.getMaxHealth());
                         living.setOnFireFor(5);
+                        living.setOnFire(true);
+                        if (living.isTouchingWater() || !living.isOnFire()) {
+                            living.damage(world.getDamageSources().onFire(), 2);
+                        }
                     } else {
                         // Remove if dead
                         nbt.remove("TargetEternalFire");

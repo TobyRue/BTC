@@ -165,19 +165,21 @@ public class CreeperPillarEntity extends Entity implements Ownable {
         if (this.isRemoved()) return false;
         if (getWorld() instanceof ServerWorld serverWorld) {
             if (source.getAttacker() instanceof PlayerEntity player) {
-                if (source.getWeaponStack().isIn(ItemTags.PICKAXES)) {
-                    pickaxeHitCount++;
-                    pickaxeHitTimer = 40;
+                if (source.getWeaponStack() != null) {
+                    if (source.getWeaponStack().isIn(ItemTags.PICKAXES)) {
+                        pickaxeHitCount++;
+                        pickaxeHitTimer = 40;
 
-                    if (!player.isCreative()) {
-                        source.getWeaponStack().damage(1, player, EquipmentSlot.MAINHAND);
-                    }
-                    if (pickaxeHitCount >= 3) {
-                        lifeTime = 120;
-                        return true;
-                    }
+                        if (!player.isCreative()) {
+                            source.getWeaponStack().damage(1, player, EquipmentSlot.MAINHAND);
+                        }
+                        if (pickaxeHitCount >= 3) {
+                            lifeTime = 120;
+                            return true;
+                        }
 
-                    return true; // cancel regular damage processing
+                        return true; // cancel regular damage processing
+                    }
                 }
             }
         }

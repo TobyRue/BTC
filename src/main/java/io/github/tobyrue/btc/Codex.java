@@ -577,6 +577,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 return linkText;
             }
         }
+
         @XML.Name("h")
         public record HoverText(
                 @XML.Children(allow = {XMLTextNode.class, Codex.TextContent.class}) XMLNodeCollection<?> children,
