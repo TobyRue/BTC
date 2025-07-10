@@ -365,6 +365,15 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
     @XML.Root
     public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires) implements TextContent, ConditionalNode {
+        public interface ActionBindable {
+            String getActionName();
+            String getActionValue();
+        }
+
+        public interface HoverBindable {
+            String getHoverInfo();
+        }
+
         static boolean isInvertedAdvancementText = false;
         @Override public String getRequires() { return requires.replace(':', '.'); }
 
@@ -640,6 +649,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 return baseText;
             }
         }
+
+
+
 
 
 

@@ -3,10 +3,13 @@ package io.github.tobyrue.btc.item;
 import io.github.tobyrue.btc.AdvancementParser;
 import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.Ticker;
+import io.github.tobyrue.btc.client.screen.SpellScreenTest;
+import io.github.tobyrue.btc.client.screen.SpellSelectorScreen;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -49,16 +52,18 @@ public class ScreenTestItem extends Item {
 //        return TypedActionResult.success(player.getStackInHand(hand));
 //    }
 
-//    @Override
-//    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-//        if (player.isSneaking()) {
-//            if (world.isClient) {
-//                MinecraftClient.getInstance().setScreen(new CodexScreen());
-//            }
-//            return TypedActionResult.success(player.getStackInHand(hand));
-//        }
-//        return TypedActionResult.pass(player.getStackInHand(hand));
-//    }
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (player.isSneaking()) {
+            SpellScreenTest.string = this.string; // remove "!say " and set it as message string
+            // then open the screen for that player
+            MinecraftClient.getInstance().execute(() -> {
+                MinecraftClient.getInstance().setScreen(new SpellScreenTest());
+            });
+            return TypedActionResult.success(player.getStackInHand(hand));
+        }
+        return TypedActionResult.pass(player.getStackInHand(hand));
+    }
 
 
     {
@@ -146,40 +151,40 @@ public class ScreenTestItem extends Item {
 //        return TypedActionResult.success(player.getStackInHand(hand));
 //    }
 
-    @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-
-//        if (player instanceof ServerPlayerEntity) {
-//            player.sendMessage(Text.literal("Current spell: " + currentSpell.asString()), false);
-//            nextSpell = SpellRegistryEnum.nextUnlockedOrCurrent((ServerPlayerEntity) player, currentSpell);
-//            player.sendMessage(Text.literal("Next available spell: " + nextSpell.asString()), false);
-//            currentSpell = nextSpell;
+//    @Override
+//    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+//
+////        if (player instanceof ServerPlayerEntity) {
+////            player.sendMessage(Text.literal("Current spell: " + currentSpell.asString()), false);
+////            nextSpell = SpellRegistryEnum.nextUnlockedOrCurrent((ServerPlayerEntity) player, currentSpell);
+////            player.sendMessage(Text.literal("Next available spell: " + nextSpell.asString()), false);
+////            currentSpell = nextSpell;
+////        }
+//        if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
+//            final XMLParser<Codex.Text> parser;
+//
+//            try {
+//                parser = new XMLParser<>(Codex.Text.class);
+//            } catch (XMLException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            try {
+//                var otherParser = parser.parse(string);
+//
+//                // use new method here — fully handles null requires, inversion, multi-condition logic
+//                if (otherParser.requirementMet(serverPlayer)) {
+//                    player.sendMessage(Text.of("Requirement met! Showing text..."), false);
+//                    player.sendMessage(otherParser.toText(), false);
+//                } else {
+//                    player.sendMessage(Text.of("Requirement NOT met!"), false);
+//                }
+//
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
 //        }
-        if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
-            final XMLParser<Codex.Text> parser;
-
-            try {
-                parser = new XMLParser<>(Codex.Text.class);
-            } catch (XMLException e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                var otherParser = parser.parse(string);
-
-                // use new method here — fully handles null requires, inversion, multi-condition logic
-                if (otherParser.requirementMet(serverPlayer)) {
-                    player.sendMessage(Text.of("Requirement met! Showing text..."), false);
-                    player.sendMessage(otherParser.toText(), false);
-                } else {
-                    player.sendMessage(Text.of("Requirement NOT met!"), false);
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return TypedActionResult.success(player.getStackInHand(hand));
-    }
+//
+//        return TypedActionResult.success(player.getStackInHand(hand));
+//    }
 }
