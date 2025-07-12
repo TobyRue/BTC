@@ -203,7 +203,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 //            context.drawText()
         }
 
-        public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires,  @XML.Attribute(fallBack = "left") String align) implements XMLNode, TextContent, ConditionalNode {
+        public record Line(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires,  @XML.Attribute(fallBack = "left") String align, @XML.Attribute(fallBack = "0") Integer alignInt) implements XMLNode, TextContent, ConditionalNode {
             @Override public String getRequires() { return requires.replace(':', '.').replace("&", "-and-").replace("|", "-or-"); }
             static boolean isInvertedAdvancementLine = false;
 
@@ -362,19 +362,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
 
 
-
     @XML.Root
     //TODO Page and alignment requirements are temp look at SpellScreenTest to see what page boolean does
-    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires, @XML.Attribute(fallBack = "left") String align, @XML.Attribute(fallBack = "false") Boolean page) implements TextContent, ConditionalNode {
-        public interface ActionBindable {
-            String getActionName();
-            String getActionValue();
-        }
-
-        public interface HoverBindable {
-            String getHoverInfo();
-        }
-
+    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires, @XML.Attribute(fallBack = "left") String align, @XML.Attribute(fallBack = "0") Integer alignInt, @XML.Attribute(fallBack = "false") Boolean page) implements TextContent, ConditionalNode {
         static boolean isInvertedAdvancementText = false;
         @Override public String getRequires() { return requires.replace(':', '.'); }
 

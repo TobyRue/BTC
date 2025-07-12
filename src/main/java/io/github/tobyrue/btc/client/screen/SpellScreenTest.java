@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.client.screen;
 import io.github.tobyrue.btc.AdvancementParser;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
+import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
@@ -75,7 +76,7 @@ public class SpellScreenTest extends Screen {
                             default -> x = this.width / 2 - 160;
                         }
                     }
-
+                    x += alignInt;
                     context.drawTextWithShadow(this.textRenderer, line, x, lineY, 0x000000);
 
                     // Hover detection on this line
@@ -113,7 +114,6 @@ public class SpellScreenTest extends Screen {
                 var parsed = parser.parse(string);
 
                 var lines = this.textRenderer.wrapLines(parsedText, 140);
-                boolean pageSide = true; // or however you're tracking this — same as in render
 
                 int lineY = yStart;
                 int lineHeight = this.textRenderer.fontHeight + 2;
@@ -139,7 +139,7 @@ public class SpellScreenTest extends Screen {
                             default -> x = this.width / 2 - 160;
                         }
                     }
-
+                    x += alignInt;
                     // check if mouse is inside this line
                     if (mouseY >= lineY && mouseY < lineY + lineHeight) {
                         int relativeX = (int) (mouseX - x);
