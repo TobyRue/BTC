@@ -364,7 +364,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
 
     @XML.Root
-    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires, @XML.Attribute(fallBack = "left") String align, @XML.Attribute(fallBack = "0") Integer alignInt, @XML.Attribute(fallBack = "false") Boolean page) implements TextContent, ConditionalNode {
+    //TODO Page and alignment requirements are temp look at SpellScreenTest to see what page boolean does
+    public record Text(@XML.Children(allow = {XMLTextNode.class, TextContent.class}) XMLNodeCollection<?> children, @XML.Attribute(fallBack = "true") String requires, @XML.Attribute(fallBack = "left") String align, @XML.Attribute(fallBack = "false") Boolean page) implements TextContent, ConditionalNode {
         public interface ActionBindable {
             String getActionName();
             String getActionValue();
