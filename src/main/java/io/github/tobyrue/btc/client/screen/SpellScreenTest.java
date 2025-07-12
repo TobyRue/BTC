@@ -38,6 +38,7 @@ public class SpellScreenTest extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackground(context, mouseX, mouseY, delta);
+        boolean pageSide = true;
         int x = this.width / 2 - 110;
         int yStart = this.height / 2 - 85;
 
@@ -47,13 +48,34 @@ public class SpellScreenTest extends Screen {
             try {
                 XMLParser<Codex.Text> parser = new XMLParser<>(Codex.Text.class);
                 var parsedText = parser.parse(string).toText();
+                var parsed = parser.parse(string);
 
-                var lines = this.textRenderer.wrapLines(parsedText, 180);
+                var lines = this.textRenderer.wrapLines(parsedText, 140);
 
                 int lineY = yStart;
                 int lineHeight = this.textRenderer.fontHeight + 2;
+                String align = parsed.align().toLowerCase();
+                Integer alignInt = parsed.alignInt();
+                Boolean page = parsed.page();
+
 
                 for (OrderedText line : lines) {
+                    int lineWidth = this.textRenderer.getWidth(line);
+
+                    if (page) {
+                        switch (align) {
+                            case "middle" -> x = ((this.width - lineWidth) / 2) + 90;
+                            case "right"  -> x = this.width / 2 - lineWidth + 160;
+                            default -> x = this.width / 2 + 20;
+                        }
+                    } else {
+                        switch (align) {
+                            case "middle" -> x = ((this.width - lineWidth) / 2) - 90;
+                            case "right"  -> x = this.width / 2 - lineWidth - 20;
+                            default -> x = this.width / 2 - 160;
+                        }
+                    }
+
                     context.drawTextWithShadow(this.textRenderer, line, x, lineY, 0x000000);
 
                     // Hover detection on this line
@@ -80,36 +102,57 @@ public class SpellScreenTest extends Screen {
 
         super.render(context, mouseX, mouseY, delta);
     }
-
-
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && string != null && !string.isEmpty()) {
-            int xStart = this.width / 2 - 110;
             int yStart = this.height / 2 - 85;
 
             try {
                 XMLParser<Codex.Text> parser = new XMLParser<>(Codex.Text.class);
                 var parsedText = parser.parse(string).toText();
+                var parsed = parser.parse(string);
 
-                var lines = this.textRenderer.wrapLines(parsedText, 180);
+                var lines = this.textRenderer.wrapLines(parsedText, 140);
+                boolean pageSide = true; // or however you're tracking this — same as in render
 
+                int lineY = yStart;
                 int lineHeight = this.textRenderer.fontHeight + 2;
-                int clickedLine = (int)((mouseY - yStart) / lineHeight);
+                String align = parsed.align().toLowerCase();
+                Integer alignInt = parsed.alignInt();
+                Boolean page = parsed.page();
 
-                if (clickedLine >= 0 && clickedLine < lines.size()) {
-                    OrderedText lineText = lines.get(clickedLine);
+                for (OrderedText lineText : lines) {
+                    int lineWidth = this.textRenderer.getWidth(lineText);
 
-                    // Relative x inside text line
-                    int relativeX = (int)(mouseX - xStart);
-                    if (relativeX < 0) return super.mouseClicked(mouseX, mouseY, button);
+                    int x;
 
-                    Style style = this.textRenderer.getTextHandler().getStyleAt(lineText, relativeX);
-                    if (style != null) {
-                        boolean handled = this.handleTextClick(style);
-                        if (handled) return true;
+                    if (page) {
+                        switch (align) {
+                            case "middle" -> x = ((this.width - lineWidth) / 2) + 90;
+                            case "right"  -> x = this.width / 2 - lineWidth + 160;
+                            default -> x = this.width / 2 + 20;
+                        }
+                    } else {
+                        switch (align) {
+                            case "middle" -> x = ((this.width - lineWidth) / 2) - 90;
+                            case "right"  -> x = this.width / 2 - lineWidth - 20;
+                            default -> x = this.width / 2 - 160;
+                        }
                     }
+
+                    // check if mouse is inside this line
+                    if (mouseY >= lineY && mouseY < lineY + lineHeight) {
+                        int relativeX = (int) (mouseX - x);
+                        if (relativeX >= 0) {
+                            Style style = this.textRenderer.getTextHandler().getStyleAt(lineText, relativeX);
+                            if (style != null) {
+                                boolean handled = this.handleTextClick(style);
+                                if (handled) return true;
+                            }
+                        }
+                    }
+
+                    lineY += lineHeight;
                 }
             } catch (XMLException e) {
                 e.printStackTrace();
@@ -144,8 +187,8 @@ public class SpellScreenTest extends Screen {
                 return true;
             }
             case SUGGEST_COMMAND -> {
-                client.setScreen(new ChatScreen(clickEvent.getValue()));
                 client.setScreen(null);
+                client.setScreen(new ChatScreen(clickEvent.getValue()));
                 return true;
             }
             case COPY_TO_CLIPBOARD -> {
@@ -161,17 +204,6 @@ public class SpellScreenTest extends Screen {
             }
         }
         return super.handleTextClick(style);
-        }
-
-
-    protected void renderTextHoverEffect(DrawContext context, HoverEvent hoverEvent, int mouseX, int mouseY) {
-        if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-            Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
-            if (text != null) {
-                context.drawTooltip(this.textRenderer, text, mouseX, mouseY);
-            }
-        }
-        // You can add more hover event types here if you want
     }
 
     @Override
