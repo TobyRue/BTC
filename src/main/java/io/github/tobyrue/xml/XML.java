@@ -17,6 +17,7 @@ public @interface XML {
     @Target({ElementType.PARAMETER})
     @interface Children {
         Class<? extends XMLNode>[] allow() default {};
+        boolean omitBlankText() default true;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -30,6 +31,7 @@ public @interface XML {
     @Target({ElementType.TYPE, ElementType.PARAMETER})
     @interface Name {
         String value();
+        String TEXT = "[[text]]";
     }
 
     @Retention(RetentionPolicy.RUNTIME)

@@ -75,7 +75,9 @@ public class XMLParser<T extends Record & XMLNode> {
                                 }
                             }
                             case XMLStreamReader.CHARACTERS -> {
-                                data.getByK2(stack.peek().getClass()).addChild(stack.peek(), new XMLTextNode(stream.getText()));
+                                if (!stream.getText().isBlank() || !data.getByK2(stack.peek().getClass()).omitBlankText) {
+                                    data.getByK2(stack.peek().getClass()).addChild(stack.peek(), data.getByK1(XML.Name.TEXT).create(stack.peek(), stream.getText()));
+                                }
                             }
                             case XMLStreamReader.ATTRIBUTE, XMLStreamReader.DTD, XMLStreamReader.CDATA, XMLStreamReader.COMMENT, XMLStreamReader.START_DOCUMENT,
                                  XMLStreamReader.END_DOCUMENT, XMLStreamReader.ENTITY_DECLARATION, XMLStreamReader.ENTITY_REFERENCE, XMLStreamReader.NAMESPACE,
@@ -147,6 +149,9 @@ public class XMLParser<T extends Record & XMLNode> {
             }
             q.addAll(List.of(clazz.getDeclaredClasses()));
         }
+
+        classes.putIfAbsent(XML.Name.TEXT, XMLTextNode.class, new ClassData<>(XMLTextNode.class));
+
         return classes;
     }
 
@@ -192,6 +197,7 @@ public class XMLParser<T extends Record & XMLNode> {
         private final int childPos;
         private final List<Class<?>> allowedChildren = new ArrayList<>();
         private final List<AttributeData<?>> attributes = new ArrayList<>();
+        private final boolean omitBlankText;
 
         private ClassData(final Class<T> clazz) throws XMLException {
             this.name = normalize(clazz.isAnnotationPresent(XML.Name.class) ? clazz.getAnnotation(XML.Name.class).value() : clazz.getSimpleName());
@@ -228,8 +234,20 @@ public class XMLParser<T extends Record & XMLNode> {
             this.parentPos = IntStream.range(0, parameters.length).filter(i -> parameters[i].isAnnotationPresent(XML.Parent.class)).findFirst().orElse(-1);
             this.childPos = IntStream.range(0, parameters.length).filter(i -> parameters[i].isAnnotationPresent(XML.Children.class)).findFirst().orElse(-1);
 
+            if (this.name.equals(XML.Name.TEXT)) {
+                if (childPos != -1) {
+                    throw new XMLException(String.format("Nodes named '%s' are used for plain text and may not have children", this.name));
+                }
+                if (this.attributes.size() != 1 || this.attributes.getFirst().clazz != String.class) {
+                    throw new XMLException(String.format("Nodes named '%s' are used for plain text and must have a single string parameter", this.name));
+                }
+            }
+
             if (this.childPos != -1) {
+                this.omitBlankText = parameters[childPos].getAnnotation(XML.Children.class).omitBlankText();
                 this.allowedChildren.addAll(Arrays.asList(parameters[childPos].getAnnotation(XML.Children.class).allow()));
+            } else {
+                this.omitBlankText = true;
             }
         }
 
@@ -258,6 +276,24 @@ public class XMLParser<T extends Record & XMLNode> {
                 }
                 args[a.getPosition()] = attributeParser.parse(value, a.getType());
             }
+            try {
+                return this.constructor.newInstance(args);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new XMLException(String.format("Unable to create node '%s'", this.name), e);
+            }
+        }
+
+        public T create(@Nullable final XMLNode parent, final Object... values) throws XMLException {
+            var args = new Object[this.constructor.getParameters().length];
+
+            if ((parentPos != -1 ? 1 : 0) + values.length != args.length) {
+                throw new XMLException(String.format("Expected %d values but got %d", args.length - (parentPos != -1 ? 1 : 0), values.length));
+            }
+
+            for (int i = 0, v = 0; i < args.length; i++) {
+                args[i] = parentPos == i ? parent : values[v++];
+            }
+
             try {
                 return this.constructor.newInstance(args);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -434,6 +470,12 @@ public class XMLParser<T extends Record & XMLNode> {
         }
         public V getByK2(K2 k2) {
             return m2.get(k2);
+        }
+        public boolean containsK1(K1 k1) {
+            return m1.containsKey(k1);
+        }
+        public boolean containsK2(K2 k2) {
+            return m2.containsKey(k2);
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModEnchantments;
 import net.minecraft.component.DataComponentTypes;
@@ -30,18 +31,19 @@ public class PaperMixin {
                         .map(component::getLevel))
                 .orElse(-1);
     }
-    @Inject(method = "isEnchantable", at = @At("HEAD"), cancellable = true)
-    private void makePaperEnchantable(CallbackInfoReturnable<Boolean> cir) {
-
-        if ((Object)this == Items.PAPER) {
-            cir.setReturnValue(true);
+    @ModifyReturnValue(method = "isEnchantable", at = @At("RETURN"))
+    private boolean modifyIsEnchantable(boolean original) {
+        if ((Object) this == Items.PAPER) {
+            return true;
         }
+        return original;
     }
-    @Inject(method = "getEnchantability", at = @At("HEAD"), cancellable = true)
-    private void paperEnchantable(CallbackInfoReturnable<Integer> cir) {
-        if ((Object)this == Items.PAPER) {
-            cir.setReturnValue(1);
+    @ModifyReturnValue(method = "getEnchantability", at = @At("RETURN"))
+    private int modifyGetEnchantability(int original) {
+        if ((Object) this == Items.PAPER) {
+            return 1;
         }
+        return original;
     }
 
     @Inject(method = "inventoryTick", at = @At("HEAD"))

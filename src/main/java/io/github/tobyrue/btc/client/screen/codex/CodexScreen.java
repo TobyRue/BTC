@@ -1,40 +1,30 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.Codex;
-import io.github.tobyrue.xml.XMLException;
-import io.github.tobyrue.xml.XMLParser;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.io.InputStreamReader;
-import java.util.Objects;
-
 public class CodexScreen extends Screen {
-    public static final Identifier BOOK_TEXTURE = BTC.identifierOf("textures/gui/book.png");
-
+    public static final Identifier BOOK_TEXTURE = BTC.identifierOf("textures/gui/book_text_area.png");
+    public static Codex codex;
 
     public CodexScreen() {
         super(Text.empty());
     }
 
 
-    protected static final Codex.Text CODEX;
-
-    static {
-        try {
-            CODEX = XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class);
-        } catch (XMLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY, delta);
+        int x = 0;
+        int y = 0;
+        int width = 0;
+        int height = 0;
+
+        context.fill(x, y, x + width, y + height, 0xFF00FF);
         super.render(context, mouseX, mouseY, delta);
-        context.drawText(this.textRenderer, CODEX.toText(), this.width / 2, this.height / 2, 0xFFFFFF, false);
     }
 
 

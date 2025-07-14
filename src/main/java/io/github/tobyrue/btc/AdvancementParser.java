@@ -85,7 +85,7 @@ public class AdvancementParser {
     private static final Pattern GROUP_PATTERN = Pattern.compile("\\((?<contents>[^(]*?)\\)");
 
 
-    public static Expression parse(String text, ArrayList<Expression> groups)  {
+    private static Expression parse(String text, ArrayList<Expression> groups)  {
         var last = text;
         while (!last.equals(text = replace(text, GROUP_PATTERN, t -> {
             groups.add(parse(t.group("contents"), groups));

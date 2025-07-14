@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.authlib.GameProfile;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
@@ -13,13 +14,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 
 @Mixin(PlayerEntity.class)
 public abstract class NaturalRegenerationMixin {
-    @Inject(method = "canFoodHeal", at = @At("TAIL"), cancellable = true)
-    public void canFoodHeal(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValue() && !((PlayerEntity) ((Object) this)).hasStatusEffect(ModStatusEffects.NO_NATURAL_REGENERATION));
+    @ModifyReturnValue(method = "canFoodHeal", at = @At("RETURN"))
+    private boolean modifyCanFoodHeal(boolean original) {
+        return original && !((PlayerEntity) ((Object) this)).hasStatusEffect(ModStatusEffects.NO_NATURAL_REGENERATION);
     }
 }
