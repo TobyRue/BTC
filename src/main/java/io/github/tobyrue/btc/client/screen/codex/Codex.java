@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.AdvancementParser;
+import io.github.tobyrue.btc.client.screen.codex.style.Margins;
 import io.github.tobyrue.xml.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -27,7 +28,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     XMLParser.AttributeParser::parseBoolean,
                     Codex::parseExpression,
                     Codex::parseFormatting,
-                    Codex::parseTextAlignment
+                    Codex::parseTextAlignment,
+                    Margins::parseMargins
             ));
         } catch (final XMLException e) {
             throw new RuntimeException(e);
@@ -65,9 +67,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         private static final Map<String, TextAlignment> BY_NAME;
 
-        private static String sanitize(String name) {
-            return name.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
-        }
 
         @Nullable
         public static TextAlignment byName(@Nullable String name) {
@@ -114,7 +113,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     }
 
     public interface BlockContent extends XMLNode {
-
+        Margins getMargins();
     }
 
     public interface ConditionalContent extends XMLNode {
@@ -147,6 +146,12 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             @Override
             public boolean isRequirementMet(ServerPlayerEntity player) {
                 return requires.evaluate(player);
+            }
+
+            //TODO
+            @Override
+            public Margins getMargins() {
+                return null;
             }
         }
     }

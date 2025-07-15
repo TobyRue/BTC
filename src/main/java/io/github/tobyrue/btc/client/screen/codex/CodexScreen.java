@@ -9,6 +9,8 @@ import net.minecraft.util.Identifier;
 public class CodexScreen extends Screen {
     public static final Identifier BOOK_TEXTURE = BTC.identifierOf("textures/gui/book_text_area.png");
     public static Codex codex;
+    private static final int IMAGE_WIDTH = 256;
+    private static final int IMAGE_HEIGHT = 160;
 
     public CodexScreen() {
         super(Text.empty());
@@ -17,43 +19,39 @@ public class CodexScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
+
         int x = 0;
         int y = 0;
         int width = 0;
         int height = 0;
 
-        context.fill(x, y, x + width, y + height, 0xFF00FF);
         super.render(context, mouseX, mouseY, delta);
     }
 
+    public RenderHelper getRenderHelper(DrawContext context) {
+        return new RenderHelper(context, textRenderer, width, height, IMAGE_WIDTH, IMAGE_HEIGHT, 1.5f);
+    }
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderInGameBackground(context);
+        var h = getRenderHelper(context);
+        h.renderDebugBackground();
 
-        int imageWidth = 256;
-        int imageHeight = 160;
-        float scale = 1.5f;
+        Vec2i b = h.getBackgroundOrigin();
 
-        int scaledWidth = (int) (imageWidth * scale);
-        int scaledHeight = (int) (imageHeight * scale);
-
-        int x = (this.width - scaledWidth) / 2;
-        int y = (this.height - scaledHeight) / 2;
-
-        context.getMatrices().push();
-        context.getMatrices().translate(x, y, 0);
-        context.getMatrices().scale(scale, scale, 1.0f);
+//        context.getMatrices().push();
+//        context.getMatrices().translate(b.x, b.y, 0);
+//        context.getMatrices().scale(h.scale(), h.scale(), 1.0f);
 
         context.drawTexture(
                 BOOK_TEXTURE,
+                b.x, b.y,
                 0, 0,
-                0, 0,
-                imageWidth, imageHeight,
-                imageWidth, imageHeight
+                h.scaled(h.imageWidth()), h.scaled(h.imageHeight()),
+                h.scaled(h.imageWidth()), h.scaled(h.imageHeight())
         );
 
-        context.getMatrices().pop();
+//        context.getMatrices().pop();
     }
 }
