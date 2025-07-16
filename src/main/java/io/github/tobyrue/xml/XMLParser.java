@@ -122,7 +122,7 @@ public class XMLParser<T extends Record & XMLNode> {
         if (text == null) {
             throw new NullPointerException();
         } else if (this.ignoreCase) {
-            return text.toLowerCase();
+            return text.toLowerCase(Locale.ROOT);
         } else {
             return text;
         }
@@ -434,7 +434,7 @@ public class XMLParser<T extends Record & XMLNode> {
             }
         }
         public static Boolean parseBoolean(final String text) throws XMLException {
-            return switch (text.trim().toLowerCase()) {
+            return switch (text.trim().toLowerCase(Locale.ROOT)) {
                 case "", "false" -> false;
                 case "true" -> true;
                 default -> throw new XMLException(String.format("Cannot parse '%s' as boolean", text));

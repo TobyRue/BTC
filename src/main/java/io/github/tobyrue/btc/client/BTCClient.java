@@ -56,7 +56,7 @@ public class BTCClient implements ClientModInitializer {
 //                            throw new Exception("Missing command after '!'");
 //                        }
 //
-//                        var command = strings[0].toLowerCase();
+//                        var command = strings[0].toLowerCase(Locale.ROOT);
 //                        var args = Arrays.copyOfRange(strings, 1, strings.length);
 //
 //                        switch (command) {

@@ -4,6 +4,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,7 +81,7 @@ public class AdvancementParser {
         if (text.contains("$")) {
             throw new Exception("Expression can not contain '$'");
         }
-        return parse(text.toLowerCase().replace("\\s+", ""), new ArrayList<>());
+        return parse(text.toLowerCase(Locale.ROOT).replace("\\s+", ""), new ArrayList<>());
     }
     private static final Pattern GROUP_PATTERN = Pattern.compile("\\((?<contents>[^(]*?)\\)");
 

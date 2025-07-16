@@ -430,15 +430,15 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
                 if (href.startsWith("#")) {
                     e = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, href.substring(1).strip());
-                } else if (href.toLowerCase().startsWith("file:")) {
+                } else if (href.toLowerCase(Locale.ROOT).startsWith("file:")) {
                     e = new ClickEvent(ClickEvent.Action.OPEN_FILE, href.substring(5).strip());
                 } else if (!href.isEmpty()) {
                     e = new ClickEvent(ClickEvent.Action.OPEN_URL, href);
-                } else if (onclick.toLowerCase().startsWith("copy:")) {
+                } else if (onclick.toLowerCase(Locale.ROOT).startsWith("copy:")) {
                     e = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, onclick.substring(5).strip());
-                } else if (onclick.toLowerCase().startsWith("?")) {
+                } else if (onclick.toLowerCase(Locale.ROOT).startsWith("?")) {
                     e = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + onclick.substring(1).strip());
-                } else if (onclick.toLowerCase().startsWith("/")) {
+                } else if (onclick.toLowerCase(Locale.ROOT).startsWith("/")) {
                     e = new ClickEvent(ClickEvent.Action.RUN_COMMAND, onclick);
                 } else {
                     e = null;

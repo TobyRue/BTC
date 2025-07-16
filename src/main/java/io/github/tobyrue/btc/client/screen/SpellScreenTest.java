@@ -25,6 +25,7 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class SpellScreenTest extends Screen {
@@ -55,7 +56,7 @@ public class SpellScreenTest extends Screen {
 
                 int lineY = yStart;
                 int lineHeight = this.textRenderer.fontHeight + 2;
-                String align = parsed.align().toLowerCase();
+                String align = parsed.align().toLowerCase(Locale.ROOT);
                 Integer alignInt = parsed.alignInt();
                 Boolean page = parsed.page();
 
@@ -117,7 +118,7 @@ public class SpellScreenTest extends Screen {
 
                 int lineY = yStart;
                 int lineHeight = this.textRenderer.fontHeight + 2;
-                String align = parsed.align().toLowerCase();
+                String align = parsed.align().toLowerCase(Locale.ROOT);
                 Integer alignInt = parsed.alignInt();
                 Boolean page = parsed.page();
 
