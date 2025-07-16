@@ -9,7 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.io.Reader;
@@ -17,10 +16,12 @@ import java.util.*;
 
 @XML.Root
 public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> children) implements XMLNode {
+    public static final XMLParser.AttributeParser ATTRIBUTE_PARSER;
+
     public static final XMLParser<Codex> XML_PARSER;
     static {
         try {
-            XML_PARSER = new XMLParser<>(Codex.class, new XMLParser.AttributeParser(
+            XML_PARSER = new XMLParser<>(Codex.class, ATTRIBUTE_PARSER = new XMLParser.AttributeParser(
                     XMLParser.AttributeParser::parseString,
                     XMLParser.AttributeParser::parseByte,
                     XMLParser.AttributeParser::parseShort,
@@ -33,9 +34,11 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     Codex::parseFormatting,
                     Codex::parseTextAlignment,
                     Codex::parsePosition,
-                    Margins::parseMargins
+                    Margins::parseMargins,
+                    UnitValue.DistanceValue::parse
             ));
         } catch (final XMLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -63,11 +66,11 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
     }
 
-    private enum TextAlignment {
+    private enum Alignment {
         LEFT,
         RIGHT,
         CENTER,
-        LANGUAGE_NATIVE
+        TEXT_LOCALE
     }
 
     private static AdvancementParser.Expression parseExpression(final String text) throws XMLException {
@@ -93,9 +96,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
     }
 
-    private static TextAlignment parseTextAlignment(final String text) throws XMLException {
+    private static Alignment parseTextAlignment(final String text) throws XMLException {
         try {
-            return Objects.requireNonNull(EnumHelper.byName(TextAlignment.class, text));
+            return Objects.requireNonNull(EnumHelper.byName(Alignment.class, text));
         } catch (Exception e) {
             throw new XMLException(e.getMessage());
         }
@@ -167,15 +170,103 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             }
         }
 
+        @XML.Name("hr")
+        public record HorizontalLine() implements BlockContent {
+
+            @Override
+            public Margins getMargins() {
+                return null;
+            }
+
+            @Override
+            public Position getPosition() {
+                return null;
+            }
+
+            @Override
+            public int getHeight() {
+                return 0;
+            }
+
+            @Override
+            public int getWidth() {
+                return 0;
+            }
+
+            @Override
+            public void render(ServerPlayerEntity player, int x, int y, int width, int height) {
+
+            }
+        }
+        //TODO ^ v finish
+        @XML.Name("br")
+        public record BreakLine() implements BlockContent {
+            @Override
+            public Margins getMargins() {
+                return null;
+            }
+
+            @Override
+            public Position getPosition() {
+                return null;
+            }
+
+            @Override
+            public int getHeight() {
+                return 0;
+            }
+
+            @Override
+            public int getWidth() {
+                return 0;
+            }
+
+            @Override
+            public void render(ServerPlayerEntity player, int x, int y, int width, int height) {
+
+            }
+        }
+
+        @XML.Name("img")
+        public record TranslatedText(String key) implements BlockContent {
+
+            @Override
+            public Margins getMargins() {
+                return null;
+            }
+
+            @Override
+            public Position getPosition() {
+                return null;
+            }
+
+            @Override
+            public int getHeight() {
+                return 0;
+            }
+
+            @Override
+            public int getWidth() {
+                return 0;
+            }
+
+            @Override
+            public void render(ServerPlayerEntity player, int x, int y, int width, int height) {
+
+            }
+        }
+
         @XML.Name("p")
         public record Paragraph(
                 @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,
                 @XML.Attribute(fallBack = "true") AdvancementParser.Expression requires,
-                @XML.Attribute(fallBack = "left") TextAlignment align,
+                @XML.Attribute(fallBack = "text_locale") Alignment align,
                 @XML.Attribute(fallBack = "0.5u, 0u, 1u, 0u") Margins margin,
                 @XML.Attribute(fallBack = "static") Position position,
-                @XML.Attribute(fallBack = "0") Integer x,
-                @XML.Attribute(fallBack = "0") Integer y,
+                @XML.Attribute(fallBack = "0") Integer top,
+                @XML.Attribute(fallBack = "0") Integer bottom,
+                @XML.Attribute(fallBack = "0") Integer left,
+                @XML.Attribute(fallBack = "0") Integer right,
                 @XML.Attribute(fallBack = "-1px") UnitValue.DistanceValue height,
                 @XML.Attribute(fallBack = "-1px") UnitValue.DistanceValue width
 
@@ -216,6 +307,24 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
     @XML.Root
     public record Text(@XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children) implements XMLNode {
+        public static final XMLParser<Text> XML_PARSER;
+
+        static {
+            try {
+                XML_PARSER = new XMLParser<>(Text.class, ATTRIBUTE_PARSER);
+            } catch (final XMLException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+
+        public net.minecraft.text.Text toText() {
+            return concat(this.children);
+        }
+
+        public static net.minecraft.text.Text parse(Reader reader) throws XMLException {
+            return XML_PARSER.parse(reader).toText();
+        }
 
         public static MutableText concat(final XMLNodeCollection<TextContent> nodes) {
             var text = net.minecraft.text.Text.empty();

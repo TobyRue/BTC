@@ -13,13 +13,30 @@ public interface UnitValue {
             var matcher = PATTERN.matcher(text.strip().toLowerCase(Locale.ROOT));
             var f = Float.parseFloat(matcher.group(1));
             return switch (matcher.group(2)) {
-                case "px", "" -> (dimensionMax, scale, baseValue) -> (int) f;
-                case "%" -> (dimensionMax, scale, baseValue) -> (int) (f * dimensionMax);
-                case "tpx" -> (dimensionMax, scale, baseValue) -> (int) (f * scale);
-                case "em", "u" -> (dimensionMax, scale, baseValue) -> (int) (f * baseValue);
+                case "px", "" -> px((int) f);
+                case "%" -> percent(f);
+                case "bgp" -> bgp(f);
+                case "em", "u" -> em(f);
                 default -> throw new XMLException(String.format("Unknown unit '%s'", matcher.group(2)));
             };
         }
+
+        static DistanceValue px(int px) {
+            return (dimensionMax, scale, baseValue) -> px;
+        }
+
+        static DistanceValue percent(float percent) {
+            return (dimensionMax, scale, baseValue) -> (int) (percent * 100 * dimensionMax);
+        }
+
+        static DistanceValue bgp(float bgp) {
+            return (dimensionMax, scale, baseValue) -> (int) (bgp * scale);
+        }
+
+        static DistanceValue em(float em) {
+            return (dimensionMax, scale, baseValue) -> (int) (em * baseValue);
+        }
+
         int getPxDistance(int dimensionMax, float scale, int baseValue);
     }
 }

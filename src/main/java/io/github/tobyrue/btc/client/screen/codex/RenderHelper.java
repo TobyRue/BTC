@@ -21,7 +21,6 @@ public record RenderHelper(
     public Vec2i getCenter() {
         return new Vec2i(this.screenWidth / 2, this.screenHeight / 2);
     }
-
     private static final int CYAN = solidRGB(0x00FFFF);
     private static final int LIME = solidRGB(0x4CFF00);
     private static final int MAGENTA = solidRGB(0xFF00DC);

@@ -57,7 +57,8 @@ public class ScreenTestItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\codex.xml")) {
+        try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
+            player.sendMessage(Codex.Text.parse(reader));
             CodexScreen.codex = Codex.parse(reader);
         } catch (Throwable t) {
             t.printStackTrace();
