@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -59,7 +60,18 @@ public class ScreenTestItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
             player.sendMessage(Codex.Text.parse(reader));
-            CodexScreen.codex = Codex.parse(reader);
+
+            int red = 255;
+            int green = 100;
+            int blue = 200;
+
+            TextColor rgbColor = TextColor.fromRgb((red << 16) | (green << 8) | blue);
+
+            Text message = Text.literal("This is RGB text!")
+                    .setStyle(Style.EMPTY.withColor(rgbColor));
+
+            player.sendMessage(message, false);
+//            CodexScreen.codex = Codex.parse(reader);
         } catch (Throwable t) {
             t.printStackTrace();
             player.sendMessage(Text.literal(String.format("[%s]: %s", t.getClass().getSimpleName(), t.getMessage())).formatted(Formatting.RED));

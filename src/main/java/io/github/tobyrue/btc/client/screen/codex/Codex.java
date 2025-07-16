@@ -1,14 +1,13 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.AdvancementParser;
+import io.github.tobyrue.btc.client.screen.codex.style.Color;
 import io.github.tobyrue.btc.client.screen.codex.style.EnumHelper;
 import io.github.tobyrue.btc.client.screen.codex.style.Margins;
 import io.github.tobyrue.btc.client.screen.codex.style.UnitValue;
 import io.github.tobyrue.xml.*;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 import java.io.Reader;
@@ -35,7 +34,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     Codex::parseTextAlignment,
                     Codex::parsePosition,
                     Margins::parseMargins,
-                    UnitValue.DistanceValue::parse
+                    UnitValue.DistanceValue::parse,
+                    Color::parseRgb
             ));
         } catch (final XMLException e) {
             e.printStackTrace();
@@ -389,12 +389,31 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             }
         }
         @XML.Name("fmt")
-        public record FormatedText(@XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children, @XML.Attribute(fallBack = "reset") Formatting[] style) implements TextContent {
+        public record FormatedText(
+                @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,
+                @XML.Attribute(fallBack = "reset") Formatting[] style,
+                @XML.Attribute(fallBack = "[null]") Color color
+        ) implements TextContent {
             @Override
             public net.minecraft.text.Text toText() {
-                return concat(this.children).formatted(style);
+                if (color != null) {
+                    var base = concat(this.children).formatted(style);
+                    return color == null ? base : base.withColor(color.color());
+                } else {
+                    return concat(this.children).formatted(style);
+                }
             }
         }
+//        @XML.Name("highlight")
+//        public record HighlightText(
+//                @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,
+//                @XML.Attribute(fallBack = "yellow") TextColor highlightColor
+//        ) implements TextContent {
+//            @Override
+//            public net.minecraft.text.Text toText() {
+//                return concat(this.children).styled(s -> s.withColor(highlightColor));
+//            }
+//        }
         @XML.Name("a")
         public record Anchor(
                 @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,

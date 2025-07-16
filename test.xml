@@ -1,1 +1,5 @@
-<text><i>Hello World </i><b>Hello World </b><i style="red, strikethrough">Hello World </i><a onclick="/give @p diamond" title="Click Me">Example.com</a></text>
+<text>
+    <fmt style="red, underline" color="#FF64C8">Pink Text</fmt>
+    <a href="https://example.com"><fmt style="obfuscated" color="239,8,153">RGB Color</fmt></a>
+        <fmt style="obfuscated" color="000000">Hex Without Hash</fmt>
+</text>

@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.BTC;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -20,10 +21,10 @@ public class CodexScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 
-        int x = 0;
-        int y = 0;
-        int width = 0;
-        int height = 0;
+//        int x = 0;
+//        int y = 0;
+//        int width = 0;
+//        int height = 0;
 
         super.render(context, mouseX, mouseY, delta);
     }
