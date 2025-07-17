@@ -61,16 +61,16 @@ public class ScreenTestItem extends Item {
         try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
             player.sendMessage(Codex.Text.parse(reader));
 
-            int red = 255;
-            int green = 100;
-            int blue = 200;
-
-            TextColor rgbColor = TextColor.fromRgb((red << 16) | (green << 8) | blue);
-
-            Text message = Text.literal("This is RGB text!")
-                    .setStyle(Style.EMPTY.withColor(rgbColor));
-
-            player.sendMessage(message, false);
+//            int red = 255;
+//            int green = 100;
+//            int blue = 200;
+//
+//            TextColor rgbColor = TextColor.fromRgb((red << 16) | (green << 8) | blue);
+//
+//            Text message = Text.literal("This is RGB text!")
+//                    .setStyle(Style.EMPTY.withColor(rgbColor));
+//
+//            player.sendMessage(message, false);
 //            CodexScreen.codex = Codex.parse(reader);
         } catch (Throwable t) {
             t.printStackTrace();

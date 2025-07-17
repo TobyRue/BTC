@@ -82,7 +82,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     }
     private static Formatting[] parseFormatting(final String text) throws XMLException {
         try {
-            return Arrays.stream(text.split(",")).map(t -> Objects.requireNonNull(Formatting.byName(t))).toArray(Formatting[]::new);
+            return Arrays.stream(text.split("[,;]")).filter(t -> !t.isBlank()).map(t -> Objects.requireNonNull(Formatting.byName(t))).toArray(Formatting[]::new);
         } catch (Exception e) {
             throw new XMLException(e.getMessage());
         }
@@ -391,17 +391,13 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         @XML.Name("fmt")
         public record FormatedText(
                 @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,
-                @XML.Attribute(fallBack = "reset") Formatting[] style,
-                @XML.Attribute(fallBack = "[null]") Color color
+                @XML.Attribute(fallBack = "") Formatting[] style,
+                @XML.Attribute(fallBack = "") Color color
         ) implements TextContent {
             @Override
             public net.minecraft.text.Text toText() {
-                if (color != null) {
-                    var base = concat(this.children).formatted(style);
-                    return color == null ? base : base.withColor(color.color());
-                } else {
-                    return concat(this.children).formatted(style);
-                }
+                var base = concat(this.children).formatted(style);
+                return color.isValid() ? base.withColor(color.rgb()) : base;
             }
         }
 //        @XML.Name("highlight")
