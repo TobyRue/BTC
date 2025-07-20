@@ -196,6 +196,7 @@
   "item.btc.spell.wind.cluster_wind_charge": "Wind Cluster Shot",
   "item.btc.spell.wind.tempests_call": "Tempest's Call",
   "item.btc.spell.wind.storm_push": "Storm Push",
+  "item.btc.spell.wind.wind_tornado": "Wind Tornado",
 
   "item.btc.spell.water.set": "Drowned Staff set to: %s",
   "item.btc.spell.water.water_blast": "Water Blast",

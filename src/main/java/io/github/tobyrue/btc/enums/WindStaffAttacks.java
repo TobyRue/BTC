@@ -6,7 +6,8 @@ public enum WindStaffAttacks implements StringIdentifiable {
     WIND_CHARGE ("wind_charge", "wind_charge"),
     CLUSTER_WIND_CHARGE ("cluster_wind_charge", "cluster_wind_charge"),
     TEMPESTS_CALL ("tempests_call", "tempests_call"),
-    STORM_PUSH ("storm_push", "storm_push");
+    STORM_PUSH ("storm_push", "storm_push"),
+    WIND_TORNADO ("wind_tornado", "wind_tornado");
 
     private final String name;
 

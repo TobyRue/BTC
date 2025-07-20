@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -16,13 +17,19 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class WindTornadoEntity extends Entity {
+    private int maxAge = 320;
+    private LivingEntity user;
 
     public WindTornadoEntity(EntityType<?> type, World world) {
         super(type, world);
+        this.maxAge = 320;
     }
-    public WindTornadoEntity(LivingEntity user, World world, double x, double y, double z) {
+
+    public WindTornadoEntity(LivingEntity user, World world, double x, double y, double z, int maxAge) {
         super(ModEntities.WIND_TORNADO, world);
         this.setPosition(x, y, z);
+        this.maxAge = maxAge;
+        this.user = user;
     }
 
     @Override
@@ -69,36 +76,70 @@ public class WindTornadoEntity extends Entity {
         }
 
         // Pull nearby mobs
-        Box pullBox = this.getBoundingBox().expand(5.5);
-        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e ->
-                e != (Entity) this &&
-                        e.isAlive() &&
-                        (!(e instanceof PlayerEntity) || (!((PlayerEntity) e).isCreative() && !((PlayerEntity) e).isSpectator()))
-        );
+        if (!world.isClient) {
+            Box pullBox = this.getBoundingBox().expand(5.5);
+//        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e -> {
+//            if (e == this || !e.isAlive()) return false;
+//            if (e == user) return false;
+//
+//            // Skip tamed pets owned by the user
+//            if (e instanceof TameableEntity tameable) {
+//                if (tameable.isTamed() && tameable.getOwner() == user) {
+//                    return false;
+//                }
+//            }
+//
+//            // Skip creative/spectator players
+//            if (e instanceof PlayerEntity player) {
+//                return !player.isCreative() && !player.isSpectator();
+//            }
+//
+//            return true;
+//        });
+//        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e ->
+//                e != (Entity) this &&
+//                        e.isAlive() &&
+//                        (e != user) &&
+//                        (!(e instanceof PlayerEntity) || (!((PlayerEntity) e).isCreative() && !((PlayerEntity) e).isSpectator()))
+//        );
+            //TODO
+            List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e -> {
+                if (e != (Entity) this) return false;
+                if (e != user) return false;
+                if (e instanceof PlayerEntity player) {
+                    return !player.isCreative() && !player.isSpectator();
+                }
+                if (e instanceof TameableEntity tameable) {
+                    if (tameable.isTamed() && tameable.getOwner() == user) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            });
 
-        for (LivingEntity entity : nearby) {
-            Vec3d direction = this.getPos().subtract(entity.getPos()).normalize().multiply(0.15);
-            Vec3d upward = new Vec3d(0, 0.1, 0);
-            entity.addVelocity(direction.x, direction.y + upward.y, direction.z);
-            entity.velocityModified = true;
+            for (LivingEntity entity : nearby) {
+                Vec3d direction = this.getPos().subtract(entity.getPos()).normalize().multiply(0.15);
+                Vec3d upward = new Vec3d(0, 0.1, 0);
+                entity.addVelocity(direction.x, direction.y + upward.y, direction.z);
+                entity.velocityModified = true;
 
-            // Swirling particles around pulled entity
-            world.addParticle(ParticleTypes.CLOUD,
-                    entity.getX() + (random.nextDouble() - 0.5),
-                    entity.getY() + random.nextDouble() * 1.5,
-                    entity.getZ() + (random.nextDouble() - 0.5),
-                    0, 0.01, 0);
+                // Swirling particles around pulled entity
+                world.addParticle(ParticleTypes.CLOUD,
+                        entity.getX() + (random.nextDouble() - 0.5),
+                        entity.getY() + random.nextDouble() * 1.5,
+                        entity.getZ() + (random.nextDouble() - 0.5),
+                        0, 0.01, 0);
 
-            // Bonus: Impact damage if colliding horizontally
-            System.out.println("Entity Velocity: " + entity.getVelocity() + " Length: " + entity.getVelocity().length() + " Collision: " + entity.horizontalCollision);
-            if (!world.isClient && entity.horizontalCollision && entity.getVelocity().length() > 0.1) {
-                float damage = (float) (4.0 + Math.round(entity.getVelocity().length()) * 2);
-                entity.damage(entity.getDamageSources().inWall(), damage);
+                if (entity.horizontalCollision && entity.getVelocity().length() > 0.1) {
+                    float damage = (float) (4.0 + Math.round(entity.getVelocity().length()) * 2);
+                    entity.damage(entity.getDamageSources().inWall(), damage);
+                }
             }
         }
 
-        // Lifetime check: 320 ticks = 16 seconds
-        if (++age >= 320) {
+        if (++age >= maxAge) {
             for (int i = 0; i < 60; i++) {
                 double dx = (random.nextDouble() - 0.5) * 2;
                 double dy = (random.nextDouble() - 0.5) * 2;

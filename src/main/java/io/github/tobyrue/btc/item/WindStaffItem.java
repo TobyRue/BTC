@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.CooldownProvider;
+import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.entity.custom.WindTornadoEntity;
 import io.github.tobyrue.btc.enums.DragonStaffAttacks;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.WindStaffAttacks;
@@ -83,6 +85,15 @@ public class WindStaffItem extends StaffItem {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         shootMobsAway(player, world);
                         setCooldown(player, stack, cooldownKey, 100, true);
+                        player.incrementStat(Stats.USED.getOrCreateStat(this));
+                        return TypedActionResult.success(stack);
+                    }
+                }
+                case WIND_TORNADO -> {
+                    if (!isCooldownActive(stack, cooldownKey)) {
+                        WindTornadoEntity windTornado = new WindTornadoEntity(player, world, player.getX(), player.getY(), player.getZ(), 320);
+                        world.spawnEntity(windTornado);
+                        setCooldown(player, stack, cooldownKey, 400, true);
                         player.incrementStat(Stats.USED.getOrCreateStat(this));
                         return TypedActionResult.success(stack);
                     }
