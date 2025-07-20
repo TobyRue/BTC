@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ModEntities;
+import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -17,12 +18,13 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class WindTornadoEntity extends Entity {
-    private int maxAge = 320;
+    private int maxAge;
     private LivingEntity user;
 
     public WindTornadoEntity(EntityType<?> type, World world) {
         super(type, world);
         this.maxAge = 320;
+        user = null;
     }
 
     public WindTornadoEntity(LivingEntity user, World world, double x, double y, double z, int maxAge) {
@@ -50,7 +52,9 @@ public class WindTornadoEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
+
         World world = this.getWorld();
+
 
         // Slow falling gravity
         Vec3d velocity = this.getVelocity();
@@ -65,7 +69,7 @@ public class WindTornadoEntity extends Entity {
         this.move(MovementType.SELF, this.getVelocity());
 
         // Ambient swirl particles (low amount)
-        if (world.isClient || world.getTime() % 2 == 0) {
+        if (world.getTime() % 2 == 0) {
             for (int i = 0; i < 3; i++) {
                 world.addParticle(ParticleTypes.CLOUD,
                         getX() + (random.nextDouble() - 0.5) * 1.5,
@@ -104,19 +108,22 @@ public class WindTornadoEntity extends Entity {
 //        );
             //TODO
             List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e -> {
-                if (e != (Entity) this) return false;
-                if (e != user) return false;
-                if (e instanceof PlayerEntity player) {
-                    return !player.isCreative() && !player.isSpectator();
-                }
-                if (e instanceof TameableEntity tameable) {
-                    if (tameable.isTamed() && tameable.getOwner() == user) {
-                        return false;
-                    } else {
-                        return true;
+
+                if (e == (Entity) this || !e.isAlive()) return false;
+
+                if (user != null) {
+                    if (e.equals(user)) return false;
+
+                    // Skip tamed pets of user
+                    if (e instanceof TameableEntity tameable && tameable.isTamed()) {
+                        if (tameable.getOwner() == user) return false;
                     }
+
+                    // Skip creative or spectator players
+                    return !(e instanceof PlayerEntity player) || (!player.isCreative() && !player.isSpectator());
                 }
-                return true;
+
+                return !(e instanceof PlayerEntity player) || (!player.isCreative() && !player.isSpectator());
             });
 
             for (LivingEntity entity : nearby) {
@@ -125,7 +132,6 @@ public class WindTornadoEntity extends Entity {
                 entity.addVelocity(direction.x, direction.y + upward.y, direction.z);
                 entity.velocityModified = true;
 
-                // Swirling particles around pulled entity
                 world.addParticle(ParticleTypes.CLOUD,
                         entity.getX() + (random.nextDouble() - 0.5),
                         entity.getY() + random.nextDouble() * 1.5,
@@ -138,6 +144,7 @@ public class WindTornadoEntity extends Entity {
                 }
             }
         }
+
 
         if (++age >= maxAge) {
             for (int i = 0; i < 60; i++) {
