@@ -22,6 +22,9 @@
     ],
     "main": [
       "io.github.tobyrue.btc.BTC"
+    ],
+    "mm:early_risers": [
+      "io.github.tobyrue.btc.regestries.EarlyRiser"
     ]
   },
   "mixins": [

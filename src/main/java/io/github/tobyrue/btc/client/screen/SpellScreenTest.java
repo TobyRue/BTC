@@ -1,30 +1,21 @@
 package io.github.tobyrue.btc.client.screen;
 
-import io.github.tobyrue.btc.AdvancementParser;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
-import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.BookScreen;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundManager;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
@@ -172,9 +163,10 @@ public class SpellScreenTest extends Screen {
         if (clickEvent == null) return false;
 
         MinecraftClient client = MinecraftClient.getInstance();
+        String actionName = clickEvent.getAction().name();
 
-        switch (clickEvent.getAction()) {
-            case OPEN_URL -> {
+        switch (actionName) {
+            case "OPEN_URL" -> {
                 try {
                     Util.getOperatingSystem().open(clickEvent.getValue());
                 } catch (Exception e) {
@@ -182,28 +174,59 @@ public class SpellScreenTest extends Screen {
                 }
                 return true;
             }
-            case RUN_COMMAND -> {
+            case "RUN_COMMAND" -> {
                 client.player.networkHandler.sendCommand(clickEvent.getValue());
                 client.setScreen(null);
                 return true;
             }
-            case SUGGEST_COMMAND -> {
+            case "SUGGEST_COMMAND" -> {
                 client.setScreen(null);
                 client.setScreen(new ChatScreen(clickEvent.getValue()));
                 return true;
             }
-            case COPY_TO_CLIPBOARD -> {
+            case "COPY_TO_CLIPBOARD" -> {
                 client.keyboard.setClipboard(clickEvent.getValue());
                 client.player.sendMessage(Text.literal("Copied to clipboard!"), false);
                 return true;
             }
-            case CHANGE_PAGE -> {
-                //TODO
+            case "CODEX_PAGE" -> {
+                System.out.println("CODEX_PAGE clicked with value: " + clickEvent.getValue());
+
+                client.player.sendMessage(
+                        Text.literal("CODEX_PAGE triggered: " + clickEvent.getValue()).formatted(Formatting.LIGHT_PURPLE),
+                        false
+                );
+                if (clickEvent.getValue().startsWith("page:")) {
+                    String page = clickEvent.getValue().strip().substring(5);
+                    try {
+                        try {
+                            int pageInt = Integer.parseInt(page);
+                            System.out.println("Page Int: " + pageInt);
+                        } catch (Exception e) {
+                            System.out.println("Page Name: " + page);
+                        }
+                    } catch (RuntimeException r) {
+                        throw new RuntimeException(r);
+                    }
+                } else if (clickEvent.getValue().startsWith("value:")) {
+                    String value = clickEvent.getValue().strip().substring(6);
+                }
+                return true;
+            }
+            case "CODEX_VALUE" -> {
+                System.out.println("CODEX_VALUE clicked with value: " + clickEvent.getValue());
+
+                client.player.sendMessage(
+                        Text.literal("CODEX_VALUE triggered: " + clickEvent.getValue()).formatted(Formatting.LIGHT_PURPLE),
+                        false
+                );
+                return true;
             }
             default -> {
                 return super.handleTextClick(style);
             }
         }
+
         return super.handleTextClick(style);
     }
 

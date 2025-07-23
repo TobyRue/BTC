@@ -326,6 +326,10 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             return XML_PARSER.parse(reader).toText();
         }
 
+        public static net.minecraft.text.Text parse(String string) throws XMLException {
+            return XML_PARSER.parse(string).toText();
+        }
+
         public static MutableText concat(final XMLNodeCollection<TextContent> nodes) {
             var text = net.minecraft.text.Text.empty();
             for (var node : nodes) {
@@ -410,6 +414,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 //                return concat(this.children).styled(s -> s.withColor(highlightColor));
 //            }
 //        }
+
         @XML.Name("a")
         public record Anchor(
                 @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,
@@ -421,25 +426,41 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             @Override
             public net.minecraft.text.Text toText() {
                 final ClickEvent e;
+                ClickEvent e1;
                 final var href = this.href.strip();
                 final var onclick = this.onclick.strip();
 
                 if (href.startsWith("#")) {
-                    e = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, href.substring(1).strip());
+                    try {
+                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_PAGE");
+                        e1 = new ClickEvent(action, href.substring(1).strip());
+                    } catch (IllegalArgumentException ex) {
+                        e1 = null;
+                        throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_PAGE' not found: %s", ex));
+                    }
+                } else if (href.startsWith("value:")) {
+                    try {
+                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_VALUE");
+                        e1 = new ClickEvent(action, href.substring(6).strip());
+                    } catch (IllegalArgumentException ex) {
+                        e1 = null;
+                        throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
+                    }
                 } else if (href.toLowerCase(Locale.ROOT).startsWith("file:")) {
-                    e = new ClickEvent(ClickEvent.Action.OPEN_FILE, href.substring(5).strip());
+                    e1 = new ClickEvent(ClickEvent.Action.OPEN_FILE, href.substring(5).strip());
                 } else if (!href.isEmpty()) {
-                    e = new ClickEvent(ClickEvent.Action.OPEN_URL, href);
+                    e1 = new ClickEvent(ClickEvent.Action.OPEN_URL, href);
                 } else if (onclick.toLowerCase(Locale.ROOT).startsWith("copy:")) {
-                    e = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, onclick.substring(5).strip());
+                    e1 = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, onclick.substring(5).strip());
                 } else if (onclick.toLowerCase(Locale.ROOT).startsWith("?")) {
-                    e = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + onclick.substring(1).strip());
+                    e1 = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + onclick.substring(1).strip());
                 } else if (onclick.toLowerCase(Locale.ROOT).startsWith("/")) {
-                    e = new ClickEvent(ClickEvent.Action.RUN_COMMAND, onclick);
+                    e1 = new ClickEvent(ClickEvent.Action.RUN_COMMAND, onclick);
                 } else {
-                    e = null;
+                    e1 = null;
                 }
 
+                e = e1;
                 return concat(this.children).formatted(style).styled(s -> s.withClickEvent(e).withHoverEvent(title.isBlank() ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, net.minecraft.text.Text.translatable(title))));
             }
         }

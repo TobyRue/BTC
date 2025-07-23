@@ -36,6 +36,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -128,6 +129,7 @@ public class BTC implements ModInitializer {
                 System.out.println("  Line (align=" + align + "): " + textContent);
             }
         }
+
 
 
         //Adds a trade in another class, BetterTrialChambersMapTrade

@@ -559,6 +559,16 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 } else if (!page.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page);
                     hoverText = "Go to page";
+                } else if (!copy.isEmpty() && copy.startsWith("test:")) {
+                    try {
+                        ClickEvent.Action action = ClickEvent.Action.valueOf("TEST_COMMAND");
+                        event = new ClickEvent(action, copy.substring(5).strip());
+                        System.out.println("Thinger: " + action + " Thinger Value: " + copy.substring(5));
+                    } catch (IllegalArgumentException ex) {
+                        System.err.println("Custom ClickEvent.Action 'TEST_COMMAND' not found.");
+                        event = null;
+                    }
+                    hoverText = "Copy text";
                 } else if (!copy.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy);
                     hoverText = "Copy text";
@@ -567,10 +577,11 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     hoverText = null;
                 }
                 // Apply link-specific style to the whole text chain — preserving child formatting
+                ClickEvent finalEvent = event;
                 linkText = linkText.copy().styled(style -> style
                         .withColor(Formatting.byName(color.toUpperCase()))
                         .withUnderline(true)
-                        .withClickEvent(event)
+                        .withClickEvent(finalEvent)
                         .withHoverEvent(hoverText != null ? new HoverEvent(HoverEvent.Action.SHOW_TEXT, net.minecraft.text.Text.literal(hoverText)) : null)
                 );
 
