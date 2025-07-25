@@ -214,8 +214,13 @@ public class SpellScreenTest extends Screen {
                 return true;
             }
             case "CODEX_VALUE" -> {
-                System.out.println("CODEX_VALUE clicked with value: " + clickEvent.getValue());
+                try {
 
+                    String[] values = clickEvent.getValue().substring(6).strip().split("\\|");
+                    System.out.println("Changing value: " + values[0] + ", to " + values[1]);
+                } catch (IllegalArgumentException ex) {
+                    throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
+                }
                 client.player.sendMessage(
                         Text.literal("CODEX_VALUE triggered: " + clickEvent.getValue()).formatted(Formatting.LIGHT_PURPLE),
                         false
@@ -226,8 +231,6 @@ public class SpellScreenTest extends Screen {
                 return super.handleTextClick(style);
             }
         }
-
-        return super.handleTextClick(style);
     }
 
     @Override

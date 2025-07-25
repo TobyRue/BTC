@@ -1,7 +1,7 @@
 <text>
     <fmt style="red, underline" color="0xFF64C8">Pink Text</fmt>
-    <a href="https://example.com"><fmt style="obfuscated" color="rgb(239,8,153)">RGB Color</fmt></a>
+    <a href="https://example.com"><fmt color="rgb(239,8,153)">RGB Color</fmt></a>
     <fmt style="red" color="#FFBBAA">Hex Without Hash</fmt>
-    <a href="test:hihi">Hi</a>
-    <a href="https://example.com">Hi</a>
+    <a href="#1">Hi</a>
+    <a href="value:hi|yes">Hi</a>
 </text>

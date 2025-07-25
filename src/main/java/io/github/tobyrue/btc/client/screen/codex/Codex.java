@@ -426,12 +426,22 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             @Override
             public net.minecraft.text.Text toText() {
                 final ClickEvent e;
-                ClickEvent e1;
+                ClickEvent e1 = null;
                 final var href = this.href.strip();
                 final var onclick = this.onclick.strip();
 
                 if (href.startsWith("#")) {
                     try {
+                        try {
+                            try {
+                                int pageInt = Integer.parseInt(href.substring(1));
+                                System.out.println("Page Int: " + pageInt);
+                            } catch (Exception exception) {
+                                System.out.println("Page Name: " + href.substring(1));
+                            }
+                        } catch (RuntimeException r) {
+                            throw new RuntimeException(r);
+                        }
                         ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_PAGE");
                         e1 = new ClickEvent(action, href.substring(1).strip());
                     } catch (IllegalArgumentException ex) {
@@ -442,6 +452,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     try {
                         ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_VALUE");
                         e1 = new ClickEvent(action, href.substring(6).strip());
+                        String[] values = href.substring(6).strip().split("\\|");
+
+                        System.out.println("Changing value: " + values[0] + ", to " + values[1]);
                     } catch (IllegalArgumentException ex) {
                         e1 = null;
                         throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));

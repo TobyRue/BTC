@@ -559,16 +559,31 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 } else if (!page.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page);
                     hoverText = "Go to page";
-                } else if (!copy.isEmpty() && copy.startsWith("test:")) {
+                } else if (!copy.isEmpty() && copy.startsWith("page:")) {
                     try {
-                        ClickEvent.Action action = ClickEvent.Action.valueOf("TEST_COMMAND");
+                        try {
+                            int pageInt = Integer.parseInt(copy.substring(5));
+                            System.out.println("Page Int: " + pageInt);
+                        } catch (Exception exception) {
+                            System.out.println("Page Name: " + copy.substring(5));
+                        }
+                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_PAGE");
                         event = new ClickEvent(action, copy.substring(5).strip());
-                        System.out.println("Thinger: " + action + " Thinger Value: " + copy.substring(5));
-                    } catch (IllegalArgumentException ex) {
-                        System.err.println("Custom ClickEvent.Action 'TEST_COMMAND' not found.");
-                        event = null;
+                        hoverText = "Copy text";
+                    } catch (RuntimeException r) {
+                        throw new RuntimeException(r);
                     }
-                    hoverText = "Copy text";
+                } else if (!copy.isEmpty() && copy.startsWith("value:")) {
+                    try {
+                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_VALUE");
+                        event = new ClickEvent(action, copy.substring(6).strip());
+                        String[] values = copy.substring(6).strip().split("\\|");
+                        System.out.println("Changing value: " + values[0] + ", to " + values[1]);
+                        hoverText = "Copy text";
+                    } catch (IllegalArgumentException ex) {
+                        event = null;
+                        throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
+                    }
                 } else if (!copy.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy);
                     hoverText = "Copy text";
