@@ -6,28 +6,14 @@ import io.github.tobyrue.btc.item.SpellScrollItem;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.criterion.*;
-import net.minecraft.block.Blocks;
-import net.minecraft.data.client.*;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
-import net.minecraft.potion.Potions;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
 
@@ -73,7 +59,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
         @Override
         public void generate(RecipeExporter exporter) {
             for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.CLUSTER_WIND_SHOT) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.CLUSTER_WIND_SHOT) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -88,7 +74,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .offerTo(exporter);
                 }
 
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.DRAGON_FIREBALL) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.DRAGON_FIREBALL) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -103,7 +89,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .offerTo(exporter);
                 }
 
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.FROST_WALKER) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FROST_WALKER) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -118,7 +104,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .offerTo(exporter);
                 }
 
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.EARTH_SPIKES) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.EARTH_SPIKES) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -133,7 +119,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .offerTo(exporter);
                 }
 
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.FIREBALL_STRONG) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FIREBALL_STRONG) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -148,7 +134,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .offerTo(exporter);
                 }
 
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.TEMPESTS_CALL) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.TEMPESTS_CALL) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -163,7 +149,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                             .offerTo(exporter);
                 }
 
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.STORM_PUSH) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.STORM_PUSH) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -177,7 +163,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                                     FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
                             .offerTo(exporter);
                 }
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.FIRE_STORM) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FIRE_STORM) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")
@@ -193,7 +179,7 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
                                     FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
                             .offerTo(exporter);
                 }
-                if (!spell.spellType.isStartingSpell && spell.spellType == SpellRegistryEnum.CONCENTRATED_FIRE_STORM) {
+                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.CONCENTRATED_FIRE_STORM) {
                     ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
                             .pattern("aca")
                             .pattern("cbc")

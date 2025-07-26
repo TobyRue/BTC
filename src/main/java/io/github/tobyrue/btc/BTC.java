@@ -6,40 +6,37 @@ import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
+import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.ScreenTestItem;
+import io.github.tobyrue.btc.packets.ModPackets;
+import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.btc.regestries.*;
-import io.github.tobyrue.btc.status_effects.*;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.minecraft.advancement.Advancement;
 import net.minecraft.block.*;
-import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
-import net.minecraft.data.client.VariantSettings;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.ClickEvent;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
@@ -54,8 +51,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.io.File;
-import java.util.function.Predicate;
 
 public class BTC implements ModInitializer {
 
@@ -82,53 +77,55 @@ public class BTC implements ModInitializer {
 
     public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
 
+
+
     // Register our custom particle type in the mod initializer.
     @Override
     public void onInitialize() {
-        System.out.println(SpellBookXMLParser.loadResource());
 
-
-//        var xmlFilePath = "test.xml";
-
-        var builderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        try {
-            builder = builderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-
-        var xmlString = SpellBookXMLParser.loadResource();
-        var reader = new StringReader(xmlString);
-        var inputSource = new InputSource(reader);
-        Document document;
-        try {
-            document = builder.parse(inputSource);
-        } catch (SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        var root = document.getDocumentElement();
-        var pages = root.getElementsByTagName("page");
-
-        for (int i = 0; i < pages.getLength(); i++) {
-            var page = (Element) pages.item(i);
-
-            // Get attribute id
-
-            var id = page.getAttribute("id");
-            System.out.println("Page ID: " + id);
-
-            // Get all <line> elements inside this page
-            var lines = page.getElementsByTagName("line");
-
-            for (int j = 0; j < lines.getLength(); j++) {
-                var line = (Element) lines.item(j);
-                String align = line.hasAttribute("align") ? line.getAttribute("align") : "left";
-                String textContent = line.getTextContent().trim();
-                System.out.println("  Line (align=" + align + "): " + textContent);
-            }
-        }
+//        System.out.println(SpellBookXMLParser.loadResource());
+//
+////        var xmlFilePath = "test.xml";
+//
+//        var builderFactory = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder builder;
+//        try {
+//            builder = builderFactory.newDocumentBuilder();
+//        } catch (ParserConfigurationException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        var xmlString = SpellBookXMLParser.loadResource();
+//        var reader = new StringReader(xmlString);
+//        var inputSource = new InputSource(reader);
+//        Document document;
+//        try {
+//            document = builder.parse(inputSource);
+//        } catch (SAXException | IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        var root = document.getDocumentElement();
+//        var pages = root.getElementsByTagName("page");
+//
+//        for (int i = 0; i < pages.getLength(); i++) {
+//            var page = (Element) pages.item(i);
+//
+//            // Get attribute id
+//
+//            var id = page.getAttribute("id");
+//            System.out.println("Page ID: " + id);
+//
+//            // Get all <line> elements inside this page
+//            var lines = page.getElementsByTagName("line");
+//
+//            for (int j = 0; j < lines.getLength(); j++) {
+//                var line = (Element) lines.item(j);
+//                String align = line.hasAttribute("align") ? line.getAttribute("align") : "left";
+//                String textContent = line.getTextContent().trim();
+//                System.out.println("  Line (align=" + align + "): " + textContent);
+//            }
+//        }
 
 
 
@@ -137,14 +134,17 @@ public class BTC implements ModInitializer {
             factories.add(new BetterTrialChambersMapTrade());
         });
 
-        ModMapDecorationTypes.register();
+        ModCommands.initialize();
+        ModMapDecorationTypes.initialize();
         ModBlocks.initialize();
         ModItems.initialize();
         ModBlockEntities.initialize();
         ModPotions.initialize();
         ModSounds.initialize();
-        ModCopperBlocks.registerCopperBlocks();
+        ModWaxings.initialize();
         ModInventoryItemRegistry.initialize();
+        ModPackets.initialize();
+        ModSpells.initialize();
 
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());

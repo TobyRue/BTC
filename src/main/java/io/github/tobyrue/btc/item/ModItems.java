@@ -29,7 +29,7 @@ public class ModItems {
 
     static {
         for (SpellRegistryEnum spell : SpellRegistryEnum.values()) {
-            if (!spell.isStartingSpell) {
+            if (!spell.hasNoScroll) {
                 SpellScrollItem item = new SpellScrollItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).maxCount(1), spell);
                 SPELL_ITEMS.put(spell, register(item, spell.toString() + "_scroll"));
             }

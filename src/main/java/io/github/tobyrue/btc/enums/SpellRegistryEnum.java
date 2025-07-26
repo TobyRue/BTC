@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.enums;
 
-import io.github.tobyrue.btc.AdvancementUtils;
+import io.github.tobyrue.btc.util.AdvancementUtils;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
@@ -56,15 +56,15 @@ public enum SpellRegistryEnum implements StringIdentifiable {
     public final double cooldown;
     private final String cooldownKey;
     public final SpellTypes spellTypes;
-    public final boolean isStartingSpell;
+    public final boolean hasNoScroll;
 
-    SpellRegistryEnum(int id, String name, double cooldown, String cooldownKey, SpellTypes spellTypes, boolean isStartingSpell) {
+    SpellRegistryEnum(int id, String name, double cooldown, String cooldownKey, SpellTypes spellTypes, boolean hasNoScroll) {
         this.id = id;
         this.name = name;
         this.cooldown = cooldown;
         this.cooldownKey = cooldownKey;
         this.spellTypes = spellTypes;
-        this.isStartingSpell = isStartingSpell;
+        this.hasNoScroll = hasNoScroll;
     }
 
     public double getCooldown() {
@@ -91,6 +91,14 @@ public enum SpellRegistryEnum implements StringIdentifiable {
         return (SpellRegistryEnum)BY_ID.apply(id);
     }
 
+    public static boolean hasSpell(ServerPlayerEntity player, SpellRegistryEnum spell) {
+        if (spell.hasNoScroll || AdvancementUtils.hasAdvancement(player, "btc", String.format("adventure/get_%s_scroll", spell.asString()))) {
+            return true;
+        }
+
+        return true;
+    }
+
     public static SpellRegistryEnum nextUnlocked(ServerPlayerEntity player, SpellRegistryEnum current) {
         int total = values().length;
         int index = current.id;
@@ -100,7 +108,7 @@ public enum SpellRegistryEnum implements StringIdentifiable {
             SpellRegistryEnum nextSpell = byId(index);
 
             // unlocked if player has advancement OR it's a starting spell
-            if (nextSpell.isStartingSpell || AdvancementUtils.hasAdvancement(player, "btc", String.format("adventure/get_%s_scroll", nextSpell.asString()))) {
+            if (nextSpell.hasNoScroll || AdvancementUtils.hasAdvancement(player, "btc", String.format("adventure/get_%s_scroll", nextSpell.asString()))) {
                 return nextSpell;
             }
         }
@@ -108,6 +116,7 @@ public enum SpellRegistryEnum implements StringIdentifiable {
         // No unlocked spells found
         return null;
     }
+
     public static SpellRegistryEnum nextUnlockedOrCurrent(ServerPlayerEntity player, SpellRegistryEnum current) {
         SpellRegistryEnum next = nextUnlocked(player, current);
         return next != null ? next : current;

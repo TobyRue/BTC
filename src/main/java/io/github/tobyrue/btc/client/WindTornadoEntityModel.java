@@ -4,19 +4,11 @@
 
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.AdvancementUtils;
-import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.entity.custom.WindTornadoEntity;
-import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.WindChargeEntityRenderer;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.client.render.entity.model.WindChargeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.WindChargeEntity;
-
-import javax.swing.text.html.parser.Entity;
 
 public class WindTornadoEntityModel<T extends WindTornadoEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart tornado;

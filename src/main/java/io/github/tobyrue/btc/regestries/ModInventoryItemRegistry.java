@@ -1,7 +1,6 @@
 package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellScrollItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -18,10 +17,13 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
             content.addAfter(ModItems.ENCHANTED_PAPER, ModItems.EMPTY_SCROLL);
             for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
-                if (!spell.spellType.isStartingSpell) {
+                if (!spell.spellType.hasNoScroll) {
                     content.addAfter(ModItems.ENCHANTED_PAPER, spell);
                 }
             }
+        });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
+            content.addAfter(Items.LIGHT, ModItems.TEST);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);

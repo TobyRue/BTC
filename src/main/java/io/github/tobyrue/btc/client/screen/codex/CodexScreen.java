@@ -1,7 +1,7 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.BTC;
-import net.minecraft.client.font.MultilineText;
+import io.github.tobyrue.btc.util.Vec2i;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;

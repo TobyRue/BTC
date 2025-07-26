@@ -2,7 +2,7 @@ package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.AdvancementParser;
 import io.github.tobyrue.btc.client.screen.codex.style.Color;
-import io.github.tobyrue.btc.client.screen.codex.style.EnumHelper;
+import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.btc.client.screen.codex.style.Margins;
 import io.github.tobyrue.btc.client.screen.codex.style.UnitValue;
 import io.github.tobyrue.xml.*;
@@ -404,16 +404,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 return color.isValid() ? base.withColor(color.rgb()) : base;
             }
         }
-//        @XML.Name("highlight")
-//        public record HighlightText(
-//                @XML.Children(allow = {TextContent.class}) XMLNodeCollection<TextContent> children,
-//                @XML.Attribute(fallBack = "yellow") TextColor highlightColor
-//        ) implements TextContent {
-//            @Override
-//            public net.minecraft.text.Text toText() {
-//                return concat(this.children).styled(s -> s.withColor(highlightColor));
-//            }
-//        }
 
         @XML.Name("a")
         public record Anchor(
@@ -426,54 +416,25 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             @Override
             public net.minecraft.text.Text toText() {
                 final ClickEvent e;
-                ClickEvent e1 = null;
                 final var href = this.href.strip();
                 final var onclick = this.onclick.strip();
 
                 if (href.startsWith("#")) {
-                    try {
-                        try {
-                            try {
-                                int pageInt = Integer.parseInt(href.substring(1));
-                                System.out.println("Page Int: " + pageInt);
-                            } catch (Exception exception) {
-                                System.out.println("Page Name: " + href.substring(1));
-                            }
-                        } catch (RuntimeException r) {
-                            throw new RuntimeException(r);
-                        }
-                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_PAGE");
-                        e1 = new ClickEvent(action, href.substring(1).strip());
-                    } catch (IllegalArgumentException ex) {
-                        e1 = null;
-                        throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_PAGE' not found: %s", ex));
-                    }
-                } else if (href.startsWith("value:")) {
-                    try {
-                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_VALUE");
-                        e1 = new ClickEvent(action, href.substring(6).strip());
-                        String[] values = href.substring(6).strip().split("\\|");
-
-                        System.out.println("Changing value: " + values[0] + ", to " + values[1]);
-                    } catch (IllegalArgumentException ex) {
-                        e1 = null;
-                        throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
-                    }
+                    e = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, href.substring(1).strip());
                 } else if (href.toLowerCase(Locale.ROOT).startsWith("file:")) {
-                    e1 = new ClickEvent(ClickEvent.Action.OPEN_FILE, href.substring(5).strip());
+                    e = new ClickEvent(ClickEvent.Action.OPEN_FILE, href.substring(5).strip());
                 } else if (!href.isEmpty()) {
-                    e1 = new ClickEvent(ClickEvent.Action.OPEN_URL, href);
+                    e = new ClickEvent(ClickEvent.Action.OPEN_URL, href);
                 } else if (onclick.toLowerCase(Locale.ROOT).startsWith("copy:")) {
-                    e1 = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, onclick.substring(5).strip());
+                    e = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, onclick.substring(5).strip());
                 } else if (onclick.toLowerCase(Locale.ROOT).startsWith("?")) {
-                    e1 = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + onclick.substring(1).strip());
+                    e = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + onclick.substring(1).strip());
                 } else if (onclick.toLowerCase(Locale.ROOT).startsWith("/")) {
-                    e1 = new ClickEvent(ClickEvent.Action.RUN_COMMAND, onclick);
+                    e = new ClickEvent(ClickEvent.Action.RUN_COMMAND, onclick);
                 } else {
-                    e1 = null;
+                    e = null;
                 }
 
-                e = e1;
                 return concat(this.children).formatted(style).styled(s -> s.withClickEvent(e).withHoverEvent(title.isBlank() ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, net.minecraft.text.Text.translatable(title))));
             }
         }

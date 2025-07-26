@@ -34,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class FireStaffItem extends StaffItem {
-    World world2 = null;
 
     public FireStaffItem(Settings settings) {
         super(settings);
@@ -136,7 +135,6 @@ public class FireStaffItem extends StaffItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        world2 = world;
         FireStaffAttacks current = getElement(stack);
         FireStaffAttacks next = FireStaffAttacks.next(current);
         String cooldownKey = current.getCooldownKey();

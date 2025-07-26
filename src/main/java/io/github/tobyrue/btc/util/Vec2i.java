@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc.client.screen.codex;
+package io.github.tobyrue.btc.util;
 
 import net.minecraft.util.math.MathHelper;
 

@@ -573,18 +573,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     } catch (RuntimeException r) {
                         throw new RuntimeException(r);
                     }
-                } else if (!copy.isEmpty() && copy.startsWith("value:")) {
-                    try {
-                        ClickEvent.Action action = ClickEvent.Action.valueOf("CODEX_VALUE");
-                        event = new ClickEvent(action, copy.substring(6).strip());
-                        String[] values = copy.substring(6).strip().split("\\|");
-                        System.out.println("Changing value: " + values[0] + ", to " + values[1]);
-                        hoverText = "Copy text";
-                    } catch (IllegalArgumentException ex) {
-                        event = null;
-                        throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
-                    }
-                } else if (!copy.isEmpty()) {
+                }  else if (!copy.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy);
                     hoverText = "Copy text";
                 } else {

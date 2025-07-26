@@ -2,11 +2,10 @@ package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.block.ModBlocks;
 import net.minecraft.block.Oxidizable;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.HoneycombItem;
 
-public class ModCopperBlocks {
-    public static void registerCopperBlocks() {
+public class ModWaxings {
+    public static void initialize() {
         //WAXING
         HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON);
         HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().put(ModBlocks.EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON);

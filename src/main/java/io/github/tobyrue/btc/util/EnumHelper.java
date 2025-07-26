@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc.client.screen.codex.style;
+package io.github.tobyrue.btc.util;
 
 import org.jetbrains.annotations.Nullable;
 

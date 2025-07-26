@@ -2,10 +2,12 @@ package io.github.tobyrue.btc.client.screen;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
+import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -163,10 +165,10 @@ public class SpellScreenTest extends Screen {
         if (clickEvent == null) return false;
 
         MinecraftClient client = MinecraftClient.getInstance();
-        String actionName = clickEvent.getAction().name();
+        ClickEvent.Action action = clickEvent.getAction();
 
-        switch (actionName) {
-            case "OPEN_URL" -> {
+        switch (action) {
+            case OPEN_URL -> {
                 try {
                     Util.getOperatingSystem().open(clickEvent.getValue());
                 } catch (Exception e) {
@@ -174,28 +176,22 @@ public class SpellScreenTest extends Screen {
                 }
                 return true;
             }
-            case "RUN_COMMAND" -> {
+            case RUN_COMMAND -> {
                 client.player.networkHandler.sendCommand(clickEvent.getValue());
                 client.setScreen(null);
                 return true;
             }
-            case "SUGGEST_COMMAND" -> {
+            case SUGGEST_COMMAND -> {
                 client.setScreen(null);
                 client.setScreen(new ChatScreen(clickEvent.getValue()));
                 return true;
             }
-            case "COPY_TO_CLIPBOARD" -> {
+            case COPY_TO_CLIPBOARD -> {
                 client.keyboard.setClipboard(clickEvent.getValue());
                 client.player.sendMessage(Text.literal("Copied to clipboard!"), false);
                 return true;
             }
-            case "CODEX_PAGE" -> {
-                System.out.println("CODEX_PAGE clicked with value: " + clickEvent.getValue());
-
-                client.player.sendMessage(
-                        Text.literal("CODEX_PAGE triggered: " + clickEvent.getValue()).formatted(Formatting.LIGHT_PURPLE),
-                        false
-                );
+            case CHANGE_PAGE -> {
                 if (clickEvent.getValue().startsWith("page:")) {
                     String page = clickEvent.getValue().strip().substring(5);
                     try {
@@ -210,27 +206,29 @@ public class SpellScreenTest extends Screen {
                     }
                 } else if (clickEvent.getValue().startsWith("value:")) {
                     String value = clickEvent.getValue().strip().substring(6);
+                    ClientPlayNetworking.send(new SetElementPayload(value, client.player.getUuid()));
+                    return true;
                 }
-                return true;
             }
-            case "CODEX_VALUE" -> {
-                try {
-
-                    String[] values = clickEvent.getValue().substring(6).strip().split("\\|");
-                    System.out.println("Changing value: " + values[0] + ", to " + values[1]);
-                } catch (IllegalArgumentException ex) {
-                    throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
-                }
-                client.player.sendMessage(
-                        Text.literal("CODEX_VALUE triggered: " + clickEvent.getValue()).formatted(Formatting.LIGHT_PURPLE),
-                        false
-                );
-                return true;
-            }
+//            case CODEX_VALUE -> {
+//                try {
+//
+//                    String[] values = clickEvent.getValue().substring(6).strip().split("\\|");
+//                    System.out.println("Changing value: " + values[0] + ", to " + values[1]);
+//                } catch (IllegalArgumentException ex) {
+//                    throw new IllegalArgumentException(String.format("Custom ClickEvent.Action 'CODEX_VALUE' not found: %s", ex));
+//                }
+//                client.player.sendMessage(
+//                        Text.literal("CODEX_VALUE triggered: " + clickEvent.getValue()).formatted(Formatting.LIGHT_PURPLE),
+//                        false
+//                );
+//                return true;
+//            }
             default -> {
                 return super.handleTextClick(style);
             }
         }
+        return super.handleTextClick(style);
     }
 
     @Override

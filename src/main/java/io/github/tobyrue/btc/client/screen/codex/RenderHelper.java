@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
+import io.github.tobyrue.btc.util.Vec2i;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

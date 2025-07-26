@@ -1,4 +1,4 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.util;
 
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementProgress;
