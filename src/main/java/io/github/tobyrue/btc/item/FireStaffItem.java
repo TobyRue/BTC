@@ -1,15 +1,12 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.CooldownProvider;
+import io.github.tobyrue.btc.spell.ItemCooldownProvider;
 import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.WitchEntity;
@@ -45,7 +42,7 @@ public class FireStaffItem extends StaffItem {
         NbtCompound nbt = component.copyNbt();
         FireStaffAttacks current = getElement(stack);
         if (current != FireStaffAttacks.ETERNAL_FIRE) {
-            if (this instanceof CooldownProvider cp) {
+            if (this instanceof ItemCooldownProvider cp) {
                 return cp.getVisibleCooldownKey(stack) != null;
             }
         } else {
@@ -61,7 +58,7 @@ public class FireStaffItem extends StaffItem {
         FireStaffAttacks current = getElement(stack);
 
         if (current != FireStaffAttacks.ETERNAL_FIRE) {
-            if (this instanceof CooldownProvider cp) {
+            if (this instanceof ItemCooldownProvider cp) {
                 String key = cp.getVisibleCooldownKey(stack);
                 if (key != null) {
                     float progress = cp.getCooldownProgressInverse(stack, key);
@@ -297,7 +294,7 @@ public class FireStaffItem extends StaffItem {
         }, duration));
     }
 
-    private void shootFireball(World world, PlayerEntity player, int explosionPower) {
+    private static void shootFireball(World world, PlayerEntity player, int explosionPower) {
         Vec3d direction = player.getRotationVec(1.0F).normalize();
 
         FireballEntity fireball = new FireballEntity(world, player, direction, explosionPower);
@@ -308,15 +305,7 @@ public class FireStaffItem extends StaffItem {
 
         world.spawnEntity(fireball);
     }
-    private Entity getEntity(ItemStack stack) {
-        NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-        NbtCompound nbt = component.copyNbt();
-        UUID name = nbt.getUuid("EternalFireTarget");
-        if (stack.getHolder().getEntityWorld() instanceof ServerWorld serverWorld) {
-            return serverWorld.getEntity(name);
-        }
-        return null;
-    }
+
     private FireStaffAttacks getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();

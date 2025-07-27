@@ -1,13 +1,9 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.CooldownProvider;
 import io.github.tobyrue.btc.entity.custom.CreeperPillarEntity;
 import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
-import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import io.github.tobyrue.btc.enums.CreeperPillarType;
 import io.github.tobyrue.btc.enums.EarthStaffAttacks;
-import io.github.tobyrue.btc.enums.FireStaffAttacks;
-import io.github.tobyrue.btc.enums.SpellBookAttacks;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,14 +15,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;

@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum SpellTypes implements StringIdentifiable {
+    GENERIC("generic"),
     FIRE("fire"),
     WIND("wind"),
     WATER("water"),

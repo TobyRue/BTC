@@ -1,14 +1,13 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.CooldownProvider;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import io.github.tobyrue.btc.spell.ItemCooldownProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class StaffItem extends Item implements CooldownProvider {
+public class StaffItem extends Item implements ItemCooldownProvider {
     public StaffItem(Settings settings) {
         super(settings);
     }
@@ -22,7 +21,7 @@ public class StaffItem extends Item implements CooldownProvider {
     }
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
+        if (this instanceof ItemCooldownProvider cp) {
             return cp.getVisibleCooldownKey(stack) != null;
         }
         return false;
@@ -30,7 +29,7 @@ public class StaffItem extends Item implements CooldownProvider {
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
+        if (this instanceof ItemCooldownProvider cp) {
             String key = cp.getVisibleCooldownKey(stack);
             if (key != null) {
                 float progress = cp.getCooldownProgressInverse(stack, key);

@@ -1,10 +1,9 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.CooldownProvider;
+import io.github.tobyrue.btc.spell.ItemCooldownProvider;
 import io.github.tobyrue.btc.entity.custom.CreeperPillarEntity;
 import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
 import io.github.tobyrue.btc.enums.CreeperPillarType;
-import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.SpellBookAttacks;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -23,10 +22,8 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.WindChargeEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpyglassItem;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -36,11 +33,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -49,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class SpellBookItem extends Item implements CooldownProvider {
+public class SpellBookItem extends Item implements ItemCooldownProvider {
     private static final Integer SPIKE_Y_RANGE = 12;
     private static final Integer SPIKE_COUNT = 8;
 
@@ -59,7 +54,7 @@ public class SpellBookItem extends Item implements CooldownProvider {
 
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
+        if (this instanceof ItemCooldownProvider cp) {
             return cp.getVisibleCooldownKey(stack) != null;
         }
         return false;
@@ -67,7 +62,7 @@ public class SpellBookItem extends Item implements CooldownProvider {
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        if (this instanceof CooldownProvider cp) {
+        if (this instanceof ItemCooldownProvider cp) {
             String key = cp.getVisibleCooldownKey(stack);
             if (key != null) {
                 float progress = cp.getCooldownProgressInverse(stack, key);

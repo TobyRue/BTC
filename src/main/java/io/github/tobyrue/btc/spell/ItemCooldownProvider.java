@@ -1,17 +1,16 @@
-package io.github.tobyrue.btc;
+package io.github.tobyrue.btc.spell;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public interface CooldownProvider {
+public interface ItemCooldownProvider {
 
     // Set a cooldown with option to make it visible
     default void setCooldown(LivingEntity entity, ItemStack stack, String key, int durationTicks, boolean visible) {

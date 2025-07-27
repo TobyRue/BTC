@@ -1,11 +1,6 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.CooldownProvider;
-import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.enums.DragonStaffAttacks;
-import io.github.tobyrue.btc.enums.FireStaffAttacks;
-import io.github.tobyrue.btc.enums.WindStaffAttacks;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -14,11 +9,9 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;

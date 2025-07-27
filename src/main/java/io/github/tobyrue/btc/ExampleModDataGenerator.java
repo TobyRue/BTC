@@ -3,6 +3,7 @@ package io.github.tobyrue.btc;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellScrollItem;
+import io.github.tobyrue.btc.regestries.ModSpells;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -58,143 +59,143 @@ public class ExampleModDataGenerator implements DataGeneratorEntrypoint {
 
         @Override
         public void generate(RecipeExporter exporter) {
-            for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.CLUSTER_WIND_SHOT) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.WIND_CHARGE)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.BREEZE_ROD)
-                            .criterion(FabricRecipeProvider.hasItem(Items.WIND_CHARGE),
-                                    FabricRecipeProvider.conditionsFromItem(Items.WIND_CHARGE))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.DRAGON_FIREBALL) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', ModItems.DRAGON_ROD)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.FIRE_CHARGE)
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.DRAGON_ROD),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.DRAGON_ROD))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FROST_WALKER) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.WATER_BUCKET)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.BLUE_ICE)
-                            .criterion(FabricRecipeProvider.hasItem(Items.BLUE_ICE),
-                                    FabricRecipeProvider.conditionsFromItem(Items.BLUE_ICE))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.EARTH_SPIKES) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.STONE)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.EMERALD)
-                            .criterion(FabricRecipeProvider.hasItem(Items.EMERALD),
-                                    FabricRecipeProvider.conditionsFromItem(Items.EMERALD))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FIREBALL_STRONG) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.BLAZE_ROD)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.FIRE_CHARGE)
-                            .criterion(FabricRecipeProvider.hasItem(Items.BLAZE_ROD),
-                                    FabricRecipeProvider.conditionsFromItem(Items.BLAZE_ROD))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.TEMPESTS_CALL) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.PHANTOM_MEMBRANE)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.WIND_CHARGE)
-                            .criterion(FabricRecipeProvider.hasItem(Items.PHANTOM_MEMBRANE),
-                                    FabricRecipeProvider.conditionsFromItem(Items.PHANTOM_MEMBRANE))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.STORM_PUSH) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.FEATHER)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.PHANTOM_MEMBRANE)
-                            .criterion(FabricRecipeProvider.hasItem(Items.FEATHER),
-                                    FabricRecipeProvider.conditionsFromItem(Items.FEATHER))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FIRE_STORM) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.MAGMA_CREAM)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.BLAZE_ROD)
-                            .criterion(FabricRecipeProvider.hasItem(Items.MAGMA_CREAM),
-                                    FabricRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM))
-                            .criterion(FabricRecipeProvider.hasItem(Items.BLAZE_ROD),
-                                    FabricRecipeProvider.conditionsFromItem(Items.BLAZE_ROD))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
-                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.CONCENTRATED_FIRE_STORM) {
-                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
-                            .pattern("aca")
-                            .pattern("cbc")
-                            .pattern("aca")
-                            .input('a', Items.MAGMA_CREAM)
-                            .input('b', ModItems.EMPTY_SCROLL)
-                            .input('c', Items.GHAST_TEAR)
-                            .criterion(FabricRecipeProvider.hasItem(Items.MAGMA_CREAM),
-                                    FabricRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM))
-                            .criterion(FabricRecipeProvider.hasItem(Items.GHAST_TEAR),
-                                    FabricRecipeProvider.conditionsFromItem(Items.GHAST_TEAR))
-                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
-                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
-                            .offerTo(exporter);
-                }
+            for (SpellScrollItem spell : ModSpells.SCROLLS.values()) {
+//                if (spell.spellType == ModSpells.CLUSTER_WIND_SHOT) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.WIND_CHARGE)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.BREEZE_ROD)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.WIND_CHARGE),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.WIND_CHARGE))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.DRAGON_FIREBALL) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', ModItems.DRAGON_ROD)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.FIRE_CHARGE)
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.DRAGON_ROD),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.DRAGON_ROD))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FROST_WALKER) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.WATER_BUCKET)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.BLUE_ICE)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.BLUE_ICE),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.BLUE_ICE))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.EARTH_SPIKES) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.STONE)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.EMERALD)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.EMERALD),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.EMERALD))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FIREBALL_STRONG) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.BLAZE_ROD)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.FIRE_CHARGE)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.BLAZE_ROD),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.BLAZE_ROD))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.TEMPESTS_CALL) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.PHANTOM_MEMBRANE)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.WIND_CHARGE)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.PHANTOM_MEMBRANE),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.PHANTOM_MEMBRANE))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.STORM_PUSH) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.FEATHER)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.PHANTOM_MEMBRANE)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.FEATHER),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.FEATHER))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.FIRE_STORM) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.MAGMA_CREAM)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.BLAZE_ROD)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.MAGMA_CREAM),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM))
+//                            .criterion(FabricRecipeProvider.hasItem(Items.BLAZE_ROD),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.BLAZE_ROD))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
+//                if (!spell.spellType.hasNoScroll && spell.spellType == SpellRegistryEnum.CONCENTRATED_FIRE_STORM) {
+//                    ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, spell)
+//                            .pattern("aca")
+//                            .pattern("cbc")
+//                            .pattern("aca")
+//                            .input('a', Items.MAGMA_CREAM)
+//                            .input('b', ModItems.EMPTY_SCROLL)
+//                            .input('c', Items.GHAST_TEAR)
+//                            .criterion(FabricRecipeProvider.hasItem(Items.MAGMA_CREAM),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM))
+//                            .criterion(FabricRecipeProvider.hasItem(Items.GHAST_TEAR),
+//                                    FabricRecipeProvider.conditionsFromItem(Items.GHAST_TEAR))
+//                            .criterion(FabricRecipeProvider.hasItem(ModItems.EMPTY_SCROLL),
+//                                    FabricRecipeProvider.conditionsFromItem(ModItems.EMPTY_SCROLL))
+//                            .offerTo(exporter);
+//                }
             }
         }
     }

@@ -1,9 +1,8 @@
 package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.Spell;
+import io.github.tobyrue.btc.spell.Spell;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;

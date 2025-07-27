@@ -1,13 +1,8 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.CooldownProvider;
-import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.WindTornadoEntity;
-import io.github.tobyrue.btc.enums.DragonStaffAttacks;
-import io.github.tobyrue.btc.enums.FireStaffAttacks;
 import io.github.tobyrue.btc.enums.WindStaffAttacks;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
-import io.github.tobyrue.btc.client.BTCClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;

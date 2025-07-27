@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModItems {
-    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
+//    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
 
     public static<T extends Item> T register(T item, String id) {
         // Create the identifier for the item.
@@ -27,14 +27,14 @@ public class ModItems {
         return registeredItem;
     }
 
-    static {
-        for (SpellRegistryEnum spell : SpellRegistryEnum.values()) {
-            if (!spell.hasNoScroll) {
-                SpellScrollItem item = new SpellScrollItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).maxCount(1), spell);
-                SPELL_ITEMS.put(spell, register(item, spell.toString() + "_scroll"));
-            }
-        }
-    }
+//    static {
+//        for (SpellRegistryEnum spell : SpellRegistryEnum.values()) {
+//            if (!spell.hasNoScroll) {
+//                SpellScrollItem item = new SpellScrollItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).maxCount(1), spell);
+//                SPELL_ITEMS.put(spell, register(item, spell.toString() + "_scroll"));
+//            }
+//        }
+//    }
 
     public static final Item EMPTY_SCROLL = register(
             new Item(new Item.Settings()),
@@ -43,6 +43,10 @@ public class ModItems {
     public static final Item TEST = register(
             new ScreenTestItem(new Item.Settings()),
             "test_screen"
+    );
+    public static final Item DUMMY_ITEM = register(
+            new DummyItem(new Item.Settings().maxCount(1 )),
+            "dummy_item"
     );
     public static final Item RUBY_TRIAL_KEY = register(
             new Item(new Item.Settings()),

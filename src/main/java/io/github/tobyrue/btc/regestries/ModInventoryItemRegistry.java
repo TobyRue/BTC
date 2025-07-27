@@ -16,14 +16,15 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModItems.STAFF, ModItems.DRAGON_ROD);
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
             content.addAfter(ModItems.ENCHANTED_PAPER, ModItems.EMPTY_SCROLL);
-            for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
-                if (!spell.spellType.hasNoScroll) {
-                    content.addAfter(ModItems.ENCHANTED_PAPER, spell);
-                }
-            }
+//            for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
+//                if (!spell.spellType.hasNoScroll) {
+//                    content.addAfter(ModItems.ENCHANTED_PAPER, spell);
+//                }
+//            }
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
             content.addAfter(Items.LIGHT, ModItems.TEST);
+            content.addAfter(ModItems.TEST, ModItems.DUMMY_ITEM);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);
