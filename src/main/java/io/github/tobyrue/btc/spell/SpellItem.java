@@ -22,7 +22,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
             final var direction = new Vec3d(pointer.state().get(DispenserBlock.FACING).getUnitVector());
             final var data = SpellItem.this.getSpellDataStore(stack);
             //TODO dispenser sounds?
-            data.getSpell().tryUse(new Spell.SpellContext(pointer.world(), pointer.pos(), direction, data, null));
+            data.getSpell().tryUse(new Spell.SpellContext(pointer.world(), pointer.pos().toCenterPos(), direction, data, null));
             return stack;
         }));
     }

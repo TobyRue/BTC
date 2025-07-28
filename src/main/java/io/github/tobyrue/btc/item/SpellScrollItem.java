@@ -62,7 +62,7 @@ public class SpellScrollItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.btc.scroll.type", Text.translatable("item.btc.scroll.type." + spell.getSpellType())).formatted(Formatting.BLUE));
-        tooltip.add(Text.translatable("item.btc.scroll.attack", Text.translatable("item.btc.scroll.attack." + spell)).formatted(Formatting.BLUE));
+        tooltip.add(Text.translatable("item.btc.scroll.attack", Text.translatable("item.btc.scroll.attack." + Objects.requireNonNull(ModRegistries.SPELL.getId(spell)).getNamespace())).formatted(Formatting.BLUE));
         if (spell.getCooldown() instanceof Spell.SpellCooldown c) {
             tooltip.add(Text.translatable("item.btc.scroll.cooldown", (c.ticks() / 20)).formatted(Formatting.BLUE));
         }
