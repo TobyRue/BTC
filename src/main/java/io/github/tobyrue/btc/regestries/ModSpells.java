@@ -62,6 +62,9 @@ public class ModSpells {
 
     public static final Spell WIND_CHARGE = register("wind_charge", new WindChargeSpell());
     public static final Spell CLUSTER_WIND_CHARGE = register("cluster_wind_charge", new ClusterWindChargeSpell(8, 0.2));
+    public static final Spell TEMPESTS_CALL = register("tempests_call", new TempestsCallSpell(25.0d, 3.0d));
+    public static final Spell STORM_PUSH = register("storm_push", new StormPushSpell(15.0d, 5.0d));
+    public static final Spell WIND_TORNADO = register("wind_tornado", new WindTornadoSpell());
 
 
 

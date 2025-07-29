@@ -42,6 +42,6 @@ public abstract class Spell {
         return this.type;
     }
 
-    public record SpellContext(World world, Vec3d pos, Vec3d direction, SpellDataStore data, @Nullable LivingEntity user) {}
+    public record SpellContext(World world, Vec3d pos, Vec3d direction, SpellDataStore data, GrabBag properties, @Nullable LivingEntity user) {}
     public record SpellCooldown(int ticks, Identifier key) {}
 }

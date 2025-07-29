@@ -19,6 +19,7 @@ import java.util.List;
 
 public class WindTornadoEntity extends Entity {
     private int maxAge;
+
     private LivingEntity user;
 
     public WindTornadoEntity(EntityType<?> type, World world) {
@@ -31,6 +32,10 @@ public class WindTornadoEntity extends Entity {
         super(ModEntities.WIND_TORNADO, world);
         this.setPosition(x, y, z);
         this.maxAge = maxAge;
+        this.user = user;
+    }
+
+    public void setUser(LivingEntity user) {
         this.user = user;
     }
 

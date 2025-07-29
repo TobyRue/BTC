@@ -14,6 +14,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
 
     public SpellItem(Settings settings) {
@@ -45,13 +47,17 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
             @Override
             public Spell getSpell() {
                 final var nbt = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
-                return ModRegistries.SPELL.get(Identifier.tryParse(nbt.getString("BTCSpell")));
+                return ModRegistries.SPELL.get(Identifier.tryParse(nbt.getCompound("BTCSpell").getString("name")));
             }
 
             @Override
             public void setSpell(final Spell spell) {
                 final var nbt = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
-                nbt.putString("BTCSpell", ModRegistries.SPELL.getId(spell).toString());
+
+                final var c = nbt.getCompound("BTCSpell");
+                nbt.put("BTCSpell", c);
+
+                c.putString("name", Objects.requireNonNull(ModRegistries.SPELL.getId(spell)).toString());
                 stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
             }
 
