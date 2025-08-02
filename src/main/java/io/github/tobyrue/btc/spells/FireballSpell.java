@@ -25,7 +25,7 @@ public class FireballSpell extends Spell {
 
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return  user == null ? null : new Spell.SpellCooldown(args.getInt("cooldown", (40 * args.getInt("level", 1))), BTC.identifierOf("fireball"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", (40 * args.getInt("level", 1))), BTC.identifierOf("fireball"));
     }
 
     @Override

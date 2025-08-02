@@ -30,6 +30,6 @@ public class DragonFireballSpell extends Spell {
 
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return user == null ? null : new Spell.SpellCooldown(args.getInt("cooldown", 800), BTC.identifierOf("dragon_fireball"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", 800), BTC.identifierOf("dragon_fireball"));
     }
 }

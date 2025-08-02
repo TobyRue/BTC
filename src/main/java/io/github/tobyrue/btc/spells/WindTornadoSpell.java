@@ -28,7 +28,7 @@ public class WindTornadoSpell extends Spell {
 
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return user == null ? null : new Spell.SpellCooldown(args.getInt("cooldown", 400), BTC.identifierOf("wind_tornado"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", 400), BTC.identifierOf("wind_tornado"));
     }
 
     @Override

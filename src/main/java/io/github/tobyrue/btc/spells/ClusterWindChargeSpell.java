@@ -52,7 +52,7 @@ public class ClusterWindChargeSpell extends Spell {
 
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return user == null ? null : new SpellCooldown(args.getInt("cooldown", 80), BTC.identifierOf("cluster_wind_charge"));
+        return new SpellCooldown(args.getInt("cooldown", 80), BTC.identifierOf("cluster_wind_charge"));
     }
 
     @Override
