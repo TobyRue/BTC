@@ -3,26 +3,27 @@ package io.github.tobyrue.btc.spells;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 public class FireStormSpell extends Spell {
-    protected final int duration;
-    protected final double maxRadius;
-    protected final int cooldown;
 
-    public FireStormSpell(int duration, double maxRadius, int cooldown) {
-        super(0x0, SpellTypes.FIRE);
-        this.duration = duration;
-        this.maxRadius = maxRadius;
-        this.cooldown = cooldown;
+
+    public FireStormSpell() {
+        super(SpellTypes.FIRE);
     }
 
     @Override
-    public void use(final Spell.SpellContext ctx) {
+    public void use(final Spell.SpellContext ctx, final GrabBag args) {
+        int duration = args.getInt("duration", 2);
+        double maxRadius = args.getDouble("maxRadius", 8);
+
+
         Vec3d storedPos = ctx.user().getPos();
         ((Ticker.TickerTarget) ctx.user()).add(Ticker.forSeconds((ticks) -> {
             if (ctx.world() instanceof ServerWorld serverWorld) {
@@ -61,12 +62,17 @@ public class FireStormSpell extends Spell {
     }
 
     @Override
-    protected boolean canUse(Spell.SpellContext ctx) {
-        return ctx.user() != null && super.canUse(ctx);
+    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
+        return ctx.user() != null && super.canUse(ctx, args);
     }
 
     @Override
-    public Spell.SpellCooldown getCooldown() {
-        return new Spell.SpellCooldown(cooldown, BTC.identifierOf("fire_storm"));
+    public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
+        return user == null ? null : new Spell.SpellCooldown(args.getInt("cooldown", 400), BTC.identifierOf("fire_storm"));
+    }
+
+    @Override
+    public int getColor(final GrabBag args) {
+        return 0xFFFF9400;
     }
 }

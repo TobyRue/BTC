@@ -11,7 +11,7 @@ public interface SpellHost<T> {
     default boolean tryUseSpell(final World world, final Vec3d pos, final Vec3d direction, final @Nullable LivingEntity user, final T t) {
         final var data = this.getSpellDataStore(t);
         if (data.getSpell() instanceof Spell spell) {
-            return spell.tryUse(new Spell.SpellContext(world, pos, direction, data, user));
+            return spell.tryUse(new Spell.SpellContext(world, pos, direction, data, user), data.getArgs());
         }
         return false;
     }

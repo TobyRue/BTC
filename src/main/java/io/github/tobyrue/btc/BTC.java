@@ -1,55 +1,35 @@
 package io.github.tobyrue.btc;
 
+import com.mojang.serialization.Codec;
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
-import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.btc.packets.ModPackets;
-import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.btc.regestries.*;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.*;
 import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Arrays;
 
 public class BTC implements ModInitializer {
@@ -72,6 +52,13 @@ public class BTC implements ModInitializer {
                     .codec(WrenchType.CODEC)
                     .build()
     );
+
+    public static final ComponentType<NbtComponent> SPELL_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("spell"),
+            ComponentType.<NbtComponent>builder().codec(NbtComponent.CODEC).build()
+    );
+
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 

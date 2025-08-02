@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AnvilScreenHandlerMixin",
+    "BlockWithEntityInvoker",
     "CopperGolemSpawnMixin",
+    "DispenserBlockMixin",
     "EnchantmentScreenHandlerMixin",
     "LivingEntityMixin",
     "NaturalRegenerationMixin",

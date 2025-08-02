@@ -5,8 +5,14 @@ import io.github.tobyrue.xml.util.Nullable;
 public interface SpellDataStore {
 
     @Nullable Spell getSpell();
-    void setSpell(final Spell spell);
-    int getCooldown(@Nullable final Spell spell);
-    float getCooldownPercent(@Nullable final Spell spell);
-    void setCooldown(final Spell spell);
+    GrabBag getArgs();
+
+    default void setSpell(final Spell spell) {
+        setSpell(spell, null);
+    }
+
+    void setSpell(final Spell spell, @Nullable final GrabBag args);
+    int getCooldown(@Nullable final Spell.SpellCooldown cooldown);
+    float getCooldownPercent(@Nullable final Spell.SpellCooldown cooldown);
+    void setCooldown(@Nullable final Spell.SpellCooldown cooldown);
 }

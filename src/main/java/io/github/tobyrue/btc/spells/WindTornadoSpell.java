@@ -4,15 +4,20 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.WindTornadoEntity;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.xml.util.Nullable;
+import net.minecraft.client.render.entity.GuardianEntityRenderer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.GuardianEntity;
 
 public class WindTornadoSpell extends Spell {
     public WindTornadoSpell() {
-        super(0x0, SpellTypes.WIND);
+        super(SpellTypes.WIND);
     }
 
     @Override
-    protected void use(SpellContext ctx) {
+    protected void use(final SpellContext ctx, final GrabBag args) {
         WindTornadoEntity windTornado = new WindTornadoEntity(ModEntities.WIND_TORNADO, ctx.world());
         if (ctx.user() != null) {
             windTornado.setUser(ctx.user());
@@ -22,7 +27,12 @@ public class WindTornadoSpell extends Spell {
     }
 
     @Override
-    public Spell.SpellCooldown getCooldown() {
-        return new Spell.SpellCooldown(400, BTC.identifierOf("wind_tornado"));
+    public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
+        return user == null ? null : new Spell.SpellCooldown(args.getInt("cooldown", 400), BTC.identifierOf("wind_tornado"));
+    }
+
+    @Override
+    public int getColor(final GrabBag args) {
+        return 0xFFBFFFFA;
     }
 }

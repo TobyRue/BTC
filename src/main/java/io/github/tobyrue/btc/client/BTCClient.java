@@ -1,32 +1,36 @@
 package io.github.tobyrue.btc.client;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.SpellstoneItem;
 import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
+import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.item.CompassItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -88,6 +92,69 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ModelPredicateProviderRegistry.register(ModItems.SPELLSTONE, Identifier.ofVanilla("spelltype"),
+                (stack, world, entity, seed) -> {
+                    if (stack.getItem() instanceof SpellstoneItem item && item.getSpellDataStore(stack).getSpell() instanceof Spell spell) {
+                        return Math.round((spell.getSpellType().ordinal() / (float) SpellTypes.values().length) * 100f) / 100f;
+                    }
+                    return 0; // no spell
+                });
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            if (stack.getItem() instanceof SpellstoneItem spellstoneItem) {
+                var data = spellstoneItem.getSpellDataStore(stack);
+                var spell = data.getSpell();
+
+                if (spell != null && tintIndex == 1) {
+                    return 0xFF000000 | spell.getColor(data.getArgs());
+                } else if (tintIndex == 1) {
+                    return 0x00000000;
+                }
+                if (spell == null && tintIndex == 2) {
+                    return 0x00000000;
+                }
+            }
+
+            return 0xFFFFFFFF; // base always visible
+        }, ModItems.SPELLSTONE);
+
+//        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+//            if (stack.getItem() instanceof SpellstoneItem spellstoneItem) {
+//                var data = spellstoneItem.getSpellDataStore(stack);
+//                var spell = data.getSpell();
+//
+//                if (spell != null) {
+//                    int color = spell.getColor(data.getArgs());
+//                    SpellTypes type = spell.getSpellType();
+//                    System.out.println("Spell: " + spell + ", Type: " + type + ", TintIndex: " + tintIndex + ", Color: " + color);
+//
+//                    // Determine the correct overlay layer index for this spell type
+//                    int activeLayer = switch (type) {
+//                        case GENERIC -> 1;
+//                        case FIRE    -> 2;
+//                        case WIND    -> 3;
+//                        case WATER   -> 4;
+//                        case EARTH   -> 5;
+//                        case ENDER   -> 6;
+//                    };
+//
+//                    // If the current layer matches the spell type, return the ARGB color
+//                    if (tintIndex == activeLayer) {
+//                        return 0xFF000000 | color; // Force alpha to FF (fully opaque)
+//                    } else if (tintIndex >= 1 && tintIndex <= 6) {
+//                        return 0x00000000; // Transparent for all other overlays
+//                    }
+//                } else {
+//                    if (tintIndex >= 1 && tintIndex <= 6) {
+//                        return 0x00000000; // Transparent for all other overlays
+//                    }
+//                }
+//            }
+//
+//            // layer0 base always visible (or any unexpected layer)
+//            return 0xFFFFFFFF;
+//        }, ModItems.SPELLSTONE);
+
 
         DrowningEffectOverlay.register();
         ModelLoadingPlugin.register(new BTCModelLoadingPlugin());

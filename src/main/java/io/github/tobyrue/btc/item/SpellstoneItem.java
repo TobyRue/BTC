@@ -2,26 +2,25 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.regestries.ModSpells;
-import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.SpellItem;
-import net.minecraft.block.entity.DispenserBlockEntity;
-import net.minecraft.entity.damage.DamageTypes;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
 import java.util.List;
 
-public class DummyItem extends SpellItem {
-    public DummyItem(Settings settings) {
+public class SpellstoneItem extends SpellItem {
+    public SpellstoneItem(Settings settings) {
         super(settings);
     }
+
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -29,9 +28,10 @@ public class DummyItem extends SpellItem {
         final var data = this.getSpellDataStore(stack);
 
         if (data.getSpell() == null) {
-            data.setSpell(ModSpells.WEAK_FIREBALL);
+            data.setSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
+                put("level", 5);
+            }}));
         }
-        
         if (!user.isSneaking()) {
             if (this.tryUseSpell(world, user.getEyePos(), user.getRotationVec(1.0F).normalize(), user, stack)) {
                 return TypedActionResult.success(stack);

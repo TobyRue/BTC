@@ -24,7 +24,7 @@ public class ModInventoryItemRegistry {
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
             content.addAfter(Items.LIGHT, ModItems.TEST);
-            content.addAfter(ModItems.TEST, ModItems.DUMMY_ITEM);
+            content.addAfter(ModItems.TEST, ModItems.SPELLSTONE);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);

@@ -2,16 +2,12 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
-import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ModItems {
 //    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
@@ -44,9 +40,9 @@ public class ModItems {
             new ScreenTestItem(new Item.Settings()),
             "test_screen"
     );
-    public static final Item DUMMY_ITEM = register(
-            new DummyItem(new Item.Settings().maxCount(1 )),
-            "dummy_item"
+    public static final Item SPELLSTONE = register(
+            new SpellstoneItem(new Item.Settings().maxCount(1 )),
+            "spellstone"
     );
     public static final Item RUBY_TRIAL_KEY = register(
             new Item(new Item.Settings()),

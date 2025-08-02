@@ -2,7 +2,9 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.regestries.ModRegistries;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -62,8 +64,8 @@ public class SpellScrollItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.btc.scroll.type", Text.translatable("item.btc.scroll.type." + spell.getSpellType())).formatted(Formatting.BLUE));
-        tooltip.add(Text.translatable("item.btc.scroll.attack", Text.translatable("item.btc.scroll.attack." + Objects.requireNonNull(ModRegistries.SPELL.getId(spell)).getNamespace())).formatted(Formatting.BLUE));
-        if (spell.getCooldown() instanceof Spell.SpellCooldown c) {
+        tooltip.add(Text.translatable("item.btc.scroll.attack", Text.translatable("item.btc.scroll.attack." + spell.getPureName())).formatted(Formatting.BLUE));
+        if (spell.getCooldown(GrabBag.empty(), MinecraftClient.getInstance().player) instanceof Spell.SpellCooldown c) {
             tooltip.add(Text.translatable("item.btc.scroll.cooldown", (c.ticks() / 20)).formatted(Formatting.BLUE));
         }
         super.appendTooltip(stack, context, tooltip, type);

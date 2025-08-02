@@ -1,0 +1,32 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "btc:item/spellstone"
+  },
+  "overrides": [
+    {
+      "predicate": { "spelltype": 0 },
+      "model": "btc:item/spellstone_generic"
+    },
+    {
+      "predicate": { "spelltype": 0.17 },
+      "model": "btc:item/spellstone_fire"
+    },
+    {
+      "predicate": { "spelltype": 0.33 },
+      "model": "btc:item/spellstone_wind"
+    },
+    {
+      "predicate": { "spelltype": 0.5 },
+      "model": "btc:item/spellstone_water"
+    },
+    {
+      "predicate": { "spelltype": 0.67 },
+      "model": "btc:item/spellstone_earth"
+    },
+    {
+      "predicate": { "spelltype": 1 },
+      "model": "btc:item/spellstone_ender"
+    }
+  ]
+}
