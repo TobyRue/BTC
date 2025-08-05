@@ -6,6 +6,9 @@ import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellScrollItem;
 import io.github.tobyrue.btc.spells.*;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.block.BarrelBlock;
+import net.minecraft.block.entity.BarrelBlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -34,7 +37,8 @@ public class ModSpells {
 
     public static final Spell FIRE_STORM = register("fire_storm", new FireStormSpell());
 
-    public static final Spell POTION_SPELL = register("potion", new PotionSpell());
+    public static final Spell POTION = register("potion", new PotionSpell());
+    public static final Spell POTION_AREA_EFFECT = register("potion_area_effect", new PotionAreaEffectSpell());
 
     //TODO ETERNAL FIRE
 
@@ -50,6 +54,10 @@ public class ModSpells {
     public static final Spell LIFE_STEAL = register("life_steal", new LifeStealSpell());
     public static final Spell ENDER_CHEST = register("ender_chest", new EnderChestSpell());
 
+    public static final Spell EARTH_SPIKE_LINE = register("earth_spike_line", new EarthSpikeLineSpell());
+    public static final Spell CREEPER_WALL_CIRCLE = register("creeper_wall_circle", new CreeperWallCircleSpell());
+    public static final Spell CREEPER_WALL_EXPLOSIVE_TRAP = register("creeper_wall_explosive_trap", new CreeperWallExplosiveTrapSpell());
+    public static final Spell CREEPER_WALL_BLOCK = register("creeper_wall_block", new CreeperWallBlockSpell());
 
 
 

@@ -4,14 +4,18 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellstoneItem;
+import io.github.tobyrue.btc.item.UnlockScrollItem;
 import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.util.EnumHelper;
+import io.github.tobyrue.btc.util.UnlockScrollItemRenderer;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;
@@ -26,6 +30,7 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.CompassItem;
@@ -39,6 +44,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class BTCClient implements ClientModInitializer {
@@ -92,10 +98,18 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            if (stack.getItem() instanceof UnlockScrollItem item && tintIndex == 1 && stack.contains(DataComponentTypes.DYED_COLOR)) {
+                return Objects.requireNonNull(stack.get(DataComponentTypes.DYED_COLOR)).rgb();
+            }
+            return 0xFFFFFFFF;
+        }, ModItems.UNLOCK_SCROLL);
+
         ModelPredicateProviderRegistry.register(ModItems.SPELLSTONE, Identifier.ofVanilla("spelltype"),
                 (stack, world, entity, seed) -> {
                     if (stack.getItem() instanceof SpellstoneItem item && item.getSpellDataStore(stack).getSpell() instanceof Spell spell) {
-                        return Math.round((spell.getSpellType().ordinal() / (float) SpellTypes.values().length) * 100f) / 100f;
+                        return Math.round((spell.getSpellType().ordinal() / (float) (SpellTypes.values().length - 1)) * 100f) / 100f;
                     }
                     return 0; // no spell
                 });

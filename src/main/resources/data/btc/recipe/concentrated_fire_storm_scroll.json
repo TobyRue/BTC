@@ -19,6 +19,13 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:concentrated_fire_storm_scroll"
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": "btc:adventure/get_fire_storm_scroll",
+      "minecraft:dyed_color": {
+        "rgb": -27648,
+        "show_in_tooltip": false
+      }
+    }
   }
 }

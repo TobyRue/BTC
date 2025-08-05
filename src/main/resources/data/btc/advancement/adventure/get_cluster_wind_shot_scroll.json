@@ -2,7 +2,7 @@
   "parent": "btc:adventure/obtain_spell_book_advancment",
   "display": {
     "icon": {
-      "id": "btc:cluster_wind_shot_scroll",
+      "id": "btc:cluster_wind_charge_scroll",
       "count": 1
     },
     "title": {

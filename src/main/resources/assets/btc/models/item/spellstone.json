@@ -9,23 +9,23 @@
       "model": "btc:item/spellstone_generic"
     },
     {
-      "predicate": { "spelltype": 0.17 },
+      "predicate": { "spelltype": 0.2 },
       "model": "btc:item/spellstone_fire"
     },
     {
-      "predicate": { "spelltype": 0.33 },
+      "predicate": { "spelltype": 0.4 },
       "model": "btc:item/spellstone_wind"
     },
     {
-      "predicate": { "spelltype": 0.5 },
+      "predicate": { "spelltype": 0.6 },
       "model": "btc:item/spellstone_water"
     },
     {
-      "predicate": { "spelltype": 0.67 },
+      "predicate": { "spelltype": 0.8 },
       "model": "btc:item/spellstone_earth"
     },
     {
-      "predicate": { "spelltype": 1 },
+      "predicate": { "spelltype": 1.0 },
       "model": "btc:item/spellstone_ender"
     }
   ]

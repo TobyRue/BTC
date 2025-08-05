@@ -11,6 +11,8 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class BTCModelLoadingPlugin implements ModelLoadingPlugin {
     public static final Identifier DUNGEON_WIRE_V2 = BTC.identifierOf("dungeon_wire_v2");
+    public static final Identifier SPELL_SCROLL = BTC.identifierOf("spell_scroll");
+
 
     @Override
     public void onInitializeModelLoader(Context pluginContext) {

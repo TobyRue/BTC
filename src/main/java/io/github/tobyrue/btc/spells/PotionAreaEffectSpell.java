@@ -8,23 +8,26 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.ElderGuardianEntity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Optional;
 
-public class PotionSpell extends Spell {
+public class PotionAreaEffectSpell extends Spell {
 
-
-    public PotionSpell() {
+    public PotionAreaEffectSpell() {
         super(SpellTypes.GENERIC);
     }
 
     @Override
-    protected void use(Spell.SpellContext ctx, final GrabBag args) {
+    protected void use(SpellContext ctx, GrabBag args) {
+        var user = ctx.user();
+        var world = ctx.world();
+
         Identifier id = Identifier.tryParse(args.getString("effect", "minecraft:strength"));
         if (id == null) {
             return;
@@ -35,7 +38,11 @@ public class PotionSpell extends Spell {
             return;
         }
 
-        ctx.user().addStatusEffect(new StatusEffectInstance(entry.get(), args.getInt("duration", 60), args.getInt("amplifier")));
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(args.getDouble("radius", 8D)),
+                entity -> (((entity != user) && !args.getBoolean("includeUser")) || args.getBoolean("includeUser")) && entity instanceof LivingEntity && ((entity instanceof HostileEntity && args.getBoolean("onlyHostile")) || !args.getBoolean("onlyHostile"))); // Only affect hostile mobs
+        for (LivingEntity entity : entities) {
+            entity.addStatusEffect(new StatusEffectInstance(entry.get(), args.getInt("duration", 60), args.getInt("amplifier")));
+        }
     }
 
     @Override

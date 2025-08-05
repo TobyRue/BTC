@@ -16,6 +16,8 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModItems.STAFF, ModItems.DRAGON_ROD);
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER);
             content.addAfter(ModItems.ENCHANTED_PAPER, ModItems.EMPTY_SCROLL);
+            content.addAfter(ModItems.EMPTY_SCROLL, ModItems.UNLOCK_SCROLL);
+
 //            for (SpellScrollItem spell : ModItems.SPELL_ITEMS.values()) {
 //                if (!spell.spellType.hasNoScroll) {
 //                    content.addAfter(ModItems.ENCHANTED_PAPER, spell);
@@ -28,6 +30,7 @@ public class ModInventoryItemRegistry {
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);
+            content.addAfter(Items.MUSIC_DISC_PIGSTEP, ModItems.CRYSTAL_FOREST_MUSIC_DISC);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);

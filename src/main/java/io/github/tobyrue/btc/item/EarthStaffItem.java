@@ -87,7 +87,7 @@ public class EarthStaffItem extends StaffItem {
                 }
                 case CREEPER_WALL_CIRCLE -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
-                        int spikes = Math.max(8, (int) (3 * 3) + 8);
+                        int spikes = Math.max(8, (3 * 3) + 8);
                         double radius = 3;
                         player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 2));
                         for (int i = 0; i < spikes; i++) {
@@ -211,7 +211,6 @@ public class EarthStaffItem extends StaffItem {
                 assert client.world != null;
                 BlockState blockState = client.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
-                System.out.println("Block found is: " + block + ", which pos is: " + blockPos);
                 return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
         return null;

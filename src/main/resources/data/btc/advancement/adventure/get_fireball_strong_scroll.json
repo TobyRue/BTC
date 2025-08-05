@@ -2,7 +2,7 @@
     "parent": "btc:adventure/obtain_spell_book_advancment",
     "display": {
       "icon": {
-        "id": "btc:fireball_strong_scroll",
+        "id": "btc:fireball_scroll",
         "count": 1
       },
       "title": {
@@ -16,13 +16,13 @@
       "hidden": false
     },
     "criteria": {
-      "scroll": {
+      "unlock": {
         "trigger": "minecraft:impossible"
       }
     },
     "requirements": [
       [
-        "scroll"
+        "unlock"
       ]
     ],
     "sends_telemetry_event": true

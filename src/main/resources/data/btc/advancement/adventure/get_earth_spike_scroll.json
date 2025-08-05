@@ -2,7 +2,7 @@
     "parent": "btc:adventure/obtain_spell_book_advancment",
     "display": {
       "icon": {
-        "id": "btc:earth_spike_scroll",
+        "id": "btc:earth_spike_line_scroll",
         "count": 1
       },
       "title": {

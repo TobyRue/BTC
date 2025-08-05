@@ -2,12 +2,19 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.regestries.ModSounds;
+import net.minecraft.block.jukebox.JukeboxSong;
+import net.minecraft.block.jukebox.JukeboxSongs;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.*;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.Util;
 
 public class ModItems {
 //    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
@@ -31,6 +38,12 @@ public class ModItems {
 //            }
 //        }
 //    }
+
+
+    public static final Item UNLOCK_SCROLL = register(
+            new UnlockScrollItem(),
+            "unlock_scroll"
+    );
 
     public static final Item EMPTY_SCROLL = register(
             new Item(new Item.Settings()),
@@ -103,7 +116,7 @@ public class ModItems {
             "tuff_golem_spawn_egg"
     );
     public static final Item WATER_BLAST = register(
-            new WaterBlastItem(new Item.Settings().maxCount(64).rarity(Rarity.UNCOMMON)),
+            new WaterBlastItem(new Item.Settings().rarity(Rarity.UNCOMMON)),
             "water_blast"
     );
     public static final Item SPELL_BOOK = register(
@@ -111,6 +124,13 @@ public class ModItems {
             "spell_book_item"
     );
 
+    public static final Item CRYSTAL_FOREST_MUSIC_DISC = register(
+            new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(ModSounds.CRYSTAL_FOREST_KEY)),
+            "crystal_forest_music_disc"
+    );
+
+
     public static void initialize() {
+
     }
 }

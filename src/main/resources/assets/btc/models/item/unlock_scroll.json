@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "btc:item/empty_scroll",
+    "layer1": "btc:item/scroll_text_overlay"
+  }
+}

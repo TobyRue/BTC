@@ -41,5 +41,13 @@
       "btc:entity/copper_golem/copper_hurt_3",
       "btc:entity/copper_golem/copper_hurt_4"
     ]
+  },
+  "crystal_forest": {
+    "sounds": [
+      {
+        "name": "btc:records/crystal_forest",
+        "stream": true
+      }
+    ]
   }
 }
