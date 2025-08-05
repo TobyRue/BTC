@@ -98,12 +98,24 @@ public class BTCClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
+        ModelPredicateProviderRegistry.register(ModItems.UNLOCK_SCROLL, Identifier.ofVanilla("texture"),
+                (stack, world, entity, seed) -> {
+                    if (stack.getItem() instanceof UnlockScrollItem item && stack.contains(BTC.UNLOCK_SPELL_COMPONENT)) {
+                        var number = Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).textureInt();
+                        return (number / 100f);
+                    }
+                    return 0;
+                });
+
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
-            if (stack.getItem() instanceof UnlockScrollItem item && tintIndex == 1 && stack.contains(DataComponentTypes.DYED_COLOR)) {
-                return Objects.requireNonNull(stack.get(DataComponentTypes.DYED_COLOR)).rgb();
+            if (stack.getItem() instanceof UnlockScrollItem item && tintIndex == 1 && stack.contains(DataComponentTypes.DYED_COLOR) && stack.contains(BTC.UNLOCK_SPELL_COMPONENT)) {
+                if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).textureInt() == 0) {
+                    return Objects.requireNonNull(stack.get(DataComponentTypes.DYED_COLOR)).rgb();
+                }
             }
             return 0xFFFFFFFF;
         }, ModItems.UNLOCK_SCROLL);
+
 
         ModelPredicateProviderRegistry.register(ModItems.SPELLSTONE, Identifier.ofVanilla("spelltype"),
                 (stack, world, entity, seed) -> {
@@ -112,6 +124,7 @@ public class BTCClient implements ClientModInitializer {
                     }
                     return 0; // no spell
                 });
+
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
             if (stack.getItem() instanceof SpellstoneItem spellstoneItem) {

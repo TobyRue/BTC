@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class UnlockScrollItem extends Item {
     public UnlockScrollItem() {
-        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, BTC.identifierOf("adventure/enter_btc_trial_chamber")).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xFFFFFF, false)));
+        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("adventure/enter_btc_trial_chamber"),  0)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xFFFFFF, false)));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class UnlockScrollItem extends Item {
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 
         if ((user instanceof ServerPlayerEntity player)
-                && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)) instanceof Identifier id
+                && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier id
                 && player.server.getAdvancementLoader().get(id) instanceof AdvancementEntry advancement) {
             if (!player.getAdvancementTracker().getProgress(advancement).isDone()) {
                 player.getAdvancementTracker().grantCriterion(
@@ -60,7 +60,7 @@ public class UnlockScrollItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)) instanceof Identifier id) {
+        if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier id) {
             return Text.translatable(this.getTranslationKey(stack), Text.translatable("advancements." + id.toShortTranslationKey().replace("/", ".")));
         }
         return Text.translatable(this.getTranslationKey() + ".empty");

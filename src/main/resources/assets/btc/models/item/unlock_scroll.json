@@ -3,5 +3,15 @@
   "textures": {
     "layer0": "btc:item/empty_scroll",
     "layer1": "btc:item/scroll_text_overlay"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": { "texture": 0 },
+      "model": "btc:item/unlock_scroll"
+    },
+    {
+      "predicate": { "texture": 0.01 },
+      "model": "btc:item/fire_storm_scroll"
+    }
+  ]
 }
