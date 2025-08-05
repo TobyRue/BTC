@@ -15,7 +15,6 @@ import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.EnumHelper;
-import io.github.tobyrue.btc.util.UnlockScrollItemRenderer;
 import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;

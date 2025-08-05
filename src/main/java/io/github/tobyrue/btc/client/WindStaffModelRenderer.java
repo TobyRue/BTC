@@ -92,7 +92,7 @@ public static TexturedModelData getTexturedModelData() {
         matrices.pop();
     }
 
-        @Override
+    @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();

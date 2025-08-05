@@ -65,13 +65,7 @@ public class BTC implements ModInitializer {
             BTC.identifierOf("unlock_spell"),
             ComponentType.<Identifier>builder().codec(Identifier.CODEC).build()
     );
-    public static final ComponentType<Identifier> SPELL_TEXTURE_COMPONENT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("spell_texture"),
-            ComponentType.<Identifier>builder().codec(Identifier.CODEC).build()
-    );
-
-
+    
 //    public static final ComponentType<UnlockSpellComponent> UNLOCK_SPELL_COMPONENT = Registry.register(
 //            Registries.DATA_COMPONENT_TYPE,
 //            BTC.identifierOf("unlock_spell"),
