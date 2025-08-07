@@ -6,9 +6,6 @@ import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellScrollItem;
 import io.github.tobyrue.btc.spells.*;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.block.BarrelBlock;
-import net.minecraft.block.entity.BarrelBlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -46,6 +43,7 @@ public class ModSpells {
     public static final Spell CLUSTER_WIND_CHARGE = register("cluster_wind_charge", new ClusterWindChargeSpell());
     public static final Spell TEMPESTS_CALL = register("tempests_call", new TempestsCallSpell());
     public static final Spell STORM_PUSH = register("storm_push", new StormPushSpell());
+    public static final Spell LOCALIZED_STORM_PUSH = register("localized_storm_push", new LocalizedStormPushSpell());
     public static final Spell WIND_TORNADO = register("wind_tornado", new WindTornadoSpell());
 
 
@@ -59,6 +57,7 @@ public class ModSpells {
     public static final Spell CREEPER_WALL_EXPLOSIVE_TRAP = register("creeper_wall_explosive_trap", new CreeperWallExplosiveTrapSpell());
     public static final Spell CREEPER_WALL_BLOCK = register("creeper_wall_block", new CreeperWallBlockSpell());
 
+    public static final Spell ICE_BLOCK = register("ice_block", new IceBlockSpell());
 
 
     public static void initialize() {
