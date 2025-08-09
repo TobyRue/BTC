@@ -59,6 +59,36 @@ public interface GrabBag {
         return getChild(key, GrabBag.empty());
     }
 
+    default boolean equalsOther(@Nullable final Object o) {
+        return o instanceof GrabBag other && this.getKeys().size() == other.getKeys().size() && this.getKeys().stream().allMatch(key -> {
+            final var t1 = this.getType(key);
+            final var t2 = other.getType(key);
+
+            if (t1 == Byte.class && t2 == Byte.class) {
+                return this.getByte(key) == other.getByte(key);
+            } else if (t1 == Short.class && t2 == Short.class) {
+                return this.getShort(key) == other.getShort(key);
+            } else if (t1 == Integer.class && t2 == Integer.class) {
+                return this.getInt(key) == other.getInt(key);
+            } else if (t1 == Long.class && t2 == Long.class) {
+                return this.getLong(key) == other.getLong(key);
+            } else if (t1 == Float.class && t2 == Float.class) {
+                return this.getFloat(key) == other.getFloat(key);
+            } else if (t1 == Double.class && t2 == Double.class) {
+                return this.getDouble(key) == other.getDouble(key);
+            } else if (t1 == String.class && t2 == String.class) {
+                return this.getString(key) == other.getString(key);
+            } else if (t1 == Boolean.class && t2 == Boolean.class) {
+                // Note: getType will return Byte.class for booleans, but let's handle it anyway
+                return this.getBoolean(key) == other.getBoolean(key);
+            } else if (t1 == GrabBag.class && t2 == GrabBag.class) {
+                return this.getChild(key).equals(other.getChild(key));
+            } else {
+                return false;
+            }
+        });
+    }
+
     static GrabBag empty() {
         return new GrabBag() {
             @Override

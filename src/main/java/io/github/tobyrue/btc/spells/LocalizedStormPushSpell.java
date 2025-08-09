@@ -29,27 +29,23 @@ public class LocalizedStormPushSpell extends Spell {
 
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
-        double shoot_strength = args.getDouble("shoot_strength", 5d);
-        float shoot_up_strength = args.getFloat("shoot_up_strength", 1.26f);
+        double shootStrength = args.getDouble("shootStrength", 5d); // Overall velocity multiplier
+        double verticalMultiplier = args.getDouble("verticalMultiplier", 1.0d); // How much extra vertical force to apply
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         double range = args.getDouble("range", 24);
-
-
         // Shoot mob away from the player
         var entity = getEntityLookedAt(ctx.user(), range, aimingForgiveness);
         double dx = entity.getX() - ctx.user().getX();
         double dy = entity.getY() - ctx.user().getY();
         double dz = entity.getZ() - ctx.user().getZ();
         double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
         // Apply velocity away from the player
         if (distance != 0) {
-            // Apply the up-strength to the y-axis and normal strength to the x and z axes
-            double vx = dx / distance * shoot_strength;
-            double vy = (dy / distance) * shoot_strength + shoot_up_strength; // Added up-force
-            double vz = dz / distance * shoot_strength;
-
-            entity.setVelocity(vx, vy, vz);
+            entity.setVelocity(dx / distance * shootStrength, (dy / distance * shootStrength), dz / distance * shootStrength);
+            entity.setVelocity(entity.getVelocity().add(0, verticalMultiplier, 0));
         }
+
         // Optionally, deal damage to the entity
         if (entity instanceof PlayerEntity) {
             entity.damage(ModDamageTypes.of(ctx.world(), ModDamageTypes.WIND_BURST), 5.0f);

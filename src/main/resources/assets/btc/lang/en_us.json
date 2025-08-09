@@ -251,7 +251,9 @@
   "item.btc.unlock_scroll.empty": "Empty Unlock Scroll",
   "item.btc.unlock_scroll": "Unlock %s",
 
-
+  "command.btc.common.no_such_spell": "No such spell!",
+  "command.btc.common.bad_nbt": "Invalid NBT data!",
+  "command.btc.common.failed": "Unable to cast spell",
 
   "tag.item.btc.wrenches": "Wrenches"
 }

@@ -12,11 +12,16 @@ import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.regestries.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.*;
+import net.minecraft.client.particle.CampfireSmokeParticle;
+import net.minecraft.client.particle.FlameParticle;
+import net.minecraft.client.particle.GustParticle;
+import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
@@ -75,6 +80,7 @@ public class BTC implements ModInitializer {
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
     public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
+    public static final SimpleParticleType WATER_DROP = FabricParticleTypes.simple();
 
 
 
@@ -203,9 +209,12 @@ public class BTC implements ModInitializer {
 //            }
 //            return ActionResult.PASS;
 //        });
+
         //TODO COMMENT THESE BACK IN WHEN NOT DOING DATA GEN WITH THESE IT BREAKS IT
-//        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
-//        ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
+        ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_drop"), WATER_DROP);
+        ParticleFactoryRegistry.getInstance().register(BTC.WATER_DROP, FlameParticle.Factory::new);
     }
     public static void println(Object... args) {
         System.out.println(String.join(" ", Arrays.stream(args).map(Object::toString).toArray(String[]::new)));

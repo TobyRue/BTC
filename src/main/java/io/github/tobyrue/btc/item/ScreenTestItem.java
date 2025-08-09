@@ -5,6 +5,10 @@ import io.github.tobyrue.btc.client.screen.SpellScreenTest;
 import io.github.tobyrue.btc.client.screen.codex.Codex;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.regestries.ModRegistries;
+import io.github.tobyrue.btc.regestries.ModSpells;
+import io.github.tobyrue.btc.spell.GrabBag;
+import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
+import io.github.tobyrue.btc.spell.SpellItem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -12,6 +16,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,10 +31,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 
-public class ScreenTestItem extends Item {
+public class ScreenTestItem extends PredefinedSpellsItem {
     public String string;
     private final SpellRegistryEnum currentSpell = SpellRegistryEnum.FIREBALL_WEAK;
     private SpellRegistryEnum nextSpell;
@@ -130,5 +134,15 @@ public class ScreenTestItem extends Item {
 
         nbt.put("Cooldowns", cooldowns);
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+    }
+
+    @Override
+    public List<InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
+        return List.of(new InstancedSpell[] {
+                new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1);}})),
+                new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5);}})),
+                new InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.empty()),
+                new InstancedSpell(ModSpells.WATER_WAVE, GrabBag.empty())
+        });
     }
 }

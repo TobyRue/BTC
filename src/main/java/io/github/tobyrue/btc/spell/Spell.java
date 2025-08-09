@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.component.ComponentHolder;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -62,6 +63,10 @@ public abstract class Spell {
 
     public String getTranslationKey() {
         return Util.createTranslationKey("spell", ModRegistries.SPELL.getId(this));
+    }
+
+    public static Identifier getId(Spell type) {
+        return ModRegistries.SPELL.getId(type);
     }
 
     public record SpellContext(World world, Vec3d pos, Vec3d direction, SpellDataStore data, @Nullable LivingEntity user) {}

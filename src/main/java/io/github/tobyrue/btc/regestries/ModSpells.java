@@ -58,6 +58,7 @@ public class ModSpells {
     public static final Spell CREEPER_WALL_BLOCK = register("creeper_wall_block", new CreeperWallBlockSpell());
 
     public static final Spell ICE_BLOCK = register("ice_block", new IceBlockSpell());
+    public static final Spell WATER_WAVE = register("water_wave", new WaterWaveSpell());
 
 
     public static void initialize() {
