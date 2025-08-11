@@ -11,6 +11,10 @@ public interface GrabBag {
 
     Set<String> getKeys();
 
+    default int size() {
+        return this.getKeys().size();
+    }
+
     @Nullable
     Class<?> getType(final String key);
 

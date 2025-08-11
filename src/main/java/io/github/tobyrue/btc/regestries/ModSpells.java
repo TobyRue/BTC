@@ -59,6 +59,9 @@ public class ModSpells {
 
     public static final Spell ICE_BLOCK = register("ice_block", new IceBlockSpell());
     public static final Spell WATER_WAVE = register("water_wave", new WaterWaveSpell());
+    public static final Spell WATER_BLAST = register("water_blast", new WaterBlastSpell());
+    public static final Spell GEYSER_STEP = register("geyser_step", new GeyserStepSpell());
+    public static final Spell MIST_VEIL = register("mist_veil", new MistVeilSpell());
 
 
     public static void initialize() {

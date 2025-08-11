@@ -34,7 +34,7 @@ import static net.minecraft.server.command.CommandManager.*;
 
 public class ModCommands {
     public static final SuggestionProvider<ServerCommandSource> SPELLS_SUGGESTIONS = SuggestionProviders.register(BTC.identifierOf("spells"), (context, builder) -> CommandSource.suggestFromIdentifier(ModRegistries.SPELL.stream(), builder, Spell::getId, Spell::getName));
-    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.literal("Item does not support spells"));
+    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.literal("Item does not support spells / Just failed"));
     private static final SimpleCommandExceptionType FAILED_SPELL_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("command.btc.common.no_such_spell"));
     private static final SimpleCommandExceptionType FAILED_ARGS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("command.btc.common.bad_nbt"));
 
@@ -87,15 +87,33 @@ public class ModCommands {
         ));
     }
 
-    private static int selectSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement args) throws CommandSyntaxException {
+    private static int selectSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt) throws CommandSyntaxException {
         if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof SpellItem item) {
             var data = item.getSpellDataStore(stack);
             if (spell != null) {
-                if (args instanceof NbtCompound compound) {
-                    data.setSpell(spell, GrabBag.fromNBT(compound));
-                    return 1;
+                if (source.hasPermissionLevel(2)) {
+                    if (nbt instanceof NbtCompound compound) {
+                        data.setSpell(spell, GrabBag.fromNBT(compound));
+                        return 1;
+                    } else {
+                        throw FAILED_ARGS_EXCEPTION.create();
+                    }
                 } else {
-                    throw FAILED_ARGS_EXCEPTION.create();
+                    if (nbt instanceof NbtCompound compound && item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                        var args = GrabBag.fromNBT(compound);
+                        boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity)
+                                .stream()
+                                .anyMatch(instancedSpell -> instancedSpell.spell() == spell && (instancedSpell.args().equalsOther(args)));
+
+                        if (found) {
+                            data.setSpell(spell, GrabBag.fromNBT(compound));
+                            return 1;
+                        } else {
+                            throw FAILED_EXCEPTION.create();
+                        }
+                    } else {
+                        throw FAILED_ARGS_EXCEPTION.create();
+                    }
                 }
             } else {
                 throw FAILED_SPELL_EXCEPTION.create();
