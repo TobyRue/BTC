@@ -51,6 +51,7 @@ public class ModSpells {
     public static final Spell DRAGONS_BREATH = register("dragon_fireball", new DragonFireballSpell());
     public static final Spell LIFE_STEAL = register("life_steal", new LifeStealSpell());
     public static final Spell ENDER_CHEST = register("ender_chest", new EnderChestSpell());
+    public static final Spell SHULKER_BULLET = register("shulker_bullet", new ShulkerBulletSpell());
 
     public static final Spell EARTH_SPIKE_LINE = register("earth_spike_line", new EarthSpikeLineSpell());
     public static final Spell CREEPER_WALL_CIRCLE = register("creeper_wall_circle", new CreeperWallCircleSpell());

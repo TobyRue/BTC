@@ -19,6 +19,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -167,28 +168,6 @@ public class ScreenTestItem extends PredefinedSpellsItem {
     @Override
     public List<InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
        List<InstancedSpell> s = new ArrayList<>();
-
-        // Always ensure default WATER_WAVE exists
-
-//        return List.of(new InstancedSpell[] {
-//                new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1);}})),
-//                new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5);}})),
-//                new InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-//                    put("aimingForgiveness", 0.3d);
-//                    put("range", 24d);
-//                    put("duration", 400);
-//                    put("amplifier", 4);
-//                    put("cooldown", 600);
-//                }})),
-//                new InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
-//                    put("maxRadius", 8d);
-//                    put("maxDuration", 600);
-//                    put("duration", 2);
-//                    put("amplifier", 1);
-//                    put("cooldown", 600);
-//                }})),
-//        });
-
         if (entity instanceof ServerPlayerEntity serverPlayer) {
             addSpell(serverPlayer, s, BTC.identifierOf("adventure/get_earth_spike_scroll"), new InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
                 put("spikeCount", 8);
