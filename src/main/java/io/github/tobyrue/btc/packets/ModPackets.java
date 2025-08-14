@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.item.ScreenTestItem;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -11,15 +13,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class ModPackets {
     public static final Identifier SPELL_PACKET_ID = BTC.identifierOf("selected_spell");
+    public static final Identifier QUICK_SPELL_PACKET_ID = BTC.identifierOf("quick_spell");
 
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
 
 
 
@@ -56,5 +62,28 @@ public class ModPackets {
 
                     });
                 });
+        ServerPlayNetworking.registerGlobalReceiver(
+                QuickElementPayload.ID,
+                (payload, context) -> {
+                    ServerPlayerEntity player = context.player();
+                    int slot = payload.slot();
+
+                    context.server().execute(() -> {
+
+                        var stack = player.getMainHandStack();
+                        if (stack.getItem() instanceof ScreenTestItem item) {
+                            var spells = item.getAvailableSpells(stack, player.getWorld(), player);
+                            if (slot - 1 < spells.size()) {
+                                var spell = spells.get(slot - 1);
+                                player.server.getCommandManager().executeWithPrefix(
+                                        player.getCommandSource(),
+                                        "selectspell " + spell.spell() + " " + spell.args().toNBTArgs()
+                                );
+                            }
+                        }
+                    });
+                }
+        );
+
     }
 }

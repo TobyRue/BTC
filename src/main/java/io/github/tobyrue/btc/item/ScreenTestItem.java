@@ -172,23 +172,23 @@ public class ScreenTestItem extends PredefinedSpellsItem {
             addSpell(serverPlayer, s, BTC.identifierOf("adventure/get_earth_spike_scroll"), new InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
                 put("spikeCount", 8);
                 put("yRange", 12);
-                put("cooldown", 400);
+                put("cooldown", 0);
             }})));
             addSpell(serverPlayer, s, null, new InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
                 put("maxRadius", 8d);
                 put("maxDuration", 600);
                 put("duration", 2);
                 put("amplifier", 1);
-                put("cooldown", 600);
+                put("cooldown", 0);
             }})));
-            addSpell(serverPlayer, s, null, new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1);}})));
-            addSpell(serverPlayer, s, null, new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5);}})));
+            addSpell(serverPlayer, s, null, new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1); put("cooldown", 0);}})));
+            addSpell(serverPlayer, s, null, new InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5); put("cooldown", 0);}})));
             addSpell(serverPlayer, s, null, new InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
                 put("aimingForgiveness", 0.3d);
                 put("range", 24d);
                 put("duration", 400);
                 put("amplifier", 4);
-                put("cooldown", 600);
+                put("cooldown", 0);
             }})));
 
         }

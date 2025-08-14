@@ -255,5 +255,8 @@
   "command.btc.common.bad_nbt": "Invalid NBT data!",
   "command.btc.common.failed": "Unable to cast spell",
 
+  "category.btc.spell": "Spells",
+  "key.btc.open_spellbook": "Open Spellbook",
+
   "tag.item.btc.wrenches": "Wrenches"
 }

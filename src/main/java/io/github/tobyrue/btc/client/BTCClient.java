@@ -4,12 +4,15 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.btc.item.SpellstoneItem;
 import io.github.tobyrue.btc.item.UnlockScrollItem;
+import io.github.tobyrue.btc.packets.QuickElementPayload;
 import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
@@ -19,16 +22,21 @@ import io.github.tobyrue.xml.XMLException;
 import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -38,15 +46,19 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class BTCClient implements ClientModInitializer {
+    public static KeyBinding keyBinding;
+    public static KeyBinding keyBinding1;
 
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
     public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
@@ -97,6 +109,47 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
+        keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.open_spellbook", // The translation key of the keybinding's name
+                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+                GLFW.GLFW_KEY_Z, // The keycode of the key
+                "category.btc.spell" // The translation key of the keybinding's category.
+        ));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (keyBinding.wasPressed()) {
+                assert client.player != null;
+                for (var h : Hand.values()) {
+                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
+                        client.player.networkHandler.sendCommand("selectspell btc:fireball {level:10,cooldown:0}");
+                        client.setScreen(new CodexScreen());
+                    }
+                }
+            }
+//            while (keyBinding1.wasPressed()) {
+//                assert client.player != null;
+//                for (int i = 0; i < 9; i++) {
+//                    int keyCode = GLFW.GLFW_KEY_1 + i;
+//                    if (InputUtil.isKeyPressed(client.getWindow().getHandle(), keyCode)) {
+//                        int slotNumber = i + 1;
+//                        System.out.println("[DEBUG] Sending QuickElementPayload for slot " + slotNumber);
+//
+//                        // Send packet to server with slot + player UUID
+//                        ClientPlayNetworking.send(
+//                                new QuickElementPayload(slotNumber)
+//                        );
+//                    }
+//                }
+//            }
+
+
+        });
+        keyBinding1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.quick_spell", // The translation key of the keybinding's name
+                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+                GLFW.GLFW_KEY_LEFT_ALT, // The keycode of the key
+                "category.btc.spell" // The translation key of the keybinding's category.
+        ));
 
         ModelPredicateProviderRegistry.register(ModItems.UNLOCK_SCROLL, Identifier.ofVanilla("texture"),
                 (stack, world, entity, seed) -> {
