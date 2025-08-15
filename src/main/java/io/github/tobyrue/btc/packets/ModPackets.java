@@ -75,7 +75,7 @@ public class ModPackets {
                     context.server().execute(() -> {
 
                         var stack = player.getMainHandStack();
-                        if (stack.getItem() instanceof ScreenTestItem item) {
+                        if (stack.getItem() instanceof PredefinedSpellsItem item) {
                             if (player instanceof ServerPlayerEntity serverPlayer) {
                                 MinecraftServer server = serverPlayer.getServer();
                                 SpellPersistentState spellState = SpellPersistentState.get(server);
