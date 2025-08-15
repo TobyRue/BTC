@@ -1,23 +1,36 @@
 package io.github.tobyrue.btc.spell;
 
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.xml.util.Nullable;
+import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.stream.IntStream;
+
 public abstract class Spell {
     protected final SpellTypes type;
+    public static final Codec<Spell> CODEC = Identifier.CODEC.xmap(
+            ModRegistries.SPELL::get,
+            ModRegistries.SPELL::getId
+    );
 
     public Spell(final SpellTypes type) {
         this.type = type;
@@ -71,4 +84,14 @@ public abstract class Spell {
 
     public record SpellContext(World world, Vec3d pos, Vec3d direction, SpellDataStore data, @Nullable LivingEntity user) {}
     public record SpellCooldown(int ticks, Identifier key) {}
+
+    public record InstancedSpell(Spell spell, GrabBag args) {
+        public static final Codec<InstancedSpell> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(instance -> instance.group(
+                Spell.CODEC.fieldOf("spell").forGetter(InstancedSpell::spell),
+                NbtCompound.CODEC.fieldOf("args").forGetter(s -> GrabBag.toNBT(s.args()))
+        ).apply(instance, (spell, args) -> new InstancedSpell(spell, GrabBag.fromNBT(args)))));
+
+
+//                Codec.INT_STREAM.comapFlatMap(stream -> Util.decodeFixedLengthArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])), pos -> IntStream.of(pos.getX(), pos.getY(), pos.getZ())).stable();
+    }
 }

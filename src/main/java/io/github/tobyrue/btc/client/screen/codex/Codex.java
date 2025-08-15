@@ -44,14 +44,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     }
 
     public static final class Pages {
-        private final TreeMap<String, Page> pages;
+        private final TreeMap<String, Page> pages = new TreeMap<>();
 
-        Pages(TreeMap<String, Page> pages) {
-            this.pages = pages;
-        }
-
-        Pages(XMLNodeCollection<Page> pages) {
-            this.pages = new TreeMap<>();
+        private Pages(XMLNodeCollection<Page> pages) {
             pages.forEach(page -> this.pages.put(page.id, page));
         }
 
@@ -59,10 +54,14 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             return this.pages.get(id);
         }
         public Page getPage(int index) {
-            return this.pages.values().stream().skip(index - 1).findFirst().orElse(null);
+            return this.pages.values().stream().filter(p -> !p.hidden()).skip(index - 1).findFirst().orElse(null);
         }
+
         public int size() {
-            return this.pages.size();
+            return this.size(false);
+        }
+        public int size(boolean includeHidden) {
+            return (int) this.pages.values().stream().filter(p -> includeHidden || !p.hidden()).count();
         }
     }
 
@@ -139,6 +138,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
     public record Page(
             @XML.Children(allow = {BlockContent.class}) XMLNodeCollection<BlockContent> children,
             @XML.Attribute(fallBack = "true") AdvancementParser.Expression requires,
+            @XML.Attribute(fallBack = "false") Boolean hidden,
             String id
     ) implements XMLNode, ConditionalContent, RenderContent {
         @Override

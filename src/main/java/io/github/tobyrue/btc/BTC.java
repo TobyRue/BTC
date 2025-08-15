@@ -11,6 +11,7 @@ import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.regestries.*;
+import io.github.tobyrue.btc.spell.Spell;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -23,6 +24,7 @@ import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
 import net.minecraft.particle.SimpleParticleType;
@@ -32,6 +34,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -63,8 +66,6 @@ public class BTC implements ModInitializer {
             BTC.identifierOf("spell"),
             ComponentType.<NbtComponent>builder().codec(NbtComponent.CODEC).build()
     );
-
-
 //    public static final ComponentType<Identifier> UNLOCK_SPELL_COMPONENT = Registry.register(
 //            Registries.DATA_COMPONENT_TYPE,
 //            BTC.identifierOf("unlock_spell"),

@@ -1,7 +1,7 @@
 package io.github.tobyrue.btc.regestries;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.tobyrue.btc.BTC;
@@ -10,24 +10,19 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtElementArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.server.command.EnchantCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.minecraft.server.command.CommandManager.*;
@@ -37,6 +32,12 @@ public class ModCommands {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.literal("Item does not support spells / Just failed"));
     private static final SimpleCommandExceptionType FAILED_SPELL_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("command.btc.common.no_such_spell"));
     private static final SimpleCommandExceptionType FAILED_ARGS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("command.btc.common.bad_nbt"));
+    public static final SuggestionProvider<ServerCommandSource> DIGIT_SUGGESTIONS = (context, builder) -> {
+        for (int i = 0; i <= 9; i++) {
+            builder.suggest(String.valueOf(i));
+        }
+        return builder.buildFuture();
+    };
 
     public static void initialize() {
         ArgumentTypeRegistry.registerArgumentType(
@@ -69,9 +70,14 @@ public class ModCommands {
                                         }
                                     })
                                     .executes(context -> selectSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args")))
+                                    .then(
+                                            argument("slot", IntegerArgumentType.integer(0, 9))
+                                            .suggests(ModCommands.DIGIT_SUGGESTIONS)
+                                    )
                             )
                     )
             ));
+
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 literal("cast")
                         .requires(source -> source.hasPermissionLevel(2))

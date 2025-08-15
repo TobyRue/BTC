@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
 
-    private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary.png");
+    private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary.json.png");
     private static final Identifier TEXTURE_ANGRY = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_angry.png");
 
     public EldritchLuminaryRenderer(EntityRendererFactory.Context context) {

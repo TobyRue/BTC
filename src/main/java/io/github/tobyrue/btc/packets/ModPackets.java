@@ -2,7 +2,10 @@ package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.item.ScreenTestItem;
+import io.github.tobyrue.btc.player_data.PlayerSpellData;
+import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.GrabBag;
+import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -12,6 +15,7 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -72,13 +76,18 @@ public class ModPackets {
 
                         var stack = player.getMainHandStack();
                         if (stack.getItem() instanceof ScreenTestItem item) {
-                            var spells = item.getAvailableSpells(stack, player.getWorld(), player);
-                            if (slot - 1 < spells.size()) {
-                                var spell = spells.get(slot - 1);
-                                player.server.getCommandManager().executeWithPrefix(
-                                        player.getCommandSource(),
-                                        "selectspell " + spell.spell() + " " + spell.args().toNBTArgs()
-                                );
+                            if (player instanceof ServerPlayerEntity serverPlayer) {
+                                MinecraftServer server = serverPlayer.getServer();
+                                SpellPersistentState spellState = SpellPersistentState.get(server);
+                                PlayerSpellData playerData = spellState.getPlayerData(player);
+                                var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
+                                if (slot - 1 < spells.size()) {
+                                    var spell = spells.get(slot - 1);
+                                    player.server.getCommandManager().executeWithPrefix(
+                                            player.getCommandSource(),
+                                            "selectspell " + spell.spell() + " " + GrabBag.toNBT(spell.args())
+                                    );
+                                }
                             }
                         }
                     });

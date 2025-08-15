@@ -15,29 +15,6 @@ public interface GrabBag {
         return this.getKeys().size();
     }
 
-    default String toNBTArgs() {
-        StringBuilder sb = new StringBuilder("{");
-        boolean first = true;
-        for (String key : getKeys()) {
-            if (!first) sb.append(", ");
-            first = false;
-            Class<?> type = getType(key);
-            Object value = null;
-            if (type == Byte.class) value = getByte(key);
-            else if (type == Short.class) value = getShort(key);
-            else if (type == Integer.class) value = getInt(key);
-            else if (type == Long.class) value = getLong(key);
-            else if (type == Float.class) value = getFloat(key);
-            else if (type == Double.class) value = getDouble(key);
-            else if (type == String.class) value = "\"" + getString(key) + "\"";
-            else if (type == Boolean.class) value = getBoolean(key);
-            else if (type == GrabBag.class) value = getChild(key).toString();
-            sb.append(key).append(": ").append(value);
-        }
-        sb.append("}");
-        return sb.toString();
-    }
-
     @Nullable
     Class<?> getType(final String key);
 

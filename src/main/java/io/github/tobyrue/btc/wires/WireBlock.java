@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
+import io.github.tobyrue.btc.item.WrenchItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FrostedIceBlock;
