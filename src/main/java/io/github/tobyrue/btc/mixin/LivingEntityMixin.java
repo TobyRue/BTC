@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.mixin;
 
 import io.github.tobyrue.btc.Ticker;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.BlazeEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

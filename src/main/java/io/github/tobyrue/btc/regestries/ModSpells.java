@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellScrollItem;
 import io.github.tobyrue.btc.spells.*;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -31,8 +32,8 @@ public class ModSpells {
 
 
     public static final Spell FIREBALL = register("fireball", new FireballSpell());
-
     public static final Spell FIRE_STORM = register("fire_storm", new FireStormSpell());
+    public static final Spell BLAZE_STORM = register("blaze_storm", new BlazeStormSpell());
 
     public static final Spell POTION = register("potion", new PotionSpell());
     public static final Spell POTION_AREA_EFFECT = register("potion_area_effect", new PotionAreaEffectSpell());
