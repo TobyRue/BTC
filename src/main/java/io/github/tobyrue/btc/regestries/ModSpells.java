@@ -34,6 +34,7 @@ public class ModSpells {
     public static final Spell FIREBALL = register("fireball", new FireballSpell());
     public static final Spell FIRE_STORM = register("fire_storm", new FireStormSpell());
     public static final Spell BLAZE_STORM = register("blaze_storm", new BlazeStormSpell());
+    public static final Spell FLAME_BURST = register("flame_burst", new FlameBurstSpell());
 
     public static final Spell POTION = register("potion", new PotionSpell());
     public static final Spell POTION_AREA_EFFECT = register("potion_area_effect", new PotionAreaEffectSpell());
