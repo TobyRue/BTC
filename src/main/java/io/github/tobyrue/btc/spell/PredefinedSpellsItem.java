@@ -77,9 +77,8 @@ public abstract class PredefinedSpellsItem extends SpellItem {
     public static void addFavoriteSpellWithIndex(ServerPlayerEntity player, SpellPersistentState state, Spell.InstancedSpell spell, int index) {
         List<Spell.InstancedSpell> list = state.getPlayerData(player).favoriteSpells;
         boolean exists = list.stream().anyMatch(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()));
-
         if (!exists) {
-            list.add(index, spell);
+            list.set(index, spell);
             state.markDirty();
         }
     }
@@ -90,6 +89,11 @@ public abstract class PredefinedSpellsItem extends SpellItem {
     }
 
     public static void removeFavoriteSpell(ServerPlayerEntity player, SpellPersistentState state, Spell.InstancedSpell spell) {
+        List<Spell.InstancedSpell> list = state.getPlayerData(player).favoriteSpells;
+        list.removeIf(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()));
+        state.markDirty();
+    }
+    public static void removeAllFavoriteSpells(ServerPlayerEntity player, SpellPersistentState state, Spell.InstancedSpell spell) {
         List<Spell.InstancedSpell> list = state.getPlayerData(player).favoriteSpells;
         list.removeIf(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()));
         state.markDirty();

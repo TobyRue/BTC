@@ -62,14 +62,19 @@ public abstract class Spell {
         return this.type;
     }
 
-    public Text getName() {
+    public Text getName(final GrabBag args) {
         return Text.translatable(this.getTranslationKey());
+    }
+
+    public Text getName() {
+        return this.getName(GrabBag.empty());
     }
 
     @Override
     public String toString() {
         return ModRegistries.SPELL.getEntry(this).getIdAsString();
     }
+    @Deprecated
     public String getPureName() {
         return toString().substring(ModRegistries.SPELL.getId(this).getNamespace().length() + 1);
     }

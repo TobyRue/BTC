@@ -8,6 +8,7 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.text.Text;
 
 public class FireballSpell extends Spell {
 
@@ -21,6 +22,11 @@ public class FireballSpell extends Spell {
         fireball.setPos(ctx.pos().getX() + ctx.direction().x * 1.5, ctx.pos().getY() + ctx.direction().y * 1.5, ctx.pos().getZ() + ctx.direction().z * 1.5);
         fireball.setVelocity(ctx.direction().multiply(1.5));
         ctx.world().spawnEntity(fireball);
+    }
+
+    @Override
+    public Text getName(final GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("level") > 4 ? "strong" : "weak"));
     }
 
     @Override

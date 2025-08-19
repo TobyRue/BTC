@@ -63,36 +63,43 @@ public class ScreenTestItem extends PredefinedSpellsItem {
             MinecraftServer server = serverPlayer.getServer();
             SpellPersistentState spellState = SpellPersistentState.get(server);
             PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
-            addFavoriteSpellWithIndex(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
-                put("maxRadius", 8d);
-                put("maxDuration", 600);
-                put("duration", 2);
-                put("amplifier", 1);
-                put("cooldown", 0);
-            }})), 0);
-            addFavoriteSpellWithIndex(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("maxRadius", 8d);
-                put("duration", 2);
-                put("cooldown", 0);
-            }})), 1);
-            addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1); put("cooldown", 0);}})), null);
+            if (getFavoriteSpells(playerData).isEmpty()) {
+//                addFavoriteSpellWithIndex(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
+//                    put("maxRadius", 8d);
+//                    put("maxDuration", 600);
+//                    put("duration", 2);
+//                    put("amplifier", 1);
+//                    put("cooldown", 0);
+//                }})), 0);
+//                addFavoriteSpellWithIndex(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
+//                    put("maxRadius", 8d);
+//                    put("duration", 2);
+//                    put("cooldown", 0);
+//                }})), 1);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
+                    put("level", 1);
+                    put("cooldown", 0);
+                }})), null);
 
-            addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5); put("cooldown", 0);}})), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
+                    put("level", 5);
+                    put("cooldown", 0);
+                }})), null);
 
-            addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-                put("aimingForgiveness", 0.3d);
-                put("range", 24d);
-                put("duration", 400);
-                put("amplifier", 4);
-                put("cooldown", 0);
-            }})), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
+                    put("aimingForgiveness", 0.3d);
+                    put("range", 24d);
+                    put("duration", 400);
+                    put("amplifier", 4);
+                    put("cooldown", 0);
+                }})), null);
 
-            addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-                put("spikeCount", 8);
-                put("yRange", 12);
-                put("cooldown", 0);
-            }})), BTC.identifierOf("adventure/get_earth_spike_scroll"));
-
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
+                    put("spikeCount", 8);
+                    put("yRange", 12);
+                    put("cooldown", 0);
+                }})), BTC.identifierOf("adventure/get_earth_spike_scroll"));
+            }
             System.out.println("Favorite Spells: " + getFavoriteSpells(playerData) + " Known Spells" + getKnownSpells(playerData));
         }
 

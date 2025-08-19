@@ -8,8 +8,10 @@ import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.command.ParticleCommand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -68,6 +70,7 @@ public class GeyserStepSpell extends Spell {
                 }
             }
         }
+
         // Schedule continuous splash particles while rising
         ((Ticker.TickerTarget) ctx.user()).add(Ticker.of((tickCount) -> {
             if (world.isClient) {

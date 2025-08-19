@@ -9,8 +9,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 
@@ -37,7 +39,6 @@ public class PotionAreaEffectSpell extends Spell {
         if (entry.isEmpty()) {
             return;
         }
-
         List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(args.getDouble("radius", 8D)),
                 entity -> (((entity != user) && !args.getBoolean("includeUser")) || args.getBoolean("includeUser")) && entity instanceof LivingEntity && ((entity instanceof HostileEntity && args.getBoolean("onlyHostile")) || !args.getBoolean("onlyHostile"))); // Only affect hostile mobs
         for (LivingEntity entity : entities) {

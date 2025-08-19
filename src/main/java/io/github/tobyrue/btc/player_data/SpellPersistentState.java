@@ -3,6 +3,8 @@ package io.github.tobyrue.btc.player_data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.regestries.ModSpells;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
@@ -74,7 +76,15 @@ public class SpellPersistentState extends PersistentState {
             var fav = Spell.InstancedSpell.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, playerTag.get("favoriteSpells")).resultOrPartial(System.err::println).orElse(new ArrayList<>());
             PlayerSpellData data = new PlayerSpellData();
             data.knownSpells = new ArrayList<>(known);
-            data.favoriteSpells = new ArrayList<>(fav);
+            data.favoriteSpells = new ArrayList<>(fav.subList(0, 10));
+
+            while (data.favoriteSpells.size() < 10) {
+                data.favoriteSpells.add(new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty()));
+            }
+            if (data.favoriteSpells.size() > 10) {
+                data.favoriteSpells = new ArrayList<>(data.favoriteSpells.subList(0, 10));
+            }
+
             state.playerSpellMap.put(uuid, data);
         }
         return state;

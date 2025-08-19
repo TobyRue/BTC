@@ -1,12 +1,13 @@
 package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellScrollItem;
 import io.github.tobyrue.btc.spells.*;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -29,6 +30,23 @@ public class ModSpells {
     public static <T extends Spell> T register(String name, T spell) {
         return register(name, spell, true);
     }
+
+    public static final Spell EMPTY = register("empty", new Spell(SpellTypes.GENERIC) {
+        @Override
+        public int getColor(GrabBag args) {
+            return 0;
+        }
+
+        @Override
+        protected void use(SpellContext ctx, GrabBag args) {
+
+        }
+
+        @Override
+        protected boolean canUse(SpellContext ctx, GrabBag args) {
+            return false;
+        }
+    });
 
 
     public static final Spell FIREBALL = register("fireball", new FireballSpell());
@@ -65,7 +83,7 @@ public class ModSpells {
     public static final Spell WATER_BLAST = register("water_blast", new WaterBlastSpell());
     public static final Spell GEYSER_STEP = register("geyser_step", new GeyserStepSpell());
     public static final Spell MIST_VEIL = register("mist_veil", new MistVeilSpell());
-
+    public static final Spell RIPTIDE = register("riptide", new RiptideSpell());
 
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
