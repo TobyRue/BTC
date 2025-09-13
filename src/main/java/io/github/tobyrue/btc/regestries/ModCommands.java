@@ -58,7 +58,14 @@ public class ModCommands {
                                 if (context.getSource().hasPermissionLevel(2)) {
                                     return ModCommands.SPELLS_SUGGESTIONS.getSuggestions(context, builder);
                                 } else if (context.getSource().getEntity() instanceof LivingEntity l && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof PredefinedSpellsItem item) {
-                                    return CommandSource.suggestMatching(item.getAvailableSpells(stack, context.getSource().getWorld(), l).stream().map(i -> Spell.getId(i.spell()).toString()).toList(), builder);
+                                    if (l instanceof ServerPlayerEntity serverPlayer && item instanceof PredefinedSpellsItem) {
+                                        MinecraftServer server = serverPlayer.getServer();
+                                        SpellPersistentState spellState = SpellPersistentState.get(server);
+                                        PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+                                        return CommandSource.suggestMatching(PredefinedSpellsItem.getKnownSpells(playerData).stream().map(i -> Spell.getId(i.spell()).toString()).toList(), builder);
+                                    } else {
+                                        return CommandSource.suggestMatching(List.of(), builder);
+                                    }
                                 } else {
                                     return CommandSource.suggestMatching(List.of(), builder);
                                 }
@@ -69,7 +76,14 @@ public class ModCommands {
                                     .suggests((context, builder) -> {
                                         // Suggest some example NBT compounds
                                         if (context.getSource().getEntity() instanceof LivingEntity l && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof PredefinedSpellsItem item) {
-                                            return CommandSource.suggestMatching(item.getAvailableSpells(stack, context.getSource().getWorld(), l).stream().filter(i -> i.spell() == SpellArgumentType.getSpell(context, "spell")).map(i -> GrabBag.toNBT(i.args()).toString()).toList(), builder);
+                                            if (l instanceof ServerPlayerEntity serverPlayer && item instanceof PredefinedSpellsItem) {
+                                                MinecraftServer server = serverPlayer.getServer();
+                                                SpellPersistentState spellState = SpellPersistentState.get(server);
+                                                PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+                                                return CommandSource.suggestMatching(PredefinedSpellsItem.getKnownSpells(playerData).stream().map(i -> Spell.getId(i.spell()).toString()).toList(), builder);
+                                            } else {
+                                                return CommandSource.suggestMatching(List.of(), builder);
+                                            }
                                         } else {
                                             return CommandSource.suggestMatching(List.of(), builder);
                                         }
@@ -120,16 +134,14 @@ public class ModCommands {
                                 PlayerSpellData playerData = spellState.getPlayerData(player);
                                 if (slot != null) {
                                     PredefinedSpellsItem.addFavoriteSpellWithIndex(player, spellState, new Spell.InstancedSpell(spell, args), slot);
-                                    System.out.println("[DEBUG] Fav Spell set by admin: " + spell.getPureName() + " with args " + GrabBag.fromNBT(compound));
                                     return 1;
                                 }
                             } catch (Exception e) {
-                                System.out.println("[DEBUG][ERROR] Failed to set spell: " + e.getMessage());
                                 e.printStackTrace();
                                 throw FAILED_EXCEPTION.create();
                             }
                         }
-                        data.setSpell(spell, GrabBag.fromNBT(compound));
+                        data.setSpell(spell, args);
                         System.out.println("[DEBUG] Spell set by admin: " + spell.getPureName());
                         return 1;
                     } else {

@@ -1,48 +1,30 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.screen.SpellScreenTest;
-import io.github.tobyrue.btc.client.screen.codex.Codex;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
-import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.regestries.ModSpells;
 import io.github.tobyrue.btc.spell.GrabBag;
-import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellItem;
-import io.github.tobyrue.btc.util.AdvancementUtils;
-import io.github.tobyrue.xml.util.Nullable;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 
-import java.io.*;
 import java.util.*;
 
 public class ScreenTestItem extends PredefinedSpellsItem {
@@ -63,19 +45,7 @@ public class ScreenTestItem extends PredefinedSpellsItem {
             MinecraftServer server = serverPlayer.getServer();
             SpellPersistentState spellState = SpellPersistentState.get(server);
             PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
-            if (getFavoriteSpells(playerData).isEmpty()) {
-//                addFavoriteSpellWithIndex(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
-//                    put("maxRadius", 8d);
-//                    put("maxDuration", 600);
-//                    put("duration", 2);
-//                    put("amplifier", 1);
-//                    put("cooldown", 0);
-//                }})), 0);
-//                addFavoriteSpellWithIndex(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
-//                    put("maxRadius", 8d);
-//                    put("duration", 2);
-//                    put("cooldown", 0);
-//                }})), 1);
+            if (getKnownSpells(playerData).isEmpty()) {
                 addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
                     put("level", 1);
                     put("cooldown", 0);
@@ -100,10 +70,8 @@ public class ScreenTestItem extends PredefinedSpellsItem {
                     put("cooldown", 0);
                 }})), BTC.identifierOf("adventure/get_earth_spike_scroll"));
             }
-            System.out.println("Favorite Spells: " + getFavoriteSpells(playerData) + " Known Spells" + getKnownSpells(playerData));
         }
 
-        System.out.println(this.getAvailableSpells(stack, world, player));
         if (!player.isSneaking()) {
             if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
                 return TypedActionResult.success(stack);
@@ -204,28 +172,27 @@ public class ScreenTestItem extends PredefinedSpellsItem {
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
        List<Spell.InstancedSpell> s = new ArrayList<>();
         if (entity instanceof ServerPlayerEntity serverPlayer) {
-
-//            addSpell(serverPlayer, s, BTC.identifierOf("adventure/get_earth_spike_scroll"), new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-//                put("spikeCount", 8);
-//                put("yRange", 12);
-//                put("cooldown", 0);
-//            }})));
-//            addSpell(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
-//                put("maxRadius", 8d);
-//                put("maxDuration", 600);
-//                put("duration", 2);
-//                put("amplifier", 1);
-//                put("cooldown", 0);
-//            }})));
-//            addSpell(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1); put("cooldown", 0);}})));
-//            addSpell(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5); put("cooldown", 0);}})));
-//            addSpell(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-//                put("aimingForgiveness", 0.3d);
-//                put("range", 24d);
-//                put("duration", 400);
-//                put("amplifier", 4);
-//                put("cooldown", 0);
-//            }})));
+            addSpellToItem(serverPlayer, s, BTC.identifierOf("adventure/get_earth_spike_scroll"), new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
+                put("spikeCount", 8);
+                put("yRange", 12);
+                put("cooldown", 0);
+            }})));
+            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
+                put("maxRadius", 8d);
+                put("maxDuration", 600);
+                put("duration", 2);
+                put("amplifier", 1);
+                put("cooldown", 0);
+            }})));
+            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1); put("cooldown", 0);}})));
+            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5); put("cooldown", 0);}})));
+            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
+                put("aimingForgiveness", 0.3d);
+                put("range", 24d);
+                put("duration", 400);
+                put("amplifier", 4);
+                put("cooldown", 0);
+            }})));
 
         }
         return s;

@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
 import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
@@ -27,10 +28,12 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
+import net.minecraft.client.gui.screen.option.MouseOptionsScreen;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
@@ -59,6 +62,7 @@ import java.util.Objects;
 public class BTCClient implements ClientModInitializer {
     public static KeyBinding keyBinding;
     public static KeyBinding keyBinding1;
+    public static KeyBinding keyBinding2;
 
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
     public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
@@ -116,34 +120,19 @@ public class BTCClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_Z, // The keycode of the key
                 "category.btc.spell" // The translation key of the keybinding's category.
         ));
+
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
                 assert client.player != null;
                 for (var h : Hand.values()) {
                     if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
-                        client.player.networkHandler.sendCommand("selectspell btc:fireball {level:10,cooldown:0}");
-                        client.setScreen(new CodexScreen());
+                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu")));
                     }
                 }
             }
-//            while (keyBinding1.wasPressed()) {
-//                assert client.player != null;
-//                for (int i = 0; i < 9; i++) {
-//                    int keyCode = GLFW.GLFW_KEY_1 + i;
-//                    if (InputUtil.isKeyPressed(client.getWindow().getHandle(), keyCode)) {
-//                        int slotNumber = i + 1;
-//                        System.out.println("[DEBUG] Sending QuickElementPayload for slot " + slotNumber);
-//
-//                        // Send packet to server with slot + player UUID
-//                        ClientPlayNetworking.send(
-//                                new QuickElementPayload(slotNumber)
-//                        );
-//                    }
-//                }
-//            }
-
-
         });
+
         keyBinding1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.btc.quick_spell", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.

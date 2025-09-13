@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.util.AdvancementUtils;
 import io.github.tobyrue.xml.util.Nullable;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -22,7 +23,7 @@ public abstract class PredefinedSpellsItem extends SpellItem {
     public abstract List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity);
 
 
-    public static void addSpell(ServerPlayerEntity player, List<Spell.InstancedSpell> spellList, @Nullable Identifier id, Spell.InstancedSpell spell) {
+    public static void addSpellToItem(ServerPlayerEntity player, List<Spell.InstancedSpell> spellList, @Nullable Identifier id, Spell.InstancedSpell spell) {
         boolean exists = spellList.stream()
                 .anyMatch(s -> s.spell() == spell.spell() && s.args() == spell.args());
         if (id != null) {
@@ -37,7 +38,7 @@ public abstract class PredefinedSpellsItem extends SpellItem {
             }
         }
     }
-    public static void removeSpell(List<Spell.InstancedSpell> spellList, Spell.InstancedSpell spell) {
+    public static void removeSpellFromItem(List<Spell.InstancedSpell> spellList, Spell.InstancedSpell spell) {
         spellList.removeIf(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()));
     }
 

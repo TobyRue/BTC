@@ -19,13 +19,11 @@ import net.minecraft.world.World;
 import java.util.Objects;
 
 public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
-
     public SpellItem(Settings settings) {
         super(settings);
         DispenserBlock.registerBehavior(this, ((pointer, stack) -> {
             final var direction = new Vec3d(pointer.state().get(DispenserBlock.FACING).getUnitVector());
             final var data = SpellItem.this.getSpellDataStore(stack);
-            //TODO dispenser sounds?
             data.getSpell().tryUse(new Spell.SpellContext(pointer.world(), pointer.pos().toCenterPos(), direction, data, null), data.getArgs());
             return stack;
         }));

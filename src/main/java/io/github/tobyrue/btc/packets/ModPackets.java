@@ -83,10 +83,12 @@ public class ModPackets {
                                 var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
                                 if (slot - 1 < spells.size()) {
                                     var spell = spells.get(slot - 1);
-                                    player.server.getCommandManager().executeWithPrefix(
-                                            player.getCommandSource(),
-                                            "selectspell " + spell.spell() + " " + GrabBag.toNBT(spell.args())
-                                    );
+                                    if (PredefinedSpellsItem.getKnownSpells(playerData).contains(spell) || player.hasPermissionLevel(2)) {
+                                        player.server.getCommandManager().executeWithPrefix(
+                                                player.getCommandSource(),
+                                                "selectspell " + spell.spell() + " " + GrabBag.toNBT(spell.args())
+                                        );
+                                    }
                                 }
                             }
                         }
