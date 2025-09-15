@@ -552,10 +552,10 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     hoverText = "Open link";
                 } else if (!run.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.RUN_COMMAND, run);
-                    hoverText = "Run command";
+                    hoverText = "Run commandHover";
                 } else if (!suggest.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, suggest);
-                    hoverText = "Suggest command";
+                    hoverText = "Suggest commandHover";
                 } else if (!page.isEmpty()) {
                     event = new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page);
                     hoverText = "Go to page";

@@ -24,7 +24,7 @@ import java.util.Locale;
 public class SpellScreenTest extends Screen {
     public static final Identifier BOOK_TEXTURE = BTC.identifierOf("textures/gui/book.png");
 
-    public static String string = "";  // set externally via chat command etc.
+    public static String string = "";  // set externally via chat commandHover etc.
 
 
     public SpellScreenTest() {

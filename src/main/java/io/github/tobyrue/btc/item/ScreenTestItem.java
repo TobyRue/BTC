@@ -102,7 +102,7 @@ public class ScreenTestItem extends PredefinedSpellsItem {
                     var strings = text.substring(1).split(" ");
 
                     if (strings.length < 1) {
-                        throw new Exception("Missing command after '!'");
+                        throw new Exception("Missing commandHover after '!'");
                     }
 
                     var command = strings[0].toLowerCase(Locale.ROOT);
@@ -113,7 +113,7 @@ public class ScreenTestItem extends PredefinedSpellsItem {
                             this.string = text.substring(5);
                             break;
                         default:
-                            throw new Exception("Unknown command '" + command + "'");
+                            throw new Exception("Unknown commandHover '" + command + "'");
                     }
                 } catch (Throwable t) {
                     sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));

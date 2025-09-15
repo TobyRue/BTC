@@ -185,7 +185,7 @@ public class ModCommands {
                                     }
                                 }
                             } else {
-                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/command block)");
+                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                                 boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                         .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 

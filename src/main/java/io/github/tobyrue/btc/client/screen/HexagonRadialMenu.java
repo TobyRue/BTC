@@ -2,11 +2,14 @@ package io.github.tobyrue.btc.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HexagonRadialMenu extends Screen {
     private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
@@ -18,8 +21,20 @@ public class HexagonRadialMenu extends Screen {
     private int centerX;
     private int centerY;
 
-    public HexagonRadialMenu(Text title) {
+    private final List<SpellValue> spells; // list of spell values provided
+
+    private final int start;
+    private final int end;
+
+
+    public record SpellValue(Text display, String commandHover, String commandClick) {}
+
+    public HexagonRadialMenu(Text title, List<SpellValue> spells, int start, int end) {
         super(title);
+        // only keep first 6 if longer
+        this.spells = spells;
+        this.start = start;
+        this.end = end; // clamp to size
     }
 
     @Override
@@ -27,6 +42,25 @@ public class HexagonRadialMenu extends Screen {
         super.init();
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
+        ScreenMouseEvents.afterMouseScroll(this).register((screen, mouseX, mouseY, horiz, vert) -> {
+            if (spells.isEmpty()) return;
+
+            // scroll up
+            if (vert > 0 && start > 0) {
+                int newStart = Math.max(0, start - 6);
+                int newEnd = Math.min(newStart + 6, spells.size());
+                close();
+                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd));
+            }
+
+            // scroll down
+            if (vert < 0 && end < spells.size()) {
+                int newStart = start + 6;
+                int newEnd = Math.min(newStart + 6, spells.size());
+                close();
+                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd));
+            }
+        });
     }
 
     @Override
@@ -64,9 +98,12 @@ public class HexagonRadialMenu extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
-        if (sector != -1) {
-            System.out.println("Clicked on hexagon: " + sector );
+        if (sector >= 0 && sector < spells.size()) {
+            SpellValue value = spells.get(sector + start);
+            System.out.println("Clicked: " + value.commandHover());
+            // TODO: run commandHover here with MinecraftClient.getInstance().player.networkHandler.sendCommand(...)
             this.close();
+            return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -124,6 +161,57 @@ public class HexagonRadialMenu extends Screen {
         RenderSystem.disableBlend();
 
         context.getMatrices().pop();
+
+        // Draw text for spells[start..end)
+        int radius = 60;
+        for (int i = 0; i < (end - start); i++) {
+            SpellValue spell = spells.get(start + i);
+            double angleRad = Math.toRadians(i * 60 - 60);
+            int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
+            int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
+
+            String text = spell.display().getString();
+
+            // Simple word wrap
+            int maxWidth = 40;
+            String[] words = text.split(" ");
+            List<String> lines = new ArrayList<>();
+            StringBuilder currentLine = new StringBuilder();
+
+            for (String word : words) {
+                String testLine = (currentLine.length() == 0 ? "" : currentLine + " ") + word;
+                if (this.textRenderer.getWidth(testLine) <= maxWidth) {
+                    currentLine = new StringBuilder(testLine);
+                } else {
+                    lines.add(currentLine.toString());
+                    currentLine = new StringBuilder(word);
+                }
+            }
+            if (currentLine.length() > 0) lines.add(currentLine.toString());
+
+            boolean shrink = lines.size() > 3;
+
+            context.getMatrices().push();
+            if (shrink) {
+                context.getMatrices().translate(hexCenterX, hexCenterY, 0);
+                context.getMatrices().scale(0.75f, 0.75f, 1f);
+                hexCenterX = 0;
+                hexCenterY = 0;
+            }
+
+            int totalHeight = lines.size() * this.textRenderer.fontHeight;
+            int startY = hexCenterY - totalHeight / 2;
+
+            for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
+                String line = lines.get(lineIndex);
+                int lineWidth = this.textRenderer.getWidth(line);
+                int lineX = hexCenterX - lineWidth / 2;
+                int lineY = startY + lineIndex * this.textRenderer.fontHeight;
+                context.drawText(this.textRenderer, line, lineX, lineY, 0xFFFFFF, true);
+            }
+
+            context.getMatrices().pop();
+        }
     }
 }
 

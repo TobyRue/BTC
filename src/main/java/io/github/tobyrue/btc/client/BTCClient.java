@@ -55,7 +55,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
@@ -85,13 +87,13 @@ public class BTCClient implements ClientModInitializer {
 //                        var strings = text.substring(1).split(" ");
 //
 //                        if (strings.length < 1) {
-//                            throw new Exception("Missing command after '!'");
+//                            throw new Exception("Missing commandHover after '!'");
 //                        }
 //
-//                        var command = strings[0].toLowerCase(Locale.ROOT);
+//                        var commandHover = strings[0].toLowerCase(Locale.ROOT);
 //                        var args = Arrays.copyOfRange(strings, 1, strings.length);
 //
-//                        switch (command) {
+//                        switch (commandHover) {
 //                            case "say":
 ////                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
 //
@@ -99,7 +101,7 @@ public class BTCClient implements ClientModInitializer {
 //                                sender.sendMessage(parser.parse(text.substring(5)).toText());
 //                                break;
 //                            default:
-//                                throw new Exception("Unknown command '" + command + "'");
+//                                throw new Exception("Unknown commandHover '" + commandHover + "'");
 //                        }
 //                    } catch (Throwable t) {
 //                        sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
@@ -127,7 +129,16 @@ public class BTCClient implements ClientModInitializer {
                 assert client.player != null;
                 for (var h : Hand.values()) {
                     if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
-                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu")));
+                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fireball"), "cast_fireball", "cast_fireball"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell icebolt"), "cast_icebolt", "cast_icebolt"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 1"), "cast_lightning 1", "cast_lightning 1"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 2"), "cast_lightning 2", "cast_lightning 2"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 3"), "cast_lightning 3", "cast_lightning 3"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 4"), "cast_lightning 4", "cast_lightning 4"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 5"), "cast_lightning 5", "cast_lightning 5"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 6"), "cast_lightning 6", "cast_lightning 6")
+                        )), 0, 6));
                     }
                 }
             }
