@@ -2,9 +2,13 @@ package io.github.tobyrue.btc.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.BTCClient;
+import io.github.tobyrue.btc.mixin.KeyBindingAccessor;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -25,9 +29,10 @@ public class HexagonRadialMenu extends Screen {
 
     private final int start;
     private final int end;
-
+    private DoubleInt mouse;
 
     public record SpellValue(Text display, String commandHover, String commandClick) {}
+    protected record DoubleInt(int mouseX, int mouseY) {}
 
     public HexagonRadialMenu(Text title, List<SpellValue> spells, int start, int end) {
         super(title);
@@ -45,15 +50,12 @@ public class HexagonRadialMenu extends Screen {
         ScreenMouseEvents.afterMouseScroll(this).register((screen, mouseX, mouseY, horiz, vert) -> {
             if (spells.isEmpty()) return;
 
-            // scroll up
             if (vert > 0 && start > 0) {
                 int newStart = Math.max(0, start - 6);
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
                 client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd));
             }
-
-            // scroll down
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + 6;
                 int newEnd = Math.min(newStart + 6, spells.size());
@@ -64,14 +66,26 @@ public class HexagonRadialMenu extends Screen {
     }
 
     @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (this.client == null || this.client.player == null) return false;
+
+        if (keyCode == ((KeyBindingAccessor) BTCClient.keyBinding).getBoundKey().getCode()) {
+            int hovered = getHoveredHex(mouse.mouseX, mouse.mouseY);
+            if (hovered >= 0 && hovered + start < spells.size()) {
+                SpellValue value = spells.get(start + hovered);
+                System.out.println("Key release hover command: " + value.commandHover());
+            }
+            close();
+            return true;
+        }
+
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+
+    @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-
-//        int hovered = getHoveredHex(mouseX, mouseY);
-//
-//        if (hovered >= 0) {
-//            System.out.println("Hovered: " + hovered);
-//        }
-
+        mouse = new DoubleInt(mouseX, mouseY);
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -84,7 +98,6 @@ public class HexagonRadialMenu extends Screen {
             angle += 90;
             if (angle < 0) angle += 360;
             int sector = (int) Math.floor(angle / 60);
-            System.out.println("Sector: " + sector);
             return sector;
         }
         return -1;
@@ -98,7 +111,7 @@ public class HexagonRadialMenu extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
-        if (sector >= 0 && sector < spells.size()) {
+        if (sector >= 0 && sector + start < spells.size()) {
             SpellValue value = spells.get(sector + start);
             System.out.println("Clicked: " + value.commandHover());
             // TODO: run commandHover here with MinecraftClient.getInstance().player.networkHandler.sendCommand(...)
@@ -107,6 +120,7 @@ public class HexagonRadialMenu extends Screen {
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
+
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {

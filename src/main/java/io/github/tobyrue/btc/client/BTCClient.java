@@ -37,6 +37,8 @@ import net.minecraft.client.gui.screen.option.MouseOptionsScreen;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.SimpleOption;
+import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
@@ -64,7 +66,7 @@ import java.util.Objects;
 public class BTCClient implements ClientModInitializer {
     public static KeyBinding keyBinding;
     public static KeyBinding keyBinding1;
-    public static KeyBinding keyBinding2;
+
 
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
     public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
@@ -123,6 +125,13 @@ public class BTCClient implements ClientModInitializer {
                 "category.btc.spell" // The translation key of the keybinding's category.
         ));
 
+        keyBinding1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.quick_spell", // The translation key of the keybinding's name
+                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+                GLFW.GLFW_KEY_LEFT_ALT, // The keycode of the key
+                "category.btc.spell" // The translation key of the keybinding's category.
+        ));
+
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
@@ -144,12 +153,7 @@ public class BTCClient implements ClientModInitializer {
             }
         });
 
-        keyBinding1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.btc.quick_spell", // The translation key of the keybinding's name
-                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
-                GLFW.GLFW_KEY_LEFT_ALT, // The keycode of the key
-                "category.btc.spell" // The translation key of the keybinding's category.
-        ));
+
 
         ModelPredicateProviderRegistry.register(ModItems.UNLOCK_SCROLL, Identifier.ofVanilla("texture"),
                 (stack, world, entity, seed) -> {
