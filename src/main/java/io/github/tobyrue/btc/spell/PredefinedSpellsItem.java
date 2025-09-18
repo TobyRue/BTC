@@ -15,32 +15,11 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public abstract class PredefinedSpellsItem extends SpellItem {
+public abstract class PredefinedSpellsItem extends MinimalPredefinedSpellsItem {
     public PredefinedSpellsItem(Settings settings) {
         super(settings);
     }
 
-    public abstract List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity);
-
-
-    public static void addSpellToItem(ServerPlayerEntity player, List<Spell.InstancedSpell> spellList, @Nullable Identifier id, Spell.InstancedSpell spell) {
-        boolean exists = spellList.stream()
-                .anyMatch(s -> s.spell() == spell.spell() && s.args() == spell.args());
-        if (id != null) {
-            if (AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath())) {
-                if (!exists) {
-                    spellList.add(spell);
-                }
-            }
-        } else {
-            if (!exists) {
-                spellList.add(spell);
-            }
-        }
-    }
-    public static void removeSpellFromItem(List<Spell.InstancedSpell> spellList, Spell.InstancedSpell spell) {
-        spellList.removeIf(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()));
-    }
 
     public static List<Spell.InstancedSpell> getKnownSpells(PlayerSpellData data) {
         return data.knownSpells;

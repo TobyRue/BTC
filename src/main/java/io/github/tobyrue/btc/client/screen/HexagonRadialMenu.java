@@ -73,6 +73,7 @@ public class HexagonRadialMenu extends Screen {
             int hovered = getHoveredHex(mouse.mouseX, mouse.mouseY);
             if (hovered >= 0 && hovered + start < spells.size()) {
                 SpellValue value = spells.get(start + hovered);
+                client.player.networkHandler.sendCommand(value.commandHover());
                 System.out.println("Key release hover command: " + value.commandHover());
             }
             close();
@@ -113,8 +114,8 @@ public class HexagonRadialMenu extends Screen {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
         if (sector >= 0 && sector + start < spells.size()) {
             SpellValue value = spells.get(sector + start);
-            System.out.println("Clicked: " + value.commandHover());
-            // TODO: run commandHover here with MinecraftClient.getInstance().player.networkHandler.sendCommand(...)
+            System.out.println("Clicked: " + value.commandClick());
+            client.player.networkHandler.sendCommand(value.commandClick());
             this.close();
             return true;
         }

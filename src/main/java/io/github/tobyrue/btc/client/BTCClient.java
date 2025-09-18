@@ -139,14 +139,14 @@ public class BTCClient implements ClientModInitializer {
                 for (var h : Hand.values()) {
                     if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
                         client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fireball"), "cast_fireball", "cast_fireball"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell icebolt"), "cast_icebolt", "cast_icebolt"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 1"), "cast_lightning 1", "cast_lightning 1"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 2"), "cast_lightning 2", "cast_lightning 2"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 3"), "cast_lightning 3", "cast_lightning 3"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 4"), "cast_lightning 4", "cast_lightning 4"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 5"), "cast_lightning 5", "cast_lightning 5"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell lightning 6"), "cast_lightning 6", "cast_lightning 6")
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fireball"), "selectspell btc:fireball", "cast btc:fireball"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell ice block"), "selectspell btc:ice_block", "cast btc:ice_block"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fire storm"), "selectspell btc:fire_storm", "cast btc:fire_storm"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell water wave"), "selectspell btc:water_wave", "cast btc:water_wave"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell earth spike"), "selectspell btc:earth_spike_line", "cast btc:earth_spike_line"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell water blast"), "selectspell btc:water_blast", "cast btc:water_blast"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell dragons breath"), "selectspell btc:dragon_fireball", "cast btc:dragon_fireball"),
+                                new HexagonRadialMenu.SpellValue(Text.translatable("spell clustered wind charge"), "selectspell btc:cluster_wind_charge", "cast btc:cluster_wind_charge")
                         )), 0, 6));
                     }
                 }

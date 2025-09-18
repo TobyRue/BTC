@@ -100,14 +100,33 @@ public class ModCommands {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 literal("cast")
-                        .requires(source -> source.hasPermissionLevel(2))
                         .then(
                                 argument("spell", SpellArgumentType.spell())
                                         .suggests(ModCommands.SPELLS_SUGGESTIONS)
-                                        .executes(context -> castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), null))
+                                        .executes(context -> {
+                                            if (context.getSource().getEntity() instanceof PlayerEntity player) {
+                                                for (var h : Hand.values())
+                                                    if (player.getCommandSource().hasPermissionLevel(2) && player.getStackInHand(h).getItem() instanceof PredefinedSpellsItem) {
+                                                        return castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), null);
+                                                    }
+                                            } else {
+                                                return castNoItemSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), null);
+                                            }
+                                            return 0;
+                                        })
                                         .then(
                                                 argument("args", NbtElementArgumentType.nbtElement())
-                                                        .executes(context -> castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args")))
+                                                        .executes(context -> {
+                                                            if (context.getSource().getEntity() instanceof PlayerEntity player) {
+                                                                for (var h : Hand.values())
+                                                                if (player.getCommandSource().hasPermissionLevel(2) && player.getStackInHand(h).getItem() instanceof PredefinedSpellsItem) {
+                                                                    return castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"));
+                                                                }
+                                                            } else {
+                                                                return castNoItemSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"));
+                                                            }
+                                                            return 0;
+                                                        })
                                         )
                         )
         ));
@@ -216,7 +235,8 @@ public class ModCommands {
         }
     }
 
-    private static int castSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt) throws CommandSyntaxException {
+    @Deprecated
+    private static int castNoItemSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt) throws CommandSyntaxException {
         if (spell != null) {
             if (nbt instanceof NbtCompound || nbt == null) {
                 var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
@@ -255,4 +275,78 @@ public class ModCommands {
             throw FAILED_SPELL_EXCEPTION.create();
         }
     }
+
+    private static int castSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt) throws CommandSyntaxException {
+        System.out.println("[DEBUG] castSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt);
+
+        if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof SpellItem item) {
+            System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
+
+            var data = item.getSpellDataStore(stack);
+            if (spell != null) {
+                // Admin override
+                if (nbt instanceof NbtCompound compound) {
+                    var args = GrabBag.fromNBT(compound);
+                    if (source.hasPermissionLevel(2)) {
+                        System.out.println("[DEBUG] Source has permission level 2");
+                        data.setSpell(spell, args);
+                        System.out.println("[DEBUG] Spell casted by admin: " + spell.getPureName());
+                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                    } else {
+                        System.out.println("[DEBUG] Non-admin args parsed: " + args);
+
+                        if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                            // Player path
+                            if (entity instanceof PlayerEntity) {
+                                var player = source.getPlayer();
+                                MinecraftServer server = source.getWorld().getServer();
+                                SpellPersistentState spellState = SpellPersistentState.get(server);
+                                PlayerSpellData playerData = spellState.getPlayerData(player);
+
+                                System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
+
+
+                                boolean found = PredefinedSpellsItem.getKnownSpells(playerData).stream()
+                                        .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
+
+                                if (found) {
+                                    System.out.println("[DEBUG] Spell casted directly on item: " + spell.getPureName());
+                                    data.setSpell(spell, args);
+                                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                } else {
+                                    System.out.println("[DEBUG] Spell not found in known spells (no slot)");
+                                    throw FAILED_EXCEPTION.create();
+                                }
+                            } else {
+                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+                                boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity).stream()
+                                        .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
+
+                                if (found) {
+                                    data.setSpell(spell, args);
+                                    System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
+                                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                } else {
+                                    System.out.println("[DEBUG] Spell not found in available spells for entity");
+                                    throw FAILED_EXCEPTION.create();
+                                }
+                            }
+                        } else {
+                            System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
+                            throw FAILED_EXCEPTION.create();
+                        }
+                    }
+                } else {
+                    throw FAILED_EXCEPTION.create();
+                }
+            } else {
+                System.out.println("[DEBUG] Spell was null");
+                throw FAILED_SPELL_EXCEPTION.create();
+            }
+        } else {
+            System.out.println("[DEBUG] Entity not holding a valid SpellItem");
+            throw FAILED_EXCEPTION.create();
+        }
+    }
+
 }
