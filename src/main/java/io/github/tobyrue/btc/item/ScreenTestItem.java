@@ -22,6 +22,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
@@ -190,5 +191,9 @@ public class ScreenTestItem extends PredefinedSpellsItem {
 
         }
         return s;
+    }
+    @Override
+    public List<Identifier> getSpellAdvancements(ItemStack stack, World world, LivingEntity entity) {
+        return List.of(BTC.identifierOf("adventure/get_earth_spike_scroll"));
     }
 }

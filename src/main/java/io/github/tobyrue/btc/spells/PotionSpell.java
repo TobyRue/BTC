@@ -12,6 +12,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Optional;
@@ -45,6 +46,11 @@ public class PotionSpell extends Spell {
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown"), BTC.identifierOf("potion"));
+    }
+
+    @Override
+    public Text getName(final GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + "." + (args.getString("name", "normal")));
     }
 
     @Override

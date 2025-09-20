@@ -9,6 +9,7 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 public class FireStormSpell extends Spell {
@@ -69,6 +70,11 @@ public class FireStormSpell extends Spell {
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 400), BTC.identifierOf("fire_storm"));
+    }
+
+    @Override
+    public Text getName(final GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("maxRadius") > 8 ? (args.getInt("maxRadius") == 8 ? "normal" : "strong") : "concentrated"));
     }
 
     @Override

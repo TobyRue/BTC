@@ -10,6 +10,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
@@ -55,5 +56,9 @@ public class WindStaffItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.empty()));
         }
         return s;
+    }
+    @Override
+    public List<Identifier> getSpellAdvancements(ItemStack stack, World world, LivingEntity entity) {
+        return List.of();
     }
 }

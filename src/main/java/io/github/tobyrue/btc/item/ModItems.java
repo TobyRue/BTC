@@ -87,20 +87,20 @@ public class ModItems {
         new io.github.tobyrue.btc.item.staffs.WindStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "wind_staff"
     );
-    public static final StaffItem FIRE_STAFF = register(
-            new FireStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+    public static final io.github.tobyrue.btc.item.staffs.FireStaffItem FIRE_STAFF = register(
+            new io.github.tobyrue.btc.item.staffs.FireStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "fire_staff"
     );
-    public static final StaffItem DRAGON_STAFF = register(
-            new DragonStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+    public static final io.github.tobyrue.btc.item.staffs.DragonStaffItem DRAGON_STAFF = register(
+            new io.github.tobyrue.btc.item.staffs.DragonStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "dragon_staff"
     );
-    public static final StaffItem WATER_STAFF = register(
-            new WaterStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+    public static final io.github.tobyrue.btc.item.staffs.WaterStaffItem WATER_STAFF = register(
+            new io.github.tobyrue.btc.item.staffs.WaterStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "water_staff"
     );
-    public static final StaffItem EARTH_STAFF = register(
-            new EarthStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+    public static final io.github.tobyrue.btc.item.staffs.EarthStaffItem EARTH_STAFF = register(
+            new io.github.tobyrue.btc.item.staffs.EarthStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "earth_staff"
     );
     public static final Item ELDRITCH_LUMINARY_SPAWN_EGG = register(

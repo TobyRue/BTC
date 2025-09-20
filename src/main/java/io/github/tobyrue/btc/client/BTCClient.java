@@ -154,13 +154,22 @@ public class BTCClient implements ClientModInitializer {
                     if (item instanceof MinimalPredefinedSpellsItem minimal) {
                         var spells = minimal.getAvailableSpells(stack, world, user);
 
+                        final var data = minimal.getSpellDataStore(stack);
                         // Convert the available spells into SpellValue objects
                         var spellValues = spells.stream()
-                                .map(inst -> new HexagonRadialMenu.SpellValue(
-                                        Text.translatable("item.btc.spell." + Spell.getId(inst.spell()).getPath()),
-                                        "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
-                                        "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
-                                ))
+                                .map(inst -> {
+                                    // Get the raw string (includes translation{key='...', args=[...]})
+                                    String raw = inst.spell().getName(inst.args()).toString();
+
+                                    // Extract just the translation key with regex
+                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+
+                                    return new HexagonRadialMenu.SpellValue(
+                                            Text.translatable(key), // pass inst.args() so it renders correctly
+                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+                                    );
+                                })
                                 .toList();
 
                         int maxSlots = spellValues.size(); // dynamically adjust max slots

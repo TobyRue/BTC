@@ -11,6 +11,7 @@ import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.regestries.*;
+import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;

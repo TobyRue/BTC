@@ -36,6 +36,8 @@ public class AdvancementUtils {
             return advancementCache.getOrDefault(Identifier.of(namespace, path), false);
         }
     }
+
+
     public static void requestAdvancementCheck(String namespace, String path) {
         ClientPlayNetworking.send(new AdvancementPayload(Identifier.of(namespace, path)));
     }

@@ -260,5 +260,41 @@
 
   "tag.item.btc.wrenches": "Wrenches",
 
-  "item.btc.spell._": "Use This For The Template For Spell Translations"
+  "spell.btc._": "Use This For The Template For Spell Translations",
+  "spell.btc.": "",
+  "spell.btc.fireball.weak": "Weak Fireball",
+  "spell.btc.fireball.strong": "Strong Fireball",
+  "spell.btc.fire_storm.normal": "Fire Storm",
+  "spell.btc.fire_storm.strong": "Strong Fire Storm",
+  "spell.btc.fire_storm.concentrated": "Concentrated Fire Storm",
+  "spell.btc.blaze_storm": "Blaze Storm",
+  "spell.btc.flame_burst": "Flame Burst",
+
+  "spell.btc.wind_charge": "Wind Charge",
+  "spell.btc.cluster_wind_charge": "Cluster Wind Charge",
+  "spell.btc.storm_push": "Storm Push",
+  "spell.btc.tempests_call": "Tempests Call",
+  "spell.btc.wind_tornado": "Wind Tornado",
+  "spell.btc.localized_storm_push": "Localized Storm Push",
+
+  "spell.btc.water_wave": "Water Wave",
+  "spell.btc.ice_block": "Ice Block",
+  "spell.btc.water_blast": "Water Blast",
+  "spell.btc.riptide": "Riptide",
+  "spell.btc.mist_veil": "Mist Veil",
+  "spell.btc.geyser_step": "Geyser Step",
+
+  "spell.btc.earth_spike_line": "Earth Spike Line",
+  "spell.btc.creeper_wall_block": "Creeper Wall Block",
+  "spell.btc.creeper_wall_circle": "Creeper Wall Circle",
+  "spell.btc.creeper_wall_explosive_trap": "Creeper Wall Trap",
+
+  "spell.btc.ender_pearl": "Ender Pearl",
+  "spell.btc.ender_chest": "Ender Chest",
+  "spell.btc.dragon_fireball": "Dragon Fireball",
+  "spell.btc.life_steal": "Life Steal",
+  "spell.btc.shulker_bullet": "Shulker Bullet",
+
+  "spell.btc.potion.normal": "Potion",
+  "spell.btc.potion_area_effect.normal": "Potion Area Effect"
 }

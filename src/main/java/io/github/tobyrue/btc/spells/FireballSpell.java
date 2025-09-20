@@ -26,7 +26,7 @@ public class FireballSpell extends Spell {
 
     @Override
     public Text getName(final GrabBag args) {
-        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("level") > 4 ? "strong" : "weak"));
+        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("level") > 3 ? "strong" : "weak"));
     }
 
     @Override
