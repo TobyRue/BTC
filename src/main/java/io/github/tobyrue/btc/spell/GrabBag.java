@@ -1,8 +1,12 @@
 package io.github.tobyrue.btc.spell;
 
 import io.github.tobyrue.xml.util.Nullable;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.Identifier;
 
 import java.util.Map;
 import java.util.Set;

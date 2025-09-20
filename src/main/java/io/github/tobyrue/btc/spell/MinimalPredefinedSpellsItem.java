@@ -1,16 +1,11 @@
 package io.github.tobyrue.btc.spell;
 
-import io.github.tobyrue.btc.client.BTCClient;
-import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.util.AdvancementUtils;
 import io.github.tobyrue.xml.util.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +13,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MinimalPredefinedSpellsItem extends SpellItem {
@@ -32,7 +26,7 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
         boolean exists = spellList.stream()
                 .anyMatch(s -> s.spell() == spell.spell() && s.args() == spell.args());
         if (id != null) {
-            if (player instanceof ServerPlayerEntity serverPlayer && AdvancementUtils.hasAdvancement(serverPlayer, id.getNamespace(), id.getPath())) {
+            if (AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath())) {
                 if (!exists) {
                     //TODO make a packet that detects if the advancement is activated and if so it runs THIS METHOD again but with NULL IDENTIFIER, the packet will need a identifier and another identifier (of the spell) using ModRegistries.SPELL.get() or something like that to remember the spell
                     spellList.add(spell);

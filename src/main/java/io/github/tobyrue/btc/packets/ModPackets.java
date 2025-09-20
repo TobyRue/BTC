@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
-import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.ModRegistries;
@@ -10,11 +8,10 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
-import io.github.tobyrue.btc.util.EnumHelper;
-import io.github.tobyrue.btc.enums.SpellRegistryEnum;
+import io.github.tobyrue.btc.util.AdvancementUtils;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,23 +19,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModPackets {
+
     public static final Identifier SPELL_PACKET_ID = BTC.identifierOf("selected_spell");
     public static final Identifier QUICK_SPELL_PACKET_ID = BTC.identifierOf("quick_spell");
+    public static final Identifier ADVANCEMENT_SPELL = BTC.identifierOf("advancement");
+    public static final Identifier ADVANCEMENT_RESPONSE_SPELL = BTC.identifierOf("advancement_response");
 
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
 
 
         ServerPlayNetworking.registerGlobalReceiver(
@@ -100,7 +97,27 @@ public class ModPackets {
                         }
                     });
                 }
-
         );
+        ServerPlayNetworking.registerGlobalReceiver(
+                AdvancementPayload.ID,
+                (payload, context) -> {
+
+                    context.server().execute(() -> {
+                        var player = context.player();
+                        var adv = payload.advancement();
+                        var stack = context.player().getMainHandStack();
+                        boolean has = AdvancementUtils.hasAdvancement(player, adv.getNamespace(), adv.getPath());
+
+                        ServerPlayNetworking.send(player, new ServerAdvancementResponsePayload(has, adv));
+                    });
+                });
+
+        ClientPlayNetworking.registerGlobalReceiver(
+                ServerAdvancementResponsePayload.ID, (payload, context) -> {
+            Identifier adv = payload.advancement();
+            boolean has = payload.has();
+
+            context.client().execute(() -> AdvancementUtils.advancementCache.put(adv, has));
+        });
     }
 }
