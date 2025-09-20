@@ -54,9 +54,23 @@ public class FlameBurstSpell extends Spell {
                         ).normalize().multiply(world.getRandom().nextDouble() * range);
 
                         Vec3d particlePos = user.getPos().add(0, user.getStandingEyeHeight(), 0).add(offset);
-                        world.addParticle(ParticleTypes.FLAME,
-                                particlePos.x, particlePos.y, particlePos.z,
-                                look.x * 0.1, look.y * 0.1, look.z * 0.1);
+                        if (!world.isClient) {
+                            // send particle to all players nearby
+                            ((ServerWorld) world).spawnParticles(
+                                    ParticleTypes.FLAME,
+                                    particlePos.x, particlePos.y, particlePos.z,
+                                    1,    // count
+                                    0, 0, 0, // delta for random offset
+                                    0.1     // speed
+                            );
+                        } else {
+                            // already client-side, can just spawn directly
+                            world.addParticle(
+                                    ParticleTypes.FLAME,
+                                    particlePos.x, particlePos.y, particlePos.z,
+                                    look.x * 0.1, look.y * 0.1, look.z * 0.1
+                            );
+                        }
                     }
 
                     // every few ticks, actually deal damage + ignite

@@ -1,15 +1,20 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
 import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
+import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
+import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
+import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,9 +22,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,8 +41,6 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
 
 
-
-
         ServerPlayNetworking.registerGlobalReceiver(
                 SetElementPayload.ID,
                 (payload, context) -> {
@@ -43,7 +50,6 @@ public class ModPackets {
                         String value = payload.elementName();
                         ItemStack stack = playerByUuid.getMainHandStack();
                         if (stack.isEmpty()) return;
-
                         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
                         NbtCompound originalNbt = component.copyNbt();
 
@@ -94,7 +100,7 @@ public class ModPackets {
                         }
                     });
                 }
-        );
 
+        );
     }
 }

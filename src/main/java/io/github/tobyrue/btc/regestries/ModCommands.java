@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.*;
 import io.github.tobyrue.xml.util.Nullable;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.CommandSource;
@@ -27,6 +28,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,15 +59,28 @@ public class ModCommands {
                             .suggests((context, builder) -> {
                                 if (context.getSource().hasPermissionLevel(2)) {
                                     return ModCommands.SPELLS_SUGGESTIONS.getSuggestions(context, builder);
-                                } else if (context.getSource().getEntity() instanceof LivingEntity l && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof PredefinedSpellsItem item) {
-                                    if (l instanceof ServerPlayerEntity serverPlayer && item instanceof PredefinedSpellsItem) {
-                                        MinecraftServer server = serverPlayer.getServer();
-                                        SpellPersistentState spellState = SpellPersistentState.get(server);
-                                        PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
-                                        return CommandSource.suggestMatching(PredefinedSpellsItem.getKnownSpells(playerData).stream().map(i -> Spell.getId(i.spell()).toString()).toList(), builder);
-                                    } else {
-                                        return CommandSource.suggestMatching(List.of(), builder);
+                                } else if (context.getSource().getEntity() instanceof LivingEntity l && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack) {
+                                    if (stack.getItem() instanceof PredefinedSpellsItem) {
+                                        if (l instanceof ServerPlayerEntity serverPlayer) {
+                                            MinecraftServer server = serverPlayer.getServer();
+                                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                                            PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+                                            return CommandSource.suggestMatching(
+                                                    PredefinedSpellsItem.getKnownSpells(playerData).stream()
+                                                            .map(i -> Spell.getId(i.spell()).toString())
+                                                            .toList(),
+                                                    builder
+                                            );
+                                        }
+                                    } else if (stack.getItem() instanceof MinimalPredefinedSpellsItem minimal) {
+                                        return CommandSource.suggestMatching(
+                                                minimal.getAvailableSpells(stack, l.getWorld(), l).stream()
+                                                        .map(i -> Spell.getId(i.spell()).toString())
+                                                        .toList(),
+                                                builder
+                                        );
                                     }
+                                    return CommandSource.suggestMatching(List.of(), builder);
                                 } else {
                                     return CommandSource.suggestMatching(List.of(), builder);
                                 }
@@ -73,22 +88,52 @@ public class ModCommands {
                             .executes(context -> selectSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), new NbtCompound(), null))
                             .then(
                                     argument("args", NbtElementArgumentType.nbtElement())
-                                    .suggests((context, builder) -> {
-                                        // Suggest some example NBT compounds
-                                        if (context.getSource().getEntity() instanceof LivingEntity l && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof PredefinedSpellsItem item) {
-                                            if (l instanceof ServerPlayerEntity serverPlayer && item instanceof PredefinedSpellsItem) {
-                                                MinecraftServer server = serverPlayer.getServer();
-                                                SpellPersistentState spellState = SpellPersistentState.get(server);
-                                                PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
-                                                return CommandSource.suggestMatching(PredefinedSpellsItem.getKnownSpells(playerData).stream().map(i -> Spell.getId(i.spell()).toString()).toList(), builder);
-                                            } else {
-                                                return CommandSource.suggestMatching(List.of(), builder);
-                                            }
-                                        } else {
-                                            return CommandSource.suggestMatching(List.of(), builder);
-                                        }
-                                    })
-                                    .executes(context -> selectSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"), null))
+                                            .suggests((context, builder) -> {
+                                                if (context.getSource().getEntity() instanceof LivingEntity l
+                                                        && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack) {
+
+                                                    Spell chosenSpell = SpellArgumentType.getSpell(context, "spell");
+
+                                                    if (stack.getItem() instanceof PredefinedSpellsItem) {
+                                                        if (l instanceof ServerPlayerEntity serverPlayer) {
+                                                            MinecraftServer server = serverPlayer.getServer();
+                                                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                                                            PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+
+                                                            List<String> argSuggestions = new ArrayList<>(
+                                                                    PredefinedSpellsItem.getKnownSpells(playerData).stream()
+                                                                            .filter(inst -> inst.spell() == chosenSpell)
+                                                                            .map(inst -> GrabBag.toNBT(inst.args()).toString())
+                                                                            .toList()
+                                                            );
+
+                                                            if (argSuggestions.stream().noneMatch(s -> s.equals("{}"))) {
+                                                                argSuggestions.add("{}");
+                                                            }
+
+                                                            return CommandSource.suggestMatching(argSuggestions, builder);
+                                                        }
+                                                    } else if (stack.getItem() instanceof MinimalPredefinedSpellsItem minimal) {
+                                                        List<String> argSuggestions = new ArrayList<>(
+                                                                minimal.getAvailableSpells(stack, l.getWorld(), l).stream()
+                                                                        .filter(inst -> inst.spell() == chosenSpell)
+                                                                        .map(inst -> GrabBag.toNBT(inst.args()).toString())
+                                                                        .toList()
+                                                        );
+
+                                                        if (argSuggestions.stream().noneMatch(s -> s.equals("{}"))) {
+                                                            argSuggestions.add("{}");
+                                                        }
+
+                                                        return CommandSource.suggestMatching(argSuggestions, builder);
+                                                    }
+                                                }
+
+                                                // Fallback default
+                                                return CommandSource.suggestMatching(List.of("{}"), builder);
+                                            })
+
+                                            .executes(context -> selectSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"), null))
                                     .then(
                                             argument("slot", IntegerArgumentType.integer(0, 9))
                                             .suggests(ModCommands.DIGIT_SUGGESTIONS)
@@ -102,31 +147,85 @@ public class ModCommands {
                 literal("cast")
                         .then(
                                 argument("spell", SpellArgumentType.spell())
-                                        .suggests(ModCommands.SPELLS_SUGGESTIONS)
-                                        .executes(context -> {
-                                            if (context.getSource().getEntity() instanceof PlayerEntity player) {
-                                                for (var h : Hand.values())
-                                                    if (player.getCommandSource().hasPermissionLevel(2) && player.getStackInHand(h).getItem() instanceof PredefinedSpellsItem) {
-                                                        return castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), null);
+                                        .suggests((context, builder) -> {
+                                            if (context.getSource().hasPermissionLevel(2)) {
+                                                return ModCommands.SPELLS_SUGGESTIONS.getSuggestions(context, builder);
+                                            } else if (context.getSource().getEntity() instanceof LivingEntity l && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack) {
+                                                if (stack.getItem() instanceof PredefinedSpellsItem) {
+                                                    if (l instanceof ServerPlayerEntity serverPlayer) {
+                                                        MinecraftServer server = serverPlayer.getServer();
+                                                        SpellPersistentState spellState = SpellPersistentState.get(server);
+                                                        PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+                                                        return CommandSource.suggestMatching(
+                                                                PredefinedSpellsItem.getKnownSpells(playerData).stream()
+                                                                        .map(i -> Spell.getId(i.spell()).toString())
+                                                                        .toList(),
+                                                                builder
+                                                        );
                                                     }
+                                                } else if (stack.getItem() instanceof MinimalPredefinedSpellsItem minimal) {
+                                                    return CommandSource.suggestMatching(
+                                                            minimal.getAvailableSpells(stack, l.getWorld(), l).stream()
+                                                                    .map(i -> Spell.getId(i.spell()).toString())
+                                                                    .toList(),
+                                                            builder
+                                                    );
+                                                }
+                                                return CommandSource.suggestMatching(List.of(), builder);
                                             } else {
-                                                return castNoItemSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), null);
+                                                return CommandSource.suggestMatching(List.of(), builder);
                                             }
-                                            return 0;
                                         })
+                                        .executes(context -> castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), null))
                                         .then(
                                                 argument("args", NbtElementArgumentType.nbtElement())
-                                                        .executes(context -> {
-                                                            if (context.getSource().getEntity() instanceof PlayerEntity player) {
-                                                                for (var h : Hand.values())
-                                                                if (player.getCommandSource().hasPermissionLevel(2) && player.getStackInHand(h).getItem() instanceof PredefinedSpellsItem) {
-                                                                    return castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"));
+                                                        .suggests((context, builder) -> {
+                                                            if (context.getSource().getEntity() instanceof LivingEntity l
+                                                                    && l.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack) {
+
+                                                                Spell chosenSpell = SpellArgumentType.getSpell(context, "spell");
+
+                                                                if (stack.getItem() instanceof PredefinedSpellsItem) {
+                                                                    if (l instanceof ServerPlayerEntity serverPlayer) {
+                                                                        MinecraftServer server = serverPlayer.getServer();
+                                                                        SpellPersistentState spellState = SpellPersistentState.get(server);
+                                                                        PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+
+                                                                        List<String> argSuggestions = new ArrayList<>(
+                                                                                PredefinedSpellsItem.getKnownSpells(playerData).stream()
+                                                                                        .filter(inst -> inst.spell() == chosenSpell)
+                                                                                        .map(inst -> GrabBag.toNBT(inst.args()).toString())
+                                                                                        .toList()
+                                                                        );
+
+                                                                        if (argSuggestions.stream().noneMatch(s -> s.equals("{}"))) {
+                                                                            argSuggestions.add("{}");
+                                                                        }
+
+                                                                        return CommandSource.suggestMatching(argSuggestions, builder);
+                                                                    }
+                                                                } else if (stack.getItem() instanceof MinimalPredefinedSpellsItem minimal) {
+                                                                    List<String> argSuggestions = new ArrayList<>(
+                                                                            minimal.getAvailableSpells(stack, l.getWorld(), l).stream()
+                                                                                    .filter(inst -> inst.spell() == chosenSpell)
+                                                                                    .map(inst -> GrabBag.toNBT(inst.args()).toString())
+                                                                                    .toList()
+                                                                    );
+
+                                                                    if (argSuggestions.stream().noneMatch(s -> s.equals("{}"))) {
+                                                                        argSuggestions.add("{}");
+                                                                    }
+
+                                                                    return CommandSource.suggestMatching(argSuggestions, builder);
                                                                 }
-                                                            } else {
-                                                                return castNoItemSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"));
                                                             }
-                                                            return 0;
+
+                                                            // Fallback default
+                                                            return CommandSource.suggestMatching(List.of("{}"), builder);
                                                         })
+
+
+                                                        .executes(context -> castSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args")))
                                         )
                         )
         ));
@@ -137,12 +236,11 @@ public class ModCommands {
 
         if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof SpellItem item) {
             System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
-
             var data = item.getSpellDataStore(stack);
             if (spell != null) {
                 // Admin override
-                if (nbt instanceof NbtCompound compound) {
-                    var args = GrabBag.fromNBT(compound);
+                if (nbt instanceof NbtCompound || nbt == null) {
+                    var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
                     if (source.hasPermissionLevel(2)) {
                         System.out.println("[DEBUG] Source has permission level 2");
                         if (source.getPlayer() != null) {
@@ -200,6 +298,15 @@ public class ModCommands {
                                         return 1;
                                     } else {
                                         System.out.println("[DEBUG] Spell not found in known spells (no slot)");
+                                        System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
+                                        System.out.println("[DEBUG] Provided args: " + args);
+
+                                        System.out.println("[DEBUG] Known spells list:");
+                                        for (Spell.InstancedSpell inst : PredefinedSpellsItem.getKnownSpells(playerData)) {
+                                            System.out.println(" - " + inst.spell().getPureName() + " with args " + inst.args());
+                                            System.out.println("   equalsOther? " + inst.args().equalsOther(args));
+                                            System.out.println("   same spell? " + (inst.spell() == spell));
+                                        }
                                         throw FAILED_EXCEPTION.create();
                                     }
                                 }
@@ -216,6 +323,20 @@ public class ModCommands {
                                     System.out.println("[DEBUG] Spell not found in available spells for entity");
                                     throw FAILED_EXCEPTION.create();
                                 }
+                            }
+                        } else if (item instanceof MinimalPredefinedSpellsItem minimal) {
+                            // Player path
+                            System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+                            boolean found = minimal.getAvailableSpells(stack, source.getWorld(), entity).stream()
+                                    .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
+
+                            if (found) {
+                                data.setSpell(spell, args);
+                                System.out.println("[DEBUG] Spell set from available spells: " + spell.getPureName());
+                                return 1;
+                            } else {
+                                System.out.println("[DEBUG] Spell not found in available spells for entity");
+                                throw FAILED_EXCEPTION.create();
                             }
                         } else {
                             System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
@@ -279,47 +400,72 @@ public class ModCommands {
     private static int castSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt) throws CommandSyntaxException {
         System.out.println("[DEBUG] castSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt);
 
-        if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof SpellItem item) {
-            System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
+        if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack) {
+            if (stack.getItem() instanceof SpellItem item) {
+                System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
 
-            var data = item.getSpellDataStore(stack);
-            if (spell != null) {
-                // Admin override
-                if (nbt instanceof NbtCompound compound) {
-                    var args = GrabBag.fromNBT(compound);
-                    if (source.hasPermissionLevel(2)) {
-                        System.out.println("[DEBUG] Source has permission level 2");
-                        data.setSpell(spell, args);
-                        System.out.println("[DEBUG] Spell casted by admin: " + spell.getPureName());
-                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
-                    } else {
-                        System.out.println("[DEBUG] Non-admin args parsed: " + args);
+                var data = item.getSpellDataStore(stack);
+                if (spell != null) {
+                    // Admin override
+                    if (nbt instanceof NbtCompound || nbt == null) {
+                        var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
+                        if (source.hasPermissionLevel(2)) {
+                            System.out.println("[DEBUG] Source has permission level 2");
+                            data.setSpell(spell, args);
+                            System.out.println("[DEBUG] Spell casted by admin: " + spell.getPureName());
+                            return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                        } else {
+                            System.out.println("[DEBUG] Non-admin args parsed: " + args);
 
-                        if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
-                            // Player path
-                            if (entity instanceof PlayerEntity) {
-                                var player = source.getPlayer();
-                                MinecraftServer server = source.getWorld().getServer();
-                                SpellPersistentState spellState = SpellPersistentState.get(server);
-                                PlayerSpellData playerData = spellState.getPlayerData(player);
+                            if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                                // Player path
+                                if (entity instanceof PlayerEntity) {
+                                    var player = source.getPlayer();
+                                    MinecraftServer server = source.getWorld().getServer();
+                                    SpellPersistentState spellState = SpellPersistentState.get(server);
+                                    PlayerSpellData playerData = spellState.getPlayerData(player);
 
-                                System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
+                                    System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
 
 
-                                boolean found = PredefinedSpellsItem.getKnownSpells(playerData).stream()
-                                        .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
+                                    boolean found = PredefinedSpellsItem.getKnownSpells(playerData).stream()
+                                            .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
-                                if (found) {
-                                    System.out.println("[DEBUG] Spell casted directly on item: " + spell.getPureName());
-                                    data.setSpell(spell, args);
-                                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                    if (found) {
+                                        System.out.println("[DEBUG] Spell casted directly on item: " + spell.getPureName());
+                                        data.setSpell(spell, args);
+                                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                    } else {
+                                        System.out.println("[DEBUG] Spell not found in known spells (no slot)");
+                                        System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
+                                        System.out.println("[DEBUG] Provided args: " + args);
+
+                                        System.out.println("[DEBUG] Known spells list:");
+                                        for (Spell.InstancedSpell inst : PredefinedSpellsItem.getKnownSpells(playerData)) {
+                                            System.out.println(" - " + inst.spell().getPureName() + " with args " + inst.args());
+                                            System.out.println("   equalsOther? " + inst.args().equalsOther(args));
+                                            System.out.println("   same spell? " + (inst.spell() == spell));
+                                        }
+                                        throw FAILED_EXCEPTION.create();
+                                    }
                                 } else {
-                                    System.out.println("[DEBUG] Spell not found in known spells (no slot)");
-                                    throw FAILED_EXCEPTION.create();
+                                    System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+                                    boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity).stream()
+                                            .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
+
+                                    if (found) {
+                                        data.setSpell(spell, args);
+                                        System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
+                                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                    } else {
+                                        System.out.println("[DEBUG] Spell not found in available spells for entity");
+                                        throw FAILED_EXCEPTION.create();
+                                    }
                                 }
-                            } else {
+                            } else if (item instanceof MinimalPredefinedSpellsItem minimal) {
+                                // Player path
                                 System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
-                                boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity).stream()
+                                boolean found = minimal.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                         .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                 if (found) {
@@ -330,18 +476,52 @@ public class ModCommands {
                                     System.out.println("[DEBUG] Spell not found in available spells for entity");
                                     throw FAILED_EXCEPTION.create();
                                 }
+                            } else {
+                                System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
+                                throw FAILED_EXCEPTION.create();
                             }
-                        } else {
-                            System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
-                            throw FAILED_EXCEPTION.create();
                         }
+                    } else {
+                        throw FAILED_EXCEPTION.create();
                     }
                 } else {
-                    throw FAILED_EXCEPTION.create();
+                    System.out.println("[DEBUG] Spell was null");
+                    throw FAILED_SPELL_EXCEPTION.create();
                 }
             } else {
-                System.out.println("[DEBUG] Spell was null");
-                throw FAILED_SPELL_EXCEPTION.create();
+                if (nbt instanceof NbtCompound || nbt == null) {
+                    var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
+                    var data = new SpellDataStore() {
+                        @Override
+                        public Spell getSpell() {
+                            return spell;
+                        }
+
+                        @Override
+                        public GrabBag getArgs() {
+                            return args;
+                        }
+
+                        @Override
+                        public void setSpell(Spell spell, GrabBag args) {}
+
+                        @Override
+                        public int getCooldown(Spell.SpellCooldown cooldown) {
+                            return 0;
+                        }
+
+                        @Override
+                        public float getCooldownPercent(Spell.SpellCooldown cooldown) {
+                            return 0;
+                        }
+
+                        @Override
+                        public void setCooldown(Spell.SpellCooldown cooldown) {}
+                    };
+                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                } else {
+                    throw FAILED_ARGS_EXCEPTION.create();
+                }
             }
         } else {
             System.out.println("[DEBUG] Entity not holding a valid SpellItem");

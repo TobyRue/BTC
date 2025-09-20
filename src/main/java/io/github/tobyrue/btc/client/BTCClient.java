@@ -15,8 +15,14 @@ import io.github.tobyrue.btc.item.SpellstoneItem;
 import io.github.tobyrue.btc.item.UnlockScrollItem;
 import io.github.tobyrue.btc.packets.QuickElementPayload;
 import io.github.tobyrue.btc.packets.SetElementPayload;
+import io.github.tobyrue.btc.player_data.PlayerSpellData;
+import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
+import io.github.tobyrue.btc.regestries.ModRegistries;
+import io.github.tobyrue.btc.spell.GrabBag;
+import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
+import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.xml.XMLException;
@@ -29,6 +35,7 @@ import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -49,6 +56,8 @@ import net.minecraft.item.CompassItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -137,18 +146,45 @@ public class BTCClient implements ClientModInitializer {
             while (keyBinding.wasPressed()) {
                 assert client.player != null;
                 for (var h : Hand.values()) {
-                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
-                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fireball"), "selectspell btc:fireball", "cast btc:fireball"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell ice block"), "selectspell btc:ice_block", "cast btc:ice_block"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fire storm"), "selectspell btc:fire_storm", "cast btc:fire_storm"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell water wave"), "selectspell btc:water_wave", "cast btc:water_wave"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell earth spike"), "selectspell btc:earth_spike_line", "cast btc:earth_spike_line"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell water blast"), "selectspell btc:water_blast", "cast btc:water_blast"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell dragons breath"), "selectspell btc:dragon_fireball", "cast btc:dragon_fireball"),
-                                new HexagonRadialMenu.SpellValue(Text.translatable("spell clustered wind charge"), "selectspell btc:cluster_wind_charge", "cast btc:cluster_wind_charge")
-                        )), 0, 6));
+                    var item = client.player.getStackInHand(h).getItem();
+                    var stack = client.player.getStackInHand(h);
+                    var world = client.world;
+                    var user = client.player;
+
+                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
+                        var spells = minimal.getAvailableSpells(stack, world, user);
+
+                        // Convert the available spells into SpellValue objects
+                        var spellValues = spells.stream()
+                                .map(inst -> new HexagonRadialMenu.SpellValue(
+                                        Text.translatable("item.btc.spell." + Spell.getId(inst.spell()).getPath()),
+                                        "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+                                        "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+                                ))
+                                .toList();
+
+                        int maxSlots = spellValues.size(); // dynamically adjust max slots
+
+                        client.setScreen(new HexagonRadialMenu(
+                                Text.of("radial menu"),
+                                new ArrayList<>(spellValues),
+                                0, // starting index
+                                maxSlots
+                        ));
                     }
+
+//                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
+//                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fireball"), "selectspell btc:fireball {level:1}", "cast btc:fireball {level:1}"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fireball 2"), "selectspell btc:fireball {level:5}", "cast btc:fireball {level:5}"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell fire storm"), "selectspell btc:fire_storm", "cast btc:fire_storm"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell water wave"), "selectspell btc:water_wave", "cast btc:water_wave"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell earth spike"), "selectspell btc:earth_spike_line", "cast btc:earth_spike_line"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell water blast"), "selectspell btc:water_blast", "cast btc:water_blast"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell dragons breath"), "selectspell btc:dragon_fireball", "cast btc:dragon_fireball"),
+//                                new HexagonRadialMenu.SpellValue(Text.translatable("spell clustered wind charge"), "selectspell btc:cluster_wind_charge", "cast btc:cluster_wind_charge")
+//                        )), 0, 6));
+//                    }
                 }
             }
         });

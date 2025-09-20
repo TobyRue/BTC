@@ -57,19 +57,19 @@ public class FireStaffItem extends MinimalPredefinedSpellsItem {
     @Override
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
         List<Spell.InstancedSpell> s = new ArrayList<>();
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
+        if (entity instanceof PlayerEntity player) {
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
                 put("level", 4);
             }})));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
                 put("duration", 4);
                 put("maxRadius", 16);
                 put("cooldown", 600);
             }})));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.empty()));
         }
         return s;
     }

@@ -56,13 +56,13 @@ public class WaterStaffItem extends MinimalPredefinedSpellsItem {
     @Override
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
         List<Spell.InstancedSpell> s = new ArrayList<>();
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.GEYSER_STEP, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.RIPTIDE, GrabBag.empty()));
+        if (entity instanceof PlayerEntity player) {
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.GEYSER_STEP, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.RIPTIDE, GrabBag.empty()));
         }
         return s;
     }

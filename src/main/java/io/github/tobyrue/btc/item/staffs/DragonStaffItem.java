@@ -56,12 +56,12 @@ public class DragonStaffItem extends MinimalPredefinedSpellsItem {
     @Override
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
         List<Spell.InstancedSpell> s = new ArrayList<>();
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.ENDER_CHEST, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()));
+        if (entity instanceof PlayerEntity player) {
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.ENDER_CHEST, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()));
         }
         return s;
     }

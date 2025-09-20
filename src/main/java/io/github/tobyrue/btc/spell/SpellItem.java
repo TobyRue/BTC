@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
@@ -109,7 +110,11 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
     public void tickCooldowns(ItemStack stack) {
         final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
         final var cooldowns = nbt.getCompound("cooldowns");
-        for (final var key : cooldowns.getKeys()) {
+
+        // copy keys to avoid ConcurrentModificationException
+        final var keys = new ArrayList<>(cooldowns.getKeys());
+
+        for (final var key : keys) {
             final var c = cooldowns.getCompound(key);
             final var value = c.getInt("value") - 1;
             if (value > 0) {
@@ -118,9 +123,9 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
                 cooldowns.remove(key);
             }
         }
+
         stack.set(BTC.SPELL_COMPONENT, NbtComponent.of(nbt));
     }
-
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);

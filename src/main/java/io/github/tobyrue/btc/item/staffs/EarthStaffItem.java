@@ -57,12 +57,12 @@ public class EarthStaffItem extends MinimalPredefinedSpellsItem {
     @Override
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
         List<Spell.InstancedSpell> s = new ArrayList<>();
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_BLOCK, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
+        if (entity instanceof PlayerEntity player) {
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_BLOCK, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:poison");
                 put("includeUser", false);
                 put("onlyHostile", false);

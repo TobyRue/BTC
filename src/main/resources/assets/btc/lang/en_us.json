@@ -258,5 +258,7 @@
   "category.btc.spell": "Spells",
   "key.btc.open_spellbook": "Open Spellbook",
 
-  "tag.item.btc.wrenches": "Wrenches"
+  "tag.item.btc.wrenches": "Wrenches",
+
+  "item.btc.spell._": "Use This For The Template For Spell Translations"
 }

@@ -44,23 +44,15 @@ public class WindStaffItem extends MinimalPredefinedSpellsItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        final var data = this.getSpellDataStore(stack);
-        if (data.getSpell() != null) {
-            tooltip.add(Text.literal(ModRegistries.SPELL.getId(data.getSpell()).toString()));
-        }
-    }
-    @Override
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
         List<Spell.InstancedSpell> s = new ArrayList<>();
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.WIND_CHARGE, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.CLUSTER_WIND_CHARGE, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.STORM_PUSH, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.TEMPESTS_CALL, GrabBag.empty()));
-            addSpellToItem(serverPlayer, s, null, new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.empty()));
+        if (entity instanceof PlayerEntity player) {
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WIND_CHARGE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CLUSTER_WIND_CHARGE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.STORM_PUSH, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.TEMPESTS_CALL, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.empty()));
         }
         return s;
     }

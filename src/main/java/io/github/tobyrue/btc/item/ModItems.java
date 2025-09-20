@@ -83,8 +83,8 @@ public class ModItems {
             new StaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "staff"
     );
-    public static final StaffItem WIND_STAFF = register(
-        new WindStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
+    public static final io.github.tobyrue.btc.item.staffs.WindStaffItem WIND_STAFF = register(
+        new io.github.tobyrue.btc.item.staffs.WindStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "wind_staff"
     );
     public static final StaffItem FIRE_STAFF = register(
