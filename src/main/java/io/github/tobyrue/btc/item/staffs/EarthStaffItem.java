@@ -57,6 +57,7 @@ public class EarthStaffItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:poison");
+                put("name", "poison");
                 put("includeUser", false);
                 put("onlyHostile", false);
                 put("duration", 80);
