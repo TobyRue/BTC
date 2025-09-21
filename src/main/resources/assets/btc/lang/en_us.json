@@ -296,5 +296,6 @@
   "spell.btc.shulker_bullet": "Shulker Bullet",
 
   "spell.btc.potion.normal": "Potion",
-  "spell.btc.potion_area_effect.normal": "Potion Area Effect"
+  "spell.btc.potion_area_effect.normal": "Potion Area Effect",
+  "spell.btc.potion.poison": "Poison Area Effect"
 }

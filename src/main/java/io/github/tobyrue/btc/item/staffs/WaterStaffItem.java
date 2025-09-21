@@ -47,14 +47,6 @@ public class WaterStaffItem extends MinimalPredefinedSpellsItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        final var data = this.getSpellDataStore(stack);
-        if (data.getSpell() != null) {
-            tooltip.add(Text.literal(ModRegistries.SPELL.getId(data.getSpell()).toString()));
-        }
-    }
-    @Override
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
         List<Spell.InstancedSpell> s = new ArrayList<>();
         if (entity instanceof PlayerEntity player) {

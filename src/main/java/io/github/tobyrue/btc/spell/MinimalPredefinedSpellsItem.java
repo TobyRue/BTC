@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -83,8 +84,10 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
         super.appendTooltip(stack, context, tooltip, type);
         final var data = this.getSpellDataStore(stack);
         if (data.getSpell() != null) {
-            tooltip.add(Text.translatable(data.getSpell().getName(data.getArgs()).toString().replaceAll(".*'([^']+)'.*", "$1")));
+            tooltip.add(Text.translatable(data.getSpell().getName(data.getArgs()).toString().replaceAll(".*'([^']+)'.*", "$1")).formatted(this.getSpellTextColor()));
         }
     }
-
+    private Formatting getSpellTextColor() {
+        return Formatting.WHITE;
+    }
 }
