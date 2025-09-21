@@ -74,7 +74,7 @@ public class FireStormSpell extends Spell {
 
     @Override
     public Text getName(final GrabBag args) {
-        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("maxRadius") > 8 ? (args.getInt("maxRadius") == 8 ? "normal" : "strong") : "concentrated"));
+        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("maxRadius") >= 8 ? (args.getInt("maxRadius") == 8 ? "normal" : "strong") : "concent rated"));
     }
 
     @Override

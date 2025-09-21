@@ -297,5 +297,5 @@
 
   "spell.btc.potion.normal": "Potion",
   "spell.btc.potion_area_effect.normal": "Potion Area Effect",
-  "spell.btc.potion.poison": "Poison Area Effect"
+  "spell.btc.potion_area_effect.poison": "Poison Area Effect"
 }

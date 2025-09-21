@@ -154,7 +154,6 @@ public class BTCClient implements ClientModInitializer {
                     if (item instanceof MinimalPredefinedSpellsItem minimal) {
                         var spells = minimal.getAvailableSpells(stack, world, user);
 
-                        final var data = minimal.getSpellDataStore(stack);
                         // Convert the available spells into SpellValue objects
                         var spellValues = spells.stream()
                                 .map(inst -> {
