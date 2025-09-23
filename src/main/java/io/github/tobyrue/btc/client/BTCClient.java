@@ -1,64 +1,39 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.Codex;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
-import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
-import io.github.tobyrue.btc.component.UnlockSpellComponent;
+import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefix;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.ScreenTestItem;
 import io.github.tobyrue.btc.item.SpellstoneItem;
 import io.github.tobyrue.btc.item.UnlockScrollItem;
-import io.github.tobyrue.btc.packets.QuickElementPayload;
-import io.github.tobyrue.btc.packets.SetElementPayload;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
-import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
-import io.github.tobyrue.btc.util.EnumHelper;
-import io.github.tobyrue.xml.XMLException;
-import io.github.tobyrue.xml.XMLParser;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.option.KeybindsScreen;
-import net.minecraft.client.gui.screen.option.MouseOptionsScreen;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.CompassItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -67,7 +42,6 @@ import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -151,33 +125,86 @@ public class BTCClient implements ClientModInitializer {
                     var world = client.world;
                     var user = client.player;
 
-                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
+                    /*if (item instanceof MinimalPredefinedSpellsItem minimal) {
                         var spells = minimal.getAvailableSpells(stack, world, user);
 
-                        // Convert the available spells into SpellValue objects
                         var spellValues = spells.stream()
                                 .map(inst -> {
-                                    // Get the raw string (includes translation{key='...', args=[...]})
                                     String raw = inst.spell().getName(inst.args()).toString();
 
-                                    // Extract just the translation key with regex
                                     String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
-                                    return new HexagonRadialMenu.SpellValue(
-                                            Text.translatable(key), // pass inst.args() so it renders correctly
+                                    return new HexagonRadialMenu.Value(
+                                            Text.translatable(key),
                                             "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
                                             "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
                                     );
                                 })
                                 .toList();
 
-                        int maxSlots = spellValues.size(); // dynamically adjust max slots
+                        int maxSlots = spellValues.size();
 
                         client.setScreen(new HexagonRadialMenu(
                                 Text.of("radial menu"),
                                 new ArrayList<>(spellValues),
                                 0, // starting index
                                 maxSlots
+                        ));
+                    } */
+
+
+                    //TODO
+                    MinecraftServer server = MinecraftClient.getInstance().getServer().getOverworld().getServer();
+
+                    SpellPersistentState spellState = SpellPersistentState.get(server);
+                    PlayerSpellData playerData = spellState.getPlayerData(client.player);
+
+                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
+                        var spells = PredefinedSpellsItem.getKnownSpells(playerData);
+
+                        // Convert available spells into PrefixValue objects
+                        var spellValues = spells.stream()
+                                .map(inst -> {
+
+                                    // Get raw string (translation{key='...', args=[...]})
+                                    String raw = inst.spell().getName(inst.args()).toString();
+
+                                    // Extract just the translation key with regex
+                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+
+                                    // Build the base command prefix
+                                    String spellId = Spell.getId(inst.spell()).toString();
+                                    NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
+                                    String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
+
+                                    // Generate suffix values 1..maxKnown
+                                    int maxKnown = spells.size(); // <-- adjust if different method
+                                    List<HexagonRadialMenuWithPrefix.HexagonRadialMenuWithSuffix.SuffixValue> suffixValues =
+                                            java.util.stream.IntStream.rangeClosed(1, maxKnown)
+                                                    .mapToObj(i -> new HexagonRadialMenuWithPrefix.HexagonRadialMenuWithSuffix.SuffixValue(
+                                                            Text.of(String.valueOf(i)),
+                                                            String.valueOf(i), // suffixHover
+                                                            String.valueOf(i)  // suffixClick
+                                                    ))
+                                                    .toList();
+
+                                    return new HexagonRadialMenuWithPrefix.PrefixValue(
+                                            Text.translatable(key, inst.args()), // display
+                                            commandPrefix,  // hover command (before suffix)
+                                            commandPrefix,  // click command (before suffix)
+                                            suffixValues    // suffix menu options
+                                    );
+                                })
+                                .toList();
+
+                        int maxSlots = spellValues.size();
+
+                        client.setScreen(new HexagonRadialMenuWithPrefix(
+                                Text.of("radial menu"),
+                                new ArrayList<>(spellValues),
+                                0,
+                                maxSlots,
+                                keyBinding
                         ));
                     }
 

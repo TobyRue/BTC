@@ -5,10 +5,9 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.mixin.KeyBindingAccessor;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -25,21 +24,25 @@ public class HexagonRadialMenu extends Screen {
     private int centerX;
     private int centerY;
 
-    private final List<SpellValue> spells; // list of spell values provided
+    private final List<Value> spells; // list of spell values provided
 
     private final int start;
     private final int end;
+    private final KeyBinding key;
+
+
     private DoubleInt mouse;
 
-    public record SpellValue(Text display, String commandHover, String commandClick) {}
+    public record Value(Text display, String commandHover, String commandClick) {}
     protected record DoubleInt(int mouseX, int mouseY) {}
 
-    public HexagonRadialMenu(Text title, List<SpellValue> spells, int start, int end) {
+    public HexagonRadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
+        this.key = key;
     }
 
     @Override
@@ -54,13 +57,13 @@ public class HexagonRadialMenu extends Screen {
                 int newStart = Math.max(0, start - 6);
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd));
+                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + 6;
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd));
+                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key));
             }
         });
     }
@@ -69,10 +72,10 @@ public class HexagonRadialMenu extends Screen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (this.client == null || this.client.player == null) return false;
 
-        if (keyCode == ((KeyBindingAccessor) BTCClient.keyBinding).getBoundKey().getCode()) {
+        if (keyCode == ((KeyBindingAccessor) key).getBoundKey().getCode()) {
             int hovered = getHoveredHex(mouse.mouseX, mouse.mouseY);
             if (hovered >= 0 && hovered + start < spells.size()) {
-                SpellValue value = spells.get(start + hovered);
+                Value value = spells.get(start + hovered);
                 client.player.networkHandler.sendCommand(value.commandHover());
                 System.out.println("Key release hover command: " + value.commandHover());
             }
@@ -113,7 +116,7 @@ public class HexagonRadialMenu extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
         if (sector >= 0 && sector + start < spells.size()) {
-            SpellValue value = spells.get(sector + start);
+            Value value = spells.get(sector + start);
             System.out.println("Clicked: " + value.commandClick());
             client.player.networkHandler.sendCommand(value.commandClick());
             this.close();
@@ -180,7 +183,7 @@ public class HexagonRadialMenu extends Screen {
         // Draw text for spells[start..end)
         int radius = 60;
         for (int i = 0; i < (end - start); i++) {
-            SpellValue spell = spells.get(start + i);
+            Value spell = spells.get(start + i);
             double angleRad = Math.toRadians(i * 60 - 60);
             int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
             int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));

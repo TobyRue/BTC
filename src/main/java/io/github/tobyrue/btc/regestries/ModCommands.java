@@ -12,6 +12,7 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.NbtElementArgumentType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
@@ -99,7 +100,6 @@ public class ModCommands {
                                                             MinecraftServer server = serverPlayer.getServer();
                                                             SpellPersistentState spellState = SpellPersistentState.get(server);
                                                             PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
-
                                                             List<String> argSuggestions = new ArrayList<>(
                                                                     PredefinedSpellsItem.getKnownSpells(playerData).stream()
                                                                             .filter(inst -> inst.spell() == chosenSpell)
