@@ -1,9 +1,10 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefixNoHover;
+import io.github.tobyrue.btc.client.screen.HexagonValues;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
-import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
@@ -19,10 +20,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModPackets {
 
@@ -30,12 +33,14 @@ public class ModPackets {
     public static final Identifier QUICK_SPELL_PACKET_ID = BTC.identifierOf("quick_spell");
     public static final Identifier ADVANCEMENT_SPELL = BTC.identifierOf("advancement");
     public static final Identifier ADVANCEMENT_RESPONSE_SPELL = BTC.identifierOf("advancement_response");
+    public static final Identifier OPEN_FAV = BTC.identifierOf("open_favorite");
 
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
 
 
         ServerPlayNetworking.registerGlobalReceiver(
@@ -119,5 +124,62 @@ public class ModPackets {
 
             context.client().execute(() -> AdvancementUtils.advancementCache.put(adv, has));
         });
+        ClientPlayNetworking.registerGlobalReceiver(
+                OpenFavoritePayload.ID, (payload, context) -> {
+                    var client = context.client();
+                    var player = context.player();
+                    var stack = player.getMainHandStack();
+                    var item = stack.getItem();
+                    var server = client.getServer().getOverworld().getServer();
+
+                    SpellPersistentState spellState = SpellPersistentState.get(server);
+                    PlayerSpellData playerData = spellState.getPlayerData(client.player);
+
+                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
+                        var spells = PredefinedSpellsItem.getKnownSpells(playerData);
+
+                        // Convert available spells into PrefixValue objects
+                        var spellValues = spells.stream()
+                                .map(inst -> {
+
+                                    // Get raw string (translation{key='...', args=[...]})
+                                    String raw = inst.spell().getName(inst.args()).toString();
+
+                                    // Extract just the translation key with regex
+                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+
+                                    // Build the base command prefix
+                                    String spellId = Spell.getId(inst.spell()).toString();
+                                    NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
+                                    String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
+
+                                    // Generate suffix values 1..maxKnown
+                                    int maxKnown = spells.size(); // <-- adjust if different method
+                                    List<SuffixValueNoHover> suffixValues =
+                                            java.util.stream.IntStream.rangeClosed(1, maxKnown)
+                                                    .mapToObj(i -> new SuffixValueNoHover(
+                                                            Text.of(String.valueOf(i)),
+                                                            String.valueOf(i)  // suffixClick
+                                                    ))
+                                                    .toList();
+
+                                    return new PrefixValueNoHover(
+                                            Text.translatable(key, inst.args()), // display
+                                            commandPrefix,  // click command (before suffix)
+                                            suffixValues    // suffix menu options
+                                    );
+                                })
+                                .toList();
+
+                        int maxSlots = spellValues.size();
+
+                        client.setScreen(new HexagonRadialMenuWithPrefixNoHover(
+                                Text.of("radial menu"),
+                                new ArrayList<>(spellValues),
+                                0,
+                                maxSlots
+                        ));
+                    }
+                });
     }
 }

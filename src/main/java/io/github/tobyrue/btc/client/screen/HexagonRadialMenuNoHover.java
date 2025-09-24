@@ -2,18 +2,18 @@ package io.github.tobyrue.btc.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.screen.HexagonValues.*;
 import io.github.tobyrue.btc.mixin.KeyBindingAccessor;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBinding;
+import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class HexagonRadialMenu extends Screen {
+public class HexagonRadialMenuNoHover extends Screen {
     private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
     private static final Identifier BACKGROUND_STONE = BTC.identifierOf("textures/gui/honeycomb_stone.png");
 
@@ -23,32 +23,27 @@ public class HexagonRadialMenu extends Screen {
     private int centerX;
     private int centerY;
 
-    private final List<Value> spells; // list of spell values provided
+    private final List<ValueNoHover> spells; // list of spell values provided
 
     private final int start;
     private final int end;
-    private final KeyBinding key;
 
+    private HexagonValues.DoubleInt mouse;
 
-    private DoubleInt mouse;
-
-    public HexagonRadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key) {
+    public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells, int start, int end) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
-        this.key = key;
     }
-
-    public HexagonRadialMenu(Text title, List<Value> spells, KeyBinding key) {
+    public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells) {
         super(title);
+        // only keep first 6 if longer
         this.spells = spells;
         this.start = 0;
-        this.end = 6;
-        this.key = key;
+        this.end = 6; // clamp to size
     }
-
     @Override
     protected void init() {
         super.init();
@@ -61,39 +56,20 @@ public class HexagonRadialMenu extends Screen {
                 int newStart = Math.max(0, start - 6);
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key));
+                client.setScreen(new HexagonRadialMenuNoHover(Text.of("radial"), spells, newStart, newEnd));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + 6;
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key));
+                client.setScreen(new HexagonRadialMenuNoHover(Text.of("radial"), spells, newStart, newEnd));
             }
         });
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (this.client == null || this.client.player == null) return false;
-
-        if (keyCode == ((KeyBindingAccessor) key).getBoundKey().getCode()) {
-            int hovered = getHoveredHex(mouse.mouseX(), mouse.mouseY());
-            if (hovered >= 0 && hovered + start < spells.size()) {
-                Value value = spells.get(start + hovered);
-                client.player.networkHandler.sendCommand(value.commandHover());
-                System.out.println("Key release hover command: " + value.commandHover());
-            }
-            close();
-            return true;
-        }
-
-        return super.keyReleased(keyCode, scanCode, modifiers);
-    }
-
-
-    @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        mouse = new DoubleInt(mouseX, mouseY);
+        mouse = new HexagonValues.DoubleInt(mouseX, mouseY);
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -120,7 +96,7 @@ public class HexagonRadialMenu extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
         if (sector >= 0 && sector + start < spells.size()) {
-            Value value = spells.get(sector + start);
+            ValueNoHover value = spells.get(sector + start);
             System.out.println("Clicked: " + value.commandClick());
             client.player.networkHandler.sendCommand(value.commandClick());
             this.close();
@@ -187,7 +163,7 @@ public class HexagonRadialMenu extends Screen {
         // Draw text for spells[start..end)
         int radius = 60;
         for (int i = 0; i < (end - start); i++) {
-            Value spell = spells.get(start + i);
+            ValueNoHover spell = spells.get(start + i);
             double angleRad = Math.toRadians(i * 60 - 60);
             int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
             int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));

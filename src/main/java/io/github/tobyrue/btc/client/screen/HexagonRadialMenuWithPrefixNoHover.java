@@ -2,20 +2,17 @@ package io.github.tobyrue.btc.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.BTCClient;
-import io.github.tobyrue.btc.mixin.KeyBindingAccessor;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import io.github.tobyrue.btc.client.screen.HexagonValues.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
 
-public class HexagonRadialMenuWithPrefix extends Screen {
+public class HexagonRadialMenuWithPrefixNoHover extends Screen {
     private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
     private static final Identifier BACKGROUND_STONE = BTC.identifierOf("textures/gui/honeycomb_stone.png");
 
@@ -25,21 +22,26 @@ public class HexagonRadialMenuWithPrefix extends Screen {
     private int centerX;
     private int centerY;
 
-    private final List<PrefixValue> spells; // list of spell values provided
+    private final List<PrefixValueNoHover> spells; // list of spell values provided
 
     private final int start;
     private final int end;
-    private final KeyBinding key;
 
     private DoubleInt mouse;
-    
-    public HexagonRadialMenuWithPrefix(Text title, List<PrefixValue> spells, int start, int end, KeyBinding key) {
+
+    public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells, int start, int end) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
-        this.key = key;
+    }
+
+    public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells) {
+        super(title);
+        this.spells = spells;
+        this.start = 0;
+        this.end = 6;
     }
 
     @Override
@@ -54,54 +56,15 @@ public class HexagonRadialMenuWithPrefix extends Screen {
                 int newStart = Math.max(0, start - 6);
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuWithPrefix(Text.of("radial"), spells, newStart, newEnd, key));
+                client.setScreen(new HexagonRadialMenuWithPrefixNoHover(Text.of("radial"), spells, newStart, newEnd));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + 6;
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuWithPrefix(Text.of("radial"), spells, newStart, newEnd, key));
+                client.setScreen(new HexagonRadialMenuWithPrefixNoHover(Text.of("radial"), spells, newStart, newEnd));
             }
         });
-    }
-
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (this.client == null || this.client.player == null) return false;
-
-        if (keyCode == ((KeyBindingAccessor) key).getBoundKey().getCode()) {
-            int hovered = getHoveredHex(mouse.mouseX(), mouse.mouseY());
-            if (hovered >= 0 && hovered + start < spells.size()) {
-                PrefixValue value = spells.get(start + hovered);
-
-                close();
-
-                client.setScreen(new HexagonRadialMenuWithSuffix(
-                        Text.of("radial"),
-                        value.commandHover(),
-                        spells.stream()
-                                .flatMap(inst -> inst.suffixValues().stream()
-                                        .map(instTwo -> new SuffixValue(
-                                                instTwo.display(),
-                                                instTwo.suffixHover(),
-                                                instTwo.suffixClick()
-                                        ))
-                                )
-                                .toList(),
-                        0,
-                        value.suffixValues().size(),
-                        key
-                ));
-
-                return true;
-            }
-
-            close();
-
-            return true;
-        }
-
-        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
 
@@ -134,25 +97,23 @@ public class HexagonRadialMenuWithPrefix extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
         if (sector >= 0 && sector + start < spells.size()) {
-            PrefixValue value = spells.get(sector + start);
+            PrefixValueNoHover value = spells.get(sector + start);
 
             this.close();
 
-            client.setScreen(new HexagonRadialMenuWithSuffix(
+            client.setScreen(new HexagonRadialMenuWithSuffixNoHover(
                     Text.of("radial"),
                     value.commandClick(),
                     spells.stream()
                             .flatMap(inst -> inst.suffixValues().stream()
-                                    .map(instTwo -> new SuffixValue(
+                                    .map(instTwo -> new SuffixValueNoHover(
                                             instTwo.display(),
-                                            instTwo.suffixHover(),
                                             instTwo.suffixClick()
                                     ))
                             )
                             .toList(),
                     0,
-                    value.suffixValues().size(),
-                    key
+                    value.suffixValues().size()
             ));
 
             return true;
@@ -218,7 +179,7 @@ public class HexagonRadialMenuWithPrefix extends Screen {
         // Draw text for spells[start..end)
         int radius = 60;
         for (int i = 0; i < (end - start); i++) {
-            PrefixValue spell = spells.get(start + i);
+            PrefixValueNoHover spell = spells.get(start + i);
             double angleRad = Math.toRadians(i * 60 - 60);
             int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
             int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
@@ -267,8 +228,7 @@ public class HexagonRadialMenuWithPrefix extends Screen {
         }
     }
 
-
-    public static class HexagonRadialMenuWithSuffix extends Screen {
+    public static class HexagonRadialMenuWithSuffixNoHover extends Screen {
         private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
         private static final Identifier BACKGROUND_STONE = BTC.identifierOf("textures/gui/honeycomb_stone.png");
 
@@ -280,31 +240,20 @@ public class HexagonRadialMenuWithPrefix extends Screen {
 
 
         private final String prefixCommand;
-        private final List<SuffixValue> spells; // list of spell values provided
+        private final List <SuffixValueNoHover> spells; // list of spell values provided
         private final int start;
         private final int end;
-        private final KeyBinding key;
 
         private DoubleInt mouse;
-        
-        public HexagonRadialMenuWithSuffix(Text title, String prefixCommand, List<SuffixValue> spells, int start, int end, KeyBinding key) {
+
+        public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells, int start, int end) {
             super(title);
+            // only keep first 6 if longer
 
             this.prefixCommand = prefixCommand;
             this.spells = spells;
             this.start = start;
             this.end = end; // clamp to size
-            this.key = key;
-        }
-
-        public HexagonRadialMenuWithSuffix(Text title, String prefixCommand, List<SuffixValue> spells, KeyBinding key) {
-            super(title);
-
-            this.prefixCommand = prefixCommand;
-            this.spells = spells;
-            this.start = 0;
-            this.end = 6; // clamp to size
-            this.key = key;
         }
 
         @Override
@@ -319,32 +268,15 @@ public class HexagonRadialMenuWithPrefix extends Screen {
                     int newStart = Math.max(0, start - 6);
                     int newEnd = Math.min(newStart + 6, spells.size());
                     close();
-                    client.setScreen(new HexagonRadialMenuWithSuffix(Text.of("radial"), prefixCommand, spells, newStart, newEnd, key));
+                    client.setScreen(new HexagonRadialMenuWithSuffixNoHover(Text.of("radial"), prefixCommand, spells, newStart, newEnd));
                 }
                 if (vert < 0 && end < spells.size()) {
                     int newStart = start + 6;
                     int newEnd = Math.min(newStart + 6, spells.size());
                     close();
-                    client.setScreen(new HexagonRadialMenuWithSuffix(Text.of("radial"), prefixCommand, spells, newStart, newEnd, key));
+                    client.setScreen(new HexagonRadialMenuWithSuffixNoHover(Text.of("radial"), prefixCommand, spells, newStart, newEnd));
                 }
             });
-        }
-
-        @Override
-        public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-            if (this.client == null || this.client.player == null) return false;
-
-            if (keyCode == ((KeyBindingAccessor) key).getBoundKey().getCode()) {
-                int hovered = getHoveredHex(mouse.mouseX(), mouse.mouseY());
-                if (hovered >= 0 && hovered + start < spells.size()) {
-                    SuffixValue value = spells.get(start + hovered);
-                    client.player.networkHandler.sendCommand(prefixCommand + value.suffixHover());
-                }
-                close();
-                return true;
-            }
-
-            return super.keyReleased(keyCode, scanCode, modifiers);
         }
 
 
@@ -377,7 +309,7 @@ public class HexagonRadialMenuWithPrefix extends Screen {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             int sector = getHoveredHex((int) mouseX, (int) mouseY);
             if (sector >= 0 && sector + start < spells.size()) {
-                SuffixValue value = spells.get(sector + start);
+                SuffixValueNoHover value = spells.get(sector + start);
                 client.player.networkHandler.sendCommand(prefixCommand + value.suffixClick());
                 this.close();
                 return true;
@@ -443,7 +375,7 @@ public class HexagonRadialMenuWithPrefix extends Screen {
             // Draw text for spells[start..end)
             int radius = 60;
             for (int i = 0; i < (end - start); i++) {
-                SuffixValue spell = spells.get(start + i);
+                SuffixValueNoHover spell = spells.get(start + i);
                 double angleRad = Math.toRadians(i * 60 - 60);
                 int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
                 int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));

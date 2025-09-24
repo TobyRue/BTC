@@ -5,13 +5,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.BTCClient;
+import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefix;
+import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefixNoHover;
+import io.github.tobyrue.btc.packets.OpenFavoritePayload;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.*;
 import io.github.tobyrue.xml.util.Nullable;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.NbtElementArgumentType;
@@ -28,10 +32,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import io.github.tobyrue.btc.client.screen.HexagonValues.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static net.minecraft.server.command.CommandManager.*;
 
@@ -46,7 +50,7 @@ public class ModCommands {
         }
         return builder.buildFuture();
     };
-
+//TODO MAKE A KEYBIND THAT DOES NOT HAVE KEY HOVERING RELEASE!!!
     public static void initialize() {
         ArgumentTypeRegistry.registerArgumentType(
                 BTC.identifierOf("spell"),
@@ -229,6 +233,16 @@ public class ModCommands {
                                         )
                         )
         ));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
+                literal("openfavoritingspells").executes(context -> {
+                    var source = context.getSource();
+                    if (source.isExecutedByPlayer()) {
+                        ServerPlayNetworking.send(source.getPlayer(), new OpenFavoritePayload(""));
+                    }
+                    return 1;
+                })
+        ));
+
     }
 
     private static int selectSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt, @Nullable final Integer slot) throws CommandSyntaxException {

@@ -125,88 +125,38 @@ public class BTCClient implements ClientModInitializer {
                     var world = client.world;
                     var user = client.player;
 
-                    /*if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                        var spells = minimal.getAvailableSpells(stack, world, user);
-
-                        var spellValues = spells.stream()
-                                .map(inst -> {
-                                    String raw = inst.spell().getName(inst.args()).toString();
-
-                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
-
-                                    return new HexagonRadialMenu.Value(
-                                            Text.translatable(key),
-                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
-                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
-                                    );
-                                })
-                                .toList();
-
-                        int maxSlots = spellValues.size();
-
-                        client.setScreen(new HexagonRadialMenu(
-                                Text.of("radial menu"),
-                                new ArrayList<>(spellValues),
-                                0, // starting index
-                                maxSlots
-                        ));
-                    } */
+//                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
+//                        var spells = minimal.getAvailableSpells(stack, world, user);
+//
+//                        var spellValues = spells.stream()
+//                                .map(inst -> {
+//                                    String raw = inst.spell().getName(inst.args()).toString();
+//
+//                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+//
+//                                    return new HexagonRadialMenu.Value(
+//                                            Text.translatable(key),
+//                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+//                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+//                                    );
+//                                })
+//                                .toList();
+//
+//                        int maxSlots = spellValues.size();
+//
+//                        client.setScreen(new HexagonRadialMenu(
+//                                Text.of("radial menu"),
+//                                new ArrayList<>(spellValues),
+//                                0, // starting index
+//                                maxSlots,
+//                                keyBinding
+//                        ));
+//                    }
 
 
                     //TODO
                     MinecraftServer server = MinecraftClient.getInstance().getServer().getOverworld().getServer();
 
-                    SpellPersistentState spellState = SpellPersistentState.get(server);
-                    PlayerSpellData playerData = spellState.getPlayerData(client.player);
-
-                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                        var spells = PredefinedSpellsItem.getKnownSpells(playerData);
-
-                        // Convert available spells into PrefixValue objects
-                        var spellValues = spells.stream()
-                                .map(inst -> {
-
-                                    // Get raw string (translation{key='...', args=[...]})
-                                    String raw = inst.spell().getName(inst.args()).toString();
-
-                                    // Extract just the translation key with regex
-                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
-
-                                    // Build the base command prefix
-                                    String spellId = Spell.getId(inst.spell()).toString();
-                                    NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
-                                    String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
-
-                                    // Generate suffix values 1..maxKnown
-                                    int maxKnown = spells.size(); // <-- adjust if different method
-                                    List<HexagonRadialMenuWithPrefix.HexagonRadialMenuWithSuffix.SuffixValue> suffixValues =
-                                            java.util.stream.IntStream.rangeClosed(1, maxKnown)
-                                                    .mapToObj(i -> new HexagonRadialMenuWithPrefix.HexagonRadialMenuWithSuffix.SuffixValue(
-                                                            Text.of(String.valueOf(i)),
-                                                            String.valueOf(i), // suffixHover
-                                                            String.valueOf(i)  // suffixClick
-                                                    ))
-                                                    .toList();
-
-                                    return new HexagonRadialMenuWithPrefix.PrefixValue(
-                                            Text.translatable(key, inst.args()), // display
-                                            commandPrefix,  // hover command (before suffix)
-                                            commandPrefix,  // click command (before suffix)
-                                            suffixValues    // suffix menu options
-                                    );
-                                })
-                                .toList();
-
-                        int maxSlots = spellValues.size();
-
-                        client.setScreen(new HexagonRadialMenuWithPrefix(
-                                Text.of("radial menu"),
-                                new ArrayList<>(spellValues),
-                                0,
-                                maxSlots,
-                                keyBinding
-                        ));
-                    }
 
 //                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
 //                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(
