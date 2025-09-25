@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HexagonRadialMenu extends Screen {
-    private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
-    private static final Identifier BACKGROUND_STONE = BTC.identifierOf("textures/gui/honeycomb_stone.png");
 
     private static final int TEX_WIDTH = 603;
     private static final int TEX_HEIGHT = 582;
@@ -27,10 +25,31 @@ public class HexagonRadialMenu extends Screen {
 
     private final int start;
     private final int end;
+    private final RadialIdentifiers radialIdentifiers;
+
     private final KeyBinding key;
 
 
     private DoubleInt mouse;
+
+    public HexagonRadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key, RadialIdentifiers radialIdentifiers) {
+        super(title);
+        // only keep first 6 if longer
+        this.spells = spells;
+        this.start = start;
+        this.end = end; // clamp to size
+        this.radialIdentifiers = radialIdentifiers;
+        this.key = key;
+    }
+
+    public HexagonRadialMenu(Text title, List<Value> spells, KeyBinding key, RadialIdentifiers radialIdentifiers) {
+        super(title);
+        this.spells = spells;
+        this.radialIdentifiers = radialIdentifiers;
+        this.start = 0;
+        this.end = 6;
+        this.key = key;
+    }
 
     public HexagonRadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key) {
         super(title);
@@ -38,12 +57,14 @@ public class HexagonRadialMenu extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
         this.key = key;
     }
 
     public HexagonRadialMenu(Text title, List<Value> spells, KeyBinding key) {
         super(title);
         this.spells = spells;
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
         this.start = 0;
         this.end = 6;
         this.key = key;
@@ -61,13 +82,13 @@ public class HexagonRadialMenu extends Screen {
                 int newStart = Math.max(0, start - 6);
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key));
+                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key, radialIdentifiers));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + 6;
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key));
+                client.setScreen(new HexagonRadialMenu(Text.of("radial"), spells, newStart, newEnd, key, radialIdentifiers));
             }
         });
     }
@@ -154,7 +175,7 @@ public class HexagonRadialMenu extends Screen {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         context.drawTexture(
-                BACKGROUND,
+                radialIdentifiers.backgroundOutlineTexture(),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
@@ -164,7 +185,7 @@ public class HexagonRadialMenu extends Screen {
         // Draw overlay with transparency
         RenderSystem.setShaderColor(1f, 1f, 1f, 200f / 255f); // ~70% opacity
         context.drawTexture(
-                BACKGROUND_STONE,
+                radialIdentifiers.backgroundTexture(),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
@@ -172,7 +193,7 @@ public class HexagonRadialMenu extends Screen {
         );
         RenderSystem.setShaderColor(1f, 1f, 1f, 150f / 255f); // ~70% opacity
         context.drawTexture(
-                BTC.identifierOf("textures/gui/honeycomb_sector_" + (sector + 1) + ".png"),
+                Identifier.of(radialIdentifiers.highlightedShapeTexture().getNamespace(),radialIdentifiers.highlightedShapeTexture().getPath() + (sector + 1) + ".png"),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
@@ -185,7 +206,7 @@ public class HexagonRadialMenu extends Screen {
         context.getMatrices().pop();
 
         // Draw text for spells[start..end)
-        int radius = 60;
+        int radius = radialIdentifiers.radius();
         for (int i = 0; i < (end - start); i++) {
             Value spell = spells.get(start + i);
             double angleRad = Math.toRadians(i * 60 - 60);

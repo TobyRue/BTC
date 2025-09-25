@@ -40,6 +40,7 @@ import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
+import io.github.tobyrue.btc.client.screen.HexagonValues.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,38 +126,33 @@ public class BTCClient implements ClientModInitializer {
                     var world = client.world;
                     var user = client.player;
 
-//                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
-//                        var spells = minimal.getAvailableSpells(stack, world, user);
-//
-//                        var spellValues = spells.stream()
-//                                .map(inst -> {
-//                                    String raw = inst.spell().getName(inst.args()).toString();
-//
-//                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
-//
-//                                    return new HexagonRadialMenu.Value(
-//                                            Text.translatable(key),
-//                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
-//                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
-//                                    );
-//                                })
-//                                .toList();
-//
-//                        int maxSlots = spellValues.size();
-//
-//                        client.setScreen(new HexagonRadialMenu(
-//                                Text.of("radial menu"),
-//                                new ArrayList<>(spellValues),
-//                                0, // starting index
-//                                maxSlots,
-//                                keyBinding
-//                        ));
-//                    }
+                    if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
+                        var spells = minimal.getAvailableSpells(stack, world, user);
 
+                        var spellValues = spells.stream()
+                                .map(inst -> {
+                                    String raw = inst.spell().getName(inst.args()).toString();
 
-                    //TODO
-                    MinecraftServer server = MinecraftClient.getInstance().getServer().getOverworld().getServer();
+                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
+                                    return new Value(
+                                            Text.translatable(key),
+                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+                                    );
+                                })
+                                .toList();
+
+                        int maxSlots = spellValues.size();
+
+                        client.setScreen(new HexagonRadialMenu(
+                                Text.of("radial menu"),
+                                new ArrayList<>(spellValues),
+                                0, // starting index
+                                maxSlots,
+                                keyBinding
+                        ));
+                    }
 
 //                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
 //                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(

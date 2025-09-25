@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefixNoHover;
-import io.github.tobyrue.btc.client.screen.HexagonValues;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -174,7 +173,7 @@ public class ModPackets {
                         int maxSlots = spellValues.size();
 
                         client.setScreen(new HexagonRadialMenuWithPrefixNoHover(
-                                Text.of("radial menu"),
+                                Text.of("radial"),
                                 new ArrayList<>(spellValues),
                                 0,
                                 maxSlots

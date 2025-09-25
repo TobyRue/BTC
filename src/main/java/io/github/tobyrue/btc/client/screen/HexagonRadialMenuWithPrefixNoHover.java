@@ -13,8 +13,6 @@ import java.util.List;
 import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
 
 public class HexagonRadialMenuWithPrefixNoHover extends Screen {
-    private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
-    private static final Identifier BACKGROUND_STONE = BTC.identifierOf("textures/gui/honeycomb_stone.png");
 
     private static final int TEX_WIDTH = 603;
     private static final int TEX_HEIGHT = 582;
@@ -26,8 +24,24 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
 
     private final int start;
     private final int end;
+    private final RadialIdentifiers radialIdentifiers;
 
-    private DoubleInt mouse;
+    public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells, int start, int end, RadialIdentifiers radialIdentifiers) {
+        super(title);
+        // only keep first 6 if longer
+        this.spells = spells;
+        this.start = start;
+        this.end = end; // clamp to size
+        this.radialIdentifiers = radialIdentifiers;
+    }
+
+    public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells, RadialIdentifiers radialIdentifiers) {
+        super(title);
+        this.spells = spells;
+        this.radialIdentifiers = radialIdentifiers;
+        this.start = 0;
+        this.end = 6;
+    }
 
     public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells, int start, int end) {
         super(title);
@@ -35,11 +49,13 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
     }
 
     public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells) {
         super(title);
         this.spells = spells;
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
         this.start = 0;
         this.end = 6;
     }
@@ -56,13 +72,13 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                 int newStart = Math.max(0, start - 6);
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuWithPrefixNoHover(Text.of("radial"), spells, newStart, newEnd));
+                client.setScreen(new HexagonRadialMenuWithPrefixNoHover(Text.of("radial"), spells, newStart, newEnd, radialIdentifiers));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + 6;
                 int newEnd = Math.min(newStart + 6, spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuWithPrefixNoHover(Text.of("radial"), spells, newStart, newEnd));
+                client.setScreen(new HexagonRadialMenuWithPrefixNoHover(Text.of("radial"), spells, newStart, newEnd, radialIdentifiers));
             }
         });
     }
@@ -70,7 +86,6 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        mouse = new DoubleInt(mouseX, mouseY);
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -113,8 +128,9 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                             )
                             .toList(),
                     0,
-                    value.suffixValues().size()
-            ));
+                    value.suffixValues().size(),
+                    radialIdentifiers
+                    ));
 
             return true;
         }
@@ -144,9 +160,9 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         // Draw base background
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundOutlineTransparency() / 255);
         context.drawTexture(
-                BACKGROUND,
+                radialIdentifiers.backgroundOutlineTexture(),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
@@ -154,17 +170,17 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         );
 
         // Draw overlay with transparency
-        RenderSystem.setShaderColor(1f, 1f, 1f, 200f / 255f); // ~70% opacity
+        RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundTransparency() / 255f); // ~70% opacity
         context.drawTexture(
-                BACKGROUND_STONE,
+                radialIdentifiers.backgroundTexture(),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
                 imageWidth, imageHeight
         );
-        RenderSystem.setShaderColor(1f, 1f, 1f, 150f / 255f); // ~70% opacity
+        RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.highlightedShapeTransparency() / 255f); // ~70% opacity
         context.drawTexture(
-                BTC.identifierOf("textures/gui/honeycomb_sector_" + (sector + 1) + ".png"),
+                Identifier.of(radialIdentifiers.highlightedShapeTexture().getNamespace(),radialIdentifiers.highlightedShapeTexture().getPath() + (sector + 1) + ".png"),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
@@ -177,7 +193,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         context.getMatrices().pop();
 
         // Draw text for spells[start..end)
-        int radius = 60;
+        int radius = radialIdentifiers.radius();
         for (int i = 0; i < (end - start); i++) {
             PrefixValueNoHover spell = spells.get(start + i);
             double angleRad = Math.toRadians(i * 60 - 60);
@@ -229,8 +245,6 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
     }
 
     public static class HexagonRadialMenuWithSuffixNoHover extends Screen {
-        private static final Identifier BACKGROUND = BTC.identifierOf("textures/gui/honeycomb.png");
-        private static final Identifier BACKGROUND_STONE = BTC.identifierOf("textures/gui/honeycomb_stone.png");
 
         private static final int TEX_WIDTH = 603;
         private static final int TEX_HEIGHT = 582;
@@ -243,10 +257,9 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         private final List <SuffixValueNoHover> spells; // list of spell values provided
         private final int start;
         private final int end;
+        private final RadialIdentifiers radialIdentifiers;
 
-        private DoubleInt mouse;
-
-        public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells, int start, int end) {
+        public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells, int start, int end, RadialIdentifiers radialIdentifiers) {
             super(title);
             // only keep first 6 if longer
 
@@ -254,6 +267,36 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             this.spells = spells;
             this.start = start;
             this.end = end; // clamp to size
+            this.radialIdentifiers = radialIdentifiers;
+        }
+
+        public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells, RadialIdentifiers radialIdentifiers) {
+            super(title);
+
+            this.prefixCommand = prefixCommand;
+            this.spells = spells;
+            this.start = 0;
+            this.end = 6; // clamp to size
+            this.radialIdentifiers = radialIdentifiers;
+        }
+
+        public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells, int start, int end) {
+            super(title);
+            this.prefixCommand = prefixCommand;
+            // only keep first 6 if longer
+            this.spells = spells;
+            this.start = start;
+            this.end = end; // clamp to size
+            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
+        }
+
+        public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells) {
+            super(title);
+            this.prefixCommand = prefixCommand;
+            this.spells = spells;
+            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
+            this.start = 0;
+            this.end = 6;
         }
 
         @Override
@@ -268,13 +311,13 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                     int newStart = Math.max(0, start - 6);
                     int newEnd = Math.min(newStart + 6, spells.size());
                     close();
-                    client.setScreen(new HexagonRadialMenuWithSuffixNoHover(Text.of("radial"), prefixCommand, spells, newStart, newEnd));
+                    client.setScreen(new HexagonRadialMenuWithSuffixNoHover(Text.of("radial"), prefixCommand, spells, newStart, newEnd, radialIdentifiers));
                 }
                 if (vert < 0 && end < spells.size()) {
                     int newStart = start + 6;
                     int newEnd = Math.min(newStart + 6, spells.size());
                     close();
-                    client.setScreen(new HexagonRadialMenuWithSuffixNoHover(Text.of("radial"), prefixCommand, spells, newStart, newEnd));
+                    client.setScreen(new HexagonRadialMenuWithSuffixNoHover(Text.of("radial"), prefixCommand, spells, newStart, newEnd, radialIdentifiers));
                 }
             });
         }
@@ -282,7 +325,6 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
 
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-            mouse = new DoubleInt(mouseX, mouseY);
             super.render(context, mouseX, mouseY, delta);
         }
 
@@ -340,9 +382,9 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             // Draw base background
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundOutlineTransparency() / 255f);
             context.drawTexture(
-                    BACKGROUND,
+                    radialIdentifiers.backgroundOutlineTexture(),
                     0, 0,
                     0, 0,
                     imageWidth, imageHeight,
@@ -350,17 +392,17 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             );
 
             // Draw overlay with transparency
-            RenderSystem.setShaderColor(1f, 1f, 1f, 200f / 255f); // ~70% opacity
+            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundTransparency() / 255f);
             context.drawTexture(
-                    BACKGROUND_STONE,
+                    radialIdentifiers.backgroundTexture(),
                     0, 0,
                     0, 0,
                     imageWidth, imageHeight,
                     imageWidth, imageHeight
             );
-            RenderSystem.setShaderColor(1f, 1f, 1f, 150f / 255f); // ~70% opacity
+            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.highlightedShapeTransparency() / 255f);
             context.drawTexture(
-                    BTC.identifierOf("textures/gui/honeycomb_sector_" + (sector + 1) + ".png"),
+                    Identifier.of(radialIdentifiers.highlightedShapeTexture().getNamespace(),radialIdentifiers.highlightedShapeTexture().getPath() + (sector + 1) + ".png"),
                     0, 0,
                     0, 0,
                     imageWidth, imageHeight,
@@ -373,7 +415,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             context.getMatrices().pop();
 
             // Draw text for spells[start..end)
-            int radius = 60;
+            int radius = radialIdentifiers.radius();
             for (int i = 0; i < (end - start); i++) {
                 SuffixValueNoHover spell = spells.get(start + i);
                 double angleRad = Math.toRadians(i * 60 - 60);
