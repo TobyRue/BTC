@@ -173,7 +173,7 @@ public class ModPackets {
                         int maxSlots = spellValues.size();
 
                         client.setScreen(new HexagonRadialMenuWithPrefixNoHover(
-                                Text.of("radial"),
+                                Text.translatable("radial.btc.spell.select_spell"),
                                 new ArrayList<>(spellValues),
                                 0,
                                 maxSlots

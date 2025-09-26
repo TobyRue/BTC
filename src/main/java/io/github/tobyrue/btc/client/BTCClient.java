@@ -4,14 +4,11 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
-import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefix;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellstoneItem;
 import io.github.tobyrue.btc.item.UnlockScrollItem;
-import io.github.tobyrue.btc.player_data.PlayerSpellData;
-import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -32,8 +29,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -43,7 +38,6 @@ import org.lwjgl.glfw.GLFW;
 import io.github.tobyrue.btc.client.screen.HexagonValues.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
@@ -146,7 +140,7 @@ public class BTCClient implements ClientModInitializer {
                         int maxSlots = spellValues.size();
 
                         client.setScreen(new HexagonRadialMenu(
-                                Text.of("radial menu"),
+                                Text.translatable("radial.btc.spell.select_spell"),
                                 new ArrayList<>(spellValues),
                                 0, // starting index
                                 maxSlots,

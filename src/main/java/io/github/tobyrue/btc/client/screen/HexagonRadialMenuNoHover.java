@@ -51,13 +51,13 @@ public class HexagonRadialMenuNoHover extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 40);
     }
 
     public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells) {
         super(title);
         this.spells = spells;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 40);
         this.start = 0;
         this.end = 6;
     }
@@ -179,7 +179,7 @@ public class HexagonRadialMenuNoHover extends Screen {
         context.getMatrices().pop();
 
         // Draw text for spells[start..end)
-        int radius = radialIdentifiers.radius();
+        int radius = this.radialIdentifiers.radius();
         for (int i = 0; i < (end - start); i++) {
             ValueNoHover spell = spells.get(start + i);
             double angleRad = Math.toRadians(i * 60 - 60);
@@ -189,14 +189,14 @@ public class HexagonRadialMenuNoHover extends Screen {
             String text = spell.display().getString();
 
             // Simple word wrap
-            int maxWidth = 40;
+
             String[] words = text.split(" ");
             List<String> lines = new ArrayList<>();
             StringBuilder currentLine = new StringBuilder();
 
             for (String word : words) {
                 String testLine = (currentLine.length() == 0 ? "" : currentLine + " ") + word;
-                if (this.textRenderer.getWidth(testLine) <= maxWidth) {
+                if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
                     currentLine = new StringBuilder(testLine);
                 } else {
                     lines.add(currentLine.toString());
@@ -228,6 +228,7 @@ public class HexagonRadialMenuNoHover extends Screen {
 
             context.getMatrices().pop();
         }
+        context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - this.textRenderer.fontHeight * 2, 0xFFFFFF, true);
     }
 }
 
