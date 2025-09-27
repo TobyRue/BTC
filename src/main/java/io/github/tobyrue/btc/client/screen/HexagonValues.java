@@ -10,5 +10,5 @@ public class HexagonValues {
     public record PrefixValue(Text display, String commandHover, String commandClick, List<SuffixValue> suffixValues) {}
     public record Value(Text display, String commandHover, String commandClick) {}
     public record DoubleInt(int mouseX, int mouseY) {}
-    public record RadialIdentifiers(Identifier backgroundOutlineTexture, float backgroundOutlineTransparency, Identifier backgroundTexture, float backgroundTransparency, Identifier highlightedShapeTexture, float highlightedShapeTransparency, int radius, int maxTextWidth) {}
+    public record RadialIdentifiers(Identifier backgroundOutlineTexture, float backgroundOutlineTransparency, Identifier backgroundTexture, float backgroundTransparency, Identifier highlightedShapeTexture, float highlightedShapeTransparency, int textRadius, int centerRadius, int maxTextWidth, int sectors) {}
 }

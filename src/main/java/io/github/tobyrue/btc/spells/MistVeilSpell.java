@@ -30,7 +30,7 @@ public class MistVeilSpell extends Spell {
         var caster = ctx.user();
         var world = ctx.world();
 
-        double radius = args.getDouble("radius", 5.0);
+        double radius = args.getDouble("textRadius", 5.0);
         int durationTicks = args.getInt("durationTicks", 160); // 8 seconds
 
         Vec3d center = caster.getPos();
@@ -50,7 +50,7 @@ public class MistVeilSpell extends Spell {
                             1, 0, 0, 0, 0);
                 }
 
-                // Find entities in radius
+                // Find entities in textRadius
                 Box effectBox = new Box(center.x - radius, center.y - 2, center.z - radius,
                         center.x + radius, center.y + 3, center.z + radius);
 

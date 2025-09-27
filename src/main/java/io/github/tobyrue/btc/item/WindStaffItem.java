@@ -128,7 +128,7 @@ public class WindStaffItem extends StaffItem {
         }
     }
     private void pullMobsTowardsPlayer(World world, PlayerEntity player) {
-        // Use the PULL_RADIUS variable to define the radius
+        // Use the PULL_RADIUS variable to define the textRadius
         List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(PULL_RADIUS), entity -> entity != player);
         // Log the number of entities found
         // Pull all mobs towards the player

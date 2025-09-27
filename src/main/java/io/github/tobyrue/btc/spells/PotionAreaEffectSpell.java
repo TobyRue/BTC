@@ -40,7 +40,7 @@ public class PotionAreaEffectSpell extends Spell {
         if (entry.isEmpty()) {
             return;
         }
-        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(args.getDouble("radius", 8D)),
+        List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, user.getBoundingBox().expand(args.getDouble("textRadius", 8D)),
                 entity -> (((entity != user) && !args.getBoolean("includeUser")) || args.getBoolean("includeUser")) && entity instanceof LivingEntity && ((entity instanceof HostileEntity && args.getBoolean("onlyHostile")) || !args.getBoolean("onlyHostile"))); // Only affect hostile mobs
         for (LivingEntity entity : entities) {
             entity.addStatusEffect(new StatusEffectInstance(entry.get(), args.getInt("duration", 60), args.getInt("amplifier")));

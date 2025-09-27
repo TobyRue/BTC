@@ -176,7 +176,8 @@ public class ModPackets {
                                 Text.translatable("radial.btc.spell.select_spell"),
                                 new ArrayList<>(spellValues),
                                 0,
-                                maxSlots
+                                maxSlots,
+                                Text.translatable("radial.btc.spell.select_slot")
                         ));
                     }
                 });
