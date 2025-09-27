@@ -35,10 +35,9 @@ public class HexagonRadialMenuWithPrefix extends Screen {
     
     public HexagonRadialMenuWithPrefix(Text title, List<PrefixValue> spells, int start, int end, KeyBinding key, RadialIdentifiers radialIdentifiers, Text suffixTitle) {
         super(title);
-        // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
+        this.end = end;
         this.radialIdentifiers = radialIdentifiers;
         this.key = key;
         this.suffixTitle = suffixTitle;
@@ -46,21 +45,19 @@ public class HexagonRadialMenuWithPrefix extends Screen {
 
     public HexagonRadialMenuWithPrefix(Text title, List<PrefixValue> spells, KeyBinding key, RadialIdentifiers radialIdentifiers, Text suffixTitle) {
         super(title);
-        // only keep first 6 if longer
         this.spells = spells;
         this.suffixTitle = suffixTitle;
         this.start = 0;
-        this.end = 6; // clamp to size
+        this.end = 6;
         this.radialIdentifiers = radialIdentifiers;
         this.key = key;
     }
 
     public HexagonRadialMenuWithPrefix(Text title, List<PrefixValue> spells, int start, int end, KeyBinding key, Text suffixTitle) {
         super(title);
-        // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
+        this.end = end;
         this.suffixTitle = suffixTitle;
         this.key = key;
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6);
@@ -78,10 +75,9 @@ public class HexagonRadialMenuWithPrefix extends Screen {
 
     public HexagonRadialMenuWithPrefix(Text title, List<PrefixValue> spells, int start, int end, KeyBinding key, RadialIdentifiers radialIdentifiers) {
         super(title);
-        // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
+        this.end = end;
         this.radialIdentifiers = radialIdentifiers;
         this.key = key;
         this.suffixTitle = title;
