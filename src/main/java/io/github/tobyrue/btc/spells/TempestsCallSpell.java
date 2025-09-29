@@ -41,7 +41,7 @@ public class TempestsCallSpell extends Spell {
 
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return new Spell.SpellCooldown(160, BTC.identifierOf("tempests_call"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", 160), BTC.identifierOf("tempests_call"));
     }
 
     @Override

@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefixNoHover;
+import io.github.tobyrue.btc.client.screen.HexagonValues;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -20,6 +21,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
 
@@ -163,7 +165,7 @@ public class ModPackets {
                                                     .toList();
 
                                     return new PrefixValueNoHover(
-                                            Text.translatable(key, inst.args()), // display
+                                            Text.translatable(key, inst.args()).formatted(Formatting.BLACK), // display
                                             commandPrefix,  // click command (before suffix)
                                             suffixValues    // suffix menu options
                                     );
@@ -177,6 +179,7 @@ public class ModPackets {
                                 new ArrayList<>(spellValues),
                                 0,
                                 maxSlots,
+                                new HexagonValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_wood.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true),
                                 Text.translatable("radial.btc.spell.select_slot")
                         ));
                     }

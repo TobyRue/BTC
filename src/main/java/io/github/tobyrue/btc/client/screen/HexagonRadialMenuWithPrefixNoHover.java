@@ -10,6 +10,8 @@ import net.minecraft.util.Identifier;
 import io.github.tobyrue.btc.client.screen.HexagonValues.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
 
 public class HexagonRadialMenuWithPrefixNoHover extends Screen {
@@ -52,14 +54,14 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
         this.suffixTitle = title;
     }
 
     public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells) {
         super(title);
         this.spells = spells;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
         this.start = 0;
         this.end = 6;
         this.suffixTitle = title;
@@ -90,14 +92,14 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
         this.suffixTitle = suffixTitle;
     }
 
     public HexagonRadialMenuWithPrefixNoHover(Text title, List<PrefixValueNoHover> spells, Text suffixTitle) {
         super(title);
         this.spells = spells;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
         this.start = 0;
         this.end = 6;
         this.suffixTitle = suffixTitle;
@@ -203,15 +205,6 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         // Draw base background
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundOutlineTransparency() / 255);
-        context.drawTexture(
-                radialIdentifiers.backgroundOutlineTexture(),
-                0, 0,
-                0, 0,
-                imageWidth, imageHeight,
-                imageWidth, imageHeight
-        );
-
         // Draw overlay with transparency
         RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundTransparency() / 255f); // ~70% opacity
         context.drawTexture(
@@ -224,6 +217,14 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.highlightedShapeTransparency() / 255f); // ~70% opacity
         context.drawTexture(
                 Identifier.of(radialIdentifiers.highlightedShapeTexture().getNamespace(),radialIdentifiers.highlightedShapeTexture().getPath() + (sector + 1) + ".png"),
+                0, 0,
+                0, 0,
+                imageWidth, imageHeight,
+                imageWidth, imageHeight
+        );
+        RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundOutlineTransparency() / 255f);
+        context.drawTexture(
+                radialIdentifiers.backgroundOutlineTexture(),
                 0, 0,
                 0, 0,
                 imageWidth, imageHeight,
@@ -244,12 +245,10 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
             int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
 
-            String text = spell.display().getString();
+            Text displayText = spell.display();
 
-            // Simple word wrap
-
-            String[] words = text.split(" ");
-            List<String> lines = new ArrayList<>();
+            String[] words = displayText.getString().split(" ");
+            List<Text> lines = new ArrayList<>();
             StringBuilder currentLine = new StringBuilder();
 
             for (String word : words) {
@@ -257,11 +256,11 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                 if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
                     currentLine = new StringBuilder(testLine);
                 } else {
-                    lines.add(currentLine.toString());
+                    lines.add(Text.literal(currentLine.toString()));
                     currentLine = new StringBuilder(word);
                 }
             }
-            if (currentLine.length() > 0) lines.add(currentLine.toString());
+            if (currentLine.length() > 0) lines.add(Text.literal(currentLine.toString()));
 
             boolean shrink = lines.size() > 3;
 
@@ -277,16 +276,17 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             int startY = hexCenterY - totalHeight / 2;
 
             for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
-                String line = lines.get(lineIndex);
+                Text line = lines.get(lineIndex);
                 int lineWidth = this.textRenderer.getWidth(line);
                 int lineX = hexCenterX - lineWidth / 2;
                 int lineY = startY + lineIndex * this.textRenderer.fontHeight;
-                context.drawText(this.textRenderer, line, lineX, lineY, 0xFFFFFF, true);
+                Objects.requireNonNull(displayText.getStyle().getColor());
+                context.drawText(this.textRenderer, line, lineX, lineY, displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.textShadow());
             }
 
             context.getMatrices().pop();
         }
-        context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - this.textRenderer.fontHeight * 2, 0xFFFFFF, true);
+        context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - (this.textRenderer.fontHeight * 2), this.title.getStyle().getColor() != null ? this.title.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.titleShadow());
     }
 
     public static class HexagonRadialMenuWithSuffixNoHover extends Screen {
@@ -332,14 +332,14 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             this.spells = spells;
             this.start = start;
             this.end = end; // clamp to size
-            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6);
+            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
         }
 
         public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells) {
             super(title);
             this.prefixCommand = prefixCommand;
             this.spells = spells;
-            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30,40, 6);
+            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30,40, 6, true, true);
             this.start = 0;
             this.end = 6;
         }
@@ -427,17 +427,8 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             // Draw base background
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundOutlineTransparency() / 255f);
-            context.drawTexture(
-                    radialIdentifiers.backgroundOutlineTexture(),
-                    0, 0,
-                    0, 0,
-                    imageWidth, imageHeight,
-                    imageWidth, imageHeight
-            );
-
             // Draw overlay with transparency
-            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundTransparency() / 255f);
+            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundTransparency() / 255f); // ~70% opacity
             context.drawTexture(
                     radialIdentifiers.backgroundTexture(),
                     0, 0,
@@ -445,9 +436,17 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                     imageWidth, imageHeight,
                     imageWidth, imageHeight
             );
-            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.highlightedShapeTransparency() / 255f);
+            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.highlightedShapeTransparency() / 255f); // ~70% opacity
             context.drawTexture(
                     Identifier.of(radialIdentifiers.highlightedShapeTexture().getNamespace(),radialIdentifiers.highlightedShapeTexture().getPath() + (sector + 1) + ".png"),
+                    0, 0,
+                    0, 0,
+                    imageWidth, imageHeight,
+                    imageWidth, imageHeight
+            );
+            RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundOutlineTransparency() / 255f);
+            context.drawTexture(
+                    radialIdentifiers.backgroundOutlineTexture(),
                     0, 0,
                     0, 0,
                     imageWidth, imageHeight,
@@ -464,16 +463,14 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             for (int i = 0; i < (end - start); i++) {
                 SuffixValueNoHover spell = spells.get(start + i);
                 double angleStep = 360.0 / radialIdentifiers.sectors();
-            double angleRad = Math.toRadians(i * angleStep - angleStep);
+                double angleRad = Math.toRadians(i * angleStep - angleStep);
                 int hexCenterX = centerX + (int) (radius * Math.cos(angleRad));
                 int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
 
-                String text = spell.display().getString();
+                Text displayText = spell.display();
 
-                // Simple word wrap
-
-                String[] words = text.split(" ");
-                List<String> lines = new ArrayList<>();
+                String[] words = displayText.getString().split(" ");
+                List<Text> lines = new ArrayList<>();
                 StringBuilder currentLine = new StringBuilder();
 
                 for (String word : words) {
@@ -481,11 +478,11 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                     if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
                         currentLine = new StringBuilder(testLine);
                     } else {
-                        lines.add(currentLine.toString());
+                        lines.add(Text.literal(currentLine.toString()));
                         currentLine = new StringBuilder(word);
                     }
                 }
-                if (currentLine.length() > 0) lines.add(currentLine.toString());
+                if (currentLine.length() > 0) lines.add(Text.literal(currentLine.toString()));
 
                 boolean shrink = lines.size() > 3;
 
@@ -501,16 +498,16 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
                 int startY = hexCenterY - totalHeight / 2;
 
                 for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
-                    String line = lines.get(lineIndex);
+                    Text line = lines.get(lineIndex);
                     int lineWidth = this.textRenderer.getWidth(line);
                     int lineX = hexCenterX - lineWidth / 2;
                     int lineY = startY + lineIndex * this.textRenderer.fontHeight;
-                    context.drawText(this.textRenderer, line, lineX, lineY, 0xFFFFFF, true);
+                    context.drawText(this.textRenderer, line, lineX, lineY, displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.textShadow());
                 }
 
                 context.getMatrices().pop();
             }
-            context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - this.textRenderer.fontHeight * 2, 0xFFFFFF, true);
+            context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - (this.textRenderer.fontHeight * 2), this.title.getStyle().getColor() != null ? this.title.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.titleShadow());
         }
     }
 }
