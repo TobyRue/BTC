@@ -12,7 +12,7 @@ public class PlayerSpellData {
     public List<Spell.InstancedSpell> favoriteSpells = new ArrayList<>();
 
     public PlayerSpellData() {
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 6; i++) {
             favoriteSpells.add(new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty()));
         }
     }

@@ -155,9 +155,8 @@ public class ModPackets {
                                     String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
 
                                     // Generate suffix values 1..maxKnown
-                                    int maxKnown = spells.size(); // <-- adjust if different method
                                     List<SuffixValueNoHover> suffixValues =
-                                            java.util.stream.IntStream.rangeClosed(0, maxKnown - 1)
+                                            java.util.stream.IntStream.rangeClosed(0, 5)
                                                     .mapToObj(i -> new SuffixValueNoHover(
                                                             Text.literal(String.valueOf(i + 1)).formatted(Formatting.BLACK),
                                                             String.valueOf(i)  // suffixClick

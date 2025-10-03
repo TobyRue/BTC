@@ -40,12 +40,12 @@ public class ModCommands {
     private static final SimpleCommandExceptionType FAILED_SPELL_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("command.btc.common.no_such_spell"));
     private static final SimpleCommandExceptionType FAILED_ARGS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("command.btc.common.bad_nbt"));
     public static final SuggestionProvider<ServerCommandSource> DIGIT_SUGGESTIONS = (context, builder) -> {
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 0; i <= 5; i++) {
             builder.suggest(String.valueOf(i));
         }
         return builder.buildFuture();
     };
-//TODO MAKE A KEYBIND THAT DOES NOT HAVE KEY HOVERING RELEASE!!!
+
     public static void initialize() {
         ArgumentTypeRegistry.registerArgumentType(
                 BTC.identifierOf("spell"),
@@ -134,7 +134,7 @@ public class ModCommands {
 
                                             .executes(context -> selectSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"), null))
                                     .then(
-                                            argument("slot", IntegerArgumentType.integer(0, 9))
+                                            argument("slot", IntegerArgumentType.integer(0, 5))
                                             .suggests(ModCommands.DIGIT_SUGGESTIONS)
                                             .executes(context -> selectSpell(context.getSource(), SpellArgumentType.getSpell(context, "spell"), NbtElementArgumentType.getNbtElement(context, "args"), IntegerArgumentType.getInteger(context, "slot")))
                                     )
