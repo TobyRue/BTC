@@ -9,6 +9,8 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.SpellstoneItem;
 import io.github.tobyrue.btc.item.UnlockScrollItem;
+import io.github.tobyrue.btc.player_data.PlayerSpellData;
+import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -29,6 +31,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -122,6 +125,35 @@ public class BTCClient implements ClientModInitializer {
 
                     if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
                         var spells = minimal.getAvailableSpells(stack, world, user);
+
+                        var spellValues = spells.stream()
+                                .map(inst -> {
+                                    String raw = inst.spell().getName(inst.args()).toString();
+
+                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+
+                                    return new Value(
+                                            Text.translatable(key),
+                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+                                    );
+                                })
+                                .toList();
+
+                        int maxSlots = spellValues.size();
+
+                        client.setScreen(new HexagonRadialMenu(
+                                Text.translatable("radial.btc.spell.select_spell"),
+                                new ArrayList<>(spellValues),
+                                0, // starting index
+                                maxSlots,
+                                keyBinding
+                        ));
+                    } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                        MinecraftServer server = client.getServer().getOverworld().getServer();
+                        SpellPersistentState spellState = SpellPersistentState.get(server);
+                        PlayerSpellData playerData = spellState.getPlayerData(client.player);
+                        var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
 
                         var spellValues = spells.stream()
                                 .map(inst -> {

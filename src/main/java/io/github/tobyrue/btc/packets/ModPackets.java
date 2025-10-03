@@ -157,9 +157,9 @@ public class ModPackets {
                                     // Generate suffix values 1..maxKnown
                                     int maxKnown = spells.size(); // <-- adjust if different method
                                     List<SuffixValueNoHover> suffixValues =
-                                            java.util.stream.IntStream.rangeClosed(1, maxKnown)
+                                            java.util.stream.IntStream.rangeClosed(0, maxKnown - 1)
                                                     .mapToObj(i -> new SuffixValueNoHover(
-                                                            Text.of(String.valueOf(i)),
+                                                            Text.literal(String.valueOf(i + 1)).formatted(Formatting.BLACK),
                                                             String.valueOf(i)  // suffixClick
                                                     ))
                                                     .toList();
