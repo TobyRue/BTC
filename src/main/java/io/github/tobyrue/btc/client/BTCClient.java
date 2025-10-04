@@ -45,9 +45,7 @@ import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class BTCClient implements ClientModInitializer {
-    public static KeyBinding keyBinding;
-    public static KeyBinding keyBinding1;
-
+    public static KeyBinding radialMenuKeyBinding;
 
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
     public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
@@ -99,23 +97,17 @@ public class BTCClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
-        keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        radialMenuKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.btc.open_spellbook", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_Z, // The keycode of the key
                 "category.btc.spell" // The translation key of the keybinding's category.
         ));
 
-        keyBinding1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.btc.quick_spell", // The translation key of the keybinding's name
-                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
-                GLFW.GLFW_KEY_LEFT_ALT, // The keycode of the key
-                "category.btc.spell" // The translation key of the keybinding's category.
-        ));
-
+        //TODO add another keybind that opens the spell book
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (keyBinding.wasPressed()) {
+            while (radialMenuKeyBinding.wasPressed()) {
                 assert client.player != null;
                 for (var h : Hand.values()) {
                     var item = client.player.getStackInHand(h).getItem();
@@ -147,7 +139,7 @@ public class BTCClient implements ClientModInitializer {
                                     new ArrayList<>(spellValues),
                                     0, // starting index
                                     maxSlots,
-                                    keyBinding
+                                    radialMenuKeyBinding
                             ));
                         } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
                             MinecraftServer server = client.getServer().getOverworld().getServer();
@@ -176,7 +168,7 @@ public class BTCClient implements ClientModInitializer {
                                     new ArrayList<>(spellValues),
                                     0, // starting index
                                     maxSlots,
-                                    keyBinding
+                                    radialMenuKeyBinding
                             ));
                         }
 

@@ -33,7 +33,6 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
         if (id != null) {
             if (AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath())) {
                 if (!exists) {
-                    //TODO make a packet that detects if the advancement is activated and if so it runs THIS METHOD again but with NULL IDENTIFIER, the packet will need a identifier and another identifier (of the spell) using ModRegistries.SPELL.get() or something like that to remember the spell
                     spellList.add(spell);
                 }
             }

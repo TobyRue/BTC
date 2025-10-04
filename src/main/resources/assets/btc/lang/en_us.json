@@ -256,7 +256,7 @@
   "command.btc.common.failed": "Unable to cast spell",
 
   "category.btc.spell": "Spells",
-  "key.btc.open_spellbook": "Open Spellbook",
+  "key.btc.open_radial": "Open Radial Menu",
 
   "tag.item.btc.wrenches": "Wrenches",
 

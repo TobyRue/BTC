@@ -95,7 +95,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
     }
 
 
-    //TODO EAST TO WEST BEAM
 
 //    @Override
 //    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -111,7 +110,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 //        }
 //    }
 
-//TODO EAST TO WEST BEAM
 
 //    @Override
 //    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -126,7 +124,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 //        }
 //    }
 
-//TODO UP DOWN BEAM
 
 //    @Override
 //    public void render(OminousBeaconBlockEntity ominousBeaconBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

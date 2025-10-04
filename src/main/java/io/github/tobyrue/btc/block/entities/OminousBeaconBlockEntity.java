@@ -76,7 +76,6 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                     world.breakBlock(offsetPos, true);
                 }
             }
-            //TODO
             double radiusL = 25.0;
             double radiusS = 15.0;
             for (int l = 0; l <= this.beamLength; l++) {
