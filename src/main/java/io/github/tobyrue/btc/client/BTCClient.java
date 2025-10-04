@@ -122,63 +122,63 @@ public class BTCClient implements ClientModInitializer {
                     var stack = client.player.getStackInHand(h);
                     var world = client.world;
                     var user = client.player;
+                    if (!user.isSpectator()) {
+                        if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
+                            var spells = minimal.getAvailableSpells(stack, world, user);
 
-                    if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
-                        var spells = minimal.getAvailableSpells(stack, world, user);
+                            var spellValues = spells.stream()
+                                    .map(inst -> {
+                                        String raw = inst.spell().getName(inst.args()).toString();
 
-                        var spellValues = spells.stream()
-                                .map(inst -> {
-                                    String raw = inst.spell().getName(inst.args()).toString();
+                                        String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
-                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+                                        return new Value(
+                                                Text.translatable(key),
+                                                "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+                                                "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+                                        );
+                                    })
+                                    .toList();
 
-                                    return new Value(
-                                            Text.translatable(key),
-                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
-                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
-                                    );
-                                })
-                                .toList();
+                            int maxSlots = spellValues.size();
 
-                        int maxSlots = spellValues.size();
+                            client.setScreen(new HexagonRadialMenu(
+                                    Text.translatable("radial.btc.spell.select_spell"),
+                                    new ArrayList<>(spellValues),
+                                    0, // starting index
+                                    maxSlots,
+                                    keyBinding
+                            ));
+                        } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                            MinecraftServer server = client.getServer().getOverworld().getServer();
+                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                            PlayerSpellData playerData = spellState.getPlayerData(client.player);
+                            var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
 
-                        client.setScreen(new HexagonRadialMenu(
-                                Text.translatable("radial.btc.spell.select_spell"),
-                                new ArrayList<>(spellValues),
-                                0, // starting index
-                                maxSlots,
-                                keyBinding
-                        ));
-                    } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
-                        MinecraftServer server = client.getServer().getOverworld().getServer();
-                        SpellPersistentState spellState = SpellPersistentState.get(server);
-                        PlayerSpellData playerData = spellState.getPlayerData(client.player);
-                        var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
+                            var spellValues = spells.stream()
+                                    .map(inst -> {
+                                        String raw = inst.spell().getName(inst.args()).toString();
 
-                        var spellValues = spells.stream()
-                                .map(inst -> {
-                                    String raw = inst.spell().getName(inst.args()).toString();
+                                        String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
-                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
+                                        return new Value(
+                                                Text.translatable(key),
+                                                "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
+                                                "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
+                                        );
+                                    })
+                                    .toList();
 
-                                    return new Value(
-                                            Text.translatable(key),
-                                            "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
-                                            "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
-                                    );
-                                })
-                                .toList();
+                            int maxSlots = spellValues.size();
 
-                        int maxSlots = spellValues.size();
-
-                        client.setScreen(new HexagonRadialMenu(
-                                Text.translatable("radial.btc.spell.select_spell"),
-                                new ArrayList<>(spellValues),
-                                0, // starting index
-                                maxSlots,
-                                keyBinding
-                        ));
-                    }
+                            client.setScreen(new HexagonRadialMenu(
+                                    Text.translatable("radial.btc.spell.select_spell"),
+                                    new ArrayList<>(spellValues),
+                                    0, // starting index
+                                    maxSlots,
+                                    keyBinding
+                            ));
+                        }
 
 //                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
 //                        client.setScreen(new HexagonRadialMenu(Text.of("radial menu"),  new ArrayList<>(List.of(
@@ -192,6 +192,7 @@ public class BTCClient implements ClientModInitializer {
 //                                new HexagonRadialMenu.SpellValue(Text.translatable("spell clustered wind charge"), "selectspell btc:cluster_wind_charge", "cast btc:cluster_wind_charge")
 //                        )), 0, 6));
 //                    }
+                    }
                 }
             }
         });

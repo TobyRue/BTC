@@ -55,7 +55,13 @@ public class ScreenTestItem extends PredefinedSpellsItem {
                 }})), null);
 
                 addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.empty()), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.GEYSER_STEP, GrabBag.empty()), null);
                 addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.empty()), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.empty()), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.empty()), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.CLUSTER_WIND_CHARGE, GrabBag.empty()), null);
+                addKnownSpell(serverPlayer, spellState, new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.empty()), null);
 
                 System.out.println("Added spells; Known spells: " + getKnownSpells(playerData));
             }
@@ -167,28 +173,26 @@ public class ScreenTestItem extends PredefinedSpellsItem {
     public List<Spell.InstancedSpell> getAvailableSpells(ItemStack stack, World world, LivingEntity entity) {
        List<Spell.InstancedSpell> s = new ArrayList<>();
         if (entity instanceof PlayerEntity player) {
-            addSpellToItem(player, s, BTC.identifierOf("adventure/get_earth_spike_scroll"), new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-                put("spikeCount", 8);
-                put("yRange", 12);
-                put("cooldown", 0);
-            }})));
-            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WATER_WAVE, GrabBag.fromMap(new HashMap<>() {{
-                put("maxRadius", 8d);
-                put("maxDuration", 600);
-                put("duration", 2);
-                put("amplifier", 1);
-                put("cooldown", 0);
-            }})));
-            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1); put("cooldown", 0);}})));
-            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5); put("cooldown", 0);}})));
-            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-                put("aimingForgiveness", 0.3d);
-                put("range", 24d);
-                put("duration", 400);
-                put("amplifier", 4);
-                put("cooldown", 0);
-            }})));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 1);}})));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{put("level", 5);}})));
 
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.ICE_BLOCK,GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.GEYSER_STEP, GrabBag.empty()));
+
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.empty()));
+
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()));
+
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CLUSTER_WIND_CHARGE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.empty()));
+
+//            addSpellToItem(player, s, BTC.identifierOf("adventure/get_earth_spike_scroll"), new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
+//                put("spikeCount", 8);
+//                put("yRange", 12);
+//                put("cooldown", 0);
+//            }})));
         }
         return s;
     }
