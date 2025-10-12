@@ -178,7 +178,7 @@ public class ModPackets {
                                 new ArrayList<>(spellValues),
                                 0,
                                 Math.min(maxSlots, 6),
-                                new HexagonValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_wood.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true),
+                                new HexagonValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f),
                                 Text.translatable("radial.btc.spell.select_slot")
                         ));
                     }

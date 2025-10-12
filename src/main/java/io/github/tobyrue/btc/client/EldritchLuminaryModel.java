@@ -7,120 +7,158 @@ package io.github.tobyrue.btc.client;
 import io.github.tobyrue.btc.entity.animation.LuminaryAnimations;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.ModelWithArms;
-import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.render.entity.WanderingTraderEntityRenderer;
+import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> implements ModelWithArms {
+public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends SinglePartEntityModel<T> {
 
-
-	private final ModelPart eldritch_luminaries;
+	private final ModelPart root;
+	private final ModelPart eldritch_luminary;
 	private final ModelPart head;
-	private final ModelPart fullbody;
-	private final ModelPart armfullside1;
-	private final ModelPart sidearmsfull;
-	private final ModelPart armfullside2;
-	private final ModelPart armscrossed;
-
+	private final ModelPart main_head;
+	private final ModelPart cloak;
+	private final ModelPart whole_body;
 	private final ModelPart arms;
+	private final ModelPart right_arm;
+	private final ModelPart main_right_arm;
+	private final ModelPart cloak_right_arm;
+	private final ModelPart left_arm;
+	private final ModelPart main_left_arm;
+	private final ModelPart cloak_left_arm;
+	private final ModelPart body;
+	private final ModelPart main_body;
+	private final ModelPart body_cloak;
 	private final ModelPart legs;
-
+	private final ModelPart right_leg;
+	private final ModelPart main_right_leg;
+	private final ModelPart right_leg_cloak;
+	private final ModelPart top2;
+	private final ModelPart bottom2;
+	private final ModelPart left_leg;
+	private final ModelPart main_left_leg;
+	private final ModelPart left_leg_cloak;
+	private final ModelPart top;
+	private final ModelPart bottom;
+	private final ModelPart cape;
 
 	public EldritchLuminaryModel(ModelPart root) {
-        this.eldritch_luminaries = root.getChild("eldritch_luminaries");
-		this.head = eldritch_luminaries.getChild("head");
-		this.fullbody = eldritch_luminaries.getChild("fullbody");
-		this.arms = eldritch_luminaries.getChild("arms");
-		this.armscrossed = arms.getChild("armscrossed");
-		this.sidearmsfull = arms.getChild("sidearmsfull");
-		this.armfullside1 = sidearmsfull.getChild("armfullside1");
-		this.armfullside2 = sidearmsfull.getChild("armfullside2");
-
-		this.legs = eldritch_luminaries.getChild("legs");
+		this.root = root;
+        this.eldritch_luminary = root.getChild("eldritch_luminary");
+		this.head = this.eldritch_luminary.getChild("head");
+		this.main_head = this.head.getChild("main_head");
+		this.cloak = this.head.getChild("cloak");
+		this.whole_body = this.eldritch_luminary.getChild("whole_body");
+		this.arms = this.whole_body.getChild("arms");
+		this.right_arm = this.arms.getChild("right_arm");
+		this.main_right_arm = this.right_arm.getChild("main_right_arm");
+		this.cloak_right_arm = this.right_arm.getChild("cloak_right_arm");
+		this.left_arm = this.arms.getChild("left_arm");
+		this.main_left_arm = this.left_arm.getChild("main_left_arm");
+		this.cloak_left_arm = this.left_arm.getChild("cloak_left_arm");
+		this.body = this.whole_body.getChild("body");
+		this.main_body = this.body.getChild("main_body");
+		this.body_cloak = this.body.getChild("body_cloak");
+		this.legs = this.eldritch_luminary.getChild("legs");
+		this.right_leg = this.legs.getChild("right_leg");
+		this.main_right_leg = this.right_leg.getChild("main_right_leg");
+		this.right_leg_cloak = this.right_leg.getChild("right_leg_cloak");
+		this.top2 = this.right_leg_cloak.getChild("top2");
+		this.bottom2 = this.right_leg_cloak.getChild("bottom2");
+		this.left_leg = this.legs.getChild("left_leg");
+		this.main_left_leg = this.left_leg.getChild("main_left_leg");
+		this.left_leg_cloak = this.left_leg.getChild("left_leg_cloak");
+		this.top = this.left_leg_cloak.getChild("top");
+		this.bottom = this.left_leg_cloak.getChild("bottom");
+		this.cape = root.getChild("cape");
 	}
+
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData eldritch_luminaries = modelPartData.addChild("eldritch_luminaries", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 4.0F, 0.0F));
+		ModelPartData eldritch_luminary = modelPartData.addChild("eldritch_luminary", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
 
-		ModelPartData head = eldritch_luminaries.addChild("head", ModelPartBuilder.create().uv(24, 50).cuboid(-1.0F, -3.0F, -6.0F, 2.0F, 5.0F, 2.0F, new Dilation(0.0F))
-				.uv(0, 18).cuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData head = eldritch_luminary.addChild("head", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -23.0F, 0.0F));
 
-		ModelPartData fullbody = eldritch_luminaries.addChild("fullbody", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 12.0F, 0.0F));
+		ModelPartData main_head = head.addChild("main_head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -29.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 20.0F, 0.0F));
 
-		ModelPartData body = fullbody.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-5.0F, -12.0F, -3.0F, 10.0F, 12.0F, 6.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData cloak = head.addChild("cloak", ModelPartBuilder.create().uv(0, 16).cuboid(-4.0F, -29.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.4F)), ModelTransform.pivot(0.0F, 20.0F, 0.0F));
 
-		ModelPartData cloak = fullbody.addChild("cloak", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 8.0F, 0.0F));
+		ModelPartData whole_body = eldritch_luminary.addChild("whole_body", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -2.0F, 0.0F));
 
-		ModelPartData cloak1 = cloak.addChild("cloak1", ModelPartBuilder.create().uv(12, 50).cuboid(5.0F, 0.0F, -3.0F, 0.0F, 4.0F, 6.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, -8.0F, 0.0F));
+		ModelPartData arms = whole_body.addChild("arms", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -19.9F, 0.0F));
 
-		ModelPartData cloak2 = cloak.addChild("cloak2", ModelPartBuilder.create().uv(48, 30).cuboid(-5.0F, 0.0F, -3.0F, 10.0F, 4.0F, 0.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, -8.0F, 0.0F));
+		ModelPartData right_arm = arms.addChild("right_arm", ModelPartBuilder.create(), ModelTransform.pivot(2.0F, 0.0F, 0.0F));
 
-		ModelPartData cloak3 = cloak.addChild("cloak3", ModelPartBuilder.create().uv(0, 48).cuboid(-5.0F, 0.0F, -3.0F, 0.0F, 4.0F, 6.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, -8.0F, 0.0F));
+		ModelPartData main_right_arm = right_arm.addChild("main_right_arm", ModelPartBuilder.create().uv(0, 48).cuboid(0.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(2.0F, -0.2F, 0.0F));
 
-		ModelPartData cloak4 = cloak.addChild("cloak4", ModelPartBuilder.create().uv(48, 34).cuboid(-5.0F, 0.0F, 3.0F, 10.0F, 4.0F, 0.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, -8.0F, 0.0F));
+		ModelPartData cloak_right_arm = right_arm.addChild("cloak_right_arm", ModelPartBuilder.create().uv(16, 48).cuboid(4.5F, -19.2F, -1.1F, 4.0F, 12.0F, 4.0F, new Dilation(0.4F)), ModelTransform.pivot(-2.5F, 17.0F, -0.9F));
 
-		ModelPartData arms = eldritch_luminaries.addChild("arms", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 3.0F, 1.0F));
+		ModelPartData left_arm = arms.addChild("left_arm", ModelPartBuilder.create(), ModelTransform.pivot(-2.0F, 0.0F, 0.0F));
 
-		ModelPartData sidearmsfull = arms.addChild("sidearmsfull", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData main_left_arm = left_arm.addChild("main_left_arm", ModelPartBuilder.create().uv(40, 32).cuboid(-4.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, -0.2F, 0.0F));
 
-		ModelPartData armfullside1 = sidearmsfull.addChild("armfullside1", ModelPartBuilder.create().uv(0, 61).cuboid(-4.0F, -2.0F, -13.0F, 4.0F, 4.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(-5.0F, 0.0F, 0.0F));
+		ModelPartData cloak_left_arm = left_arm.addChild("cloak_left_arm", ModelPartBuilder.create().uv(48, 16).cuboid(-4.0F, -2.1F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.4F)), ModelTransform.pivot(-2.0F, -0.1F, 0.0F));
 
-		ModelPartData armfullside2 = sidearmsfull.addChild("armfullside2", ModelPartBuilder.create().uv(40, 61).cuboid(-0.1206F, -2.0F, -13.316F, 4.0F, 4.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(5.0F, 0.0F, 0.0F));
+		ModelPartData body = whole_body.addChild("body", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -10.0F, 0.0F));
 
-		ModelPartData armscrossed = arms.addChild("armscrossed", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData main_body = body.addChild("main_body", ModelPartBuilder.create().uv(0, 32).cuboid(-4.0F, -22.0F, -2.0F, 8.0F, 12.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 10.0F, 0.0F));
 
-		ModelPartData arm1 = armscrossed.addChild("arm1", ModelPartBuilder.create(), ModelTransform.pivot(-7.0F, -1.0F, -1.0F));
+		ModelPartData body_cloak = body.addChild("body_cloak", ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -12.0F, -2.0F, 8.0F, 12.0F, 4.0F, new Dilation(0.3F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
-		ModelPartData sidearm1 = arm1.addChild("sidearm1", ModelPartBuilder.create(), ModelTransform.pivot(7.0F, 18.0F, 0.0F));
+		ModelPartData legs = eldritch_luminary.addChild("legs", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
-		ModelPartData arm1_r1 = sidearm1.addChild("arm1_r1", ModelPartBuilder.create().uv(32, 15).cuboid(-1.0F, -4.0F, -9.0F, 4.0F, 4.0F, 11.0F, new Dilation(0.0F)), ModelTransform.of(-8.0F, -16.0F, 3.0F, 0.7854F, 0.0F, 0.0F));
+		ModelPartData right_leg = legs.addChild("right_leg", ModelPartBuilder.create(), ModelTransform.pivot(2.0F, -11.0F, 0.0F));
 
-		ModelPartData middlearm1 = arm1.addChild("middlearm1", ModelPartBuilder.create(), ModelTransform.pivot(7.0F, 18.0F, 0.0F));
+		ModelPartData main_right_leg = right_leg.addChild("main_right_leg", ModelPartBuilder.create().uv(32, 16).cuboid(0.0F, -12.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, 11.0F, 0.0F));
 
-		ModelPartData armmiddle1_r1 = middlearm1.addChild("armmiddle1_r1", ModelPartBuilder.create().uv(16, 42).cuboid(-5.0F, -4.0F, -2.0F, 5.0F, 4.0F, 4.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, -10.9548F, -1.9453F, 0.7854F, 0.0F, 0.0F));
+		ModelPartData right_leg_cloak = right_leg.addChild("right_leg_cloak", ModelPartBuilder.create(), ModelTransform.pivot(-2.0F, 11.0F, 0.0F));
 
-		ModelPartData arm2 = armscrossed.addChild("arm2", ModelPartBuilder.create(), ModelTransform.pivot(7.0F, -1.0F, -1.0F));
+		ModelPartData top2 = right_leg_cloak.addChild("top2", ModelPartBuilder.create().uv(48, 48).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 6.8F, 4.0F, new Dilation(0.2F)), ModelTransform.pivot(2.0F, -12.0F, 0.0F));
 
-		ModelPartData sidearm2 = arm2.addChild("sidearm2", ModelPartBuilder.create(), ModelTransform.pivot(-7.0F, 18.0F, 0.0F));
+		ModelPartData bottom2 = right_leg_cloak.addChild("bottom2", ModelPartBuilder.create().uv(56, 0).cuboid(-2.0F, 0.2F, -2.0F, 4.0F, 4.8F, 4.0F, new Dilation(0.2F)), ModelTransform.pivot(2.0F, -5.0F, 0.0F));
 
-		ModelPartData arm2_r1 = sidearm2.addChild("arm2_r1", ModelPartBuilder.create().uv(32, 0).cuboid(-1.0F, -4.0F, -9.0F, 4.0F, 4.0F, 11.0F, new Dilation(0.0F)), ModelTransform.of(6.0F, -16.0F, 3.0F, 0.7854F, 0.0F, 0.0F));
+		ModelPartData left_leg = legs.addChild("left_leg", ModelPartBuilder.create(), ModelTransform.pivot(-2.0F, -11.0F, 0.0F));
 
-		ModelPartData middlearm2 = arm2.addChild("middlearm2", ModelPartBuilder.create(), ModelTransform.pivot(-7.0F, 18.0F, 0.0F));
+		ModelPartData main_left_leg = left_leg.addChild("main_left_leg", ModelPartBuilder.create().uv(24, 32).cuboid(-4.0F, -12.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(2.0F, 11.0F, 0.0F));
 
-		ModelPartData armmiddle2_r1 = middlearm2.addChild("armmiddle2_r1", ModelPartBuilder.create().uv(34, 42).cuboid(-5.0F, -4.0F, -2.0F, 5.0F, 4.0F, 4.0F, new Dilation(0.0F)), ModelTransform.of(5.0F, -10.9639F, -1.9453F, 0.7854F, 0.0F, 0.0F));
+		ModelPartData left_leg_cloak = left_leg.addChild("left_leg_cloak", ModelPartBuilder.create(), ModelTransform.pivot(2.0F, 11.0F, 0.0F));
 
-		ModelPartData legs = eldritch_luminaries.addChild("legs", ModelPartBuilder.create(), ModelTransform.pivot(-1.0F, 20.0F, 1.0F));
+		ModelPartData top = left_leg_cloak.addChild("top", ModelPartBuilder.create().uv(32, 48).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 6.8F, 4.0F, new Dilation(0.2F)), ModelTransform.pivot(-2.0F, -12.0F, 0.0F));
 
-		ModelPartData leg1 = legs.addChild("leg1", ModelPartBuilder.create().uv(0, 36).cuboid(-2.0F, -1.0F, -3.0F, 4.0F, 8.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, -7.0F, 0.0F));
+		ModelPartData bottom = left_leg_cloak.addChild("bottom", ModelPartBuilder.create().uv(56, 32).cuboid(-2.0F, 0.2F, -2.0F, 4.0F, 4.8F, 4.0F, new Dilation(0.2F)), ModelTransform.pivot(-2.0F, -5.0F, 0.0F));
 
-		ModelPartData leg2 = legs.addChild("leg2", ModelPartBuilder.create().uv(32, 30).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 8.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(3.0F, -8.0F, -1.0F));
+		ModelPartData cape = modelPartData.addChild("cape", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 2.0F));
 		return TexturedModelData.of(modelData, 128, 128);
 	}
+
 	@Override
 	public void setAngles(EldritchLuminaryEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(netHeadYaw, headPitch);
-		if (entity.attackAnimationState.isRunning()) {
-			this.armfullside1.visible = true;
-			this.armfullside2.visible = true;
-			this.armscrossed.visible = false;
-		} else {
-			this.armfullside1.visible = false;
-			this.armfullside2.visible = false;
-			this.armscrossed.visible = true;
-		}
-
-		this.updateAnimation(entity.attackAnimationState, LuminaryAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
-
-		this.animateMovement(LuminaryAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
-		this.updateAnimation(entity.idleAnimationState, LuminaryAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
+//		if (entity.attackAnimationState.isRunning()) {
+//			this.armfullside1.visible = true;
+//			this.armfullside2.visible = true;
+//			this.armscrossed.visible = false;
+//		} else {
+//			this.armfullside1.visible = false;
+//			this.armfullside2.visible = false;
+//			this.armscrossed.visible = true;
+//		}
+//
+//		this.updateAnimation(entity.attackAnimationState, LuminaryAnimations.ELDRITCH_LUMINARY_CAST, ageInTicks, 1f);
+//
+//		this.animateMovement(LuminaryAnimations.ELDRITCH_LUMINARY_WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
+//		this.updateAnimation(entity.idleAnimationState, LuminaryAnimations.ELDRITCH_LUMINARY_IDLE, ageInTicks, 1f);
 	}
 
 	private void setHeadAngles(float headYaw, float headPitch) {
@@ -132,23 +170,37 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-		eldritch_luminaries.render(matrices, vertexConsumer, light, overlay, color);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+		eldritch_luminary.render(matrices, vertices, light, overlay, color);
 	}
 
 	@Override
 	public ModelPart getPart() {
-		return eldritch_luminaries;
+		return this.root;
 	}
 
-	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrices) {
-		if (arm == Arm.RIGHT) {
+//	@Override
+//	public ModelPart getPart() {
+//		return eldritch_luminary;
+//	}
 
-			this.armfullside1.rotate(matrices);
-		} else if (arm == Arm.LEFT) {
+	public void renderCape(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+		this.cape.render(matrices, vertices, light, overlay);
+	}
 
-			this.armfullside2.rotate(matrices);
-		}
+	public ModelPart getEldritch_luminary() {
+		return eldritch_luminary;
+	}
+
+	public ModelPart getBody() {
+		return body;
+	}
+
+	public ModelPart getArms() {
+		return arms;
+	}
+
+	public ModelPart getCape() {
+		return cape;
 	}
 }

@@ -45,9 +45,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
-//        this.goalSelector.add(1, new EldritchLuminaryWindBurstGoal(this));
-//        this.goalSelector.add(1, new EldritchLuminaryDragonFireCastGoal(this));
-//        this.goalSelector.add(1, new EldritchLuminaryFireCastGoal(this));
         this.goalSelector.add(1, new EldritchLuminaryCastGoal(this));
         this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
         this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 16.0F));

@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 public class ModEntities {
     public static final EntityType<EldritchLuminaryEntity> ELDRITCH_LUMINARY = Registry.register(Registries.ENTITY_TYPE,
-            Identifier.of(BTC.MOD_ID, "eldritch_luminary.json"),
+            Identifier.of(BTC.MOD_ID, "eldritch_luminary"),
             EntityType.Builder.create(EldritchLuminaryEntity::new, SpawnGroup.CREATURE)
                     .dimensions(0.75f, 1.9f).eyeHeight(1.6f).build());
 

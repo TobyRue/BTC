@@ -16,10 +16,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class HexagonRadialMenuNoHover extends Screen {
-
-    private static final int TEX_WIDTH = 603;
-    private static final int TEX_HEIGHT = 582;
-
     private int centerX;
     private int centerY;
 
@@ -53,12 +49,12 @@ public class HexagonRadialMenuNoHover extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = end; // clamp to size
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
     }
     public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells) {
         super(title);
         this.spells = spells;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
         this.start = 0;
         this.end = 6;
     }
@@ -76,13 +72,13 @@ public class HexagonRadialMenuNoHover extends Screen {
                 int newStart = Math.max(0, start - radialIdentifiers.sectors());
                 int newEnd = Math.min(newStart + radialIdentifiers.sectors(), spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuNoHover(Text.of("radial"), spells, newStart, newEnd, radialIdentifiers));
+                client.setScreen(new HexagonRadialMenuNoHover(title, spells, newStart, newEnd, radialIdentifiers));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + radialIdentifiers.sectors();
                 int newEnd = Math.min(newStart + radialIdentifiers.sectors(), spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuNoHover(Text.of("radial"), spells, newStart, newEnd, radialIdentifiers));
+                client.setScreen(new HexagonRadialMenuNoHover(title, spells, newStart, newEnd, radialIdentifiers));
             }
         });
     }
@@ -130,9 +126,10 @@ public class HexagonRadialMenuNoHover extends Screen {
         this.renderInGameBackground(context);
         int sector = getHoveredHex(mouseX, mouseY);
 
-        int imageWidth = TEX_WIDTH;
-        int imageHeight = TEX_HEIGHT;
-        float scale = 0.3f;
+        int imageWidth = radialIdentifiers.textureWidth();
+        int imageHeight = radialIdentifiers.textureHeight();
+
+        float scale = radialIdentifiers.imageScale();
 
         int scaledWidth = (int) (imageWidth * scale);
         int scaledHeight = (int) (imageHeight * scale);
@@ -147,7 +144,6 @@ public class HexagonRadialMenuNoHover extends Screen {
         // Draw base background
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-
         // Draw overlay with transparency
         RenderSystem.setShaderColor(1f, 1f, 1f, radialIdentifiers.backgroundTransparency() / 255f); // ~70% opacity
         context.drawTexture(
