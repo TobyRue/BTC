@@ -29,6 +29,7 @@
 //	private final ModelPart top;
 //	private final ModelPart bottom;
 //	private final ModelPart cape;
+//	private final ModelPart full;
 //	public EldritchLuminaryModel(ModelPart root) {
 //		this.eldritch_luminary = root.getChild("eldritch_luminary");
 //		this.head = this.eldritch_luminary.getChild("head");
@@ -57,6 +58,7 @@
 //		this.top = this.left_leg_cloak.getChild("top");
 //		this.bottom = this.left_leg_cloak.getChild("bottom");
 //		this.cape = root.getChild("cape");
+//		this.full = this.cape.getChild("full");
 //	}
 //	public static TexturedModelData getTexturedModelData() {
 //		ModelData modelData = new ModelData();
@@ -115,7 +117,9 @@
 //
 //		ModelPartData cape = modelPartData.addChild("cape", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 2.0F));
 //
-//		ModelPartData cube_r1 = cape.addChild("cube_r1", ModelPartBuilder.create().uv(0, 64).cuboid(-5.0F, 0.0F, 0.0F, 10.0F, 16.0F, 1.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, 0.0F, 0.0F, 0.0873F, 0.0F, 0.0F));
+//		ModelPartData full = cape.addChild("full", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+//
+//		ModelPartData cube_r1 = full.addChild("cube_r1", ModelPartBuilder.create().uv(0, 64).cuboid(-5.0F, 0.0F, 0.0F, 10.0F, 16.0F, 1.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, 0.0F, 0.0F, 0.0873F, 0.0F, 0.0F));
 //		return TexturedModelData.of(modelData, 128, 128);
 //	}
 //	@Override

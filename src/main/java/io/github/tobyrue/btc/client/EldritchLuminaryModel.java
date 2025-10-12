@@ -138,6 +138,9 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 		ModelPartData bottom = left_leg_cloak.addChild("bottom", ModelPartBuilder.create().uv(56, 32).cuboid(-2.0F, 0.2F, -2.0F, 4.0F, 4.8F, 4.0F, new Dilation(0.2F)), ModelTransform.pivot(-2.0F, -5.0F, 0.0F));
 
 		ModelPartData cape = modelPartData.addChild("cape", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 2.0F));
+
+		ModelPartData cube_r1 = cape.addChild("cube_r1", ModelPartBuilder.create().uv(0, 64).cuboid(-5.0F, 0.0F, 0.0F, 10.0F, 16.0F, 1.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, 0.0F, 0.0F, 0.0873F, 0.0F, 0.0F));
+
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 

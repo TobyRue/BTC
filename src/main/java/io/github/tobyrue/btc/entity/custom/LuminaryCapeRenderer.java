@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class LuminaryCapeRenderer extends FeatureRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
-    private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_cape.png");
+    private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_1.png");
 
 
     public LuminaryCapeRenderer(FeatureRendererContext<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> context) {
@@ -44,7 +44,7 @@ public class LuminaryCapeRenderer extends FeatureRenderer<EldritchLuminaryEntity
         if (entity.isInvisible()) return;
 
         matrices.push();
-        matrices.translate(0.0F, 0.0F, 0.125F);
+        matrices.translate(0.0F, 0.0F, 0.33F);
 
         // Simulate simple cape swing using movement and limb animation
         float movement = MathHelper.sin(limbAngle * 0.6662F) * limbDistance;
@@ -59,7 +59,7 @@ public class LuminaryCapeRenderer extends FeatureRenderer<EldritchLuminaryEntity
 
         // Smooth idle motion
         float time = entity.age + tickDelta;
-        float idleWave = MathHelper.sin(time * 0.1F) * 3.0F;
+        float idleWave = MathHelper.sin(time * 0.1F) * 2.0F;
 
         // Apply final rotation for flowing effect
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(baseAngle + idleWave));
