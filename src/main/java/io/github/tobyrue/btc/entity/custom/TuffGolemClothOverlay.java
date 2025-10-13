@@ -2,6 +2,8 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.TuffGolemEntityModel;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -12,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
+@Environment(value= EnvType.CLIENT)
 public class TuffGolemClothOverlay extends FeatureRenderer<TuffGolemEntity, TuffGolemEntityModel<TuffGolemEntity>> {
 
     private static final Identifier CLOTH = Identifier.of(BTC.MOD_ID, "textures/entity/tuff_golem_cloth_overlay.png");

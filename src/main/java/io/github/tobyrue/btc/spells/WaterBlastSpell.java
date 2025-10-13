@@ -26,6 +26,7 @@ public class WaterBlastSpell extends Spell {
         if (ctx.user() != null) {
             waterBlast.setOwner(ctx.user());
         }
+        waterBlast.setNoGravity(args.getBoolean("noGravity", false));
         ctx.world().spawnEntity(waterBlast);
     }
 

@@ -24,8 +24,6 @@ import net.minecraft.util.Identifier;
 public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
 
     private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary.png");
-    private static final Identifier TEXTURE_1 = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_1.png");
-    private static final Identifier TEXTURE_ANGRY = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_angry.png");
 
     public EldritchLuminaryRenderer(EntityRendererFactory.Context context) {
         super(context, new EldritchLuminaryModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARY)), 0.5f);
@@ -34,14 +32,7 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
 
     @Override
     public Identifier getTexture(EldritchLuminaryEntity luminary) {
-
-        return TEXTURE_1;
-
-//        if(luminary.getAttack() != AttackType.NONE) {
-//            return TEXTURE_ANGRY;
-//        } else {
-//            return TEXTURE;
-//        }
+        return TEXTURE;
     } 
 
     @Override

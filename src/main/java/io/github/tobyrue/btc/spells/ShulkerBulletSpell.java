@@ -36,10 +36,10 @@ public class ShulkerBulletSpell extends Spell {
     protected void use(SpellContext ctx, GrabBag args) {
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         double range = args.getDouble("range", 24);
-        double radius = args.getDouble("textRadius", 24);
+        double radius = args.getDouble("radius", 24);
 
         if (ctx.user() != null) {
-            Vec3d look = ctx.user().getRotationVec(1.0F); // player’s look direction
+            Vec3d look = ctx.user().getRotationVec(1.0F); // player's look direction
 
             Direction.Axis axis;
             if (Math.abs(look.x) > Math.abs(look.y) && Math.abs(look.x) > Math.abs(look.z)) {
@@ -50,14 +50,23 @@ public class ShulkerBulletSpell extends Spell {
                 axis = Direction.Axis.Z;
             }
 
-            ctx.world().spawnEntity(
-                    new ShulkerBulletEntity(
-                            ctx.world(),
-                            ctx.user(),
-                            getEntityLookedAt(ctx.user(), range, aimingForgiveness),
-                            axis
-                    )
+            ShulkerBulletEntity bullet = new ShulkerBulletEntity(
+                    ctx.world(),
+                    ctx.user(),
+                    getEntityLookedAt(ctx.user(), range, aimingForgiveness),
+                    axis
             );
+
+            // Spawn one block higher
+            bullet.refreshPositionAndAngles(
+                    ctx.user().getX(),
+                    ctx.user().getY() + 1.0,
+                    ctx.user().getZ(),
+                    ctx.user().getYaw(),
+                    ctx.user().getPitch()
+            );
+
+            ctx.world().spawnEntity(bullet);
         } else {
 // Dispenser or other non-living source
             List<LivingEntity> entities = ctx.world().getEntitiesByClass(

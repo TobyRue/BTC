@@ -36,15 +36,18 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
-public class EldritchLuminaryEntity extends HostileEntity implements Angerable, SpellHost<LivingEntity> {
-    private static final TrackedData<Integer> SPELL_COOLDOWN = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<String> CURRENT_SPELL = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.STRING);
-    private static final TrackedData<NbtCompound> SPELL_ARGS = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-    private static final TrackedData<NbtCompound> SPELLS = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-    private static final TrackedData<Integer> SPELL_CAST_TIME = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public class LuminaryEntity2 extends HostileEntity implements Angerable, SpellHost<LivingEntity> {
+    private static final TrackedData<Integer> SPELL_COOLDOWN = DataTracker.registerData(LuminaryEntity2.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<String> CURRENT_SPELL = DataTracker.registerData(LuminaryEntity2.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<NbtCompound> SPELL_ARGS = DataTracker.registerData(LuminaryEntity2.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
+    private static final TrackedData<NbtCompound> SPELLS = DataTracker.registerData(LuminaryEntity2.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
+    private static final TrackedData<Integer> SPELL_CAST_TIME = DataTracker.registerData(LuminaryEntity2.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> SPELL_CAST_COOLDOWN = DataTracker.registerData(LuminaryEntity2.class, TrackedDataHandlerRegistry.INTEGER);
 
     private LivingEntity target;
 
@@ -53,7 +56,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
-    private final int castTime = 30;
+    private final int castCooldown = 30;
+    private final int castTime = 15;
 
 
     @Override
@@ -82,7 +86,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         return super.damage(source, amount);
     }
 
-    public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    public LuminaryEntity2(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.experiencePoints = 15;
     }
@@ -92,38 +96,24 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     private void setupAnimationStates() {
-        SpellDataStore data = getSpellDataStore(this);
-
         if (this.idleAnimationTimeout <= 0) {
             this.idleAnimationTimeout = this.random.nextInt(40) + 80;
             this.idleAnimationState.startIfNotRunning(this.age);
         } else {
             --this.idleAnimationTimeout;
         }
-
-        Spell.InstancedSpell current = this.getCurrentSpellInstance();
-        if (current != null && current.spell() != ModSpells.EMPTY) {
-            var spellCooldown = current.spell().getCooldown(current.args(), this);
-            int spellCastTime = getCastTime();
-
-            // If currently casting (between 0 and castTime) and cooldown is ready
-            if (data.getCooldown(spellCooldown) <= 0 && getCastTime() > 0 && getCastTime() <= spellCastTime) {
-                this.attackAnimationTimeout = 20;
-                this.attackAnimationState.startIfNotRunning(this.age);
-            } else {
-                if (this.attackAnimationTimeout > 0) {
-                    --this.attackAnimationTimeout;
-                } else {
-                    this.attackAnimationState.stop();
-                }
-            }
-            System.out.println("Cast Cooldown22: " + data.getCooldown(spellCooldown));
-            System.out.println("Cast Time22: " + getCastTime());
+        if (getCastTime() > 0 && getCastTime() < castTime) {
+            this.attackAnimationTimeout = 40;
+            this.attackAnimationState.startIfNotRunning(this.age);
         } else {
-            this.attackAnimationState.stop();
+            // Fade or stop animation when not in casting phase
+            if (this.attackAnimationTimeout > 0) {
+                --this.attackAnimationTimeout;
+            } else {
+                this.attackAnimationState.stop();
+            }
         }
     }
-
 
     protected void updateLimbs(float posDelta) {
         float f = this.getPose() == EntityPose.STANDING ? Math.min(posDelta * 6.0f, 1.0f) : 0.0f;
@@ -140,76 +130,55 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     @Override
     public void tick() {
         super.tick();
-         if (this.getCurrentSpellInstance() != null && this.getCurrentSpellInstance().spell() != null && this.getCurrentSpellInstance().args() != null) {
-            SpellDataStore data = getSpellDataStore(this);
-            Spell.InstancedSpell current = this.getCurrentSpellInstance();
-            var spellCooldown = current.spell().getCooldown(current.args(), this);
 
+        while (getCastCooldown() < castCooldown) {
+            setCastCooldown(getCastCooldown() + 1);
+        }
 
-            if (!this.getWorld().isClient()) {
-                if (current.spell() != ModSpells.EMPTY) {
-
-                    if (data.getCooldown(spellCooldown) <= 0) {
-                        if (this.target != null) {
-                            // Cooldown done — now start charging spell
-                            if (getCastTime() < castTime) {
-                                setCastTime(getCastTime() + 1);
-                            } else {
-                                // Cast complete
-                                this.lookAtEntity(target, 90, 90);
-                                castCurrentSpellAt(this.target);
-                                setCastTime(0);
-                            }
-                        }
-                    }
-                }
-                System.out.println("Cast Cooldown: " + data.getCooldown(spellCooldown));
-                System.out.println("Cast Time: " + getCastTime());
+        if (getCastCooldown() >= castCooldown) {
+            while (getCastTime() < castTime) {
+                setCastTime(getCastTime() + 1);
             }
-
-
-            if (target != null) {
-                if (this.getWorld().isClient() && current.spell() != ModSpells.EMPTY && data.getCooldown(spellCooldown) <= 0) {
-                    int colorInt = current.spell().getColor(current.args());
-
-                    float r = ((colorInt >> 16) & 0xFF) / 255.0F;
-                    float g = ((colorInt >> 8) & 0xFF) / 255.0F;
-                    float b = (colorInt & 0xFF) / 255.0F;
-
-                    float i = this.bodyYaw * 0.017453292F + MathHelper.cos((float) this.age * 0.6662F) * 0.25F;
-                    float j = MathHelper.cos(i);
-                    float k = MathHelper.sin(i);
-                    double d = 0.6 * (double) this.getScale();
-                    double e = 1.8 * (double) this.getScale();
-
-                    this.getWorld().addParticle(
-                            EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
-                            this.getX() + j * d, this.getY() + e, this.getZ() + k * d,
-                            0.0, 0.0, 0.0
-                    );
-
-                    this.getWorld().addParticle(
-                            EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
-                            this.getX() - j * d, this.getY() + e, this.getZ() - k * d,
-                            0.0, 0.0, 0.0
-                    );
-                }
+            if (getCastTime() >= castTime) {
+                castCurrentSpellAt(this.target);
+                setCastTime(0);
+                setCastCooldown(0);
             }
         }
+
         if (getAllSpellInstances().isEmpty()) {
-            this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 100);
-            }})));
-            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()));
-            this.setCurrentSpellInstance(ModSpells.SHULKER_BULLET, GrabBag.empty());
+            this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.empty()));
         }
 
         if (this.getWorld().isClient()) {
             setupAnimationStates();
         }
 
+        // Server-side spell cooldown tick
         if (!this.getWorld().isClient()) {
             ((SpellHost<LivingEntity>) this).tickCooldowns(this);
+        }
+
+        if (this.getWorld().isClient && this.getCurrentSpell() != ModSpells.EMPTY) {
+            Spell.InstancedSpell spell = this.getCurrentSpellInstance();
+            var color = Color.decode(Integer.toString(spell.spell().getColor(spell.args())));
+
+            float r = (float)color.getRed();
+            float g = (float)color.getGreen();
+            float b = (float)color.getBlue();
+            float i = this.bodyYaw * 0.017453292F + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
+            float j = MathHelper.cos(i);
+            float k = MathHelper.sin(i);
+            double d = 0.6 * (double)this.getScale();
+            double e = 1.8 * (double)this.getScale();
+            this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b), this.getX() + (double) j * d, this.getY() + e, this.getZ() + (double) k * d, 0.0, 0.0, 0.0);
+            this.getWorld().addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b), this.getX() - (double) j * d, this.getY() + e, this.getZ() - (double) k * d, 0.0, 0.0, 0.0);
+
+        }
+
+        // Example: auto-cast spell if cooldown is 0 and a target exists
+        if (!this.getWorld().isClient() && getTarget() != null && getSpellDataStore(this).getCooldown(null) <= 0) {
+            castCurrentSpellAt(getTarget());
         }
     }
 
@@ -240,6 +209,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         builder.add(SPELL_ARGS, new NbtCompound());
         builder.add(SPELLS, new NbtCompound());
         builder.add(SPELL_CAST_TIME, 0);
+        builder.add(SPELL_CAST_COOLDOWN, 0);
     }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminaryAttributes() {
@@ -307,6 +277,14 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             this.dataTracker.set(CURRENT_SPELL, id.toString());
             this.dataTracker.set(SPELL_ARGS, args != null ? GrabBag.toNBT(args) : new NbtCompound());
         }
+    }
+
+    public int getCastCooldown() {
+        return this.dataTracker.get(SPELL_CAST_COOLDOWN);
+    }
+
+    public void setCastCooldown(int cooldown) {
+        this.dataTracker.set(SPELL_CAST_COOLDOWN, cooldown);
     }
 
     public int getCastTime() {

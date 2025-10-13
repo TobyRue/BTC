@@ -35,8 +35,10 @@ public abstract class PredefinedSpellsItem extends MinimalPredefinedSpellsItem {
 
         if (!exists) {
             if (advId != null) {
-                if (AdvancementUtils.hasAdvancement(player, advId.getNamespace(), advId.getPath())) {
-                    list.add(spell);
+                if (player.getWorld() != null) {
+                    if (AdvancementUtils.hasAdvancement(player, advId.getNamespace(), advId.getPath())) {
+                        list.add(spell);
+                    }
                 }
             } else {
                 list.add(spell);

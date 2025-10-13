@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.util.AdvancementUtils;
 import io.github.tobyrue.xml.util.Nullable;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,9 +32,11 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
         boolean exists = spellList.stream()
                 .anyMatch(s -> s.spell() == spell.spell() && s.args() == spell.args());
         if (id != null) {
-            if (AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath())) {
-                if (!exists) {
-                    spellList.add(spell);
+            if (player != null && player.getWorld() != null) {
+                if (AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath())) {
+                    if (!exists) {
+                        spellList.add(spell);
+                    }
                 }
             }
         } else {
@@ -56,12 +59,11 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
 
                 for (Identifier id : advancements) {
                     System.out.println("Item " + stack.getItem() + " requires advancement: " + id);
-
-                    AdvancementUtils.requestAdvancementCheck(id.getNamespace(), id.getPath());
-
-                    boolean has = AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath());
-                    if (has) {
-                        System.out.println("Player has advancement " + id + " -> unlock spells");
+                    if (world != null) {
+                        boolean has = AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath());
+                        if (has) {
+                            System.out.println("Player has advancement " + id + " -> unlock spells");
+                        }
                     }
                 }
             }
@@ -72,7 +74,7 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        if (!resetSpellAdvancements && entity instanceof PlayerEntity player && world.isChunkLoaded(player.getChunkPos().getCenterX(), player.getChunkPos().getCenterZ())) {
+        if (!resetSpellAdvancements && entity instanceof PlayerEntity player && world != null) {
             resetSpellAdvancements = true;
             refreshAllMinimalSpellsItems(player, world);
         }
