@@ -285,7 +285,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 100);
-            }})), 0, 24, -1, -1, -1, -1, 0.85f);
+            }})), 0, 24, -1, -1, -1, -1, 0.7f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 100);
