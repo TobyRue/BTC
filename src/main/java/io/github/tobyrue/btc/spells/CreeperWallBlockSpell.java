@@ -13,7 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -47,16 +46,16 @@ public class CreeperWallBlockSpell extends Spell {
         double offsetTowardsPlayer = args.getDouble("offsetTowardsPlayer", 2.0D);
         boolean includeFluids = args.getBoolean("includeFluids", true);
 
-        @org.jetbrains.annotations.Nullable Entity pillarPosEntity = getEntityLookedAt((PlayerEntity) user, range, aimingForgiveness);
-        @org.jetbrains.annotations.Nullable Vec3d pillarPosBlock = getBlockLookedAt((PlayerEntity) user, range, 1.0F, includeFluids);
+        @org.jetbrains.annotations.Nullable Entity pillarPosEntity = getEntityLookedAt(user, range, aimingForgiveness);
+        @org.jetbrains.annotations.Nullable Vec3d pillarPosBlock = getBlockLookedAt(user, range, 1.0F, includeFluids);
         if (pillarPosEntity instanceof LivingEntity) {
-            spawnCreeperPillarWall(world, pillarPosEntity.getPos(), (PlayerEntity) user, count, offsetTowardsPlayer);
+            spawnCreeperPillarWall(world, pillarPosEntity.getPos(), user, count, offsetTowardsPlayer);
         } else if (pillarPosBlock != null) {
-            spawnCreeperPillarWall(world, pillarPosBlock, (PlayerEntity) user, count, 0.0);
+            spawnCreeperPillarWall(world, pillarPosBlock, user, count, 0.0);
         }
     }
 
-    public static void spawnCreeperPillarWall(World world, Vec3d centerPos, PlayerEntity player, int count, double offsetTowardsPlayer) {
+    public static void spawnCreeperPillarWall(World world, Vec3d centerPos, LivingEntity player, int count, double offsetTowardsPlayer) {
         // Direction from player to centerPos
         Vec3d direction = centerPos.subtract(player.getPos()).normalize();
 
@@ -103,7 +102,7 @@ public class CreeperWallBlockSpell extends Spell {
         // Fallback if no valid ground is found
         return null;
     }
-    public static @org.jetbrains.annotations.Nullable Vec3d getBlockLookedAt(PlayerEntity player, double range, float tickDelta, boolean includeFluids) {
+    public static @org.jetbrains.annotations.Nullable Vec3d getBlockLookedAt(LivingEntity player, double range, float tickDelta, boolean includeFluids) {
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
 
@@ -121,7 +120,7 @@ public class CreeperWallBlockSpell extends Spell {
         return null;
     }
 
-    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimingForgiveness) {
+    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));

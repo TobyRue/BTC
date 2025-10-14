@@ -38,7 +38,7 @@ public class CreeperWallExplosiveTrapSpell extends Spell {
         var world = ctx.world();
 
 
-        Entity entityLookedAt = getEntityLookedAt((PlayerEntity) user, 16, 0.3D);
+        Entity entityLookedAt = getEntityLookedAt(user, 16, 0.3D);
         if (entityLookedAt != null) {
             int spikes = Math.max(8, (int) (3 * 3) + 8);
             double radius = 2;
@@ -78,7 +78,7 @@ public class CreeperWallExplosiveTrapSpell extends Spell {
     }
 
 
-    public static @Nullable Entity getEntityLookedAt(PlayerEntity player, double range, double aimmingForgivness) {
+    public static @Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimmingForgivness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));

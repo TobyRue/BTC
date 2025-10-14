@@ -34,12 +34,7 @@ public class StormPushSpell extends Spell {
                 entity.setVelocity(dx / distance * shoot_strength, dy / distance * shoot_strength, dz / distance * shoot_strength);
             }
 
-            // Optionally, deal damage to the entity
-            if (entity instanceof PlayerEntity) {
-                entity.damage(ModDamageTypes.of(ctx.world(), ModDamageTypes.WIND_BURST), 5.0f);
-            } else {
-                entity.damage(ctx.world().getDamageSources().flyIntoWall(), 5);
-            }
+            entity.damage(ctx.world().getDamageSources().flyIntoWall(), 5);
         }
     }
 

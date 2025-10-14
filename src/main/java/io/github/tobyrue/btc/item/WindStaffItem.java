@@ -165,11 +165,8 @@ public class WindStaffItem extends StaffItem {
                 }
 
                 // Optionally, deal damage to the entity
-                if (entity instanceof PlayerEntity) {
-                    entity.damage(ModDamageTypes.of(world, ModDamageTypes.WIND_BURST), 5.0f);
-                } else {
-                    entity.damage(world.getDamageSources().flyIntoWall(), 5);
-                }
+
+                entity.damage(world.getDamageSources().flyIntoWall(), 5);
             }
         }
     }

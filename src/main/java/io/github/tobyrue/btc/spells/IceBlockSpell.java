@@ -40,6 +40,8 @@ public class IceBlockSpell extends Spell {
         double range = args.getDouble("range", 24);
         int duration = args.getInt("duration", 200);
         int amplifier = args.getInt("amplifier", 4);
+        int durationM = args.getInt("durationM", 200);
+        int amplifierM = args.getInt("amplifierM", 1);
 
         // Only run server-side
         if (!world.isClient) {
@@ -48,6 +50,7 @@ public class IceBlockSpell extends Spell {
             // Iterate over the target's bounding box dimensions
             if (target instanceof LivingEntity) {
                 ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, duration, amplifier));
+                ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, durationM, amplifierM));
 
                 BlockPos targetPos = target.getBlockPos();
                 // Get the size of the entity's bounding box
