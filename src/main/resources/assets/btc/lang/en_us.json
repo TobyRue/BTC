@@ -294,11 +294,14 @@
   "spell.btc.dragon_fireball": "Dragon Fireball",
   "spell.btc.life_steal": "Life Steal",
   "spell.btc.shulker_bullet": "Shulker Bullet",
+  "spell.btc.shadow_step": "Shadow Step",
 
   "spell.btc.potion.normal": "Potion",
   "spell.btc.potion_area_effect.normal": "Potion Area Effect",
   "spell.btc.potion_area_effect.poison": "Poison Area Effect",
   "spell.btc.empty": "",
+
+  "spell.btc.eldritch_illusion": "Eldritch Illusion",
 
   "radial.btc.spell.select_spell": "Select Spell",
   "radial.btc.spell.select_slot": "Select Slot"

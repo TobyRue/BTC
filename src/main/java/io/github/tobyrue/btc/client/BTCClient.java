@@ -136,7 +136,7 @@ public class BTCClient implements ClientModInitializer {
 
                             client.setScreen(new HexagonRadialMenu(
                                     Text.translatable("radial.btc.spell.select_spell"),
-                                    new ArrayList<>(spellValues),
+                                    spellValues,
                                     0, // starting index
                                     Math.min(maxSlots, 6),
                                     radialMenuKeyBinding,

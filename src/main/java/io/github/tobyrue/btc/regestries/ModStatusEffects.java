@@ -25,6 +25,7 @@ public class ModStatusEffects {
         NO_NATURAL_REGENERATION = ModStatusEffects.register("no_natural_regeneration", new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
         FROST_WALKER = ModStatusEffects.register("frost_walker", new FrostWalkerEffect());
     }
+
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
         return Registry.registerReference(Registries.STATUS_EFFECT, BTC.identifierOf(id), statusEffect);
     }

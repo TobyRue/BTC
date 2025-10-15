@@ -77,11 +77,9 @@ public class MistVeilSpell extends Spell {
         if (caster == other) return true; // Self is always ally
 
         if (other instanceof Tameable tameable) {
-            System.out.println("caster uuid: " + caster.getUuid() + " owner uuid: " + tameable.getOwnerUuid());
             if (caster.getUuid().equals(tameable.getOwnerUuid())) return true;
         }
         var casterTeam = caster.getScoreboardTeam();
-        System.out.println("Team: " + casterTeam);
         if (casterTeam == null) return false;
 
         if (!casterTeam.isFriendlyFireAllowed()) return false;

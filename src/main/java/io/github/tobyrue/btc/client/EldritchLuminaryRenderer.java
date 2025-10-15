@@ -19,6 +19,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
@@ -37,6 +39,19 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
 
     @Override
     public void render(EldritchLuminaryEntity livingEntity, float f, float g, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i) {
+        if (livingEntity.getIllusionTime() > 0) {
+            Vec3d[] vec3ds = livingEntity.getMirrorCopyOffsets(g);
+            float h = this.getAnimationProgress(livingEntity, g);
+            for (int j = 0; j < vec3ds.length; ++j) {
+                matrices.push();
+                matrices.translate(vec3ds[j].x + (double) MathHelper.cos((float)j + h * 0.5f) * 0.025, vec3ds[j].y + (double)MathHelper.cos((float)j + h * 0.75f) * 0.0125, vec3ds[j].z + (double)MathHelper.cos((float)j + h * 0.7f) * 0.025);
+                super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
+                matrices.pop();
+            }
+        } else {
+            super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
+        }
+
         super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
     }
 }

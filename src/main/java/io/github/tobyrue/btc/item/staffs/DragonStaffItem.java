@@ -55,6 +55,7 @@ public class DragonStaffItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.empty()));
         }
         return s;
     }

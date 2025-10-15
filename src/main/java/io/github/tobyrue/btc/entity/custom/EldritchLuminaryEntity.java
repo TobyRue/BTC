@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.entity.custom;
 
 
+import io.github.tobyrue.btc.client.EldritchLuminaryModel;
+import io.github.tobyrue.btc.client.EldritchLuminaryRenderer;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
@@ -10,6 +12,7 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellDataStore;
 import io.github.tobyrue.btc.spell.SpellHost;
+import net.minecraft.client.render.entity.IllusionerEntityRenderer;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -23,10 +26,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.Angerable;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -48,6 +48,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<NbtCompound> SPELL_ARGS = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     private static final TrackedData<NbtCompound> SPELLS = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     private static final TrackedData<Integer> SPELL_CAST_TIME = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> ILLUSION_TIME = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
     private Spell.InstancedSpell activeCastingSpell = null;
 
     private LivingEntity target;
@@ -58,7 +60,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
     private final int castTime = 30;
-
+    private final int illusionTime = 400;
+    private final Vec3d[][] mirrorCopyOffsets;
 
     @Override
     protected void initGoals() {
@@ -84,6 +87,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         builder.add(SPELL_ARGS, new NbtCompound());
         builder.add(SPELLS, new NbtCompound());
         builder.add(SPELL_CAST_TIME, 0);
+        builder.add(ILLUSION_TIME, 0);
     }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminaryAttributes() {
@@ -102,6 +106,11 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.experiencePoints = 20;
+        this.mirrorCopyOffsets = new Vec3d[2][4];
+        for (int i = 0; i < 4; ++i) {
+            this.mirrorCopyOffsets[0][i] = Vec3d.ZERO;
+            this.mirrorCopyOffsets[1][i] = Vec3d.ZERO;
+        }
     }
 
     @Override
@@ -152,10 +161,32 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         this.limbAnimator.updateLimbs(f, 0.2F);
     }
 
+    public Vec3d[] getMirrorCopyOffsets(float tickDelta) {
+        if (this.getIllusionTime() <= 0) {
+            return this.mirrorCopyOffsets[1];
+        }
+        double d = ((float)this.getIllusionTime() - tickDelta) / 3.0f;
+        d = Math.pow(d, 0.25);
+        Vec3d[] vec3ds = new Vec3d[4];
+        for (int i = 0; i < 4; ++i) {
+            vec3ds[i] = this.mirrorCopyOffsets[1][i].multiply(1.0 - d).add(this.mirrorCopyOffsets[0][i].multiply(d));
+        }
+        return vec3ds;
+    }
+
     @Override
     public void tick() {
         super.tick();
-         if (this.getCurrentSpellInstance() != null && this.getCurrentSpellInstance().spell() != null && this.getCurrentSpellInstance().args() != null) {
+
+        if (this.getWorld().isClient()) {
+            if (getIllusionTime() > 0 && getIllusionTime() <= illusionTime) {
+                this.setIllusionTime(getIllusionTime() + 1);
+            } else if (getIllusionTime() >= illusionTime) {
+                this.setIllusionTime(0);
+            }
+        }
+
+        if (this.getCurrentSpellInstance() != null && this.getCurrentSpellInstance().spell() != null && this.getCurrentSpellInstance().args() != null) {
             SpellDataStore data = getSpellDataStore(this);
             Spell.InstancedSpell current = this.getCurrentSpellInstance();
             var spellCooldown = current.spell().getCooldown(current.args(), this);
@@ -278,6 +309,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 put("amplifier", 3);
             }})), 0, 24, 30, -1, -1, -1, 1f);
 
+            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
+                put("effect", "minecraft:blindness");
+                put("duration", 200);
+                put("cooldown", 100);
+                put("amplifier", 3);
+            }})), 0, 24, 60, -1, -1, -1, 0.9f);
+
             this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
                 put("noGravity", true);
                 put("cooldown", 100);
@@ -285,11 +323,19 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 100);
-            }})), 0, 24, -1, -1, -1, -1, 0.7f);
+            }})), 6, 24, -1, -1, -1, -1, 0.6f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 100);
             }})), 0, 8, -1, -1, -1, -1, 0.7f);
+
+            this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", 100);
+            }})), 0, 18, -1, -1, 40, -1, 0.8f);
+
+            this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", 100);
+            }})), 0, 24, -1, -1, -1, -1, 1.1f);
 
             this.setSpellEmpty();
         }
@@ -460,6 +506,14 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
     public void setCastTime(int time) {
         this.dataTracker.set(SPELL_CAST_TIME, time);
+    }
+
+    public int getIllusionTime() {
+        return this.dataTracker.get(ILLUSION_TIME);
+    }
+
+    public void setIllusionTime(int time) {
+        this.dataTracker.set(ILLUSION_TIME, time);
     }
 
     public Spell getCurrentSpell() {

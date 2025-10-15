@@ -34,7 +34,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
+        this.end = Math.min(end, radialIdentifiers.sectors());
         this.radialIdentifiers = radialIdentifiers;
         this.suffixTitle = title;
     }
@@ -44,7 +44,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.radialIdentifiers = radialIdentifiers;
         this.start = 0;
-        this.end = 6;
+        this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.suffixTitle = title;
     }
 
@@ -53,8 +53,8 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.end = Math.min(end, radialIdentifiers.sectors());
         this.suffixTitle = title;
     }
 
@@ -63,7 +63,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
         this.start = 0;
-        this.end = 6;
+        this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.suffixTitle = title;
     }
 
@@ -72,7 +72,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
+        this.end = Math.min(end, radialIdentifiers.sectors());
         this.radialIdentifiers = radialIdentifiers;
         this.suffixTitle = suffixTitle;
     }
@@ -82,7 +82,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.radialIdentifiers = radialIdentifiers;
         this.start = 0;
-        this.end = 6;
+        this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.suffixTitle = suffixTitle;
     }
 
@@ -91,8 +91,8 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = end; // clamp to size
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.end = Math.min(end, radialIdentifiers.sectors());
         this.suffixTitle = suffixTitle;
     }
 
@@ -101,7 +101,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
         this.spells = spells;
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
         this.start = 0;
-        this.end = 6;
+        this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.suffixTitle = suffixTitle;
     }
 
@@ -308,7 +308,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             this.prefixCommand = prefixCommand;
             this.spells = spells;
             this.start = start;
-            this.end = end; // clamp to size
+            this.end = Math.min(end, radialIdentifiers.sectors());
             this.radialIdentifiers = radialIdentifiers;
         }
 
@@ -318,7 +318,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             this.prefixCommand = prefixCommand;
             this.spells = spells;
             this.start = 0;
-            this.end = 6; // clamp to size
+            this.end = Math.min(spells.size(), radialIdentifiers.sectors());
             this.radialIdentifiers = radialIdentifiers;
         }
 
@@ -328,8 +328,8 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             // only keep first 6 if longer
             this.spells = spells;
             this.start = start;
-            this.end = end; // clamp to size
             this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+            this.end = Math.min(end, radialIdentifiers.sectors());
         }
 
         public HexagonRadialMenuWithSuffixNoHover(Text title, String prefixCommand, List<SuffixValueNoHover> spells) {
@@ -338,7 +338,7 @@ public class HexagonRadialMenuWithPrefixNoHover extends Screen {
             this.spells = spells;
             this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30,40, 6, true, true, 582, 603, 0.3f);
             this.start = 0;
-            this.end = 6;
+            this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         }
 
         @Override

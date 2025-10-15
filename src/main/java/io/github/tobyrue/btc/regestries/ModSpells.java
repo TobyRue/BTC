@@ -72,6 +72,7 @@ public class ModSpells {
     public static final Spell LIFE_STEAL = register("life_steal", new LifeStealSpell());
     public static final Spell ENDER_CHEST = register("ender_chest", new EnderChestSpell());
     public static final Spell SHULKER_BULLET = register("shulker_bullet", new ShulkerBulletSpell());
+    public static final Spell SHADOW_STEP = register("shadow_step", new ShadowStepSpell());
 
     public static final Spell EARTH_SPIKE_LINE = register("earth_spike_line", new EarthSpikeLineSpell());
     public static final Spell CREEPER_WALL_CIRCLE = register("creeper_wall_circle", new CreeperWallCircleSpell());
@@ -84,6 +85,10 @@ public class ModSpells {
     public static final Spell GEYSER_STEP = register("geyser_step", new GeyserStepSpell());
     public static final Spell MIST_VEIL = register("mist_veil", new MistVeilSpell());
     public static final Spell RIPTIDE = register("riptide", new RiptideSpell());
+
+
+
+    public static final Spell ELDRITCH_ILLUSION = register("eldritch_illusion", new EldritchIllusionSpell());
 
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
