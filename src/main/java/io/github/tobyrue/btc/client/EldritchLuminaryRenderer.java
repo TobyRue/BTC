@@ -76,11 +76,6 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
                 super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
                 matrices.pop();
             }
-
-            // Optionally, DO NOT render the real one at the center if you want only illusions visible
-            // Remove the following line to hide the center one:
-            super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
-
         } else {
             // Normal render path
             super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
