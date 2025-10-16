@@ -82,4 +82,11 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
         }
     }
 
+    @Override
+    protected float getShadowRadius(EldritchLuminaryEntity mobEntity) {
+        if (mobEntity.getIllusionTime() > 0) {
+            return 0;
+        }
+        return super.getShadowRadius(mobEntity);
+    }
 }
