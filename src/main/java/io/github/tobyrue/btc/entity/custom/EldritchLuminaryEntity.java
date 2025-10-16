@@ -296,7 +296,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 put("shootStrength", 2d);
                 put("verticalMultiplier", 1.2d);
                 put("cooldown", 100);
-            }})), 0, 4, 40, -1, -1, -1, 0.8f);
+            }})), 0, 8, 60, -1, -1, -1, 0.8f);
             this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_BLOCK, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 150);
             }})), 2, 10, 30, 4, -1, -1, 0.7f);

@@ -27,7 +27,6 @@ public class EldritchIllusionSpell extends Spell {
         if (ctx.user() instanceof EldritchLuminaryEntity luminaryEntity) {
             luminaryEntity.setIllusionTime(1);
             luminaryEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 3, false, false, false));
-            luminaryEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 600, 1, false, false, false));
         }
     }
 
