@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
@@ -35,23 +36,55 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
     @Override
     public Identifier getTexture(EldritchLuminaryEntity luminary) {
         return TEXTURE;
-    } 
+    }
 
     @Override
     public void render(EldritchLuminaryEntity livingEntity, float f, float g, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (livingEntity.getIllusionTime() > 0) {
             Vec3d[] vec3ds = livingEntity.getMirrorCopyOffsets(g);
             float h = this.getAnimationProgress(livingEntity, g);
-            for (int j = 0; j < vec3ds.length; ++j) {
+
+            // How far away each illusion should appear
+            double baseSpread = 2.5; // increase for wider spread
+            Random random = Random.create(livingEntity.getId());
+
+            // Precompute static offsets the first time the illusions are used
+            if (livingEntity.getIllusionOffsets() == null) {
+                Vec3d[] randomOffsets = new Vec3d[vec3ds.length];
+                for (int j = 0; j < vec3ds.length; ++j) {
+                    double x = (random.nextDouble() - 0.5) * baseSpread * 2;
+                    double y = (random.nextDouble() - 0.5) * 0.5; // small vertical variance
+                    double z = (random.nextDouble() - 0.5) * baseSpread * 2;
+                    randomOffsets[j] = new Vec3d(x, y, z);
+                }
+                livingEntity.setIllusionOffsets(randomOffsets);
+            }
+
+            Vec3d[] illusionOffsets = livingEntity.getIllusionOffsets();
+
+            // Render each illusion clone at its static random offset
+            for (int j = 0; j < illusionOffsets.length; ++j) {
+                Vec3d off = illusionOffsets[j];
+
                 matrices.push();
-                matrices.translate(vec3ds[j].x + (double) MathHelper.cos((float)j + h * 0.5f) * 0.025, vec3ds[j].y + (double)MathHelper.cos((float)j + h * 0.75f) * 0.0125, vec3ds[j].z + (double)MathHelper.cos((float)j + h * 0.7f) * 0.025);
+                // small bobbing animation only (no spinning)
+                double bobX = MathHelper.cos((float) j + h * 0.5f) * 0.025;
+                double bobY = MathHelper.cos((float) j + h * 0.75f) * 0.0125;
+                double bobZ = MathHelper.cos((float) j + h * 0.7f) * 0.025;
+
+                matrices.translate(off.x + bobX, off.y + bobY, off.z + bobZ);
                 super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
                 matrices.pop();
             }
+
+            // Optionally, DO NOT render the real one at the center if you want only illusions visible
+            // Remove the following line to hide the center one:
+            super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
+
         } else {
+            // Normal render path
             super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
         }
-
-        super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
     }
+
 }
