@@ -297,7 +297,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             // Base elemental attacks
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 60);
-            }})), 8, 24, -1, -1, -1, -1, 0.6f);
+            }})), 4, 24, -1, -1, -1, -1, 0.6f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
                 put("noGravity", true);
@@ -319,71 +319,67 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 200);
-            }})), 5, 12, 8, -1, -1, -1, 0.8f);
+            }})), 5, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
                 put("shootStrength", 2d);
                 put("verticalMultiplier", 1.2d);
                 put("cooldown", 100);
-            }})), 0, 8, 60, -1, -1, -1, 0.8f);
+            }})), 0, 24, -1, -1, -1, -1, 0.8f);
 
             // Summon / illusionary magic
-            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()), 4, 16, -1, 6, -1, 75, 0.5f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()), 0, 24, -1, -1, -1, -1, 0.5f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 600);
-            }})), 0, 24, 60, -1, -1, -1, 0.9f);
+            }})), 0, 24, -1, -1, -1, -1, 0.9f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 180);
-            }})), 0, 10, -1, -1, -1, -1, 0.75f);
+            }})), 0, 16, -1, -1, -1, -1, 0.75f);
 
             // Buffs and debuffs
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:invisibility");
                 put("duration", 400);
                 put("cooldown", 120);
-            }})), 0, 24, 50, -1, -1, -1, 0.85f);
+            }})), 0, 48, -1, -1, -1, -1, 0.85f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:regeneration");
                 put("duration", 150);
                 put("amplifier", 3);
                 put("cooldown", 120);
-            }})), 0, 24, 60, -1, -1, -1, 1.3f);
+            }})), 0, 48, 80, -1, -1, -1, 1.3f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:blindness");
+                put("effect", "minecraft:darkness");
                 put("duration", 200);
                 put("amplifier", 3);
                 put("cooldown", 150);
-            }})), 0, 24, 60, -1, -1, -1, 0.9f);
+            }})), 0, 24, -1, -1, -1, -1, 0.9f);
 
             // Movement / trick spells
             this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 160);
-            }})), 0, 18, -1, -1, 40, -1, 0.8f);
+            }})), 0, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 180);
-            }})), 0, 20, 50, -1, -1, -1, 0.75f);
+            }})), 0, 20, -1, -1, -1, -1, 0.75f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 200);
-            }})), 0, 20, 50, -1, -1, -1, 0.8f);
+            }})), 0, 20, -1, -1, -1, -1, 0.8f);
 
             // Utility / advanced magic
             this.addSpell(new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 220);
             }})), 0, 24, -1, -1, -1, -1, 1.2f);
 
-            this.addSpell(new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 80);
-            }})), 0, 16, -1, -1, -1, -1, 0.7f);
-
             this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 300);
-            }})), 0, 20, -1, -1, -1, -1, 0.9f);
+            }})), 0, 24, -1, -1, -1, -1, 0.9f);
             this.setSpellEmpty();
         }
 
