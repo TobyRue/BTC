@@ -243,7 +243,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                         data.setCooldown(cd);
 
                         // Now set delay for next cast
-                        setGlobalCastDelay(10);
+                        setGlobalCastDelay(20);
 
                         activeCastingSpell = null;
                         setCastTime(0);
