@@ -301,41 +301,43 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
                 put("noGravity", true);
-                put("cooldown", 80);
+                put("cooldown", 60);
             }})), 0, 24, -1, -1, -1, -1, 0.7f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 90);
+                put("cooldown", 30);
             }})), 0, 12, -1, 15, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 150);
+                put("cooldown", 60);
             }})), 6, 24, -1, -1, -1, -1, 0.6f);
 
             // Area or multi-attack spells
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 180);
+                put("cooldown", 60);
             }})), 0, 8, -1, -1, -1, -1, 0.7f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 200);
+                put("cooldown", 60);
             }})), 5, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
                 put("shootStrength", 2d);
                 put("verticalMultiplier", 1.2d);
-                put("cooldown", 100);
+                put("cooldown", 30);
             }})), 0, 24, -1, -1, -1, -1, 0.8f);
 
             // Summon / illusionary magic
-            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()), 0, 24, -1, -1, -1, -1, 0.5f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", 60);
+            }})), 0, 24, -1, -1, -1, -1, 0.5f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", 600);
             }})), 0, 24, -1, -1, -1, -1, 0.9f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 180);
+                put("cooldown", 60);
             }})), 0, 16, -1, -1, -1, -1, 0.75f);
 
             // Buffs and debuffs
