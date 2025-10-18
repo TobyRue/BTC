@@ -89,6 +89,7 @@ public class ModSpells {
 
 
     public static final Spell ELDRITCH_ILLUSION = register("eldritch_illusion", new EldritchIllusionSpell());
+    public static final Spell PURGE_BOLT = register("purge_bolt", new PurgeBoltSpell());
 
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {

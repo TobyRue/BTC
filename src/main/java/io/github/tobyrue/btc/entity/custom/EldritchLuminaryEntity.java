@@ -52,6 +52,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<Integer> GLOBAL_CAST_DELAY =
             DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
+    private static final int GLOBAL_DELAY = 20;
+
     private Spell.InstancedSpell activeCastingSpell = null;
 
     private LivingEntity target;
@@ -243,7 +245,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                         data.setCooldown(cd);
 
                         // Now set delay for next cast
-                        setGlobalCastDelay(20);
+                        setGlobalCastDelay(GLOBAL_DELAY);
 
                         activeCastingSpell = null;
                         setCastTime(0);
@@ -257,7 +259,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 activeCastingSpell = new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                     put("effect", "minecraft:regeneration");
                     put("duration", 150);
-                    put("cooldown", 100);
+                    put("cooldown", 0);
                     put("amplifier", 4);
                 }}));
                 setCurrentSpellInstance(activeCastingSpell.spell(), activeCastingSpell.args());
@@ -296,92 +298,95 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (getAllSpellInstances().isEmpty()) {
             // Base elemental attacks
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(1));
             }})), 4, 24, -1, -1, -1, -1, 0.6f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
                 put("noGravity", true);
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(1));
             }})), 0, 24, -1, -1, -1, -1, 0.7f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 30);
+                put("cooldown", getSpellWaitAmount(1));
             }})), 0, 12, -1, 15, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(3));
             }})), 6, 24, -1, -1, -1, -1, 0.6f);
 
             // Area or multi-attack spells
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(1));
             }})), 0, 8, -1, -1, -1, -1, 0.7f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(2));
             }})), 5, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
                 put("shootStrength", 2d);
                 put("verticalMultiplier", 1.2d);
-                put("cooldown", 30);
+                put("cooldown", getSpellWaitAmount(0));
             }})), 0, 24, -1, -1, -1, -1, 0.8f);
 
             // Summon / illusionary magic
             this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(1));
             }})), 0, 24, -1, -1, -1, -1, 0.5f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 600);
+                put("cooldown", getSpellWaitAmount(3));
             }})), 0, 24, -1, -1, -1, -1, 0.9f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 60);
+                put("cooldown", getSpellWaitAmount(1));
             }})), 0, 16, -1, -1, -1, -1, 0.75f);
 
             // Buffs and debuffs
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:invisibility");
                 put("duration", 400);
-                put("cooldown", 120);
+                put("cooldown", getSpellWaitAmount(2));
             }})), 0, 48, -1, -1, -1, -1, 0.85f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:regeneration");
                 put("duration", 150);
                 put("amplifier", 3);
-                put("cooldown", 120);
+                put("cooldown", getSpellWaitAmount(0));
             }})), 0, 48, 80, -1, -1, -1, 1.3f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:darkness");
                 put("duration", 200);
                 put("amplifier", 3);
-                put("cooldown", 150);
+                put("cooldown", getSpellWaitAmount(2));
             }})), 0, 24, -1, -1, -1, -1, 0.9f);
 
             // Movement / trick spells
             this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 160);
+                put("cooldown", getSpellWaitAmount(2));
             }})), 0, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 180);
+                put("cooldown", getSpellWaitAmount(2));
             }})), 0, 20, -1, -1, -1, -1, 0.75f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 200);
-            }})), 0, 20, -1, -1, -1, -1, 0.8f);
+                put("cooldown", getSpellWaitAmount(2));
+            }})), 0, 20, -1, -1, -1, -1, 0.5f);
 
             // Utility / advanced magic
             this.addSpell(new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 220);
-            }})), 0, 24, -1, -1, -1, -1, 1.2f);
+                put("cooldown", getSpellWaitAmount(1));
+            }})), 0, 24, 40, -1, -1, -1, 1f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", 300);
-            }})), 0, 24, -1, -1, -1, -1, 0.9f);
+                put("cooldown", getSpellWaitAmount(1));
+            }})), 0, 24, -1, -1, -1, -1, 0.8f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(5));
+            }})), 0, 24, -1, -1, -1, -1, 0.1f);
             this.setSpellEmpty();
         }
 
@@ -392,6 +397,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (!this.getWorld().isClient()) {
             ((SpellHost<LivingEntity>) this).tickCooldowns(this);
         }
+    }
+
+    private int getSpellWaitAmount(int amount) {
+        return ((amount) * (GLOBAL_DELAY + castTime)) + 1;
     }
 
     private void castCurrentSpellAt(LivingEntity target) {
@@ -439,12 +448,53 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
     }
 
-    @Nullable
-    public Spell.InstancedSpell getRandomSpellInstance() {
-        List<Spell.InstancedSpell> spells = this.getAllSpellInstances();
-        if (spells.isEmpty()) return null;
+    public boolean canUseSpell(Spell.InstancedSpell spellInstance) {
+        if (spellInstance == null || spellInstance.spell() == ModSpells.EMPTY) return false;
 
-        return spells.get(this.getWorld().random.nextInt(spells.size()));
+        SpellDataStore data = getSpellDataStore(this);
+        NbtCompound nbt = this.dataTracker.get(SPELLS);
+        if (nbt == null) return false;
+
+        Identifier id = ModRegistries.SPELL.getId(spellInstance.spell());
+        if (id == null || !nbt.contains(id.toString())) return false;
+
+        double distance = this.target != null ? this.distanceTo(this.target) : 0.0;
+        double selfHealthPercent = (this.getHealth() / this.getMaxHealth()) * 100.0;
+        double targetHealthPercent = (this.target != null && this.target.getMaxHealth() > 0)
+                ? (this.target.getHealth() / this.target.getMaxHealth()) * 100.0
+                : 100.0;
+
+        boolean targetOnFire = (this.target != null && this.target.isOnFire());
+
+        // --- Fire/water edge cases ---
+        if (targetOnFire && (spellInstance.spell() == ModSpells.WATER_WAVE || spellInstance.spell() == ModSpells.WATER_BLAST))
+            return false;
+        if (this.target != null && this.target.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)
+                && spellInstance.spell().getSpellType() == SpellTypes.FIRE)
+            return false;
+
+        NbtCompound spellData = nbt.getCompound(id.toString());
+
+        double min = spellData.getDouble("minDistance");
+        double max = spellData.getDouble("maxDistance");
+        double belowLife = spellData.contains("belowLife") ? spellData.getDouble("belowLife") : -1;
+        double aboveLife = spellData.contains("aboveLife") ? spellData.getDouble("aboveLife") : -1;
+        double targetBelowLife = spellData.contains("targetBelowLife") ? spellData.getDouble("targetBelowLife") : -1;
+        double targetAboveLife = spellData.contains("targetAboveLife") ? spellData.getDouble("targetAboveLife") : -1;
+
+        if (belowLife == -1) belowLife = 100.0;
+        if (aboveLife == -1) aboveLife = 0.0;
+        if (targetBelowLife == -1) targetBelowLife = 100.0;
+        if (targetAboveLife == -1) targetAboveLife = 0.0;
+
+        boolean withinDistance = (max <= 0 || (distance >= min && distance <= max));
+        boolean withinSelfHealth = (selfHealthPercent <= belowLife && selfHealthPercent >= aboveLife);
+        boolean withinTargetHealth = (targetHealthPercent <= targetBelowLife && targetHealthPercent >= targetAboveLife);
+
+        var cd = spellInstance.spell().getCooldown(spellInstance.args(), this);
+        boolean cooldownReady = data.getCooldown(cd) <= 0;
+
+        return withinDistance && withinSelfHealth && withinTargetHealth && cooldownReady;
     }
 
     public Spell.InstancedSpell chooseRandomCurrentSpell() {
@@ -486,10 +536,28 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         for (Spell.InstancedSpell spellInstance : spells) {
             Identifier id = ModRegistries.SPELL.getId(spellInstance.spell());
             if (id == null || nbt == null || !nbt.contains(id.toString())) continue;
-
+            var pb = new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(5));
+            }}));
 
             if (targetOnFire && (spellInstance.spell() == ModSpells.WATER_WAVE && spellInstance.spell() == ModSpells.WATER_BLAST)) continue;
-            if (target.hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && spellInstance.spell().getSpellType() == SpellTypes.FIRE) continue;
+            if (target.hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && spellInstance.spell().getSpellType() == SpellTypes.FIRE) {
+                if (canUseSpell(pb)) {
+                    setCurrentSpellInstance(pb.spell(), pb.args());
+                    return pb;
+                } else {
+                    continue;
+                }
+            }
+
+            if (target.hasStatusEffect(StatusEffects.REGENERATION) || target.hasStatusEffect(StatusEffects.RESISTANCE) || target.hasStatusEffect(StatusEffects.ABSORPTION)) {
+                if (canUseSpell(pb)) {
+                    setCurrentSpellInstance(pb.spell(), pb.args());
+                    return pb;
+                } else {
+                    continue;
+                }
+            }
 
             NbtCompound spellData = nbt.getCompound(id.toString());
 
