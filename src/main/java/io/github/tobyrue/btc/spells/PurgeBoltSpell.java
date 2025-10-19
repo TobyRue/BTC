@@ -12,6 +12,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
@@ -20,6 +21,8 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.Optional;
+
+import static com.ibm.icu.impl.ValidIdentifiers.Datatype.x;
 
 public class PurgeBoltSpell extends Spell {
 
@@ -47,8 +50,18 @@ public class PurgeBoltSpell extends Spell {
                     Vec3d pos = start.add(dir.multiply(speed * tick));
 
                     // Client visual trail
-                    world.addParticle(ParticleTypes.LARGE_SMOKE,
-                            pos.x, pos.y + 0.1, pos.z, 0, 0, 0);
+                    if (!world.isClient) {
+                        ((ServerWorld) world).spawnParticles(
+                                ParticleTypes.LARGE_SMOKE, // particle type
+                                pos.x, pos.y + 0.1, pos.z, // position
+                                1,                          // count
+                                0, 0, 0,                    // offset (spread)
+                                0                           // speed
+                        );
+                    } else {
+                        world.addParticle(ParticleTypes.LARGE_SMOKE,
+                                pos.x, pos.y + 0.1, pos.z, 0, 0, 0);
+                    }
 
                     if (!world.isClient) {
                         // Check if the bolt hits any entity along the look vector

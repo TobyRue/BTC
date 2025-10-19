@@ -65,7 +65,8 @@ public class ModSpells {
     public static final Spell STORM_PUSH = register("storm_push", new StormPushSpell());
     public static final Spell LOCALIZED_STORM_PUSH = register("localized_storm_push", new LocalizedStormPushSpell());
     public static final Spell WIND_TORNADO = register("wind_tornado", new WindTornadoSpell());
-
+    public static final Spell LIGHTNING_STRIKE = register("lightning_strike", new LightningStrikeSpell());
+    public static final Spell STORM_SURGE = register("storm_surge", new StormSurgeSpell());
 
     public static final Spell ENDER_PEARL = register("ender_pearl", new EnderPearlSpell());
     public static final Spell DRAGONS_BREATH = register("dragon_fireball", new DragonFireballSpell());

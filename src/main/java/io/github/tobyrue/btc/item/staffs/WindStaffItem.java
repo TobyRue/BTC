@@ -54,6 +54,8 @@ public class WindStaffItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.STORM_PUSH, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.TEMPESTS_CALL, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LIGHTNING_STRIKE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.STORM_SURGE, GrabBag.empty()));
         }
         return s;
     }

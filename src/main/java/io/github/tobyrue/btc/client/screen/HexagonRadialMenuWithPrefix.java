@@ -34,7 +34,7 @@ public class HexagonRadialMenuWithPrefix extends Screen {
         super(title);
         this.spells = spells;
         this.start = start;
-        this.end = Math.min(end, radialIdentifiers.sectors());
+        this.end = Math.min(spells.size(), end);
         this.radialIdentifiers = radialIdentifiers;
         this.key = key;
         this.suffixTitle = suffixTitle;
@@ -360,7 +360,7 @@ public class HexagonRadialMenuWithPrefix extends Screen {
             this.prefixCommand = prefixCommand;
             this.spells = spells;
             this.start = start;
-            this.end = Math.min(end, radialIdentifiers.sectors());
+            this.end = Math.min(spells.size(), end);
             this.key = key;
             this.radialIdentifiers = radialIdentifiers;
         }

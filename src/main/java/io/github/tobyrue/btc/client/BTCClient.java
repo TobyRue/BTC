@@ -168,7 +168,7 @@ public class BTCClient implements ClientModInitializer {
                                     Text.translatable("radial.btc.spell.select_spell"),
                                     new ArrayList<>(spellValues),
                                     0, // starting index
-                                    Math.min(maxSlots, 6) ,
+                                    Math.min(maxSlots, 6),
                                     radialMenuKeyBinding
                             ));
                         }

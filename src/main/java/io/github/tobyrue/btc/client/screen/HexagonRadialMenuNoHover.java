@@ -30,7 +30,7 @@ public class HexagonRadialMenuNoHover extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = Math.min(end, radialIdentifiers.sectors());
+        this.end = Math.min(spells.size(), end);
         this.radialIdentifiers = radialIdentifiers;
     }
 

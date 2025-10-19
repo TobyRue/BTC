@@ -34,7 +34,7 @@ public class HexagonRadialMenu extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = Math.min(end, radialIdentifiers.sectors());
+        this.end = Math.min(spells.size(), end);
         this.radialIdentifiers = radialIdentifiers;
         this.key = key;
     }
@@ -53,7 +53,7 @@ public class HexagonRadialMenu extends Screen {
         // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
-        this.end = Math.min(spells.size(), 6);
+        this.end = Math.min(spells.size(), end);
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
         this.key = key;
     }
@@ -62,8 +62,8 @@ public class HexagonRadialMenu extends Screen {
         super(title);
         this.spells = spells;
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.end = Math.min(spells.size(), 6);
         this.start = 0;
-        this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.key = key;
     }
 
