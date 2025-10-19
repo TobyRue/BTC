@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
 
-import io.github.tobyrue.btc.client.EldritchLuminaryModel;
-import io.github.tobyrue.btc.client.EldritchLuminaryRenderer;
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
@@ -12,7 +10,6 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellDataStore;
 import io.github.tobyrue.btc.spell.SpellHost;
-import net.minecraft.client.render.entity.IllusionerEntityRenderer;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -244,14 +241,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 if (activeCastingSpell == null && getCastTime() <= 0) {
                     activeCastingSpell = chooseRandomCurrentSpell();
                     setCastTime(1);
-                    System.out.println("Step 1 Cast spell");
-
+//                    System.out.println("Step 1 Cast spell: Active: " + activeCastingSpell);
                 }
 
                 // Step 2: Continue charging
                 else if (activeCastingSpell != null && getCastTime() < castTime) {
                     setCastTime(getCastTime() + 1);
-                    System.out.println("Step 2 In charging");
+//                    System.out.println("Step 2 In charging: Active: " + activeCastingSpell);
                 }
 
                 // Step 3: Cast spell
@@ -260,7 +256,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                     castCurrentSpellAt(this.target);
 
                     // Now set delay for next cast
-                    System.out.println("Step 3 Cast spell: Spell: " + activeCastingSpell.spell());
+//                    System.out.println("Step 3 Cast spell: Spell: " + activeCastingSpell.spell());
                     setGlobalCastDelay(GLOBAL_DELAY);
 
                     activeCastingSpell = null;
@@ -315,6 +311,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             // Base elemental attacks
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(1));
+                put("level", 2);
             }})), 4, 24, -1, -1, -1, -1, 0.6f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
@@ -386,13 +383,20 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 put("cooldown", getSpellWaitAmount(2));
             }})), 0, 24, -1, -1, -1, -1, 0.9f);
 
+            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
+                put("effect", "minecraft:mining_fatigue");
+                put("duration", 300);
+                put("amplifier", 5);
+                put("cooldown", getSpellWaitAmount(8));
+            }})), 0, 24, 80, -1, -1, -1, 0.9f);
+
             // Movement / trick spells
             this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(2));
             }})), 0, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(2));
+                put("cooldown", getSpellWaitAmount(3));
             }})), 0, 20, -1, -1, -1, -1, 0.75f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
@@ -404,9 +408,15 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 put("cooldown", getSpellWaitAmount(1));
             }})), 0, 24, 40, -1, -1, -1, 1f);
 
-            this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
+            this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGON_FIREBALL, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(1));
             }})), 0, 24, -1, -1, -1, -1, 0.8f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(5));
+            }})), 0, 8, -1, -1, -1, -1, 0.7f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(5));
+            }})), 0, 10, -1, -1, -1, -1, 0.7f);
             this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(5));
             }})), 0, 24, -1, -1, -1, -1, 0f);
@@ -525,13 +535,12 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         SpellDataStore data = getSpellDataStore(this);
 
         if (getGlobalCastDelay() > 0) {
-            System.out.println("Set To Empty 1");
             return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
         }
 
         List<Spell.InstancedSpell> spells = getAllSpellInstances();
+//        System.out.println("Spell Instances: " + getAllSpellInstances());
         if (spells.isEmpty()) {
-            System.out.println("Set To Empty 2");
             setCurrentSpellInstance(ModSpells.EMPTY, GrabBag.empty());
             return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
         }
@@ -559,24 +568,25 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         boolean targetOnFire = (this.target != null && this.target.isOnFire());
 
+        var pb = new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(5));
+        }}));
+
+        if (target.hasStatusEffect(StatusEffects.REGENERATION) || target.hasStatusEffect(StatusEffects.RESISTANCE) || target.hasStatusEffect(StatusEffects.ABSORPTION)) {
+            if (canUseSpell(pb)) {
+                setCurrentSpellInstance(pb.spell(), pb.args());
+                return pb;
+            }
+        }
+
         for (Spell.InstancedSpell spellInstance : spells) {
             Identifier id = ModRegistries.SPELL.getId(spellInstance.spell());
-            if (id == null || nbt == null || !nbt.contains(id.toString())) continue;
-            var pb = new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-            }}));
+            if (id == null || nbt == null || !nbt.contains(id.toString())) {
+                continue;
+            }
 
             if (targetOnFire && (spellInstance.spell() == ModSpells.WATER_WAVE && spellInstance.spell() == ModSpells.WATER_BLAST)) continue;
             if (target.hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && spellInstance.spell().getSpellType() == SpellTypes.FIRE) {
-                if (canUseSpell(pb)) {
-                    setCurrentSpellInstance(pb.spell(), pb.args());
-                    return pb;
-                } else {
-                    continue;
-                }
-            }
-
-            if (target.hasStatusEffect(StatusEffects.REGENERATION) || target.hasStatusEffect(StatusEffects.RESISTANCE) || target.hasStatusEffect(StatusEffects.ABSORPTION)) {
                 if (canUseSpell(pb)) {
                     setCurrentSpellInstance(pb.spell(), pb.args());
                     return pb;
@@ -604,17 +614,14 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             boolean withinDistance = (max <= 0 || (distance >= min && distance <= max));
             boolean withinSelfHealth = (selfHealthPercent <= belowLife && selfHealthPercent >= aboveLife);
             boolean withinTargetHealth = (targetHealthPercent <= targetBelowLife && targetHealthPercent >= targetAboveLife);
-            System.out.println("Spell: " + spellInstance + " Cooldown: " + data.getCooldown(cd) + " Other CD" + cd);
 
             if (withinDistance && withinSelfHealth && withinTargetHealth && data.getCooldown(cd) <= 0) {
-                System.out.println("Spell Instance: " + spellInstance);
                 validSpells.add(spellInstance);
                 weights.add(weight);
             }
         }
 
         if (validSpells.isEmpty()) {
-            System.out.println("Set To Empty 3");
             setCurrentSpellInstance(ModSpells.EMPTY, GrabBag.empty());
             return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
         }

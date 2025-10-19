@@ -6,7 +6,6 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.xml.util.Nullable;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -17,15 +16,16 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class FlameBurstSpell extends Spell {
+public class DragonsBreathSpell extends Spell {
 
-    public FlameBurstSpell() {
+    public DragonsBreathSpell() {
         super(SpellTypes.FIRE);
     }
 
     @Override
     public int getColor(GrabBag args) {
-        return 0xFF4500; // fiery orange-red
+        return 0;
+        //TODO
     }
 
     @Override
@@ -36,10 +36,10 @@ public class FlameBurstSpell extends Spell {
         World world = ctx.world();
 
         int duration = args.getInt("duration", 200);      // ticks spell lasts
-        int ticksPerShot = args.getInt("rate", 1);       // how often to “pulse” flame
-        double range = args.getDouble("range", 10.0d);     // cone length
-        double angle = args.getDouble("angle", 25.0);    // cone half-angle (degrees)
-        double damage = args.getDouble("damage", 3.0);   // damage per tick
+        int ticksPerShot = args.getInt("rate", 2);       // how often to “pulse” flame
+        double range = args.getDouble("range", 8.0d);     // cone length
+        double angle = args.getDouble("angle", 20.0d);    // cone half-angle (degrees)
+        double damage = args.getDouble("damage", 4.0d);   // damage per tick
 
         ((Ticker.TickerTarget) user).add(
                 Ticker.forTicks(tick -> {
@@ -57,7 +57,7 @@ public class FlameBurstSpell extends Spell {
                         if (!world.isClient) {
                             // send particle to all players nearby
                             ((ServerWorld) world).spawnParticles(
-                                    ParticleTypes.FLAME,
+                                    ParticleTypes.DRAGON_BREATH,
                                     particlePos.x, particlePos.y, particlePos.z,
                                     1,    // count
                                     0, 0, 0, // delta for random offset
@@ -66,7 +66,7 @@ public class FlameBurstSpell extends Spell {
                         } else {
                             // already client-side, can just spawn directly
                             world.addParticle(
-                                    ParticleTypes.FLAME,
+                                    ParticleTypes.DRAGON_BREATH,
                                     particlePos.x, particlePos.y, particlePos.z,
                                     0, 0, 0
                             );
@@ -87,8 +87,7 @@ public class FlameBurstSpell extends Spell {
                             double cos = Math.cos(Math.toRadians(angle));
 
                             if (dot > cos) { // inside cone
-                                target.setOnFireFor(3);
-                                target.damage(world.getDamageSources().inFire(), (float) damage);
+                                target.damage(world.getDamageSources().magic(), (float) damage);
                             }
                         }
 
@@ -105,7 +104,7 @@ public class FlameBurstSpell extends Spell {
         );
     }
     @Override
-    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
+    protected boolean canUse(SpellContext ctx, final GrabBag args) {
         return ctx.user() != null && super.canUse(ctx, args);
     }
     @Override

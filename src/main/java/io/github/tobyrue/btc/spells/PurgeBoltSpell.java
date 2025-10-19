@@ -36,7 +36,7 @@ public class PurgeBoltSpell extends Spell {
         LivingEntity user = ctx.user();
         if (user == null) return;
 
-        double speed = args.getDouble("speed", 0.35); // ~7 blocks/sec
+        double speed = args.getDouble("speed", 0.7); // ~7 blocks/sec
         int lifetime = args.getInt("lifetime", 60);   // 3 seconds
         double range = args.getDouble("range", 10.0);
         double forgiveness = args.getDouble("forgiveness", 0.3);
