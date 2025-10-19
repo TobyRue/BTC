@@ -55,7 +55,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<Integer> GLOBAL_CAST_DELAY =
             DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private static final int GLOBAL_DELAY = 40;
+    private static final int GLOBAL_DELAY = 20;
 
     private Spell.InstancedSpell activeCastingSpell = null;
 
