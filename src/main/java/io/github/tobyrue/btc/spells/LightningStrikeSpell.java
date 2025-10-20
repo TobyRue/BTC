@@ -93,7 +93,10 @@ public class LightningStrikeSpell extends Spell {
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 200), BTC.identifierOf("lightning_strike"));
     }
-
+    @Override
+    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
+        return ctx.user() != null && super.canUse(ctx, args);
+    }
     @Override
     public int getColor(final GrabBag args) {
         return 0xFF80E1FF;

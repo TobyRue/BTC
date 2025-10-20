@@ -116,7 +116,10 @@ public class PurgeBoltSpell extends Spell {
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 100), BTC.identifierOf("purge_bolt"));
     }
-
+    @Override
+    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
+        return ctx.user() != null && super.canUse(ctx, args);
+    }
     @Override
     public int getColor(final GrabBag args) {
         return 0xFFAAAAAA; // soft gray

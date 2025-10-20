@@ -36,7 +36,7 @@ public class DragonsBreathSpell extends Spell {
         World world = ctx.world();
 
         int duration = args.getInt("duration", 200);      // ticks spell lasts
-        int ticksPerShot = args.getInt("rate", 2);       // how often to “pulse” flame
+        int ticksPerShot = args.getInt("rate", 4);       // how often to “pulse” flame
         double range = args.getDouble("range", 8.0d);     // cone length
         double angle = args.getDouble("angle", 20.0d);    // cone half-angle (degrees)
         double damage = args.getDouble("damage", 4.0d);   // damage per tick

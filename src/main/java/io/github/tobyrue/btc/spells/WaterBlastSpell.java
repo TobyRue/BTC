@@ -10,6 +10,7 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.server.command.TeamCommand;
 import net.minecraft.util.math.Vec3d;
 
 public class WaterBlastSpell extends Spell {

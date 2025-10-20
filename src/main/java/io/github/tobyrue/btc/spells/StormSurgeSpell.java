@@ -51,7 +51,10 @@ public class StormSurgeSpell extends Spell {
             }
         }
     }
-
+    @Override
+    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
+        return ctx.user() != null && super.canUse(ctx, args);
+    }
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 400), BTC.identifierOf("storm_surge"));

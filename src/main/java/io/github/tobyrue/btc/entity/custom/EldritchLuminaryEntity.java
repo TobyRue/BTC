@@ -52,7 +52,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<Integer> GLOBAL_CAST_DELAY =
             DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private static final int GLOBAL_DELAY = 20;
+    private static final int GLOBAL_DELAY = 40;
 
     private Spell.InstancedSpell activeCastingSpell = null;
 
@@ -354,6 +354,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(1));
             }})), 0, 16, -1, -1, -1, -1, 0.75f);
+
+            this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(5));
+            }})), 0, 32, -1, -1, -1, -1, 0.85f);
 
             // Buffs and debuffs
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{

@@ -84,9 +84,9 @@ public class EldritchLuminaryStrafeGoal extends Goal {
             }
 
             this.actor.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
-            this.actor.lookAtEntity(target, 30.0F, 30.0F);
+            this.actor.lookAtEntity(target, 50.0F, 50.0F);
         } else {
-            this.actor.getLookControl().lookAt(target, 30.0F, 30.0F);
+            this.actor.getLookControl().lookAt(target, 50.0F, 50.0F);
         }
     }
 }

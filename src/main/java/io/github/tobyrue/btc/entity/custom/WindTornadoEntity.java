@@ -54,6 +54,12 @@ public class WindTornadoEntity extends Entity {
         nbt.putInt("Age", this.age);
     }
 
+
+    @Override
+    public boolean doesRenderOnFire() {
+        return false;
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -82,36 +88,28 @@ public class WindTornadoEntity extends Entity {
                         getZ() + (random.nextDouble() - 0.5) * 1.5,
                         0, 0.01, 0);
             }
+            if (this.isOnFire()) {
+                // 🔥 Fire tornado effect
+                for (int i = 0; i < 6; i++) {
+                    world.addParticle(ParticleTypes.FLAME,
+                            getX() + (random.nextDouble() - 0.5) * 1.5,
+                            getY() + random.nextDouble() * 2,
+                            getZ() + (random.nextDouble() - 0.5) * 1.5,
+                            0, 0.02, 0);
+                }
+                for (int i = 0; i < 2; i++) {
+                    world.addParticle(ParticleTypes.SMOKE,
+                            getX() + (random.nextDouble() - 0.5) * 1.5,
+                            getY() + random.nextDouble() * 2,
+                            getZ() + (random.nextDouble() - 0.5) * 1.5,
+                            0, 0.01, 0);
+                }
+            }
         }
 
         // Pull nearby mobs
         if (!world.isClient) {
             Box pullBox = this.getBoundingBox().expand(5.5);
-//        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e -> {
-//            if (e == this || !e.isAlive()) return false;
-//            if (e == user) return false;
-//
-//            // Skip tamed pets owned by the user
-//            if (e instanceof TameableEntity tameable) {
-//                if (tameable.isTamed() && tameable.getOwner() == user) {
-//                    return false;
-//                }
-//            }
-//
-//            // Skip creative/spectator players
-//            if (e instanceof PlayerEntity player) {
-//                return !player.isCreative() && !player.isSpectator();
-//            }
-//
-//            return true;
-//        });
-//        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e ->
-//                e != (Entity) this &&
-//                        e.isAlive() &&
-//                        (e != user) &&
-//                        (!(e instanceof PlayerEntity) || (!((PlayerEntity) e).isCreative() && !((PlayerEntity) e).isSpectator()))
-//        );
-            //TODO
             List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e -> {
 
                 if (e == (Entity) this || !e.isAlive()) return false;
@@ -142,6 +140,15 @@ public class WindTornadoEntity extends Entity {
                         entity.getY() + random.nextDouble() * 1.5,
                         entity.getZ() + (random.nextDouble() - 0.5),
                         0, 0.01, 0);
+
+                if (this.isOnFire()) {
+                    entity.setOnFireFor(4);
+                    world.addParticle(ParticleTypes.FLAME,
+                            entity.getX() + (random.nextDouble() - 0.5),
+                            entity.getY() + random.nextDouble() * 1.5,
+                            entity.getZ() + (random.nextDouble() - 0.5),
+                            0, 0.03, 0);
+                }
 
                 if (entity.horizontalCollision && entity.getVelocity().length() > 0.1) {
                     float damage = (float) (4.0 + Math.round(entity.getVelocity().length()) * 2);

@@ -80,6 +80,7 @@ public class ModSpells {
     public static final Spell CREEPER_WALL_CIRCLE = register("creeper_wall_circle", new CreeperWallCircleSpell());
     public static final Spell CREEPER_WALL_EXPLOSIVE_TRAP = register("creeper_wall_explosive_trap", new CreeperWallExplosiveTrapSpell());
     public static final Spell CREEPER_WALL_BLOCK = register("creeper_wall_block", new CreeperWallBlockSpell());
+    public static final Spell RAISE_UNDEAD = register("raise_undead", new RaiseUndeadSpell());
 
     public static final Spell ICE_BLOCK = register("ice_block", new IceBlockSpell());
     public static final Spell WATER_WAVE = register("water_wave", new WaterWaveSpell());
