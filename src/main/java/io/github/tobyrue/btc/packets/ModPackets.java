@@ -1,8 +1,8 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.screen.HexagonRadialMenuWithPrefixNoHover;
-import io.github.tobyrue.btc.client.screen.HexagonValues;
+import io.github.tobyrue.btc.client.screen.RadialMenuWithPrefixNoHover;
+import io.github.tobyrue.btc.client.screen.RadialValues;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -23,7 +23,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
+import io.github.tobyrue.btc.client.screen.RadialNoHoverValues.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,12 +173,12 @@ public class ModPackets {
 
                         int maxSlots = spellValues.size();
 
-                        client.setScreen(new HexagonRadialMenuWithPrefixNoHover(
+                        client.setScreen(new RadialMenuWithPrefixNoHover(
                                 Text.translatable("radial.btc.spell.select_spell"),
                                 new ArrayList<>(spellValues),
                                 0,
                                 Math.min(maxSlots, 6),
-                                new HexagonValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f),
+                                new RadialValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f),
                                 Text.translatable("radial.btc.spell.select_slot")
                         ));
                     }

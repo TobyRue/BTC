@@ -2,20 +2,18 @@ package io.github.tobyrue.btc.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.screen.HexagonValues.*;
+import io.github.tobyrue.btc.client.screen.RadialValues.*;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.minecraft.client.font.FontManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import io.github.tobyrue.btc.client.screen.HexagonNoHoverValues.*;
+import io.github.tobyrue.btc.client.screen.RadialNoHoverValues.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class HexagonRadialMenuNoHover extends Screen {
+public class RadialMenuNoHover extends Screen {
     private int centerX;
     private int centerY;
 
@@ -25,7 +23,7 @@ public class HexagonRadialMenuNoHover extends Screen {
     private final int end;
     private final RadialIdentifiers radialIdentifiers;
 
-    public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells, int start, int end, RadialIdentifiers radialIdentifiers) {
+    public RadialMenuNoHover(Text title, List<ValueNoHover> spells, int start, int end, RadialIdentifiers radialIdentifiers) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
@@ -34,7 +32,7 @@ public class HexagonRadialMenuNoHover extends Screen {
         this.radialIdentifiers = radialIdentifiers;
     }
 
-    public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells, RadialIdentifiers radialIdentifiers) {
+    public RadialMenuNoHover(Text title, List<ValueNoHover> spells, RadialIdentifiers radialIdentifiers) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
@@ -43,7 +41,7 @@ public class HexagonRadialMenuNoHover extends Screen {
         this.end = Math.min(spells.size(), radialIdentifiers.sectors());
     }
 
-    public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells, int start, int end) {
+    public RadialMenuNoHover(Text title, List<ValueNoHover> spells, int start, int end) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
@@ -51,7 +49,7 @@ public class HexagonRadialMenuNoHover extends Screen {
         this.start = start;
         this.end = Math.min(end, radialIdentifiers.sectors());
     }
-    public HexagonRadialMenuNoHover(Text title, List<ValueNoHover> spells) {
+    public RadialMenuNoHover(Text title, List<ValueNoHover> spells) {
         super(title);
         this.spells = spells;
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
@@ -72,13 +70,13 @@ public class HexagonRadialMenuNoHover extends Screen {
                 int newStart = Math.max(0, start - radialIdentifiers.sectors());
                 int newEnd = Math.min(newStart + radialIdentifiers.sectors(), spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuNoHover(title, spells, newStart, newEnd, radialIdentifiers));
+                client.setScreen(new RadialMenuNoHover(title, spells, newStart, newEnd, radialIdentifiers));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + radialIdentifiers.sectors();
                 int newEnd = Math.min(newStart + radialIdentifiers.sectors(), spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenuNoHover(title, spells, newStart, newEnd, radialIdentifiers));
+                client.setScreen(new RadialMenuNoHover(title, spells, newStart, newEnd, radialIdentifiers));
             }
         });
     }

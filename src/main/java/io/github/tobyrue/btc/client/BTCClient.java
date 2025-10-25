@@ -3,7 +3,7 @@ package io.github.tobyrue.btc.client;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.client.screen.HexagonRadialMenu;
+import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
@@ -38,7 +38,7 @@ import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
-import io.github.tobyrue.btc.client.screen.HexagonValues.*;
+import io.github.tobyrue.btc.client.screen.RadialValues.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -134,7 +134,7 @@ public class BTCClient implements ClientModInitializer {
 
                             int maxSlots = spellValues.size();
 
-                            client.setScreen(new HexagonRadialMenu(
+                            client.setScreen(new RadialMenu(
                                     Text.translatable("radial.btc.spell.select_spell"),
                                     spellValues,
                                     0, // starting index
@@ -164,7 +164,7 @@ public class BTCClient implements ClientModInitializer {
 
                             int maxSlots = spellValues.size();
 
-                            client.setScreen(new HexagonRadialMenu(
+                            client.setScreen(new RadialMenu(
                                     Text.translatable("radial.btc.spell.select_spell"),
                                     new ArrayList<>(spellValues),
                                     0, // starting index

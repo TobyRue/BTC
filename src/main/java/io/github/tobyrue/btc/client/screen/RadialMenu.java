@@ -2,19 +2,19 @@ package io.github.tobyrue.btc.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.screen.HexagonValues.*;
+import io.github.tobyrue.btc.client.screen.RadialValues.*;
 import io.github.tobyrue.btc.mixin.KeyBindingAccessor;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.server.command.TeamCommand;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class HexagonRadialMenu extends Screen {
+public class RadialMenu extends Screen {
     private int centerX;
     private int centerY;
 
@@ -29,7 +29,7 @@ public class HexagonRadialMenu extends Screen {
 
     private DoubleInt mouse;
 
-    public HexagonRadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key, RadialIdentifiers radialIdentifiers) {
+    public RadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key, RadialIdentifiers radialIdentifiers) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
@@ -39,7 +39,7 @@ public class HexagonRadialMenu extends Screen {
         this.key = key;
     }
 
-    public HexagonRadialMenu(Text title, List<Value> spells, KeyBinding key, RadialIdentifiers radialIdentifiers) {
+    public RadialMenu(Text title, List<Value> spells, KeyBinding key, RadialIdentifiers radialIdentifiers) {
         super(title);
         this.spells = spells;
         this.radialIdentifiers = radialIdentifiers;
@@ -48,7 +48,7 @@ public class HexagonRadialMenu extends Screen {
         this.key = key;
     }
 
-    public HexagonRadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key) {
+    public RadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key) {
         super(title);
         // only keep first 6 if longer
         this.spells = spells;
@@ -58,7 +58,7 @@ public class HexagonRadialMenu extends Screen {
         this.key = key;
     }
 
-    public HexagonRadialMenu(Text title, List<Value> spells, KeyBinding key) {
+    public RadialMenu(Text title, List<Value> spells, KeyBinding key) {
         super(title);
         this.spells = spells;
         this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
@@ -80,13 +80,13 @@ public class HexagonRadialMenu extends Screen {
                 int newStart = Math.max(0, start - radialIdentifiers.sectors());
                 int newEnd = Math.min(newStart + radialIdentifiers.sectors(), spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(title, spells, newStart, newEnd, key, radialIdentifiers));
+                client.setScreen(new RadialMenu(title, spells, newStart, newEnd, key, radialIdentifiers));
             }
             if (vert < 0 && end < spells.size()) {
                 int newStart = start + radialIdentifiers.sectors();
                 int newEnd = Math.min(newStart + radialIdentifiers.sectors(), spells.size());
                 close();
-                client.setScreen(new HexagonRadialMenu(title, spells, newStart, newEnd, key, radialIdentifiers));
+                client.setScreen(new RadialMenu(title, spells, newStart, newEnd, key, radialIdentifiers));
             }
         });
     }

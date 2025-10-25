@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class HexagonValues {
+public class RadialValues {
     public record SuffixValue(Text display, String suffixHover, String suffixClick) {}
     public record PrefixValue(Text display, String commandHover, String commandClick, List<SuffixValue> suffixValues) {}
     public record Value(Text display, String commandHover, String commandClick) {}
