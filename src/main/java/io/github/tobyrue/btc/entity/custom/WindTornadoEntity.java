@@ -11,6 +11,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -107,7 +108,6 @@ public class WindTornadoEntity extends Entity {
                 }
             }
         }
-
         // Pull nearby mobs
         if (!world.isClient) {
             Box pullBox = this.getBoundingBox().expand(5.5);

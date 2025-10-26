@@ -99,8 +99,7 @@ public class RaiseUndeadSpell extends Spell {
 
         // ---- Spawn Undead Mobs ----
         world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.2F);
-
-        List<LivingEntity> summoned = new ArrayList<>();
+         List<LivingEntity> summoned = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             EntityType<? extends LivingEntity> type = UNDEAD_TYPES.get(random.nextInt(UNDEAD_TYPES.size()));
