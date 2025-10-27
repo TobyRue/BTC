@@ -138,25 +138,7 @@ public class RaiseUndeadSpell extends Spell {
             );
         }
 
-        // ---- Schedule Cleanup with Ticker ----
-        Team finalTeam = knownTeam;
-        ((Ticker.TickerTarget) (user)).add(
-            Ticker.forTicks(ticks -> {
-                // Remove undead + clean up team
-                System.out.println("Ticks: " + ticks + " Lifetime: " + lifetime + " Should remove: " + (ticks == lifetime));
-                for (LivingEntity e : summoned) {
-                    if (!e.isRemoved() && e.isAlive() && ticks == lifetime) {
-                        e.kill();
-                        serverWorld.spawnParticles(net.minecraft.particle.ParticleTypes.POOF, e.getX(), e.getY() + 0.5, e.getZ(), 10, 0.2, 0.2, 0.2, 0.02);
-                    }
-                }
 
-                if (temporaryTeam) {
-                    if (ticks == lifetime) {
-                        scoreboard.removeTeam(finalTeam);
-                    }
-                }
-        }, lifetime + 1));
 
     }
 

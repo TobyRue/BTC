@@ -16,6 +16,7 @@ public class ModStatusEffects {
     public static final RegistryEntry<StatusEffect> DROWNING;
     public static final RegistryEntry<StatusEffect> NO_NATURAL_REGENERATION;
     public static final RegistryEntry<StatusEffect> FROST_WALKER;
+    public static final RegistryEntry<StatusEffect> DEFERRED_DEATH;
 
     static {
         BUILDER_BLUNDER = ModStatusEffects.register("builder_blunder", new BuilderBlunderEffect());
@@ -24,6 +25,7 @@ public class ModStatusEffects {
         DROWNING = ModStatusEffects.register("drowning", new DrowningEffect());
         NO_NATURAL_REGENERATION = ModStatusEffects.register("no_natural_regeneration", new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
         FROST_WALKER = ModStatusEffects.register("frost_walker", new FrostWalkerEffect());
+        DEFERRED_DEATH = ModStatusEffects.register("deferred_death", new DeferredDeathEffect());
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
