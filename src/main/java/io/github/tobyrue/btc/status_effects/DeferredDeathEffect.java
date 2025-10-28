@@ -16,20 +16,6 @@ public class DeferredDeathEffect extends StatusEffect {
         return super.applyUpdateEffect(entity, amplifier);
     }
 
-    //Try later
-//    @Override
-//    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-//        // Get the instance on the entity so we can read remaining duration
-//        StatusEffectInstance inst = entity.getStatusEffect(this);
-//        if (inst == null) return;
-//
-//        // When duration is 1 or less, this is the last tick before removal.
-//        // Kill on server only.
-//        if (!entity.getWorld().isClient && inst.getDuration() <= 1) {
-//            // You can use kill(), remove, or setHealth(0). kill() is fine.
-//            entity.kill();
-//        }
-//    }
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {

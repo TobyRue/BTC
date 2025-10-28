@@ -17,6 +17,8 @@ public class ModStatusEffects {
     public static final RegistryEntry<StatusEffect> NO_NATURAL_REGENERATION;
     public static final RegistryEntry<StatusEffect> FROST_WALKER;
     public static final RegistryEntry<StatusEffect> DEFERRED_DEATH;
+    public static final RegistryEntry<StatusEffect> CURSED_RECKONING;
+//    public static final RegistryEntry<StatusEffect> ELDRITCH_REPRIEVE;
 
     static {
         BUILDER_BLUNDER = ModStatusEffects.register("builder_blunder", new BuilderBlunderEffect());
@@ -26,6 +28,8 @@ public class ModStatusEffects {
         NO_NATURAL_REGENERATION = ModStatusEffects.register("no_natural_regeneration", new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x680000));
         FROST_WALKER = ModStatusEffects.register("frost_walker", new FrostWalkerEffect());
         DEFERRED_DEATH = ModStatusEffects.register("deferred_death", new DeferredDeathEffect());
+        CURSED_RECKONING = ModStatusEffects.register("cursed_reckoning", new CursedReckoningEffect());
+//        ELDRITCH_REPRIEVE = ModStatusEffects.register("eldritch_reprieve", new EldritchReprieveEffect());
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
