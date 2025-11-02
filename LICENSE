@@ -1,21 +1,69 @@
-The MIT License (MIT)
+BTC General Public License v1.0 (BTC-GPLv1.0)
+Copyright (c) 2025 TobinOakenshield (tobinoakenshield@gmail.com)
 
-Copyright (c) 2024 TobinOakenshield
+Definitions
+    1) "This License" refers to version 1.0 of the BTC General Public License.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    2) "The Program" refers to any work distributed under this License.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+    3) "You" refers to the licensee—an individual or organization exercising rights under this License.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+    4) "The Owner" refers to TobinOakenshield (contact: tobinoakenshield@gmail.com)
+       or his designated representative through the Discord server https://discord.gg/bsVyUhbH2V.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Program"), to use, copy, modify, merge, publish, distribute, and/or commercially
+use the Program, and to permit persons to whom the Program is furnished to do so, subject to the following
+conditions:
+
+    1)  The source code of the Program, including any modifications or derivative works, must be disclosed and made publicly available when distributed.
+
+    2)  This license and copyright notice shall be included in all copies or substantial portions of the Program.
+
+    3)  The Program and all derivative works must be licensed under this same BTC General Public License v1.0.
+
+    4)  Any changes made to the Program must be clearly stated in documentation or source headers.
+
+    5)  Before distributing or making publicly available any modified or unmodified version or derivative work, you must request and receive explicit
+        permission from the Owner by emailing tobinoakenshield@gmail.com or by joining the Discord server
+        https://discord.gg/bsVyUhbH2V and directly messaging TobinOakenshield, stating the changes you
+        have made and your plans for distribution or where it will be published..
+
+            5a) You may repost the Program unchanged (without edits) only after messaging the Owner for approval.
+            Reposting the unmodified Program on Modrinth or CurseForge is not permitted. Other platforms may be acceptable with permission.
+            When reposting is approved, you must include clear links to the following official pages:
+                - Discord: https://discord.gg/bsVyUhbH2V
+
+                - GitHub Repository: https://github.com/TobyRue/BTC
+                - Modrinth Page: https://modrinth.com/mod/btc
+
+            5b) If you edit or modify the Program in any way and make it publicly visible, whether through distribution or by posting it to a repository,
+            you must include clear links to the official GitHub repository and the main Modrinth page:
+                - GitHub Repository: https://github.com/TobyRue/BTC
+                - Modrinth Page: https://modrinth.com/mod/btc
+
+    6)  All subsequent forks of this Program, including forks of forks, must adhere to this same license and contact requirement.
+
+    7)  You may not patent any portion of this Program or derivative work without written permission from the Owner.
+
+    8)  You may not claim to own any portion of this Program or derivative work other than the part you made yourself.
+
+THE PROGRAM IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE PROGRAM OR THE USE OR OTHER
+DEALINGS IN THE PROGRAM.
+
+Termination:
+    Your rights under this license terminate automatically if you fail to comply with its terms. Rights may be
+    reinstated only with explicit reauthorization from the Owner.
+
+Acceptance:
+    By using, modifying, or distributing this Program, you agree to all terms stated in this BTC General Public
+    License v1.0.
+
+Contact:
+    Owner: TobinOakenshield
+    Email: tobinoakenshield@gmail.com
+    Discord: https://discord.gg/bsVyUhbH2V

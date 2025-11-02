@@ -137,9 +137,6 @@ public class RaiseUndeadSpell extends Spell {
                     10, 0.5, 0.5, 0.5, 0.02
             );
         }
-
-
-
     }
 
     @org.jetbrains.annotations.Nullable
