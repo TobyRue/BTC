@@ -29,14 +29,11 @@ public class WindStaffItem extends MinimalPredefinedSpellsItem {
         if (data.getSpell() == null) {
             data.setSpell(ModSpells.WIND_CHARGE, GrabBag.empty());
         }
-        if (!user.isSneaking()) {
-            if (this.tryUseSpell(world, user.getEyePos(), user.getRotationVec(1.0F).normalize(), user, stack)) {
-                return TypedActionResult.success(stack);
-            } else {
-                return TypedActionResult.fail(stack);
-            }
+        if (this.tryUseSpell(world, user.getEyePos(), user.getRotationVec(1.0F).normalize(), user, stack)) {
+            return TypedActionResult.success(stack);
+        } else {
+            return super.use(world, user, hand);
         }
-        return super.use(world, user, hand);
     }
 
     @Override

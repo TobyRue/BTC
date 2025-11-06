@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.status_effects;
 
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;

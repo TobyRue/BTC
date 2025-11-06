@@ -91,6 +91,9 @@ public class ModSpells {
 
 
 
+    public static final Spell TEST = register("test", new TestSpell());
+
+
     public static final Spell ELDRITCH_ILLUSION = register("eldritch_illusion", new EldritchIllusionSpell());
     public static final Spell PURGE_BOLT = register("purge_bolt", new PurgeBoltSpell());
 

@@ -54,6 +54,8 @@
   "effect.btc.drowning": "Drowning",
   "effect.btc.no_natural_regeneration": "No Regeneration",
   "effect.btc.frost_walker": "Frost Walker",
+  "effect.btc.deferred_death": "Deferred Death",
+  "effect.btc.cursed_reckoning": "Cursed Reckoning",
 
   "item.minecraft.potion.effect.builder_blunder": "Potion of Builder’s Blunder",
   "item.minecraft.potion.effect.dragon_scales": "Potion of Dragon Scales",
@@ -301,8 +303,10 @@
   "spell.btc.dragons_breath": "Dragons Breath",
 
   "spell.btc.potion.normal": "Potion",
+  "spell.btc.potion.dragon_scales": "Dragon Scales",
   "spell.btc.potion_area_effect.normal": "Potion Area Effect",
   "spell.btc.potion_area_effect.poison": "Poison Area Effect",
+
   "spell.btc.empty": "",
 
   "spell.btc.eldritch_illusion": "Eldritch Illusion",
