@@ -10,19 +10,20 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public abstract class ChanneledSpell extends Spell {
-    private final int castTime;
-    private final int intervalTicks;
-    private final boolean canBeDisturbed;
-    private final boolean showParticles;
-    private final ParticleEffect particleType;
-    private final ParticleAnimation animation;
+    protected final int castTime;
+    protected final int intervalTicks;
+    protected final boolean canBeDisturbed;
+    protected final boolean showParticles;
+    protected final boolean runsAtEnd;
+    protected final ParticleEffect particleType;
+    protected final ParticleAnimation animation;
 
     public enum ParticleAnimation {
         SPIRAL,
         CYLINDER
     }
 
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, boolean canBeDisturbed, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation) {
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, boolean canBeDisturbed, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, boolean runsAtEnd) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
@@ -30,9 +31,10 @@ public abstract class ChanneledSpell extends Spell {
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
+        this.runsAtEnd = runsAtEnd;
     }
 
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, boolean canBeDisturbed) {
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, boolean canBeDisturbed, boolean runsAtEnd) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
@@ -40,6 +42,7 @@ public abstract class ChanneledSpell extends Spell {
         this.showParticles = false;
         this.particleType = ParticleTypes.ENCHANTED_HIT;
         this.animation = ParticleAnimation.CYLINDER;
+        this.runsAtEnd = runsAtEnd;
     }
 
     @Override
@@ -72,12 +75,19 @@ public abstract class ChanneledSpell extends Spell {
                             spawnChannelParticlesSpiral(ctx.user(), tick, castTime, args);
                         }
                     }
+                    if (runsAtEnd && tick % castTime == 0 && tick != 0) {
+                        runEnd(ctx, args, tick);
+                    }
                     return false;
                 }, castTime + 1)
         );
     }
 
     protected abstract void useChanneled(final SpellContext ctx, final GrabBag args, final int tick);
+
+    protected void runEnd(final SpellContext ctx, final GrabBag args, final int tick) {
+
+    }
 
     protected final void spawnChannelParticlesCylinder(LivingEntity entity, int tick, int totalDuration, GrabBag args) {
         World world = entity.getWorld();

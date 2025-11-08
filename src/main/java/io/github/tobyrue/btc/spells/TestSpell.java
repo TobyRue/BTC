@@ -8,7 +8,7 @@ import net.minecraft.particle.ParticleTypes;
 
 public class TestSpell extends ChanneledSpell {
     public TestSpell() {
-        super(SpellTypes.GENERIC, 20, 2, false, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL);
+        super(SpellTypes.GENERIC, 20, 2, false, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, false);
     }
 
     @Override
