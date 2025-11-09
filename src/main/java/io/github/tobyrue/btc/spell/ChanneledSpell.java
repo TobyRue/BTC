@@ -9,12 +9,17 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class ChanneledSpell extends Spell {
     protected final int castTime;
     protected final int intervalTicks;
-    protected final boolean canBeDisturbed;
+    protected final int waitForFirst;
+    protected final int disturbableTill;
+
+    protected final boolean runsOnlyOnce;
     protected final boolean showParticles;
-    protected final boolean runsAtEnd;
+    protected final DistributionLevels distributionLevel;
     protected final ParticleEffect particleType;
     protected final ParticleAnimation animation;
 
@@ -22,27 +27,116 @@ public abstract class ChanneledSpell extends Spell {
         SPIRAL,
         CYLINDER
     }
+    public enum DistributionLevels {
+        NONE,
+        DAMAGE,
+        CROUCH,
+        MOVE,
+        MOVE_AND_DAMAGE,
+        MOVE_AND_CROUCH,
+        DAMAGE_AND_CROUCH,
+        DAMAGE_CROUCH_AND_MOVE
+    }
 
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, boolean canBeDisturbed, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, boolean runsAtEnd) {
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, boolean runsOnlyOnce, int disturbableTill) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.canBeDisturbed = canBeDisturbed;
+        this.distributionLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
-        this.runsAtEnd = runsAtEnd;
+        this.waitForFirst = waitForFirst;
+        this.runsOnlyOnce = runsOnlyOnce;
+        this.disturbableTill = disturbableTill;
     }
-
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, boolean canBeDisturbed, boolean runsAtEnd) {
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, int disturbableTill) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.canBeDisturbed = canBeDisturbed;
+        this.distributionLevel = distributionLevel;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = waitForFirst;
+        this.runsOnlyOnce = false;
+        this.disturbableTill = disturbableTill;
+    }
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int disturbableTill) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.distributionLevel = distributionLevel;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = 0;
+        this.runsOnlyOnce = false;
+        this.disturbableTill = disturbableTill;
+    }
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, Integer waitForFirst) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.distributionLevel = distributionLevel;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = waitForFirst;
+        this.runsOnlyOnce = false;
+        this.disturbableTill = castTime;
+    }
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, int disturbableTill) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.distributionLevel = distributionLevel;
         this.showParticles = false;
         this.particleType = ParticleTypes.ENCHANTED_HIT;
         this.animation = ParticleAnimation.CYLINDER;
-        this.runsAtEnd = runsAtEnd;
+        this.waitForFirst = 0;
+        this.runsOnlyOnce = false;
+        this.disturbableTill = disturbableTill;
+    }
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, boolean runsOnlyOnce) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.distributionLevel = distributionLevel;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = waitForFirst;
+        this.runsOnlyOnce = runsOnlyOnce;
+        this.disturbableTill = castTime;
+    }
+
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.distributionLevel = distributionLevel;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = 0;
+        this.runsOnlyOnce = false;
+        this.disturbableTill = castTime;
+    }
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.distributionLevel = distributionLevel;
+        this.showParticles = false;
+        this.particleType = ParticleTypes.ENCHANTED_HIT;
+        this.animation = ParticleAnimation.CYLINDER;
+        this.waitForFirst = 0;
+        this.runsOnlyOnce = false;
+        this.disturbableTill = castTime;
     }
 
     @Override
@@ -51,20 +145,116 @@ public abstract class ChanneledSpell extends Spell {
     @Override
     protected final void use(SpellContext ctx, GrabBag args) {
         var startHealth = ctx.user().getHealth();
-        boolean canBeDisturbed = args.getBoolean("canBeDisturbed", this.canBeDisturbed);
+        var startPos = ctx.user().getPos();
+        var user = ctx.user();
         int castTime = args.getInt("castTime", this.castTime);
         int intervalTicks = args.getInt("intervalTicks", this.intervalTicks);
-
+        AtomicBoolean ranOnce = new AtomicBoolean(false);
+        
         ((Ticker.TickerTarget) (ctx.user())).add(
                 Ticker.forTicks(tick -> {
-                    if (tick % intervalTicks == 0) {
-                        if (!canBeDisturbed) {
-                            useChanneled(ctx, args, tick);
+                    if (tick % intervalTicks == 0 && tick >= waitForFirst) {
+                        if (tick <= disturbableTill) {
+                            switch (distributionLevel) {
+                                case NONE -> {
+                                    if (runsOnlyOnce && !ranOnce.get()) {
+                                        ranOnce.set(true);
+                                        useChanneled(ctx, args, tick);
+                                    } else {
+                                        useChanneled(ctx, args, tick);
+                                    }
+                                }
+                                case DAMAGE -> {
+                                    if (startHealth == ctx.user().getHealth()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                                case CROUCH -> {
+                                    if (!user.isSneaking()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                                case MOVE -> {
+                                    if (startPos == user.getPos()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                                case MOVE_AND_DAMAGE -> {
+                                    if (startPos == user.getPos() && startHealth == ctx.user().getHealth()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                                case MOVE_AND_CROUCH -> {
+                                    if (startPos == user.getPos() && !user.isSneaking()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                                case DAMAGE_AND_CROUCH -> {
+                                    if (startHealth == ctx.user().getHealth() && !user.isSneaking()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                                case DAMAGE_CROUCH_AND_MOVE -> {
+                                    if (startHealth == ctx.user().getHealth() && !user.isSneaking() && startPos == user.getPos()) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            }
                         } else {
-                            if (startHealth == ctx.user().getHealth()) {
+                            if (runsOnlyOnce && !ranOnce.get()) {
+                                ranOnce.set(true);
                                 useChanneled(ctx, args, tick);
                             } else {
-                                return true;
+                                useChanneled(ctx, args, tick);
                             }
                         }
                     }
@@ -75,7 +265,7 @@ public abstract class ChanneledSpell extends Spell {
                             spawnChannelParticlesSpiral(ctx.user(), tick, castTime, args);
                         }
                     }
-                    if (runsAtEnd && tick % castTime == 0 && tick != 0) {
+                    if (tick % castTime == 0 && tick != 0) {
                         runEnd(ctx, args, tick);
                     }
                     return false;
@@ -85,9 +275,7 @@ public abstract class ChanneledSpell extends Spell {
 
     protected abstract void useChanneled(final SpellContext ctx, final GrabBag args, final int tick);
 
-    protected void runEnd(final SpellContext ctx, final GrabBag args, final int tick) {
-
-    }
+    protected void runEnd(final SpellContext ctx, final GrabBag args, final int tick) {}
 
     protected final void spawnChannelParticlesCylinder(LivingEntity entity, int tick, int totalDuration, GrabBag args) {
         World world = entity.getWorld();

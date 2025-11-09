@@ -57,88 +57,86 @@ public class RaiseUndeadSpell extends ChanneledSpell {
     );
 
     public RaiseUndeadSpell() {
-        super(SpellTypes.EARTH, 35 * 20, 5 * 20, false, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, true);
+        super(SpellTypes.EARTH, 35 * 20, 5 * 20, DistributionLevels.DAMAGE_CROUCH_AND_MOVE, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true, 5 * 20);
     }
 
     @Override
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
-        if (tick % this.castTime == 0 && tick != this.castTime) {
-            var user = ctx.user();
-            var world = ctx.world();
+        var user = ctx.user();
+        var world = ctx.world();
 
-            if (!(world instanceof ServerWorld serverWorld)) return;
+        if (!(world instanceof ServerWorld serverWorld)) return;
 
-            Random random = world.random;
-            int count = args.getInt("count", 10);
+        Random random = world.random;
+        int count = args.getInt("count", 10);
 
-            // ---- Get or Create Temporary Team ----
-            ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
+        // ---- Get or Create Temporary Team ----
+        ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
 
-            var et = scoreboard.getTeams().stream().filter(t -> t.getPlayerList().isEmpty() && t.getName().endsWith("_undead_team")).toList();
-            if (!et.isEmpty()) {
-                for (var t: et) {
-                    scoreboard.removeTeam(t);
-                }
+        var et = scoreboard.getTeams().stream().filter(t -> t.getPlayerList().isEmpty() && t.getName().endsWith("_undead_team")).toList();
+        if (!et.isEmpty()) {
+            for (var t: et) {
+                scoreboard.removeTeam(t);
+            }
+        }
+
+
+
+        String teamName = user.getUuidAsString() + "_undead_team";
+
+        Team knownTeam = user.getScoreboardTeam();
+
+        boolean temporaryTeam;
+
+        if (knownTeam == null) {
+            knownTeam = scoreboard.addTeam(teamName);
+            knownTeam.setDisplayName(Text.literal(user.getName().getString() + " Undead"));
+            knownTeam.setColor(net.minecraft.util.Formatting.DARK_GREEN);
+            temporaryTeam = true;
+        } else {
+            temporaryTeam = false;
+        }
+
+        // Add summoner to the team (ensures allies)
+        scoreboard.addScoreHolderToTeam(user.getNameForScoreboard(), knownTeam);
+        world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.2F);
+        List<LivingEntity> summoned = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            EntityType<? extends LivingEntity> type = UNDEAD_TYPES.get(random.nextInt(UNDEAD_TYPES.size()));
+            LivingEntity undead = type.create(world);
+            if (undead == null) continue;
+
+            Vec3d pos = user.getPos().add(
+                    (random.nextDouble() - 0.5) * 8.0,
+                    0,
+                    (random.nextDouble() - 0.5) * 8.0
+            );
+            undead.refreshPositionAndAngles(pos.x, findSpawnableGround(world, user.getBlockPos(), 24).getY() + 2, pos.z, random.nextFloat() * 360F, 0);
+
+            // Join the team to prevent friendly fire
+            scoreboard.addScoreHolderToTeam(undead.getNameForScoreboard(), knownTeam);
+
+            if (undead instanceof SkeletonEntity || undead instanceof StrayEntity) {
+                ItemStack bow = new ItemStack(Items.BOW);
+                undead.equipStack(EquipmentSlot.MAINHAND, bow);
+            } else if (undead instanceof ZombieEntity || undead instanceof HuskEntity) {
+                ItemStack sword = new ItemStack(Items.STONE_SWORD);
+                undead.equipStack(EquipmentSlot.MAINHAND, sword);
             }
 
 
+            ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
+            undead.equipStack(EquipmentSlot.HEAD, helmet);
 
-            String teamName = user.getUuidAsString() + "_undead_team";
+            world.spawnEntity(undead);
+            summoned.add(undead);
 
-            Team knownTeam = user.getScoreboardTeam();
-
-            boolean temporaryTeam;
-
-            if (knownTeam == null) {
-                knownTeam = scoreboard.addTeam(teamName);
-                knownTeam.setDisplayName(Text.literal(user.getName().getString() + " Undead"));
-                knownTeam.setColor(net.minecraft.util.Formatting.DARK_GREEN);
-                temporaryTeam = true;
-            } else {
-                temporaryTeam = false;
-            }
-
-            // Add summoner to the team (ensures allies)
-            scoreboard.addScoreHolderToTeam(user.getNameForScoreboard(), knownTeam);
-            world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.2F);
-            List<LivingEntity> summoned = new ArrayList<>();
-
-            for (int i = 0; i < count; i++) {
-                EntityType<? extends LivingEntity> type = UNDEAD_TYPES.get(random.nextInt(UNDEAD_TYPES.size()));
-                LivingEntity undead = type.create(world);
-                if (undead == null) continue;
-
-                Vec3d pos = user.getPos().add(
-                        (random.nextDouble() - 0.5) * 8.0,
-                        0,
-                        (random.nextDouble() - 0.5) * 8.0
-                );
-                undead.refreshPositionAndAngles(pos.x, findSpawnableGround(world, user.getBlockPos(), 24).getY() + 2, pos.z, random.nextFloat() * 360F, 0);
-
-                // Join the team to prevent friendly fire
-                scoreboard.addScoreHolderToTeam(undead.getNameForScoreboard(), knownTeam);
-
-                if (undead instanceof SkeletonEntity || undead instanceof StrayEntity) {
-                    ItemStack bow = new ItemStack(Items.BOW);
-                    undead.equipStack(EquipmentSlot.MAINHAND, bow);
-                } else if (undead instanceof ZombieEntity || undead instanceof HuskEntity) {
-                    ItemStack sword = new ItemStack(Items.STONE_SWORD);
-                    undead.equipStack(EquipmentSlot.MAINHAND, sword);
-                }
-
-
-                ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
-                undead.equipStack(EquipmentSlot.HEAD, helmet);
-
-                world.spawnEntity(undead);
-                summoned.add(undead);
-
-                serverWorld.spawnParticles(
-                        net.minecraft.particle.ParticleTypes.SOUL,
-                        pos.x, pos.y + 1.0, pos.z,
-                        10, 0.5, 0.5, 0.5, 0.02
-                );
-            }
+            serverWorld.spawnParticles(
+                    net.minecraft.particle.ParticleTypes.SOUL,
+                    pos.x, pos.y + 1.0, pos.z,
+                    10, 0.5, 0.5, 0.5, 0.02
+            );
         }
     }
 
