@@ -147,16 +147,16 @@ public abstract class ChanneledSpell extends Spell {
         var startHealth = ctx.user().getHealth();
         var startPos = ctx.user().getPos();
         var user = ctx.user();
-        int castTime = args.getInt("castTime", this.castTime);
-        int intervalTicks = args.getInt("intervalTicks", this.intervalTicks);
+        int castTime = this.castTime;
+        int intervalTicks = this.intervalTicks;
         AtomicBoolean ranOnce = new AtomicBoolean(false);
         
         ((Ticker.TickerTarget) (ctx.user())).add(
                 Ticker.forTicks(tick -> {
-                    if (tick % intervalTicks == 0 && tick >= waitForFirst) {
-                        if (tick <= disturbableTill) {
-                            switch (distributionLevel) {
-                                case NONE -> {
+                    if (tick >= waitForFirst) {
+                        switch (distributionLevel) {
+                            case NONE -> {
+                                if (tick % intervalTicks == 0) {
                                     if (runsOnlyOnce && !ranOnce.get()) {
                                         ranOnce.set(true);
                                         useChanneled(ctx, args, tick);
@@ -164,97 +164,118 @@ public abstract class ChanneledSpell extends Spell {
                                         useChanneled(ctx, args, tick);
                                     }
                                 }
-                                case DAMAGE -> {
-                                    if (startHealth == ctx.user().getHealth()) {
+                            }
+                            case DAMAGE -> {
+                                if (startHealth == ctx.user().getHealth()) {
+                                    if (tick % intervalTicks == 0) {
                                         if (runsOnlyOnce && !ranOnce.get()) {
                                             ranOnce.set(true);
                                             useChanneled(ctx, args, tick);
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
-                                    } else {
-                                        return true;
                                     }
-                                }
-                                case CROUCH -> {
-                                    if (!user.isSneaking()) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
-                                        } else {
-                                            useChanneled(ctx, args, tick);
-                                        }
-                                    } else {
-                                        return true;
-                                    }
-                                }
-                                case MOVE -> {
-                                    if (startPos == user.getPos()) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
-                                        } else {
-                                            useChanneled(ctx, args, tick);
-                                        }
-                                    } else {
-                                        return true;
-                                    }
-                                }
-                                case MOVE_AND_DAMAGE -> {
-                                    if (startPos == user.getPos() && startHealth == ctx.user().getHealth()) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
-                                        } else {
-                                            useChanneled(ctx, args, tick);
-                                        }
-                                    } else {
-                                        return true;
-                                    }
-                                }
-                                case MOVE_AND_CROUCH -> {
-                                    if (startPos == user.getPos() && !user.isSneaking()) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
-                                        } else {
-                                            useChanneled(ctx, args, tick);
-                                        }
-                                    } else {
-                                        return true;
-                                    }
-                                }
-                                case DAMAGE_AND_CROUCH -> {
-                                    if (startHealth == ctx.user().getHealth() && !user.isSneaking()) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
-                                        } else {
-                                            useChanneled(ctx, args, tick);
-                                        }
-                                    } else {
-                                        return true;
-                                    }
-                                }
-                                case DAMAGE_CROUCH_AND_MOVE -> {
-                                    if (startHealth == ctx.user().getHealth() && !user.isSneaking() && startPos == user.getPos()) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
-                                        } else {
-                                            useChanneled(ctx, args, tick);
-                                        }
-                                    } else {
+                                } else {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
-                        } else {
-                            if (runsOnlyOnce && !ranOnce.get()) {
-                                ranOnce.set(true);
-                                useChanneled(ctx, args, tick);
-                            } else {
-                                useChanneled(ctx, args, tick);
+                            case CROUCH -> {
+                                if (!user.isSneaking()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case MOVE -> {
+                                if (startPos == user.getPos()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case MOVE_AND_DAMAGE -> {
+                                if (startPos == user.getPos() && startHealth == ctx.user().getHealth()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case MOVE_AND_CROUCH -> {
+                                if (startPos == user.getPos() && !user.isSneaking()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case DAMAGE_AND_CROUCH -> {
+                                if (startHealth == ctx.user().getHealth() && !user.isSneaking()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case DAMAGE_CROUCH_AND_MOVE -> {
+                                if (startHealth == ctx.user().getHealth() && !user.isSneaking() && startPos == user.getPos()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce && !ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturbableTill) {
+                                        return true;
+                                    }
+                                }
                             }
                         }
                     }

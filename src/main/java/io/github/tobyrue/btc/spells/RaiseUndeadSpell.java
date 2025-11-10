@@ -57,13 +57,14 @@ public class RaiseUndeadSpell extends ChanneledSpell {
     );
 
     public RaiseUndeadSpell() {
-        super(SpellTypes.EARTH, 35 * 20, 5 * 20, DistributionLevels.DAMAGE_CROUCH_AND_MOVE, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true, 5 * 20);
+        super(SpellTypes.EARTH, 35 * 20, 1, DistributionLevels.DAMAGE_CROUCH_AND_MOVE, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true, 5 * 20);
     }
 
     @Override
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
         var user = ctx.user();
         var world = ctx.world();
+        System.out.println("Test Spell: " + tick);
 
         if (!(world instanceof ServerWorld serverWorld)) return;
 
@@ -112,7 +113,7 @@ public class RaiseUndeadSpell extends ChanneledSpell {
                     0,
                     (random.nextDouble() - 0.5) * 8.0
             );
-            undead.refreshPositionAndAngles(pos.x, findSpawnableGround(world, user.getBlockPos(), 24).getY() + 2, pos.z, random.nextFloat() * 360F, 0);
+            undead.refreshPositionAndAngles(pos.x, findSpawnableGround(world, user.getBlockPos(), 24) == null ? pos.getY() : findSpawnableGround(world, user.getBlockPos(), 24).getY() + 2, pos.z, random.nextFloat() * 360F, 0);
 
             // Join the team to prevent friendly fire
             scoreboard.addScoreHolderToTeam(undead.getNameForScoreboard(), knownTeam);
