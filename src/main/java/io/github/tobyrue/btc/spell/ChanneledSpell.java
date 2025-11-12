@@ -150,16 +150,18 @@ public abstract class ChanneledSpell extends Spell {
         int castTime = this.castTime;
         int intervalTicks = this.intervalTicks;
         AtomicBoolean ranOnce = new AtomicBoolean(false);
-        
+
         ((Ticker.TickerTarget) (ctx.user())).add(
                 Ticker.forTicks(tick -> {
-                    if (tick >= waitForFirst) {
+                     if (tick >= waitForFirst) {
                         switch (distributionLevel) {
                             case NONE -> {
                                 if (tick % intervalTicks == 0) {
-                                    if (runsOnlyOnce && !ranOnce.get()) {
-                                        ranOnce.set(true);
-                                        useChanneled(ctx, args, tick);
+                                    if (runsOnlyOnce) {
+                                        if (!ranOnce.get()) {
+                                            ranOnce.set(true);
+                                            useChanneled(ctx, args, tick);
+                                        }
                                     } else {
                                         useChanneled(ctx, args, tick);
                                     }
@@ -168,9 +170,11 @@ public abstract class ChanneledSpell extends Spell {
                             case DAMAGE -> {
                                 if (startHealth == ctx.user().getHealth()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
@@ -184,9 +188,11 @@ public abstract class ChanneledSpell extends Spell {
                             case CROUCH -> {
                                 if (!user.isSneaking()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
@@ -200,9 +206,11 @@ public abstract class ChanneledSpell extends Spell {
                             case MOVE -> {
                                 if (startPos == user.getPos()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
@@ -216,9 +224,11 @@ public abstract class ChanneledSpell extends Spell {
                             case MOVE_AND_DAMAGE -> {
                                 if (startPos == user.getPos() && startHealth == ctx.user().getHealth()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
@@ -232,9 +242,11 @@ public abstract class ChanneledSpell extends Spell {
                             case MOVE_AND_CROUCH -> {
                                 if (startPos == user.getPos() && !user.isSneaking()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
@@ -248,9 +260,11 @@ public abstract class ChanneledSpell extends Spell {
                             case DAMAGE_AND_CROUCH -> {
                                 if (startHealth == ctx.user().getHealth() && !user.isSneaking()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
                                             useChanneled(ctx, args, tick);
                                         }
@@ -262,12 +276,17 @@ public abstract class ChanneledSpell extends Spell {
                                 }
                             }
                             case DAMAGE_CROUCH_AND_MOVE -> {
+                                System.out.println("RAN ONCE: " + ranOnce.get() + " PLAIN: " + ranOnce.getPlain() + " ACQUIRE: " + ranOnce.getAcquire());
                                 if (startHealth == ctx.user().getHealth() && !user.isSneaking() && startPos == user.getPos()) {
                                     if (tick % intervalTicks == 0) {
-                                        if (runsOnlyOnce && !ranOnce.get()) {
-                                            ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                System.out.println("1");
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
                                         } else {
+                                            System.out.println("2: " + runsOnlyOnce);
                                             useChanneled(ctx, args, tick);
                                         }
                                     }

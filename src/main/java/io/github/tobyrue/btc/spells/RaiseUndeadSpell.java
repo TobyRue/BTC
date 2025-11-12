@@ -46,8 +46,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
 public class RaiseUndeadSpell extends ChanneledSpell {
+
+    private static final WeakHashMap<LivingEntity, Boolean> STORED_TEAM = new WeakHashMap<>();
 
     private static final List<EntityType<? extends LivingEntity>> UNDEAD_TYPES = List.of(
             EntityType.ZOMBIE,
@@ -74,28 +77,29 @@ public class RaiseUndeadSpell extends ChanneledSpell {
         // ---- Get or Create Temporary Team ----
         ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
 
-        var et = scoreboard.getTeams().stream().filter(t -> t.getPlayerList().isEmpty() && t.getName().endsWith("_undead_team")).toList();
-        if (!et.isEmpty()) {
-            for (var t: et) {
-                scoreboard.removeTeam(t);
-            }
-        }
+        var et = scoreboard.getTeams().stream().filter(t -> t.getName().endsWith("_undead_team_BTC_RAISE_UNDEAD_SPELL")).toList();
 
 
 
-        String teamName = user.getUuidAsString() + "_undead_team";
+
+        String teamName = user.getUuidAsString() + "_undead_team_BTC_RAISE_UNDEAD";
 
         Team knownTeam = user.getScoreboardTeam();
 
-        boolean temporaryTeam;
+        if (!et.isEmpty()) {
+            for (var t: et) {
+                killAllEntitiesOnTeam(serverWorld, knownTeam);
+                scoreboard.removeTeam(t);
+            }
+        }
 
         if (knownTeam == null) {
             knownTeam = scoreboard.addTeam(teamName);
             knownTeam.setDisplayName(Text.literal(user.getName().getString() + " Undead"));
             knownTeam.setColor(net.minecraft.util.Formatting.DARK_GREEN);
-            temporaryTeam = true;
+            STORED_TEAM.put(ctx.user(), true);
         } else {
-            temporaryTeam = false;
+            STORED_TEAM.put(ctx.user(), false);
         }
 
         // Add summoner to the team (ensures allies)
@@ -152,18 +156,23 @@ public class RaiseUndeadSpell extends ChanneledSpell {
             Team knownTeam = user.getScoreboardTeam();
 
             if (knownTeam != null) {
-                killAllEntitiesOnTeam(serverWorld, knownTeam, user);
+                killAllEntitiesOnTeam(serverWorld, knownTeam);
+                if (STORED_TEAM.get(ctx.user())) {
+
+                    ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
+
+                    scoreboard.removeTeam(knownTeam);
+                }
             }
         }
     }
 
-    public void killAllEntitiesOnTeam(ServerWorld serverWorld, Team knownTeam, LivingEntity excluded) {
-        Scoreboard scoreboard = serverWorld.getScoreboard();
+    public void killAllEntitiesOnTeam(ServerWorld serverWorld, Team knownTeam) {
         if (knownTeam == null) return;
 
         Box worldBox = new Box(-3.0E7, -3.0E7, -3.0E7, 3.0E7, 3.0E7, 3.0E7);
 
-        serverWorld.getEntitiesByClass(LivingEntity.class, worldBox, e -> e.getScoreboardTeam() != null && e.getScoreboardTeam().getName().equals(knownTeam.getName()) && e != excluded).forEach(LivingEntity::kill);
+        serverWorld.getEntitiesByClass(LivingEntity.class, worldBox, e -> e.getScoreboardTeam() != null && e.getScoreboardTeam().getName().equals(knownTeam.getName()) && (e instanceof ZombieEntity || e instanceof StrayEntity || e instanceof SkeletonEntity || e instanceof HuskEntity)).forEach(LivingEntity::kill);
     }
 
     @org.jetbrains.annotations.Nullable
