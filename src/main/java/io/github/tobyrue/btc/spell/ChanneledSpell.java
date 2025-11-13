@@ -19,7 +19,7 @@ public abstract class ChanneledSpell extends Spell {
 
     protected final boolean runsOnlyOnce;
     protected final boolean showParticles;
-    protected final DistributionLevels distributionLevel;
+    protected final DistributionLevels disturbanceLevel;
     protected final ParticleEffect particleType;
     protected final ParticleAnimation animation;
 
@@ -42,7 +42,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
@@ -54,7 +54,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
@@ -66,7 +66,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
@@ -78,7 +78,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
@@ -90,7 +90,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = false;
         this.particleType = ParticleTypes.ENCHANTED_HIT;
         this.animation = ParticleAnimation.CYLINDER;
@@ -103,7 +103,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
@@ -117,7 +117,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
@@ -130,7 +130,7 @@ public abstract class ChanneledSpell extends Spell {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.distributionLevel = distributionLevel;
+        this.disturbanceLevel = distributionLevel;
         this.showParticles = false;
         this.particleType = ParticleTypes.ENCHANTED_HIT;
         this.animation = ParticleAnimation.CYLINDER;
@@ -154,7 +154,7 @@ public abstract class ChanneledSpell extends Spell {
         ((Ticker.TickerTarget) (ctx.user())).add(
                 Ticker.forTicks(tick -> {
                      if (tick >= waitForFirst) {
-                        switch (distributionLevel) {
+                        switch (disturbanceLevel) {
                             case NONE -> {
                                 if (tick % intervalTicks == 0) {
                                     if (runsOnlyOnce) {
