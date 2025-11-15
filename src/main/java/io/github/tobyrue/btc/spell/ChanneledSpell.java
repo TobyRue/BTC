@@ -15,13 +15,13 @@ public abstract class ChanneledSpell extends Spell {
     protected final int castTime;
     protected final int intervalTicks;
     protected final int waitForFirst;
-    protected final int disturbableTill;
 
     protected final boolean runsOnlyOnce;
     protected final boolean showParticles;
-    protected final DistributionLevels disturbanceLevel;
     protected final ParticleEffect particleType;
     protected final ParticleAnimation animation;
+
+    protected final Disturb disturb;
 
     public enum ParticleAnimation {
         SPIRAL,
@@ -38,106 +38,69 @@ public abstract class ChanneledSpell extends Spell {
         DAMAGE_CROUCH_AND_MOVE
     }
 
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, boolean runsOnlyOnce, int disturbableTill) {
+    public record Disturb(DistributionLevels distributionLevel, int disturbableTill, double moveableDistance) {}
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = waitForFirst;
+        this.runsOnlyOnce = false;
+        this.disturb = disturb;
+    }
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, Integer waitForFirst) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
+        this.showParticles = showParticles;
+        this.particleType = particleType;
+        this.animation = animation;
+        this.waitForFirst = waitForFirst;
+        this.runsOnlyOnce = false;
+        this.disturb = disturb;
+    }
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, boolean runsOnlyOnce) {
+        super(type);
+        this.castTime = castTime;
+        this.intervalTicks = intervalTicks;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
         this.waitForFirst = waitForFirst;
         this.runsOnlyOnce = runsOnlyOnce;
-        this.disturbableTill = disturbableTill;
+        this.disturb = disturb;
     }
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, int disturbableTill) {
+
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
-        this.showParticles = showParticles;
-        this.particleType = particleType;
-        this.animation = animation;
-        this.waitForFirst = waitForFirst;
-        this.runsOnlyOnce = false;
-        this.disturbableTill = disturbableTill;
-    }
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int disturbableTill) {
-        super(type);
-        this.castTime = castTime;
-        this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
         this.showParticles = showParticles;
         this.particleType = particleType;
         this.animation = animation;
         this.waitForFirst = 0;
         this.runsOnlyOnce = false;
-        this.disturbableTill = disturbableTill;
+        this.disturb = disturb;
     }
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, Integer waitForFirst) {
+
+    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb) {
         super(type);
         this.castTime = castTime;
         this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
-        this.showParticles = showParticles;
-        this.particleType = particleType;
-        this.animation = animation;
-        this.waitForFirst = waitForFirst;
-        this.runsOnlyOnce = false;
-        this.disturbableTill = castTime;
-    }
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, int disturbableTill) {
-        super(type);
-        this.castTime = castTime;
-        this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
         this.showParticles = false;
         this.particleType = ParticleTypes.ENCHANTED_HIT;
         this.animation = ParticleAnimation.CYLINDER;
         this.waitForFirst = 0;
         this.runsOnlyOnce = false;
-        this.disturbableTill = disturbableTill;
+        this.disturb = disturb;
     }
 
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst, boolean runsOnlyOnce) {
-        super(type);
-        this.castTime = castTime;
-        this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
-        this.showParticles = showParticles;
-        this.particleType = particleType;
-        this.animation = animation;
-        this.waitForFirst = waitForFirst;
-        this.runsOnlyOnce = runsOnlyOnce;
-        this.disturbableTill = castTime;
-    }
-
-
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation) {
-        super(type);
-        this.castTime = castTime;
-        this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
-        this.showParticles = showParticles;
-        this.particleType = particleType;
-        this.animation = animation;
-        this.waitForFirst = 0;
-        this.runsOnlyOnce = false;
-        this.disturbableTill = castTime;
-    }
-
-    public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, DistributionLevels distributionLevel) {
-        super(type);
-        this.castTime = castTime;
-        this.intervalTicks = intervalTicks;
-        this.disturbanceLevel = distributionLevel;
-        this.showParticles = false;
-        this.particleType = ParticleTypes.ENCHANTED_HIT;
-        this.animation = ParticleAnimation.CYLINDER;
-        this.waitForFirst = 0;
-        this.runsOnlyOnce = false;
-        this.disturbableTill = castTime;
-    }
 
     @Override
     public abstract int getColor(GrabBag args);
@@ -149,12 +112,14 @@ public abstract class ChanneledSpell extends Spell {
         var user = ctx.user();
         int castTime = this.castTime;
         int intervalTicks = this.intervalTicks;
+        double moveableDistance = args.getDouble("particleCount", disturb.moveableDistance);
+
         AtomicBoolean ranOnce = new AtomicBoolean(false);
 
         ((Ticker.TickerTarget) (ctx.user())).add(
                 Ticker.forTicks(tick -> {
                      if (tick >= waitForFirst) {
-                        switch (disturbanceLevel) {
+                        switch (disturb.distributionLevel) {
                             case NONE -> {
                                 if (tick % intervalTicks == 0) {
                                     if (runsOnlyOnce) {
@@ -180,7 +145,7 @@ public abstract class ChanneledSpell extends Spell {
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -198,13 +163,13 @@ public abstract class ChanneledSpell extends Spell {
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case MOVE -> {
-                                if (startPos == user.getPos()) {
+                                if (user.getPos().distanceTo(startPos) <= moveableDistance) {
                                     if (tick % intervalTicks == 0) {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
@@ -216,13 +181,13 @@ public abstract class ChanneledSpell extends Spell {
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case MOVE_AND_DAMAGE -> {
-                                if (startPos == user.getPos() && startHealth == ctx.user().getHealth()) {
+                                if (user.getPos().distanceTo(startPos) <= moveableDistance && startHealth == ctx.user().getHealth()) {
                                     if (tick % intervalTicks == 0) {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
@@ -234,13 +199,13 @@ public abstract class ChanneledSpell extends Spell {
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case MOVE_AND_CROUCH -> {
-                                if (startPos == user.getPos() && !user.isSneaking()) {
+                                if (user.getPos().distanceTo(startPos) <= moveableDistance && !user.isSneaking()) {
                                     if (tick % intervalTicks == 0) {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
@@ -252,7 +217,7 @@ public abstract class ChanneledSpell extends Spell {
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -270,28 +235,25 @@ public abstract class ChanneledSpell extends Spell {
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case DAMAGE_CROUCH_AND_MOVE -> {
-                                System.out.println("RAN ONCE: " + ranOnce.get() + " PLAIN: " + ranOnce.getPlain() + " ACQUIRE: " + ranOnce.getAcquire());
-                                if (startHealth == ctx.user().getHealth() && !user.isSneaking() && startPos == user.getPos()) {
+                                if (startHealth == ctx.user().getHealth() && !user.isSneaking() && user.getPos().distanceTo(startPos) <= moveableDistance) {
                                     if (tick % intervalTicks == 0) {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
-                                                System.out.println("1");
                                                 ranOnce.set(true);
                                                 useChanneled(ctx, args, tick);
                                             }
                                         } else {
-                                            System.out.println("2: " + runsOnlyOnce);
                                             useChanneled(ctx, args, tick);
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturbableTill) {
+                                    if (tick <= disturb.disturbableTill) {
                                         return true;
                                     }
                                 }

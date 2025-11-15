@@ -60,7 +60,7 @@ public class RaiseUndeadSpell extends ChanneledSpell {
     );
 
     public RaiseUndeadSpell() {
-        super(SpellTypes.EARTH, 35 * 20, 1, DistributionLevels.DAMAGE_CROUCH_AND_MOVE, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true, 5 * 20);
+        super(SpellTypes.EARTH, 35 * 20, 1, new Disturb(DistributionLevels.DAMAGE_CROUCH_AND_MOVE,5 * 20, 3), true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true);
     }
 
     @Override
