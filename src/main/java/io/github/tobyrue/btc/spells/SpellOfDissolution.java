@@ -10,15 +10,10 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class SpellOfDissolution extends ChanneledSpell {
-    private static final WeakHashMap<LivingEntity, List<RegistryEntry<StatusEffect>>> STORED_EFFECTS = new WeakHashMap<>();
 
     public SpellOfDissolution() {
         super(SpellTypes.GENERIC, 200, 1, new Disturb(DistributionLevels.DAMAGE_CROUCH_AND_MOVE, 200, 12), true, ParticleTypes.REVERSE_PORTAL, ParticleAnimation.SPIRAL);
@@ -33,40 +28,41 @@ public class SpellOfDissolution extends ChanneledSpell {
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
         LivingEntity user = ctx.user();
 
-        STORED_EFFECTS.putIfAbsent(user, new ArrayList<>());
-        List<RegistryEntry<StatusEffect>> stored = STORED_EFFECTS.get(user);
+        // Gather CURRENT harmful effects only
+        List<StatusEffectInstance> harmful = new ArrayList<>();
 
-        if (tick == 0) {
-            stored.clear();
-
-            for (StatusEffectInstance eff : user.getStatusEffects()) {
-                RegistryEntry<StatusEffect> type = eff.getEffectType();
-                if (type.value().getCategory() == StatusEffectCategory.HARMFUL) {
-                    stored.add(type);
-                }
+        for (StatusEffectInstance eff : user.getStatusEffects()) {
+            if (eff.getEffectType().value().getCategory() == StatusEffectCategory.HARMFUL) {
+                harmful.add(eff);
             }
         }
 
-        if (stored.isEmpty()) return;
+        // No harmful effects left → nothing to do
+        if (harmful.isEmpty()) return;
 
-        int interval = Math.max(1, castTime / stored.size());
+        // Calculate interval based on *current* harmful effect amount
+        int interval = Math.max(1, castTime / harmful.size());
 
-        if (tick % interval == 0 && tick != 0) {
+        // Only run removal at interval ticks
+        if (tick % interval != 0 || tick == 0) return;
 
-            RegistryEntry<StatusEffect> type = stored.remove(0);
+        // Choose random harmful effect to remove
+        StatusEffectInstance chosen = harmful.get(user.getRandom().nextInt(harmful.size()));
+        RegistryEntry<StatusEffect> type = chosen.getEffectType();
 
-            boolean removed = user.removeStatusEffect(type);
-            System.out.println("Removed? " + removed + " -> " + type.getIdAsString());
+        boolean removed = user.removeStatusEffect(type);
+        System.out.println("Removed? " + removed + " -> " + type.getIdAsString());
 
-            RegistryEntry<StatusEffect> opposite = ModMaps.EFFECT_OPPOSITES.get(type);
-            System.out.println("Effect Removed: " + type);
-
-            if (opposite != null && opposite.value().isBeneficial()) {
-                System.out.println("Effect Added: " + opposite.getIdAsString());
-                user.addStatusEffect(
-                        new StatusEffectInstance(opposite, 200, 0)
-                );
-            }
+        // Add opposite if applicable
+        RegistryEntry<StatusEffect> opposite = ModMaps.EFFECT_OPPOSITES.get(type);
+        if (opposite != null && opposite.value().isBeneficial()) {
+            System.out.println("Effect Added: " + opposite.getIdAsString());
+            user.addStatusEffect(new StatusEffectInstance(
+                    opposite,
+                    Math.max(40, (int)(chosen.getDuration() * 0.8)),  // optional scaling
+                    Math.max(0, chosen.getAmplifier() / 2)             // half strength
+            ));
         }
     }
+
 }
