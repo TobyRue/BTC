@@ -18,7 +18,7 @@ public class ModStatusEffects {
     public static final RegistryEntry<StatusEffect> FROST_WALKER;
     public static final RegistryEntry<StatusEffect> DEFERRED_DEATH;
     public static final RegistryEntry<StatusEffect> CURSED_RECKONING;
-//    public static final RegistryEntry<StatusEffect> ELDRITCH_REPRIEVE;
+    public static final RegistryEntry<StatusEffect> FRAGILITY;
 
     static {
         BUILDER_BLUNDER = ModStatusEffects.register("builder_blunder", new BuilderBlunderEffect());
@@ -29,7 +29,7 @@ public class ModStatusEffects {
         FROST_WALKER = ModStatusEffects.register("frost_walker", new FrostWalkerEffect());
         DEFERRED_DEATH = ModStatusEffects.register("deferred_death", new DeferredDeathEffect());
         CURSED_RECKONING = ModStatusEffects.register("cursed_reckoning", new CursedReckoningEffect());
-//        ELDRITCH_REPRIEVE = ModStatusEffects.register("eldritch_reprieve", new EldritchReprieveEffect());
+        FRAGILITY = ModStatusEffects.register("fragility", new FragilityEffect());
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
