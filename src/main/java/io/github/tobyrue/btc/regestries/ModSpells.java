@@ -20,9 +20,9 @@ public class ModSpells {
     public static final Map<Spell, SpellScrollItem> SCROLLS = new HashMap<>();
 
     public static <T extends Spell> T register(String name, T spell, boolean shouldRegisterItem) {
-        if (shouldRegisterItem) {
-            SCROLLS.put(spell, Registry.register(Registries.ITEM, Identifier.of(BTC.MOD_ID, name + "_scroll"), new SpellScrollItem(spell)));
-        }
+//        if (shouldRegisterItem) {
+//            SCROLLS.put(spell, Registry.register(Registries.ITEM, Identifier.of(BTC.MOD_ID, name + "_scroll"), new SpellScrollItem(spell)));
+//        }
 
         return Registry.register(ModRegistries.SPELL, Identifier.of(BTC.MOD_ID, name), spell);
     }
@@ -91,10 +91,10 @@ public class ModSpells {
 
 
 
-    public static final Spell TEST = register("test", new TestSpell());
+    public static final Spell TEST = register("test", new TestSpell(), false);
 
 
-    public static final Spell ELDRITCH_ILLUSION = register("eldritch_illusion", new EldritchIllusionSpell());
+    public static final Spell ELDRITCH_ILLUSION = register("eldritch_illusion", new EldritchIllusionSpell(), false);
     public static final Spell PURGE_BOLT = register("purge_bolt", new PurgeBoltSpell());
     public static final Spell DISSOLUTION = register("dissolution", new SpellOfDissolution());
 

@@ -15,51 +15,58 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.WeakHashMap;
 
 public class FragilityEffect extends StatusEffect {
-    // Store damage accumulated during effect
     private static final WeakHashMap<LivingEntity, Float> LAST_HEALTH = new WeakHashMap<>();
+    private static final WeakHashMap<LivingEntity, Boolean> IS_PROCESSING = new WeakHashMap<>();
+
     public FragilityEffect() {
-        super(StatusEffectCategory.HARMFUL, 0x9566698F); // dark crimson red
+        super(StatusEffectCategory.HARMFUL, 0x9566698F);
     }
 
     @Override
     public void onApplied(LivingEntity entity, int amplifier) {
-        if (!LAST_HEALTH.containsKey(entity)){
-            LAST_HEALTH.put(entity, entity.getHealth() + entity.getAbsorptionAmount());
-        }
+        LAST_HEALTH.put(entity, entity.getHealth() + entity.getAbsorptionAmount());
         super.onApplied(entity, amplifier);
     }
 
     @Override
     public void onEntityDamage(LivingEntity entity, int amplifier, DamageSource source, float amount) {
-        if (entity.hasStatusEffect(ModStatusEffects.FRAGILITY)) {
-            if (!LAST_HEALTH.containsKey(entity)){
-                LAST_HEALTH.put(entity, entity.getHealth() + entity.getAbsorptionAmount());
-            }
-            System.out.println("Damaged");
-            var a = LAST_HEALTH.get(entity) - entity.getHealth();
-            System.out.println("Amount A: " + a);
-            System.out.println("Last Health: " + LAST_HEALTH.get(entity));
+        // Must be server side
+        if (entity.getWorld().isClient()) return;
 
-            float dm = (float) (Math.round((amplifier * 0.1) * 2) / 2.0);
+        // Prevent recursive damage callback
+        if (IS_PROCESSING.getOrDefault(entity, false)) return;
 
-            System.out.println("Damage Multiplier: " + dm);
-            System.out.println("Added Damage: " + a*dm);
+        // Must have this effect
+        if (!entity.hasStatusEffect(ModStatusEffects.FRAGILITY)) return;
 
-            var d = entity.damage(source, a*dm);
+        float previous = LAST_HEALTH.getOrDefault(entity, entity.getHealth() + entity.getAbsorptionAmount());
+        float current = entity.getHealth() + entity.getAbsorptionAmount();
 
-            System.out.println("Damaged: " + d);
+        float damageTaken = previous - current;
 
-            LAST_HEALTH.put(entity, entity.getHealth() + entity.getAbsorptionAmount());
-        }
+        // Update now for next tick
+        LAST_HEALTH.put(entity, current);
+
+        if (damageTaken <= 0) return;
+
+        // Extra damage = 10% per amplifier level
+        float extra = damageTaken * (0.10F * (amplifier + 1));
+
+        // Damage again without recursion
+        IS_PROCESSING.put(entity, true);
+        entity.damage(source, extra);
+        IS_PROCESSING.put(entity, false);
     }
 
     @Override
-    public void onRemoved(AttributeContainer attributes) {
-        super.onRemoved(attributes);
-        // When effect ends, unleash stored damage
+    public void onRemoved(AttributeContainer attributeContainer) {
         for (LivingEntity entity : LAST_HEALTH.keySet()) {
             if (entity.hasStatusEffect(ModStatusEffects.FRAGILITY)) continue;
             LAST_HEALTH.remove(entity);
+        }
+        for (LivingEntity entity : IS_PROCESSING.keySet()) {
+            if (entity.hasStatusEffect(ModStatusEffects.FRAGILITY)) continue;
+            IS_PROCESSING.remove(entity);
         }
     }
 }

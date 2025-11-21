@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.SpellScrollItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemGroups;

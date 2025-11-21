@@ -33,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:concentrated_fire_storm_scroll"
+        "recipe": "btc:fire_storm_scroll"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -48,7 +48,7 @@
   ],
   "rewards": {
     "recipes": [
-      "btc:concentrated_fire_storm_scroll"
+      "btc:fire_storm_scroll"
     ]
   }
 }
