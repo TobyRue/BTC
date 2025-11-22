@@ -2,7 +2,12 @@ package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
+import io.github.tobyrue.btc.player_data.PlayerSpellData;
+import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.ModRegistries;
+import io.github.tobyrue.btc.spell.GrabBag;
+import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.util.AdvancementUtils;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
@@ -10,11 +15,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Objects;
 
 public class UnlockScrollItem extends Item {
@@ -50,6 +57,19 @@ public class UnlockScrollItem extends Item {
                         advancement,
                         "unlock"
                 );
+                if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).name() instanceof Identifier name) {
+
+                    Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(name), GrabBag.empty());
+                    MinecraftServer server = player.getServer();
+                    SpellPersistentState spellState = SpellPersistentState.get(server);
+                    PlayerSpellData playerData = spellState.getPlayerData(player);
+                    List<Spell.InstancedSpell> list = playerData.knownSpells;
+                    boolean exists = list.stream().anyMatch(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()));
+
+                    if (!exists) {
+                        list.add(spell);
+                    }
+                }
                 stack.decrementUnlessCreative(1, user);
             }
         }
