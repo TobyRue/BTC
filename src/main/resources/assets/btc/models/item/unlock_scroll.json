@@ -12,6 +12,14 @@
     {
       "predicate": { "texture": 0.01 },
       "model": "btc:item/fire_storm_scroll"
+    },
+    {
+      "predicate": { "texture": 0.02 },
+      "model": "btc:item/dragon_fireball_scroll"
+    },
+    {
+      "predicate": { "texture": 0.03 },
+      "model": "btc:item/earth_spike_scroll"
     }
   ]
 }

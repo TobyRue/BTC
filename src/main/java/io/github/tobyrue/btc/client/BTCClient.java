@@ -143,6 +143,7 @@ public class BTCClient implements ClientModInitializer {
                                     new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_gold.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_gold_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f)
                             ));
                         } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                            //TODO crashes on server not on single player
                             MinecraftServer server = client.getServer().getOverworld().getServer();
                             SpellPersistentState spellState = SpellPersistentState.get(server);
                             PlayerSpellData playerData = spellState.getPlayerData(client.player);

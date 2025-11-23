@@ -19,6 +19,15 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:dragon_fireball_scroll"
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_dragon_fireball_scroll",
+        "texture_int": 2,
+        "name": "btc:dragon_fireball",
+        "id": "btc:dragon_fireball",
+        "args": "{}"
+      }
+    }
   }
 }

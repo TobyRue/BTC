@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.AdvancementUtils;
 import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +28,7 @@ import java.util.Objects;
 
 public class UnlockScrollItem extends Item {
     public UnlockScrollItem() {
-        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("adventure/enter_btc_trial_chamber"),  0, Identifier.of("empty"), Identifier.of("empty"), GrabBag.toNBT(GrabBag.empty()))).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xFFFFFF, false)));
+        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("adventure/enter_btc_trial_chamber"),  0, Identifier.of("empty"), Identifier.of("empty"), "{}")).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xFFFFFF, false)));
     }
 
     @Override
@@ -54,20 +55,23 @@ public class UnlockScrollItem extends Item {
                 && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av
                 && player.server.getAdvancementLoader().get(av) instanceof AdvancementEntry advancement) {
             if (!player.getAdvancementTracker().getProgress(advancement).isDone()) {
+
                 player.getAdvancementTracker().grantCriterion(
                         advancement,
                         "unlock"
                 );
                 stack.decrementUnlessCreative(1, user);
             }
-            if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).args() instanceof NbtCompound args) {
+            if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
 
                 Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(id), GrabBag.fromNBT(args));
                 MinecraftServer server = player.getServer();
                 SpellPersistentState spellState = SpellPersistentState.get(server);
                 PlayerSpellData playerData = spellState.getPlayerData(player);
+                boolean found = playerData.knownSpells.stream()
+                        .anyMatch(inst -> inst.spell() == spell.spell() && inst.args().equalsOther(GrabBag.fromNBT(args)));
 
-                if (!playerData.knownSpells.stream().anyMatch(s -> s.spell().equals(spell.spell()) && s.args().equals(spell.args()))) {
+                if (!found) {
                     System.out.println("Known Spells 1: " + playerData.knownSpells);
                     playerData.knownSpells.add(spell);
                     System.out.println("Known Spells: " + playerData.knownSpells.getLast());
@@ -82,6 +86,7 @@ public class UnlockScrollItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
+        var cUser = MinecraftClient.getInstance().player;
         if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).name() instanceof Identifier id) {
             return Text.translatable(this.getTranslationKey(stack), Text.translatable("spell." + id.getNamespace() + "." + id.getPath()));
         }

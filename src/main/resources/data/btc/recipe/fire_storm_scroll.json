@@ -26,11 +26,7 @@
         "texture_int": 0.01,
         "name": "btc:fire_storm.strong",
         "id": "btc:fire_storm",
-        "args": {
-          "duration": 4,
-          "maxRadius": "16.0",
-           "cooldown": 500
-        }
+        "args": "{ \"duration\":4, \"maxRadius\":16.0d, \"cooldown\":500 }"
       },
       "minecraft:dyed_color": {
         "rgb": -27648,

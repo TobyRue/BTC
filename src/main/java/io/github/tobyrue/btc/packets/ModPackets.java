@@ -131,6 +131,7 @@ public class ModPackets {
                     var player = context.player();
                     var stack = player.getMainHandStack();
                     var item = stack.getItem();
+                    //TODO crashes on server not on single player
                     var server = client.getServer().getOverworld().getServer();
 
                     SpellPersistentState spellState = SpellPersistentState.get(server);
