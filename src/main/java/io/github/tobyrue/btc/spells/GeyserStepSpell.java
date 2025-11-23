@@ -35,7 +35,7 @@ public class GeyserStepSpell extends Spell {
         var user = ctx.user();
         var world = ctx.world();
         var aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
-        var range = args.getDouble("range", 24.0);
+        var range = args.getDouble("range", 24.0d);
 
         var target = getEntityLookedAt(user, range, aimingForgiveness);
         var launchVelocity = target != null ? 1.7 : 2.2; // less for enemies, more for player

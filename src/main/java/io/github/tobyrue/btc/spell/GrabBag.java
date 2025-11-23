@@ -207,7 +207,12 @@ public interface GrabBag {
 
             @Override
             public double getDouble(final String key, final double fallback) {
-                return nbt.contains(key) && nbt.getType(key) == NbtCompound.DOUBLE_TYPE ? nbt.getDouble(key) : fallback;
+                if (!nbt.contains(key)) return fallback;
+                switch(nbt.getType(key)) {
+                    case NbtCompound.BYTE_TYPE, NbtCompound.FLOAT_TYPE, NbtCompound.LONG_TYPE,
+                         NbtCompound.DOUBLE_TYPE, NbtCompound.INT_TYPE, NbtCompound.SHORT_TYPE -> { return nbt.getDouble(key); }
+                    default -> { return fallback; }
+                }
             }
 
             @Override

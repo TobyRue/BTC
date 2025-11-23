@@ -32,7 +32,7 @@ public class CreeperWallCircleSpell extends Spell {
         var user = ctx.user();
         var world = ctx.world();
         int spikes = args.getInt("spikes", 20);
-        double radius = args.getDouble("textRadius", 3);
+        double radius = args.getDouble("radius", 3d);
 
         user.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 2));
         for (int i = 0; i < spikes; i++) {

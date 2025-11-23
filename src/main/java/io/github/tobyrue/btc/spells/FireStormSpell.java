@@ -22,7 +22,7 @@ public class FireStormSpell extends Spell {
     @Override
     public void use(final Spell.SpellContext ctx, final GrabBag args) {
         int duration = args.getInt("duration", 2);
-        double maxRadius = args.getDouble("maxRadius", 8);
+        double maxRadius = args.getDouble("maxRadius", 8d);
 
 
         Vec3d storedPos = ctx.user().getPos();
@@ -74,7 +74,7 @@ public class FireStormSpell extends Spell {
 
     @Override
     public Text getName(final GrabBag args) {
-        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("maxRadius") >= 8 ? (args.getInt("maxRadius") == 8 ? "normal" : "strong") : "concentrated"));
+        return Text.translatable(this.getTranslationKey() + "." + (args.getDouble("maxRadius", 8d) >= 8d ? (args.getDouble("maxRadius", 8d) == 8d ? "normal" : "strong") : "concentrated"));
     }
 
     @Override

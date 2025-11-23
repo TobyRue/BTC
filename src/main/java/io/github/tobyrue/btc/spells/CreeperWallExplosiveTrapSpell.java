@@ -36,17 +36,20 @@ public class CreeperWallExplosiveTrapSpell extends Spell {
     protected void use(SpellContext ctx, GrabBag args) {
         var user = ctx.user();
         var world = ctx.world();
+        double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
+        double radius = args.getDouble("radius", 2d);
+        double range = args.getDouble("range", 16d);
+        int yRange = args.getInt("yRange", 10);
+        int count = args.getInt("count", Math.max(8, (3 * 3) + 8));
 
 
-        Entity entityLookedAt = getEntityLookedAt(user, 16, 0.3D);
+        Entity entityLookedAt = getEntityLookedAt(user, range, aimingForgiveness);
         if (entityLookedAt != null) {
-            int spikes = Math.max(8, (int) (3 * 3) + 8);
-            double radius = 2;
-            for (int i = 0; i < spikes; i++) {
-                double angle = 2 * Math.PI * i / spikes;
+            for (int i = 0; i < count; i++) {
+                double angle = 2 * Math.PI * i / count;
                 double x = entityLookedAt.getX() + radius * Math.cos(angle);
                 double z = entityLookedAt.getZ() + radius * Math.sin(angle);
-                BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), 10);
+                BlockPos groundPos = findSpawnableGroundPillar(world, new BlockPos((int) x, (int) entityLookedAt.getY(), (int) z), yRange);
                 if (entityLookedAt instanceof LivingEntity) {
                     if (groundPos != null) {
                         CreeperPillarEntity pillar = new CreeperPillarEntity(world, x, groundPos.getY(), z, entityLookedAt.getYaw(), user, CreeperPillarType.RANDOM);

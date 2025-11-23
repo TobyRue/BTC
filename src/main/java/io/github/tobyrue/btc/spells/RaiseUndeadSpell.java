@@ -67,7 +67,6 @@ public class RaiseUndeadSpell extends ChanneledSpell {
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
         var user = ctx.user();
         var world = ctx.world();
-        System.out.println("Test Spell: " + tick);
 
         if (!(world instanceof ServerWorld serverWorld)) return;
 

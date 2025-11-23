@@ -37,7 +37,7 @@ public class RiptideSpell extends Spell {
         float damage = args.getFloat("damage", 2.0f);
 
         Vec3d dir = ctx.direction().normalize();
-        double speed = args.getDouble("speed", 2.0); // configurable speed
+        double speed = args.getDouble("speed", 2.0d); // configurable speed
         Vec3d velocity = dir.multiply(speed);
 
         user.addVelocity(velocity.x, velocity.y, velocity.z);

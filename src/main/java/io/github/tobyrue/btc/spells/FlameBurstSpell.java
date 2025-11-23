@@ -38,8 +38,8 @@ public class FlameBurstSpell extends Spell {
         int duration = args.getInt("duration", 200);      // ticks spell lasts
         int ticksPerShot = args.getInt("rate", 1);       // how often to “pulse” flame
         double range = args.getDouble("range", 10.0d);     // cone length
-        double angle = args.getDouble("angle", 25.0);    // cone half-angle (degrees)
-        double damage = args.getDouble("damage", 3.0);   // damage per tick
+        double angle = args.getDouble("angle", 25.0d);    // cone half-angle (degrees)
+        double damage = args.getDouble("damage", 3.0d);   // damage per tick
 
         ((Ticker.TickerTarget) user).add(
                 Ticker.forTicks(tick -> {

@@ -30,7 +30,7 @@ public class MistVeilSpell extends Spell {
         var caster = ctx.user();
         var world = ctx.world();
 
-        double radius = args.getDouble("textRadius", 5.0);
+        double radius = args.getDouble("radius", 5.0d);
         int durationTicks = args.getInt("durationTicks", 160); // 8 seconds
 
         Vec3d center = caster.getPos();

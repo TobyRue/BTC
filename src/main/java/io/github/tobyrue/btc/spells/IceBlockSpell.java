@@ -37,7 +37,7 @@ public class IceBlockSpell extends Spell {
     }
     public void freezeTargetArea(SpellContext ctx, GrabBag args, LivingEntity player, World world) {
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
-        double range = args.getDouble("range", 24);
+        double range = args.getDouble("range", 24d);
         int duration = args.getInt("duration", 200);
         int amplifier = args.getInt("amplifier", 4);
         int durationM = args.getInt("durationM", 200);

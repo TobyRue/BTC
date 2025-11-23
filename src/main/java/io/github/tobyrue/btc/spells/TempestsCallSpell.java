@@ -18,7 +18,7 @@ public class TempestsCallSpell extends Spell {
     @Override
     protected void use(final SpellContext ctx, final GrabBag args) {
         double pull_radius = args.getDouble("pull_radius", 25d);
-        double pull_strength = args.getDouble("pull_strength", 3);
+        double pull_strength = args.getDouble("pull_strength", 3d);
         List<LivingEntity> entities = ctx.world().getEntitiesByClass(LivingEntity.class, ctx.user().getBoundingBox().expand(pull_radius), entity -> entity != ctx.user());
         // Log the number of entities found
         // Pull all mobs towards the player

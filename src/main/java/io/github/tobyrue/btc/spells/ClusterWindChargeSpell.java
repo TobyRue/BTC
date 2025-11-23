@@ -24,7 +24,7 @@ public class ClusterWindChargeSpell extends Spell {
     @Override
     protected void use(final SpellContext ctx, final GrabBag args) {
         int count = args.getInt("count", 8);
-        double spreadFactor = args.getDouble("spreadFactor", 0.2);
+        double spreadFactor = args.getDouble("spreadFactor", 0.2d);
 
         for (int i = 0; i < count; i++) {
             // Create a new WindChargeEntity

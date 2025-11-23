@@ -27,7 +27,7 @@ public class StormSurgeSpell extends Spell {
         if (user == null || world.isClient) return;
 
         int maxTargets = args.getInt("targetCount", 5);
-        double range = args.getDouble("range", 20.0);
+        double range = args.getDouble("range", 20.0d);
 
         // Find nearby hostile entities
         List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class,

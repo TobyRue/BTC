@@ -24,7 +24,7 @@ public class LifeStealSpell extends Spell {
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
         List<LivingEntity> targets = ctx.world().getEntitiesByClass(LivingEntity.class,
-                new Box(ctx.user().getBlockPos()).expand(args.getDouble("textRadius", 10)),
+                new Box(ctx.user().getBlockPos()).expand(args.getDouble("radius", 10d)),
                 entity -> entity != ctx.user() && entity.isAlive());
 
         // Define the percentage of health to take (e.g., 10% = 0.10 or 5% = 0.05)

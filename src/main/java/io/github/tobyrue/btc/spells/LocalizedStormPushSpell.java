@@ -32,7 +32,7 @@ public class LocalizedStormPushSpell extends Spell {
         double shootStrength = args.getDouble("shootStrength", 7d); // Overall velocity multiplier
         double verticalMultiplier = args.getDouble("verticalMultiplier", 2.2d); // How much extra vertical force to apply
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
-        double range = args.getDouble("range", 24);
+        double range = args.getDouble("range", 24d);
         // Shoot mob away from the player
         var entity = getEntityLookedAt(ctx.user(), range, aimingForgiveness);
         double dx = entity.getX() - ctx.user().getX();

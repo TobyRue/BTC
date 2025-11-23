@@ -27,7 +27,7 @@ public class ShadowStepSpell extends Spell {
 
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
-        double range = args.getDouble("range", 24);
+        double range = args.getDouble("range", 24d);
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         double teleportDistance = args.getDouble("teleportDistance", 2.5D); // distance behind target
         int invisDuration = args.getInt("invisDuration", 140); // ticks (5s default)

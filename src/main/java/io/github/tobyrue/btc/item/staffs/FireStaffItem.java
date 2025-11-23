@@ -55,7 +55,7 @@ public class FireStaffItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
                 put("duration", 4);
-                put("maxRadius", 16);
+                put("maxRadius", 16d);
                 put("cooldown", 600);
             }})));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.empty()));

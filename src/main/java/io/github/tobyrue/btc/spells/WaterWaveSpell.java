@@ -26,8 +26,8 @@ public class WaterWaveSpell extends Spell {
 
     @Override
     public void use(final Spell.SpellContext ctx, final GrabBag args) {
-        int duration = args.getInt("duration", 2);
         double maxRadius = args.getDouble("maxRadius", 8D);
+        int duration = args.getInt("duration", 2);
         int amplifier = args.getInt("amplifier", 1);
         int maxDuration = args.getInt("maxDuration", 600);
 

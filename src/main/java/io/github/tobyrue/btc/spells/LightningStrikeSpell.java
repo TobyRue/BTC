@@ -30,8 +30,8 @@ public class LightningStrikeSpell extends Spell {
         var world = ctx.world();
         if (user == null || world.isClient) return;
 
-        double range = args.getDouble("range", 24.0);
-        double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3);
+        double range = args.getDouble("range", 24.0d);
+        double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3d);
 
         // Find target entity or block
         Entity targetEntity = getEntityLookedAt(user, range, aimingForgiveness);
