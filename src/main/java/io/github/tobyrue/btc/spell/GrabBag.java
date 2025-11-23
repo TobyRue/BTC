@@ -205,6 +205,7 @@ public interface GrabBag {
                 return nbt.contains(key) && nbt.getType(key) == NbtCompound.FLOAT_TYPE ? nbt.getFloat(key) : fallback;
             }
 
+            //TODO make work so that in json it is able to parse a double
             @Override
             public double getDouble(final String key, final double fallback) {
                 if (!nbt.contains(key)) return fallback;
