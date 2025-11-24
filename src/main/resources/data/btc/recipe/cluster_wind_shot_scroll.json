@@ -23,16 +23,13 @@
   "result": {
     "count": 1,
     "id": "btc:unlock_scroll",
-    "btc:unlock_spell": {
-      "advancement": "btc:adventure/get_cluster_wind_shot_scroll",
-      "texture_int": 0.1,
-      "name": "btc:cluster_wind_charge",
-      "id": "btc:cluster_wind_charge",
-      "args": "{}"
-    },
-    "minecraft:dyed_color": {
-      "rgb": -27648,
-      "show_in_tooltip": false
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_cluster_wind_shot_scroll",
+        "texture_int": 0,
+        "id": "btc:cluster_wind_charge",
+        "args": "{}"
+      }
     }
   }
 }

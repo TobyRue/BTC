@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public class UnlockScrollItem extends Item {
     public UnlockScrollItem() {
-        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("adventure/enter_btc_trial_chamber"),  0, Identifier.of("empty"), Identifier.of("empty"), "{}")).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xFFFFFF, false)));
+        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("err"),  0, Identifier.of("empty"), "{}")));
     }
 
     @Override
@@ -86,10 +86,11 @@ public class UnlockScrollItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        var cUser = MinecraftClient.getInstance().player;
-        if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).name() instanceof Identifier id) {
-            return Text.translatable(this.getTranslationKey(stack), Text.translatable("spell." + id.getNamespace() + "." + id.getPath()));
+        if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
+            Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(id), GrabBag.fromNBT(args));
+            return Text.translatable(this.getTranslationKey(), spell.spell().getName(spell.args()));
+            //TODO java.lang.NullPointerException: Cannot invoke "io.github.tobyrue.btc.spell.Spell.getName(io.github.tobyrue.btc.spell.GrabBag)" because the return value of "io.github.tobyrue.btc.spell.Spell$InstancedSpell.spell()" is null
         }
-        return Text.translatable(this.getTranslationKey() + ".empty");
+        return Text.translatable(this.getTranslationKey() + ".err");
     }
 }

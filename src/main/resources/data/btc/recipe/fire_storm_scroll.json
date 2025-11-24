@@ -23,14 +23,9 @@
     "components": {
       "btc:unlock_spell": {
         "advancement": "btc:adventure/get_fire_storm_scroll",
-        "texture_int": 0.01,
-        "name": "btc:fire_storm.strong",
+        "texture_int": 0,
         "id": "btc:fire_storm",
         "args": "{ \"duration\":4, \"maxRadius\":16.0d, \"cooldown\":500 }"
-      },
-      "minecraft:dyed_color": {
-        "rgb": -27648,
-        "show_in_tooltip": false
       }
     }
   }

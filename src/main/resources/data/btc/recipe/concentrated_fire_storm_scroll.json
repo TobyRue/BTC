@@ -24,7 +24,6 @@
       "btc:unlock_spell": {
         "advancement": "btc:adventure/get_concentrated_fire_storm_scroll",
         "texture_int": 1,
-        "name": "btc:fire_storm.concentrated",
         "id": "btc:fire_storm",
         "args": "{ \"duration\":2, \"maxRadius\":8.0d, \"cooldown\":400 }"
       }

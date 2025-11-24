@@ -20,12 +20,13 @@
   "result": {
     "count": 1,
     "id": "btc:unlock_scroll",
-    "btc:unlock_spell": {
-      "advancement": "btc:adventure/get_earth_spike_scroll",
-      "texture_int": 3,
-      "name": "btc:earth_spike",
-      "id": "btc:earth_spike",
-      "args": "{}"
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_earth_spike_scroll",
+        "texture_int": 3,
+        "id": "btc:earth_spike",
+        "args": "{}"
+      }
     }
   }
 }

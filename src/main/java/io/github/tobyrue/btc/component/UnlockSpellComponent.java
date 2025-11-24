@@ -6,7 +6,7 @@ import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.nbt.NbtCompound;
 
-public record UnlockSpellComponent(Identifier advancement, int textureInt, Identifier name, Identifier id, String args) {
+public record UnlockSpellComponent(Identifier advancement, int textureInt, Identifier id, String args) {
 
     public NbtCompound argsAsNbt() {
         System.out.println("ARGS: " + args);
@@ -29,7 +29,6 @@ public record UnlockSpellComponent(Identifier advancement, int textureInt, Ident
         return builder.group(
                 Identifier.CODEC.fieldOf("advancement").forGetter(UnlockSpellComponent::advancement),
                 Codec.INT.optionalFieldOf("texture_int", 0).forGetter(UnlockSpellComponent::textureInt),
-                Identifier.CODEC.optionalFieldOf("name", Identifier.of("empty")).forGetter(UnlockSpellComponent::name),
                 Identifier.CODEC.optionalFieldOf("id", Identifier.of("empty")).forGetter(UnlockSpellComponent::id),
                 Codec.STRING.optionalFieldOf("args", "{}").forGetter(UnlockSpellComponent::args)
 
