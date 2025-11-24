@@ -19,6 +19,14 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:fireball_strong_scroll"
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_fireball_strong_scroll",
+        "texture_int": 0,
+        "id": "btc:fireball",
+        "args": "{\"level\":4}"
+      }
+    }
   }
 }

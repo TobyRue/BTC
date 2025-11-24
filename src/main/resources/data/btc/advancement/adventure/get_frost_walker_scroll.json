@@ -2,7 +2,7 @@
   "parent": "btc:adventure/obtain_spell_book_advancment",
   "display": {
     "icon": {
-      "id": "btc:frost_walker_scroll",
+      "id": "btc:unlock_scroll",
       "count": 1
     },
     "title": {

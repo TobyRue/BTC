@@ -8,10 +8,12 @@ import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.AdvancementUtils;
+import io.github.tobyrue.btc.util.UnlockScrollCache;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -22,6 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +49,18 @@ public class UnlockScrollItem extends Item {
         // Start using the item
         user.setCurrentHand(hand);
         return TypedActionResult.consume(user.getStackInHand(hand));
+    }
+
+    @Override
+    public void onCraftByPlayer(ItemStack stack, World world, PlayerEntity player) {
+        super.onCraft(stack, world);
+        super.onCraftByPlayer(stack, world, player);
+    }
+
+    @Override
+    public void onCraft(ItemStack stack, World world) {
+        UnlockScrollCache.invalidate(stack);
+        super.onCraft(stack, world);
     }
 
     @Override
@@ -86,10 +101,13 @@ public class UnlockScrollItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
-            Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(id), GrabBag.fromNBT(args));
-            return Text.translatable(this.getTranslationKey(), spell.spell().getName(spell.args()));
-            //TODO java.lang.NullPointerException: Cannot invoke "io.github.tobyrue.btc.spell.Spell.getName(io.github.tobyrue.btc.spell.GrabBag)" because the return value of "io.github.tobyrue.btc.spell.Spell$InstancedSpell.spell()" is null
+        Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
+        if (inst != null && inst.spell() != null) {
+            try {
+                return Text.translatable(this.getTranslationKey(stack), inst.spell().getName(inst.args()));
+            } catch (Exception e) {
+                return Text.translatable(this.getTranslationKey() + ".err");
+            }
         }
         return Text.translatable(this.getTranslationKey() + ".err");
     }

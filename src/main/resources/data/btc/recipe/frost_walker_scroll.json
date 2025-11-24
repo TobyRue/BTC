@@ -19,6 +19,14 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:frost_walker_scroll"
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_frost_walker_scroll",
+        "texture_int": 4,
+        "id": "btc:potion",
+        "args": "{amplifier:0, cooldown:1600, cooldown_name:\"btc:frost_walker_potion_effect\", duration:1200, effect:\"btc:frost_walker\", name:\"frost_walker\" }"
+      }
+    }
   }
 }

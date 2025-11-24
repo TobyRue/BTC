@@ -28,6 +28,7 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -78,6 +79,7 @@ public class BTC implements ModInitializer {
             BTC.identifierOf("unlock_spell"),
             ComponentType.<UnlockSpellComponent>builder().codec(UnlockSpellComponent.CODEC).build()
     );
+
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 

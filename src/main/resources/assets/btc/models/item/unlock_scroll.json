@@ -20,6 +20,10 @@
     {
       "predicate": { "texture": 0.03 },
       "model": "btc:item/earth_spike_scroll"
+    },
+    {
+      "predicate": { "texture": 0.04 },
+      "model": "btc:item/frost_walker_scroll"
     }
   ]
 }

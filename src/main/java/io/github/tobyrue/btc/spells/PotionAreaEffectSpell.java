@@ -53,7 +53,7 @@ public class PotionAreaEffectSpell extends Spell {
     }
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return new Spell.SpellCooldown(args.getInt("cooldown"), BTC.identifierOf("potion"));
+        return new Spell.SpellCooldown(args.getInt("cooldown"), Identifier.tryParse(args.getString("cooldown_name", "btc:potion")));
     }
 
     @Override

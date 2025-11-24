@@ -151,6 +151,7 @@ public class ModPackets {
                                     String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
                                     // Build the base command prefix
+                                    System.out.println("Spell: " + inst.spell() + " Args as NBT: " + GrabBag.toNBT(inst.args()));
                                     String spellId = Spell.getId(inst.spell()).toString();
                                     NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
                                     String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";

@@ -68,6 +68,18 @@ public interface GrabBag {
     }
 
     default boolean equalsOther(@Nullable final Object o) {
+
+
+        if (this == o) {
+            return true;
+        }
+
+        if (o instanceof GrabBag other) {
+            if (GrabBag.toNBT(this).equals(GrabBag.toNBT(other))) {
+                return true;
+            }
+        }
+
         return o instanceof GrabBag other && this.getKeys().size() == other.getKeys().size() && this.getKeys().stream().allMatch(key -> {
             final var t1 = this.getType(key);
             final var t2 = other.getType(key);
@@ -90,7 +102,7 @@ public interface GrabBag {
                 // Note: getType will return Byte.class for booleans, but let's handle it anyway
                 return this.getBoolean(key) == other.getBoolean(key);
             } else if (t1 == GrabBag.class && t2 == GrabBag.class) {
-                return this.getChild(key).equals(other.getChild(key));
+                return this.getChild(key).equalsOther(other.getChild(key));
             } else {
                 return false;
             }

@@ -18,6 +18,7 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.util.UnlockScrollCache;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -204,14 +205,16 @@ public class BTCClient implements ClientModInitializer {
                     return 0;
                 });
 
+
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
-            if (stack.getItem() instanceof UnlockScrollItem item && tintIndex == 1 && stack.contains(DataComponentTypes.DYED_COLOR) && stack.contains(BTC.UNLOCK_SPELL_COMPONENT)) {
-                if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
-                    Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(id), GrabBag.fromNBT(args));
-                    return spell.spell().getColor(spell.args());
-                }
-            }
-            return 0xFFFFFFFF;
+            if (tintIndex != 1) return 0xFFFFFFFF;
+            if (!(stack.getItem() instanceof UnlockScrollItem)) return 0xFFFFFFFF;
+            if (!stack.contains(BTC.UNLOCK_SPELL_COMPONENT)) return 0xFFFFFFFF;
+
+            Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
+            if (inst == null || inst.spell() == null) return 0xFFFFFFFF;
+
+            return inst.spell().getColor(inst.args());
         }, ModItems.UNLOCK_SCROLL);
 
 
