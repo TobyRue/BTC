@@ -1,0 +1,16 @@
+{
+  "parent": "btc:adventure/obtain_spell_book_advancment",
+  "display": {
+    "icon": { "id": "btc:unlock_scroll", "count": 1 },
+    "title": { "translate": "advancements.btc.adventure.get_flame_burst_scroll.title" },
+    "description": { "translate": "advancements.btc.adventure.get_flame_burst_scroll.description" },
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": { "trigger": "minecraft:impossible" }
+  },
+  "requirements": [ ["unlock"] ],
+  "sends_telemetry_event": true
+}

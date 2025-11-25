@@ -6,10 +6,10 @@
       "count": 1
     },
     "title": {
-      "translate": "advancements.btc.adventure.get_tempests_call_scroll.title"
+      "translate": "advancements.btc.adventure.get_wind_charge_scroll.title"
     },
     "description": {
-      "translate": "advancements.btc.adventure.get_tempests_call_scroll.description"
+      "translate": "advancements.btc.adventure.get_wind_charge_scroll.description"
     },
     "show_toast": true,
     "announce_to_chat": true,

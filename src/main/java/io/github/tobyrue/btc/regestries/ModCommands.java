@@ -287,11 +287,7 @@ public class ModCommands {
                                 if (slot != null) {
                                     System.out.println("[DEBUG] Adding to favorites at slot " + slot);
                                     boolean found = PredefinedSpellsItem.getKnownSpells(playerData).stream()
-                                            .anyMatch(inst -> {
-                                                System.out.println("I Spell: " + inst.spell() + " I Args: " + inst.args() + " I NBT: " + GrabBag.toNBT(inst.args()));
-                                                System.out.println("C Spell: " + spell + " C Args: " + args + " C NBT: " + GrabBag.toNBT(args));
-                                                return inst.spell() == spell && inst.args().equalsOther(args);
-                                            });
+                                            .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                     if (found) {
                                         PredefinedSpellsItem.addFavoriteSpellWithIndex(player, spellState, new Spell.InstancedSpell(spell, args), slot);

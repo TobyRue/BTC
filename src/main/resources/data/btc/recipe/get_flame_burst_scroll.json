@@ -2,19 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "a": {
-      "item": "minecraft:phantom_membrane"
-    },
-    "b": {
-      "item": "btc:empty_scroll"
-    },
-    "c": {
-      "item": "minecraft:wind_charge"
-    }
+    "a": { "item": "minecraft:fire_charge" },
+    "b": { "item": "btc:empty_scroll" },
+    "c": { "item": "minecraft:blaze_powder" },
+    "d": { "item": "minecraft:blaze_rod" }
   },
   "pattern": [
     "aca",
-    "cbc",
+    "bdb",
     "aca"
   ],
   "result": {
@@ -22,9 +17,9 @@
     "id": "btc:unlock_scroll",
     "components": {
       "btc:unlock_spell": {
-        "advancement": "btc:adventure/get_tempests_call_scroll",
+        "advancement": "btc:adventure/get_flame_burst_scroll",
         "texture_int": 0,
-        "id": "btc:tempests_call",
+        "id": "btc:flame_burst",
         "args": "{}"
       }
     }

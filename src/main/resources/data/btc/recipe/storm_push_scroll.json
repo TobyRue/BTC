@@ -19,6 +19,14 @@
   ],
   "result": {
     "count": 1,
-    "id": "btc:storm_push_scroll"
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_storm_push_scroll",
+        "texture_int": 0,
+        "id": "btc:storm_push",
+        "args": "{}"
+      }
+    }
   }
 }

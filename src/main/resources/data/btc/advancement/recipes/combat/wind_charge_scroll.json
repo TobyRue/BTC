@@ -1,0 +1,60 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "btc:empty_scroll"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_wind_charge": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:wind_charge"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_feather": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:feather"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:wind_charge_scroll"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_feather",
+      "has_wind_charge",
+      "has_empty_scroll"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:wind_charge_scroll"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": { "item": "minecraft:fire_charge" },
+    "b": { "item": "btc:empty_scroll" },
+    "c": { "item": "minecraft:ghast_tear" },
+    "d": { "item": "minecraft:blaze_powder" }
+  },
+  "pattern": [
+    "ada",
+    "bdb",
+    "ada"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_fireball_scroll",
+        "texture_int": 0,
+        "id": "btc:fireball",
+        "args": "{}"
+      }
+    }
+  }
+}

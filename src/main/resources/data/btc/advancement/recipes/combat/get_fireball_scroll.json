@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:empty_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_fire_charge": { "conditions": { "items": [ { "items": "minecraft:fire_charge" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_blaze_powder": { "conditions": { "items": [ { "items": "minecraft:blaze_powder" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_ghast_tear": { "conditions": { "items": [ { "items": "minecraft:ghast_tear" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:fireball_scroll" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_fire_charge","has_blaze_powder","has_ghast_tear","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:fireball_scroll"] }
+}
