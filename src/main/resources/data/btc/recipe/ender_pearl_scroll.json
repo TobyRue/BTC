@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": { "item": "minecraft:ender_pearl" },
+    "b": { "item": "btc:empty_scroll" },
+    "c": { "item": "minecraft:chorus_fruit" },
+    "d": { "item": "minecraft:popped_chorus_fruit" }
+  },
+  "pattern": [
+    "aca",
+    "dbd",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_ender_pearl_scroll",
+        "texture_int": 0,
+        "id": "btc:ender_pearl",
+        "args": "{}"
+      }
+    }
+  }
+}

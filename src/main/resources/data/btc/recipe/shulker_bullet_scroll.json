@@ -1,0 +1,29 @@
+
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "s": { "item": "minecraft:shulker_shell" },
+    "p": { "item": "minecraft:purpur_block" },
+    "r": { "item": "minecraft:end_rod" },
+    "c": { "item": "minecraft:chorus_fruit" },
+    "x": { "item": "btc:empty_scroll" }
+  },
+  "pattern": [
+    "sps",
+    "rxc",
+    "sps"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_shulker_bullet_scroll",
+        "texture_int": 0,
+        "id": "btc:shulker_bullet",
+        "args": "{}"
+      }
+    }
+  }
+}

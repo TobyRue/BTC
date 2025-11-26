@@ -1,0 +1,17 @@
+
+{
+  "parent": "btc/obtain_spell_book_advancment",
+  "display": {
+    "icon": { "id": "btc", "count": 1 },
+    "title": { "translate": "advancements.btc.adventure.get_life_steal_scroll.title" },
+    "description": { "translate": "advancements.btc.adventure.get_life_steal_scroll.description" },
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock": { "trigger": "minecraft" }
+  },
+  "requirements": [["unlock"]],
+  "sends_telemetry_event": true
+}

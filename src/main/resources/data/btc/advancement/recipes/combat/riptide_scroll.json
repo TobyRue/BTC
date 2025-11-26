@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scroll": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] }
+    },
+    "has_trident": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:trident" }] }
+    },
+    "has_conduit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:conduit" }] }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "btc:riptide_scroll" }
+    }
+  },
+  "requirements": [
+    ["has_recipe", "has_scroll", "has_trident", "has_conduit"]
+  ],
+  "rewards": {
+    "recipes": ["btc:riptide_scroll"]
+  }
+}

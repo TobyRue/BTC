@@ -38,7 +38,7 @@ public class SpellOfDissolution extends ChanneledSpell {
 
         if (harmful.isEmpty()) return;
 
-        int interval = Math.max(1, castTime / harmful.size());
+        int interval = Math.max(1, args.getInt("castTime", this.castTime) / harmful.size());
 
         if (tick % interval != 0 || tick == 0) return;
 

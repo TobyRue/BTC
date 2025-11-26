@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scroll": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] }
+    },
+    "has_ice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:packed_ice" }] }
+    },
+    "has_glass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:glass" }] }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "btc:mist_veil_scroll" }
+    }
+  },
+  "requirements": [
+    ["has_recipe", "has_scroll", "has_ice", "has_glass"]
+  ],
+  "rewards": {
+    "recipes": ["btc:mist_veil_scroll"]
+  }
+}

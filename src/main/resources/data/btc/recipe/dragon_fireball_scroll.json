@@ -9,12 +9,15 @@
       "item": "btc:empty_scroll"
     },
     "c": {
+      "item": "minecraft:end_crystal"
+    },
+    "d": {
       "item": "minecraft:fire_charge"
     }
   },
   "pattern": [
     "aca",
-    "cbc",
+    "dbd",
     "aca"
   ],
   "result": {

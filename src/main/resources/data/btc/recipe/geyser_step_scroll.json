@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "M": { "item": "minecraft:soul_sand" },
+    "K": { "item": "minecraft:kelp" },
+    "B": { "item": "btc:empty_scroll" }
+  },
+  "pattern": [
+    "KMK",
+    "MBM",
+    "KMK"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_geyser_step_scroll",
+        "texture_int": 0,
+        "id": "btc:geyser_step",
+        "args": "{}"
+      }
+    }
+  }
+}

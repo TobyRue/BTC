@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": { "item": "minecraft:phantom_membrane" },
+    "b": { "item": "minecraft:ghast_tear" },
+    "c": { "item": "minecraft:ender_pearl" },
+    "d": { "item": "minecraft:echo_shard" },
+    "e": { "item": "minecraft:dragon_breath" },
+    "s": { "item": "btc:empty_scroll" }
+  },
+  "pattern": [
+    "abc",
+    "dse",
+    "cba"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_life_steal_scroll",
+        "texture_int": 0,
+        "id": "btc:life_steal",
+        "args": "{}"
+      }
+    }
+  }
+}

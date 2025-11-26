@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": { "item": "minecraft:conduit" },
+    "S": { "item": "minecraft:nautilus_shell" },
+    "W": { "item": "minecraft:water_bucket" },
+    "T": { "item": "minecraft:trident" },
+    "B": { "item": "btc:empty_scroll" }
+  },
+  "pattern": [
+    "SCS",
+    "WBW",
+    "STS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_riptide_scroll",
+        "texture_int": 0,
+        "id": "btc:riptide",
+        "args": "{}"
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "e": { "item": "minecraft:ender_eye" },
+    "o": { "item": "minecraft:ender_chest" },
+    "s": { "item": "btc:empty_scroll" },
+    "h": { "item": "minecraft:shulker_shell" },
+    "c": { "item": "minecraft:echo_shard" },
+    "a": { "item": "minecraft:amethyst_shard" }
+  },
+  "pattern": [
+    "eoe",
+    "hsh",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_ender_chest_scroll",
+        "texture_int": 0,
+        "id": "btc:ender_chest",
+        "args": "{}"
+      }
+    }
+  }
+}

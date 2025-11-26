@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": {
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_golden_apple": {
+      "conditions": { "items": [{ "items": "minecraft:enchanted_golden_apple" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_moss": {
+      "conditions": { "items": [{ "items": "minecraft:moss_block" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": { "recipe": "btc:creeper_wall_circle_scroll" },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    ["has_empty_scroll", "has_golden_apple", "has_moss", "has_the_recipe"]
+  ],
+  "rewards": {
+    "recipes": ["btc:creeper_wall_circle_scroll"]
+  }
+}

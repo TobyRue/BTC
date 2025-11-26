@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scroll": {
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_phantom": {
+      "conditions": { "items": [{ "items": "minecraft:phantom_membrane" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_ghast_tear": {
+      "conditions": { "items": [{ "items": "minecraft:ghast_tear" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_ender_pearl": {
+      "conditions": { "items": [{ "items": "minecraft:ender_pearl" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_echo_shard": {
+      "conditions": { "items": [{ "items": "minecraft:echo_shard" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_dragon_breath": {
+      "conditions": { "items": [{ "items": "minecraft:dragon_breath" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_recipe": {
+      "conditions": { "recipe": "btc:life_steal_scroll" },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_recipe",
+      "has_scroll",
+      "has_phantom",
+      "has_ghast_tear",
+      "has_ender_pearl",
+      "has_echo_shard",
+      "has_dragon_breath"
+    ]
+  ],
+  "rewards": {
+    "recipes": ["btc:life_steal_scroll"]
+  }
+}

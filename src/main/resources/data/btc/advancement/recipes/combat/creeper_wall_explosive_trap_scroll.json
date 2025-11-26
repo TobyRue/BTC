@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": {
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_tnt": {
+      "conditions": { "items": [{ "items": "minecraft:tnt" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_minecart_tnt": {
+      "conditions": { "items": [{ "items": "minecraft:tnt_minecart" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_pressure_plate": {
+      "conditions": { "items": [{ "items": "minecraft:stone_pressure_plate" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": { "recipe": "btc:creeper_wall_explosive_trap_scroll" },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_empty_scroll",
+      "has_tnt",
+      "has_minecart_tnt",
+      "has_pressure_plate",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": ["btc:creeper_wall_explosive_trap_scroll"]
+  }
+}

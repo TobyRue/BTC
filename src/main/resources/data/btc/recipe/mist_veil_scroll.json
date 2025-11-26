@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "AGA",
+    "IBI",
+    "AGA"
+  ],
+  "key": {
+    "A": { "item": "minecraft:packed_ice" },
+    "G": { "item": "minecraft:glass" },
+    "I": { "item": "minecraft:blue_ice" },
+    "B": { "item": "btc:empty_scroll" }
+  },
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_mist_veil_scroll",
+        "texture_int": 0,
+        "id": "btc:mist_veil",
+        "args": "{}"
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scroll": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] }
+    },
+    "has_soul_sand": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:soul_sand" }] }
+    },
+    "has_kelp": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:kelp" }] }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "btc:geyser_step_scroll" }
+    }
+  },
+  "requirements": [
+    ["has_recipe", "has_scroll", "has_soul_sand", "has_kelp"]
+  ],
+  "rewards": {
+    "recipes": ["btc:geyser_step_scroll"]
+  }
+}

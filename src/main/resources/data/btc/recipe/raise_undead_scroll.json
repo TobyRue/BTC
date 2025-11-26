@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "BGB",
+    "RCR",
+    "SSS"
+  ],
+  "key": {
+    "B": { "item": "minecraft:bone" },
+    "S": { "item": "minecraft:soul_sand" },
+    "R": { "item": "minecraft:rotten_flesh" },
+    "G": { "item": "minecraft:enchanted_golden_apple" },
+    "C": { "item": "btc:empty_scroll" }
+  },
+  "result": {
+    "id": "btc:unlock_scroll",
+    "count": 1,
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_raise_undead_scroll",
+        "texture_int": 0,
+        "id": "btc:raise_undead",
+        "args": "{}"
+      }
+    }
+  }
+}

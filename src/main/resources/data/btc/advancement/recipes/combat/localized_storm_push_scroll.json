@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:empty_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_feather": { "conditions": { "items": [ { "items": "minecraft:feather" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_slime_ball": { "conditions": { "items": [ { "items": "minecraft:slime_ball" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_phantom_membrane": { "conditions": { "items": [ { "items": "minecraft:phantom_membrane" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:localized_storm_push_scroll" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_empty_scroll","has_feather","has_slime_ball","has_phantom_membrane"] ],
+  "rewards": { "recipes": ["btc:localized_storm_push_scroll"] }
+}

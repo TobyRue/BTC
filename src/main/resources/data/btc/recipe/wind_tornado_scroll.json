@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": { "item": "minecraft:feather" },
+    "b": { "item": "btc:empty_scroll" },
+    "c": { "item": "minecraft:slime_ball" },
+    "d": { "item": "minecraft:breeze_rod" }
+  },
+  "pattern": [
+    "aca",
+    "dbd",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_wind_tornado_scroll",
+        "texture_int": 0,
+        "id": "btc:wind_tornado",
+        "args": "{}"
+      }
+    }
+  }
+}

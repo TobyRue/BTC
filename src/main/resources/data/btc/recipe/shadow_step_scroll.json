@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": { "item": "minecraft:ender_eye" },
+    "b": { "item": "btc:empty_scroll" },
+    "c": { "item": "minecraft:phantom_membrane" },
+    "d": { "item": "minecraft:echo_shard" },
+    "e": { "item": "minecraft:golden_carrot" },
+    "f": { "item": "minecraft:fermented_spider_eye" }
+
+  },
+  "pattern": [
+    "cde",
+    "aba",
+    "fdc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_shadow_step_scroll",
+        "texture_int": 0,
+        "id": "btc:shadow_step",
+        "args": "{}"
+      }
+    }
+  }
+}

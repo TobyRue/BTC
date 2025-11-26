@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:empty_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_feather": { "conditions": { "items": [ { "items": "minecraft:feather" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_redstone": { "conditions": { "items": [ { "items": "minecraft:redstone_block" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_phantom_membrane": { "conditions": { "items": [ { "items": "minecraft:phantom_membrane" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_ender_pearl": { "conditions": { "items": [ { "items": "minecraft:ender_pearl" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:storm_surge_scroll" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_empty_scroll","has_feather","has_redstone","has_phantom_membrane","has_ender_pearl"] ],
+  "rewards": { "recipes": ["btc:storm_surge_scroll"] }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": { "item": "minecraft:feather" },
+    "b": { "item": "btc:empty_scroll" },
+    "c": { "item": "minecraft:slime_ball" },
+    "d": { "item": "minecraft:phantom_membrane" }
+  },
+  "pattern": [
+    "aca",
+    "dbd",
+    "aca"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_localized_storm_push_scroll",
+        "texture_int": 0,
+        "id": "btc:localized_storm_push",
+        "args": "{}"
+      }
+    }
+  }
+}

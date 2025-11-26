@@ -4,22 +4,22 @@
   "key": {
     "a": { "item": "minecraft:fire_charge" },
     "b": { "item": "btc:empty_scroll" },
-    "c": { "item": "minecraft:blaze_powder" },
-    "d": { "item": "minecraft:magma_cream" }
+    "c": { "item": "minecraft:ghast_tear" },
+    "d": { "item": "minecraft:blaze_powder" }
   },
   "pattern": [
-    "aca",
-    "bdb",
-    "aca"
+    "ada",
+    "dbd",
+    "ada"
   ],
   "result": {
     "count": 1,
     "id": "btc:unlock_scroll",
     "components": {
       "btc:unlock_spell": {
-        "advancement": "btc:adventure/get_blaze_storm_scroll",
+        "advancement": "btc:adventure/get_fireball_scroll",
         "texture_int": 0,
-        "id": "btc:blaze_storm",
+        "id": "btc:fireball",
         "args": "{}"
       }
     }

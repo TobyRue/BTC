@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "MTM",
+    "GSG",
+    "MTM"
+  ],
+  "key": {
+    "M": { "item": "minecraft:moss_block" },
+    "T": { "item": "minecraft:enchanted_golden_apple" },
+    "G": { "item": "minecraft:gunpowder" },
+    "S": { "item": "btc:empty_scroll" }
+  },
+  "result": {
+    "id": "btc:unlock_scroll",
+    "count": 1,
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_creeper_wall_circle_scroll",
+        "texture_int": 0,
+        "id": "btc:creeper_wall_circle",
+        "args": "{}"
+      }
+    }
+  }
+}

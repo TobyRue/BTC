@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scroll": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] }
+    },
+    "has_heart_of_the_sea": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:heart_of_the_sea" }] }
+    },
+    "has_water_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": "minecraft:water_bucket" }] }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "btc:water_wave_scroll" }
+    }
+  },
+  "requirements": [
+    ["has_recipe", "has_heart_of_the_sea", "has_water_bucket", "has_scroll"]
+  ],
+  "rewards": {
+    "recipes": ["btc:water_wave_scroll"]
+  }
+}

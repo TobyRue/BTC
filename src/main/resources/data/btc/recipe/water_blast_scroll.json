@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": { "item": "minecraft:prismarine_shard" },
+    "P": { "item": "minecraft:heart_of_the_sea" },
+    "B": { "item": "btc:empty_scroll" },
+    "C": { "item": "minecraft:packed_ice" }
+  },
+  "pattern": [
+    "APA",
+    "CBC",
+    "ACA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_water_blast_scroll",
+        "texture_int": 0,
+        "id": "btc:water_blast",
+        "args": "{}"
+      }
+    }
+  }
+}

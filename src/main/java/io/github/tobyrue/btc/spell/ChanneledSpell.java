@@ -110,9 +110,9 @@ public abstract class ChanneledSpell extends Spell {
         var startHealth = ctx.user().getHealth();
         var startPos = ctx.user().getPos();
         var user = ctx.user();
-        int castTime = this.castTime;
-        int intervalTicks = this.intervalTicks;
-        double moveableDistance = args.getDouble("particleCount", disturb.moveableDistance);
+        int castTime = args.getInt("castTime", this.castTime);
+        int intervalTicks = args.getInt("intervalTicks", this.intervalTicks);
+        double moveableDistance = args.getDouble("moveableDistance", disturb.moveableDistance);
 
         AtomicBoolean ranOnce = new AtomicBoolean(false);
 

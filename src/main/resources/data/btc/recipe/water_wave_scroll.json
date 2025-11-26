@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "IWI",
+    "SBS",
+    "IWI"
+  ],
+  "key": {
+    "I": { "item": "minecraft:water_bucket" },
+    "S": { "item": "minecraft:heart_of_the_sea" },
+    "B": { "item": "btc:empty_scroll" },
+    "W": { "item": "btc:water_blast" }
+  },
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_water_wave_scroll",
+        "texture_int": 0,
+        "id": "btc:water_wave",
+        "args": "{}"
+      }
+    }
+  }
+}

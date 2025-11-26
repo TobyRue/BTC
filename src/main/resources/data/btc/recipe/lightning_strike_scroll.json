@@ -2,24 +2,24 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "a": { "item": "minecraft:fire_charge" },
+    "a": { "item": "minecraft:feather" },
     "b": { "item": "btc:empty_scroll" },
-    "c": { "item": "minecraft:ghast_tear" },
-    "d": { "item": "minecraft:blaze_powder" }
+    "c": { "item": "minecraft:redstone" },
+    "d": { "item": "minecraft:ender_pearl" }
   },
   "pattern": [
-    "ada",
-    "bdb",
-    "ada"
+    "aca",
+    "dbd",
+    "aca"
   ],
   "result": {
     "count": 1,
     "id": "btc:unlock_scroll",
     "components": {
       "btc:unlock_spell": {
-        "advancement": "btc:adventure/get_fireball_scroll",
+        "advancement": "btc:adventure/get_lightning_strike_scroll",
         "texture_int": 0,
-        "id": "btc:fireball",
+        "id": "btc:lightning_strike",
         "args": "{}"
       }
     }

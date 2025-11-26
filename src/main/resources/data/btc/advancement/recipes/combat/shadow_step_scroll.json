@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": {
+      "conditions": { "items": [{ "items": "btc:empty_scroll" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_ender_eye": {
+      "conditions": { "items": [{ "items": "minecraft:ender_eye" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_phantom_membrane": {
+      "conditions": { "items": [{ "items": "minecraft:phantom_membrane" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_echo_shard": {
+      "conditions": { "items": [{ "items": "minecraft:echo_shard" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": { "recipe": "btc:shadow_step_scroll" },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_empty_scroll",
+      "has_ender_eye",
+      "has_phantom_membrane",
+      "has_echo_shard"
+    ]
+  ],
+  "rewards": {
+    "recipes": ["btc:shadow_step_scroll"]
+  }
+}

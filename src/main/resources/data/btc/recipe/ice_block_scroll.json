@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ISI",
+    "PBP",
+    "ICI"
+  ],
+  "key": {
+    "I": { "item": "minecraft:blue_ice" },
+    "S": { "item": "minecraft:snow_block" },
+    "P": { "item": "minecraft:powder_snow_bucket" },
+    "C": { "item": "minecraft:conduit" },
+    "B": { "item": "btc:empty_scroll" }
+  },
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_ice_block_scroll",
+        "texture_int": 0,
+        "id": "btc:ice_block",
+        "args": "{}"
+      }
+    }
+  }
+}

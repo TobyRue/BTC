@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": { "item": "minecraft:dragon_breath" },
+    "g": { "item": "btc:dragon_rod" },
+    "p": { "item": "minecraft:blaze_powder" },
+    "u": { "item": "minecraft:gunpowder" },
+    "s": { "item": "btc:empty_scroll" }
+  },
+  "pattern": [
+    "dgd",
+    "psp",
+    "ugu"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_dragons_breath_scroll",
+        "texture_int": 0,
+        "id": "btc:dragons_breath",
+        "args": "{}"
+      }
+    }
+  }
+}

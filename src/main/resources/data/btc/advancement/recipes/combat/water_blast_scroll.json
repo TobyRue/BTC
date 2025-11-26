@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scroll": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "btc:empty_scroll" }]
+      }
+    },
+    "has_heart": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "minecraft:heart_of_the_sea" }]
+      }
+    },
+    "has_prismarine": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "minecraft:prismarine_shard" }]
+      }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "btc:water_blast_scroll" }
+    }
+  },
+  "requirements": [
+    ["has_recipe", "has_scroll", "has_heart", "has_prismarine"]
+  ],
+  "rewards": {
+    "recipes": ["btc:water_blast_scroll"]
+  }
+}
