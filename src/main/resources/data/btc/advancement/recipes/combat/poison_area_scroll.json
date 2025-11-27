@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:empty_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_potato": { "conditions": { "items": [ { "items": "minecraft:poisonous_potato" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_eye": { "conditions": { "items": [ { "items": "minecraft:fermented_spider_eye" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:poison_area_scroll" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_potato","has_eye","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:blaze_storm_scroll"] }
+}

@@ -25,7 +25,7 @@
         "advancement": "btc:adventure/get_concentrated_fire_storm_scroll",
         "texture_int": 1,
         "id": "btc:fire_storm",
-        "args": "{ \"duration\":2, \"maxRadius\":8.0d, \"cooldown\":400 }"
+        "args": "{ \"duration\":2, \"maxRadius\":7.9d, \"cooldown\":400 }"
       }
     }
   }

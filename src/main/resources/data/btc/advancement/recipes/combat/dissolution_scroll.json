@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:empty_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_ghast_tear": { "conditions": { "items": [ { "items": "minecraft:ghast_tear" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_quartz": { "conditions": { "items": [ { "items": "minecraft:quartz" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_apple": { "conditions": { "items": [ { "items": "minecraft:enchanted_golden_apple" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:dissolution_scroll" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_quartz","has_ghast_tear","has_apple","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:dissolution_scroll"] }
+}

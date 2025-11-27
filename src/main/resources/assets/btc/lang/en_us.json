@@ -132,8 +132,8 @@
   "advancements.btc.adventure.get_creeper_wall_block_scroll.description": "Construct a solid defensive barricade using volatile creeper energy.",
   "advancements.btc.adventure.get_raise_undead_scroll.title": "Bone Command",
   "advancements.btc.adventure.get_raise_undead_scroll.description": "Summon fallen warriors to fight once more under your command.",
-  "advancements.btc.adventure.get_poison_spell_scroll.title": "Toxic Miasma",
-  "advancements.btc.adventure.get_poison_spell_scroll.description": "Emit a poisonous wave that weakens nearby foes.",
+  "advancements.btc.adventure.get_poison_area_scroll.title": "Toxic Miasma",
+  "advancements.btc.adventure.get_poison_area_scroll.description": "Emit a poisonous wave that weakens nearby foes.",
 
 
   "advancements.btc.adventure.get_fireball_strong_scroll.title": "Blazing Mastery",
@@ -182,6 +182,9 @@
   "advancements.btc.adventure.get_storm_surge_scroll.title": "Storm's Edge",
   "advancements.btc.adventure.get_storm_surge_scroll.description": "Release the built-up fury of a raging tempest in a single devastating discharge.",
 
+
+  "advancements.btc.spells.dissolution_scroll.title": "Spell of Dissolution",
+  "advancements.btc.adventure.dissolution_scroll.description": "Channel arcane energy to transform harmful effects into helpful ones over time.",
 
   "enchantment.btc.infusion": "Infusion",
 

@@ -3,17 +3,20 @@
   "category": "equipment",
   "key": {
     "a": {
-      "item": "minecraft:wind_charge"
+      "item": "minecraft:quartz"
     },
     "b": {
       "item": "btc:empty_scroll"
     },
     "c": {
-      "item": "minecraft:feather"
+      "item": "minecraft:ghast_tear"
+    },
+    "d": {
+      "item": "minecraft:enchanted_golden_apple"
     }
   },
   "pattern": [
-    "aca",
+    "ada",
     "cbc",
     "aca"
   ],
@@ -22,10 +25,9 @@
     "id": "btc:unlock_scroll",
     "components": {
       "btc:unlock_spell": {
-        "advancement": "btc:adventure/get_wind_charge_scroll",
+        "advancement": "btc:adventure/get_dissolution_scroll",
         "texture_int": 0,
-        "name": "btc:wind_charge",
-        "id": "btc:wind_charge",
+        "id": "btc:dissolution",
         "args": "{}"
       }
     }
