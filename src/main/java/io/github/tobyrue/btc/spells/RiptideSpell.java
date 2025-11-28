@@ -66,6 +66,6 @@ public class RiptideSpell extends Spell {
     }
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return new Spell.SpellCooldown(args.getInt("cooldown", 200), BTC.identifierOf("riptide"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", 100), BTC.identifierOf("riptide"));
     }
 }

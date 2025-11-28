@@ -19,7 +19,7 @@
         "advancement": "btc:adventure/get_geyser_step_scroll",
         "texture_int": 0,
         "id": "btc:geyser_step",
-        "args": "{}"
+        "args": "{aimingForgiveness:0.3d, range:24.0d, canTarget:true, onSelf:true, cooldown:100}"
       }
     }
   }

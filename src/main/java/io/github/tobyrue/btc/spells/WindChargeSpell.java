@@ -29,7 +29,7 @@ public class WindChargeSpell extends Spell {
 
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return new SpellCooldown(20, BTC.identifierOf("wind_charge"));
+        return new SpellCooldown(args.getInt("cooldown", 20), BTC.identifierOf("wind_charge"));
     }
 
     @Override

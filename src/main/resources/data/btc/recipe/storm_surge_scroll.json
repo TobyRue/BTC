@@ -21,7 +21,7 @@
         "advancement": "btc:adventure/get_storm_surge_scroll",
         "texture_int": 0,
         "id": "btc:storm_surge",
-        "args": "{}"
+        "args": "{targetCount:5, range:20.0d, onlyHostile:false, cooldown:400}"
       }
     }
   }

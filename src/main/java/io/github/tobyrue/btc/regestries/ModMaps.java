@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.regestries;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.HashMap;
@@ -45,5 +44,10 @@ public class ModMaps {
         EFFECT_OPPOSITES.put(StatusEffects.SLOW_FALLING, StatusEffects.LEVITATION);
         EFFECT_OPPOSITES.put(StatusEffects.LEVITATION, StatusEffects.SLOW_FALLING);
 
+        EFFECT_OPPOSITES.put(ModStatusEffects.DROWNING, StatusEffects.WATER_BREATHING);
+        EFFECT_OPPOSITES.put(StatusEffects.WATER_BREATHING, ModStatusEffects.DROWNING);
+
+        EFFECT_OPPOSITES.put(ModStatusEffects.FRAGILITY, StatusEffects.RESISTANCE);
+        EFFECT_OPPOSITES.put(StatusEffects.RESISTANCE, ModStatusEffects.FRAGILITY);
     }
 }

@@ -25,7 +25,7 @@
         "advancement": "btc:adventure/get_earth_spike_scroll",
         "texture_int": 3,
         "id": "btc:earth_spike_line",
-        "args": "{}"
+        "args": "{spikeCount:8, yRange:12, cooldown:200}"
       }
     }
   }

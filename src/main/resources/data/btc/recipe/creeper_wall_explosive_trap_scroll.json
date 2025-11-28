@@ -21,7 +21,7 @@
         "advancement": "btc:adventure/get_creeper_wall_explosive_trap_scroll",
         "texture_int": 0,
         "id": "btc:creeper_wall_explosive_trap",
-        "args": "{}"
+        "args": "{aimingForgiveness:0.3d, radius:2d, range:16d, yRange:10, count:17}"
       }
     }
   }

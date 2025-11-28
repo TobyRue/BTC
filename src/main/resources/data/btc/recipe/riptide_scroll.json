@@ -21,7 +21,7 @@
         "advancement": "btc:adventure/get_riptide_scroll",
         "texture_int": 0,
         "id": "btc:riptide",
-        "args": "{}"
+        "args": "{duration:20, damage:2.0f, speed:2.0d, cooldown:100}"
       }
     }
   }

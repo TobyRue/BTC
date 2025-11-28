@@ -226,7 +226,14 @@
   "item.btc.wrench.type.wire_delay": "WIRE DELAY",
   "item.btc.wrench.type.wire_complex": "WIRE COMPLEX",
 
-  "item.btc.spell.context.current": "Current Spell: %s",
+  "item.btc.spell.type.generic": "Type: Generic",
+  "item.btc.spell.type.fire": "Type: Fire",
+  "item.btc.spell.type.wind": "Type: Wind",
+  "item.btc.spell.type.water": "Type: Water",
+  "item.btc.spell.type.earth": "Type: Earth",
+  "item.btc.spell.type.ender": "Type: Ender",
+
+  "item.btc.spell.cooldown": "Cooldown: %d Seconds",
 
   "item.btc.spell.book.set": "Spell Book set to: %s",
   "item.btc.spell.book.water_blast": "Water Blast",
@@ -377,6 +384,7 @@
 
   "spell.btc.eldritch_illusion": "Eldritch Illusion",
   "spell.btc.purge_bolt": "Purge Bolt",
+  "spell.btc.dissolution": "Dissolution",
 
   "radial.btc.spell.select_spell": "Select Spell",
   "radial.btc.spell.select_slot": "Select Slot"

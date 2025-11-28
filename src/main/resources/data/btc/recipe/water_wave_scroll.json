@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_water_wave_scroll",
         "texture_int": 0,
         "id": "btc:water_wave",
-        "args": "{}"
+        "args": "{maxRadius:8.0d, duration:40, amplifier:1, maxDuration:600, cooldown:600}"
       }
     }
   }

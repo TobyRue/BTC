@@ -7,6 +7,6 @@
     "has_blaze_rod": { "conditions": { "items": [ { "items": "minecraft:blaze_rod" } ] }, "trigger": "minecraft:inventory_changed" },
     "has_the_recipe": { "conditions": { "recipe": "btc:flame_burst_scroll" }, "trigger": "minecraft:recipe_unlocked" }
   },
-  "requirements": [ ["has_the_recipe","has_fire_charge","has_blaze_powder","has_bone_meal","has_empty_scroll"] ],
+  "requirements": [ ["has_the_recipe","has_fire_charge","has_blaze_powder","has_blaze_rod","has_empty_scroll"] ],
   "rewards": { "recipes": ["btc:flame_burst_scroll"] }
 }

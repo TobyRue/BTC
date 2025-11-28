@@ -33,6 +33,6 @@ public class EnderPearlSpell extends Spell {
 
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return new Spell.SpellCooldown(args.getInt("cooldown", 30), BTC.identifierOf("ender_pearl"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", 60), BTC.identifierOf("ender_pearl"));
     }
 }

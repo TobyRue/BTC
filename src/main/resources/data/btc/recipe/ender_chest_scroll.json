@@ -22,7 +22,7 @@
         "advancement": "btc:adventure/get_ender_chest_scroll",
         "texture_int": 0,
         "id": "btc:ender_chest",
-        "args": "{}"
+        "args": "{cooldown:160}"
       }
     }
   }

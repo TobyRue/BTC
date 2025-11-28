@@ -18,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -110,5 +111,22 @@ public class UnlockScrollItem extends Item {
             }
         }
         return Text.translatable(this.getTranslationKey() + ".err");
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
+        if (inst != null && inst.args() != null) {
+            var c = inst.args().getInt("cooldown");
+            tooltip.add(Text.translatable("item.btc.spell.type." + inst.spell().getSpellType()));
+            tooltip.add(Text.translatable("item.btc.spell.cooldown", c/20));
+            if (type.isAdvanced()) {
+                if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av) {
+                    tooltip.add(Text.literal("Adv: " + av.toTranslationKey()).formatted(Formatting.DARK_GRAY));
+                }
+                tooltip.add(Text.literal("NBT: " + GrabBag.toNBT(inst.args())).formatted(Formatting.DARK_GRAY));
+            }
+        }
+        super.appendTooltip(stack, context, tooltip, type);
     }
 }

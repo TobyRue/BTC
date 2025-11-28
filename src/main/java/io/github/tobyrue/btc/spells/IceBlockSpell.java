@@ -114,7 +114,7 @@ public class IceBlockSpell extends Spell {
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
         assert ctx.user() != null;
-        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24), args.getDouble("aimingForgiveness", 0.3D));
+        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24d), args.getDouble("aimingForgiveness", 0.3D));
         return target != null && super.canUse(ctx, args);
     }
 

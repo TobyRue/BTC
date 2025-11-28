@@ -36,11 +36,12 @@ public class GeyserStepSpell extends Spell {
         var world = ctx.world();
         var aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         var range = args.getDouble("range", 24.0d);
+        var canTarget = args.getBoolean("canTarget", true);
 
         var target = getEntityLookedAt(user, range, aimingForgiveness);
-        var launchVelocity = target != null ? 1.7 : 2.2; // less for enemies, more for player
+        var launchVelocity = (target != null && canTarget) ? 1.7 : 2.2; // less for enemies, more for player
 
-        var launchedEntity = target != null ? target : user;
+        var launchedEntity = (target != null && canTarget) ? target : user;
 
         // Apply upward velocity
         var velocity = launchedEntity.getVelocity();
@@ -52,7 +53,6 @@ public class GeyserStepSpell extends Spell {
         BlockPos pillarPos = findGroundBelowEntity(world, launchedEntity, 20);
 
         if (pillarPos != null && world.isClient) {
-            // For example, spawn splash particles vertically to simulate pillar instantly
             for (double y = pillarPos.getY(); y < storedPos.getY(); y++) {
                 for (int i = 0; i < count; i++) {
                     double angle = (2 * Math.PI / count) * i;
@@ -145,10 +145,21 @@ public class GeyserStepSpell extends Spell {
 //    }
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
+        var aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
+        var range = args.getDouble("range", 24.0d);
+        var canTarget = args.getBoolean("canTarget", true);
+        var onSelf = args.getBoolean("onSelf", true);
+
+        if (canTarget) {
+            Entity target = getEntityLookedAt(ctx.user(), range, aimingForgiveness);
+            if (!onSelf) {
+                return target != null && super.canUse(ctx, args);
+            }
+        }
         return ctx.user() != null && super.canUse(ctx, args);
     }
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
-        return new Spell.SpellCooldown(args.getInt("cooldown", 600), BTC.identifierOf("geyser_step"));
+        return new Spell.SpellCooldown(args.getInt("cooldown", 100), BTC.identifierOf("geyser_step"));
     }
 }

@@ -25,7 +25,7 @@
         "advancement": "btc:adventure/get_tempests_call_scroll",
         "texture_int": 0,
         "id": "btc:tempests_call",
-        "args": "{}"
+        "args": "{pull_radius:25.0d, pull_strength:3.0d, cooldown:160}"
       }
     }
   }

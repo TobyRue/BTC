@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_lightning_strike_scroll",
         "texture_int": 0,
         "id": "btc:lightning_strike",
-        "args": "{}"
+        "args": "{range:24.0d, aimingForgiveness:0.3d, cooldown:200}"
       }
     }
   }

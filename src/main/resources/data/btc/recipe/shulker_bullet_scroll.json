@@ -22,7 +22,7 @@
         "advancement": "btc:adventure/get_shulker_bullet_scroll",
         "texture_int": 0,
         "id": "btc:shulker_bullet",
-        "args": "{}"
+        "args": "{aimingForgiveness:0.3d, range:24.0d, radius:24.0d, cooldown:200}"
       }
     }
   }

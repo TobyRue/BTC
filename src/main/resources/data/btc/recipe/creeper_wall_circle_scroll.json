@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_creeper_wall_circle_scroll",
         "texture_int": 0,
         "id": "btc:creeper_wall_circle",
-        "args": "{}"
+        "args": "{spikes:20, radius:3d, cooldown:1200}"
       }
     }
   }

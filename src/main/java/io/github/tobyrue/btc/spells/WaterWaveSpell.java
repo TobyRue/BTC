@@ -27,12 +27,12 @@ public class WaterWaveSpell extends Spell {
     @Override
     public void use(final Spell.SpellContext ctx, final GrabBag args) {
         double maxRadius = args.getDouble("maxRadius", 8D);
-        int duration = args.getInt("duration", 2);
+        int duration = args.getInt("duration", 40);
         int amplifier = args.getInt("amplifier", 1);
         int maxDuration = args.getInt("maxDuration", 600);
 
         Vec3d storedPos = ctx.user().getPos();
-        ((Ticker.TickerTarget) ctx.user()).add(Ticker.forSeconds((ticks) -> {
+        ((Ticker.TickerTarget) ctx.user()).add(Ticker.forTicks((ticks) -> {
             if (ctx.world() instanceof ServerWorld serverWorld) {
                 double progress = ticks / (double) (duration * 20);
                 double radius = maxRadius * progress;

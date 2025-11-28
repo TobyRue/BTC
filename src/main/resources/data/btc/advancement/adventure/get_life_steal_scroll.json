@@ -9,9 +9,7 @@
     "announce_to_chat": true,
     "hidden": false
   },
-  "criteria": {
-    "unlock": { "trigger": "minecraft" }
-  },
+  "criteria": { "unlock": { "trigger": "minecraft:impossible" } },
   "requirements": [["unlock"]],
   "sends_telemetry_event": true
 }

@@ -19,7 +19,7 @@
         "advancement": "btc:adventure/get_fireball_scroll",
         "texture_int": 0,
         "id": "btc:fireball",
-        "args": "{}"
+        "args": "{level:1, cooldown:80}"
       }
     }
   }

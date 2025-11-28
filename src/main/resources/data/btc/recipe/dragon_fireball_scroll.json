@@ -28,7 +28,7 @@
         "advancement": "btc:adventure/get_dragon_fireball_scroll",
         "texture_int": 2,
         "id": "btc:dragon_fireball",
-        "args": "{}"
+        "args": "{cooldown:800}"
       }
     }
   }

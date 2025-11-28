@@ -26,7 +26,7 @@
         "texture_int": 0,
         "name": "btc:wind_charge",
         "id": "btc:wind_charge",
-        "args": "{}"
+        "args": "{cooldown:20}"
       }
     }
   }

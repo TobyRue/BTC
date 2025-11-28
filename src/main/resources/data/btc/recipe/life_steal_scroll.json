@@ -22,7 +22,7 @@
         "advancement": "btc:adventure/get_life_steal_scroll",
         "texture_int": 0,
         "id": "btc:life_steal",
-        "args": "{}"
+        "args": "{radius:10.0d, cooldown:30}"
       }
     }
   }

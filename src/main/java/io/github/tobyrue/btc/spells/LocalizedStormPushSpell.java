@@ -29,8 +29,8 @@ public class LocalizedStormPushSpell extends Spell {
 
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
-        double shootStrength = args.getDouble("shootStrength", 7d); // Overall velocity multiplier
-        double verticalMultiplier = args.getDouble("verticalMultiplier", 2.2d); // How much extra vertical force to apply
+        double shootStrength = args.getDouble("shootStrength", 7d);
+        double verticalMultiplier = args.getDouble("verticalMultiplier", 2.2d);
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         double range = args.getDouble("range", 24d);
         // Shoot mob away from the player
@@ -79,7 +79,7 @@ public class LocalizedStormPushSpell extends Spell {
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
         assert ctx.user() != null;
-        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24), args.getDouble("aimingForgiveness", 0.3D));
+        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24d), args.getDouble("aimingForgiveness", 0.3D));
         return target != null && super.canUse(ctx, args);
     }
 

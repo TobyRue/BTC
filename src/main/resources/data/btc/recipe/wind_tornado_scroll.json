@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_wind_tornado_scroll",
         "texture_int": 0,
         "id": "btc:wind_tornado",
-        "args": "{}"
+        "args": "{cooldown:400}"
       }
     }
   }

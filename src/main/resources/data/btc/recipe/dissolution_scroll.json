@@ -28,7 +28,7 @@
         "advancement": "btc:adventure/get_dissolution_scroll",
         "texture_int": 0,
         "id": "btc:dissolution",
-        "args": "{}"
+        "args": "{castTime:200, cooldown:1800, moveableDistance:12}"
       }
     }
   }

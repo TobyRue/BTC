@@ -25,7 +25,7 @@
         "advancement": "btc:adventure/get_storm_push_scroll",
         "texture_int": 0,
         "id": "btc:storm_push",
-        "args": "{}"
+        "args": "{shoot_radius:15.0d, shoot_strength:5d, cooldown:240}"
       }
     }
   }

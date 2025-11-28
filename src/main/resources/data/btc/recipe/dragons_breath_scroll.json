@@ -21,7 +21,7 @@
         "advancement": "btc:adventure/get_dragons_breath_scroll",
         "texture_int": 0,
         "id": "btc:dragons_breath",
-        "args": "{}"
+        "args": "{rate:4, range:8.0d, angle:20.0d, damage:4.0d, cooldown:800, castTime:200, intervalTicks:1}"
       }
     }
   }

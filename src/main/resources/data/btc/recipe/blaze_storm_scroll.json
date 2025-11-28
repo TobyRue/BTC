@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_blaze_storm_scroll",
         "texture_int": 0,
         "id": "btc:blaze_storm",
-        "args": "{}"
+        "args": "{deviation:0.2d, amount:20, cooldown:400}"
       }
     }
   }

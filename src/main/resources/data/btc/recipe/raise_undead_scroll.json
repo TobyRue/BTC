@@ -21,7 +21,7 @@
         "advancement": "btc:adventure/get_raise_undead_scroll",
         "texture_int": 0,
         "id": "btc:raise_undead",
-        "args": "{}"
+        "args": "{count:10, cooldown:400}"
       }
     }
   }

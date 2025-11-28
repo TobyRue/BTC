@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_mist_veil_scroll",
         "texture_int": 0,
         "id": "btc:mist_veil",
-        "args": "{}"
+        "args": "{radius:5.0d, durationTicks:160, cooldown:600}"
       }
     }
   }

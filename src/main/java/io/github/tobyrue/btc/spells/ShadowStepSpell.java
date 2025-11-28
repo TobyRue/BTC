@@ -76,7 +76,7 @@ public class ShadowStepSpell extends Spell {
     @Override
     protected boolean canUse(SpellContext ctx, GrabBag args) {
         assert ctx.user() != null;
-        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24),
+        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24d),
                 args.getDouble("aimingForgiveness", 0.3D));
         return target != null && super.canUse(ctx, args);
     }

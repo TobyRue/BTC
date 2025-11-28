@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_water_blast_scroll",
         "texture_int": 0,
         "id": "btc:water_blast",
-        "args": "{}"
+        "args": "{noGravity:false, cooldown:200}"
       }
     }
   }

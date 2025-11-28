@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_flame_burst_scroll",
         "texture_int": 0,
         "id": "btc:flame_burst",
-        "args": "{}"
+        "args": "{rate:1, range:10.0d, angle:25.0d, damage:3.0d, castTime:200, intervalTicks:1, cooldown:800}"
       }
     }
   }

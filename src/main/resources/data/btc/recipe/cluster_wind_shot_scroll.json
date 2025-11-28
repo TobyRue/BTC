@@ -28,7 +28,7 @@
         "advancement": "btc:adventure/get_cluster_wind_shot_scroll",
         "texture_int": 0,
         "id": "btc:cluster_wind_charge",
-        "args": "{}"
+        "args": "{count:8, spreadFactor:0.2d, cooldown:80}"
       }
     }
   }

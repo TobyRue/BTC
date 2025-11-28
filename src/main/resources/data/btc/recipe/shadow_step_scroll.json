@@ -23,7 +23,7 @@
         "advancement": "btc:adventure/get_shadow_step_scroll",
         "texture_int": 0,
         "id": "btc:shadow_step",
-        "args": "{}"
+        "args": "{range:24.0d, aimingForgiveness:0.3d, teleportDistance:2.5d, invisDuration:140, cooldown:300}"
       }
     }
   }

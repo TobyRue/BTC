@@ -21,7 +21,7 @@
         "advancement": "btc:adventure/get_ice_block_scroll",
         "texture_int": 0,
         "id": "btc:ice_block",
-        "args": "{}"
+        "args": "{aimingForgiveness:0.3d, range:24.0d, duration:200, amplifier:4, durationM:200, amplifierM:1, cooldown:600}"
       }
     }
   }

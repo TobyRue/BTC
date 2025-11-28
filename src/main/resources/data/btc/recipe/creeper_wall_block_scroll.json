@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_creeper_wall_block_scroll",
         "texture_int": 0,
         "id": "btc:creeper_wall_block",
-        "args": "{}"
+        "args": "{count:5, aimingForgiveness:0.3d, range:24, offsetTowardsPlayer:2.0d, includeFluids:true, cooldown:200}"
       }
     }
   }

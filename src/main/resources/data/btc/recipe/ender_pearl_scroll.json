@@ -20,7 +20,7 @@
         "advancement": "btc:adventure/get_ender_pearl_scroll",
         "texture_int": 0,
         "id": "btc:ender_pearl",
-        "args": "{}"
+        "args": "{cooldown:60}"
       }
     }
   }
