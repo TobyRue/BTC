@@ -20,7 +20,7 @@ import java.util.List;
 public class DragonsBreathSpell extends ChanneledSpell {
 
     public DragonsBreathSpell() {
-        super(SpellTypes.ENDER, 200, 1, new Disturb(DistributionLevels.CROUCH, 200, 0));
+        super(SpellTypes.ENDER, 200, 1, new Disturb(DistributionLevels.CLICK, 200, 0, 40));
     }
 
     @Override

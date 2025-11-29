@@ -21,7 +21,7 @@ import java.util.List;
 public class FlameBurstSpell extends ChanneledSpell {
 
     public FlameBurstSpell() {
-        super(SpellTypes.FIRE, 200, 1, new Disturb(DistributionLevels.CROUCH, 200, 0));
+        super(SpellTypes.FIRE, 200, 1, new Disturb(DistributionLevels.CLICK, 200, 0, 20));
     }
 
     @Override

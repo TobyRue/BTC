@@ -19,7 +19,7 @@ import java.util.*;
 public class SpellOfDissolution extends ChanneledSpell {
 
     public SpellOfDissolution() {
-        super(SpellTypes.GENERIC, 200, 1, new Disturb(DistributionLevels.DAMAGE_CROUCH_AND_MOVE, 200, 12), true, ParticleTypes.REVERSE_PORTAL, ParticleAnimation.SPIRAL);
+        super(SpellTypes.GENERIC, 200, 1, new Disturb(DistributionLevels.MOVE_DAMAGE_AND_CLICK, 200, 12, 40), true, ParticleTypes.REVERSE_PORTAL, ParticleAnimation.SPIRAL);
     }
 
     @Override

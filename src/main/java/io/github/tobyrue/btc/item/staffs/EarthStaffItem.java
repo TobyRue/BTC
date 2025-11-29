@@ -26,6 +26,11 @@ public class EarthStaffItem extends MinimalPredefinedSpellsItem {
     }
 
     @Override
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+        return 100;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         final var stack = user.getStackInHand(hand);
         final var data = this.getSpellDataStore(stack);
@@ -35,7 +40,7 @@ public class EarthStaffItem extends MinimalPredefinedSpellsItem {
         if (this.tryUseSpell(world, user.getEyePos(), user.getRotationVec(1.0F).normalize(), user, stack)) {
             return TypedActionResult.success(stack);
         } else {
-            return super.use(world, user, hand);
+            return TypedActionResult.consume(stack);
         }
     }
 

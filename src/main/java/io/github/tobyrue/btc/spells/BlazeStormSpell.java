@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public class BlazeStormSpell extends ChanneledSpell {
 
     public BlazeStormSpell() {
-        super(SpellTypes.FIRE, 100, 1, new Disturb(DistributionLevels.CROUCH, 200, 0));
+        super(SpellTypes.FIRE, 100, 1, new Disturb(DistributionLevels.CLICK, 200, 0, 20));
     }
 
     @Override

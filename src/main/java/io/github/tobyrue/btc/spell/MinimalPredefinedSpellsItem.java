@@ -86,6 +86,12 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
         final var data = this.getSpellDataStore(stack);
         if (data.getSpell() != null) {
             tooltip.add(Text.translatable(data.getSpell().getName(data.getArgs()).toString().replaceAll(".*'([^']+)'.*", "$1")).formatted(this.getSpellTextColor()));
+            if (data.getSpell() instanceof ChanneledSpell channeledSpell) {
+                var d = channeledSpell.disturb.distributionLevel();
+                if (d == ChanneledSpell.DistributionLevels.CLICK || d == ChanneledSpell.DistributionLevels.DAMAGE_AND_CLICK || d == ChanneledSpell.DistributionLevels.CROUCH_AND_CLICK || d == ChanneledSpell.DistributionLevels.MOVE_AND_CLICK || d == ChanneledSpell.DistributionLevels.DAMAGE_CROUCH_AND_CLICK || d == ChanneledSpell.DistributionLevels.MOVE_CROUCH_AND_CLICK || d == ChanneledSpell.DistributionLevels.MOVE_DAMAGE_AND_CLICK || d == ChanneledSpell.DistributionLevels.DAMAGE_CROUCH_MOVE_AND_CLICK) {
+                    tooltip.add(Text.translatable("item.btc.spell.hold", (channeledSpell.disturb.hold() / 20)));
+                }
+            }
         }
     }
     private Formatting getSpellTextColor() {

@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.spell;
 import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -32,13 +33,21 @@ public abstract class ChanneledSpell extends Spell {
         DAMAGE,
         CROUCH,
         MOVE,
+        CLICK,
         MOVE_AND_DAMAGE,
         MOVE_AND_CROUCH,
         DAMAGE_AND_CROUCH,
-        DAMAGE_CROUCH_AND_MOVE
+        DAMAGE_AND_CLICK,
+        CROUCH_AND_CLICK,
+        MOVE_AND_CLICK,
+        DAMAGE_CROUCH_AND_MOVE,
+        MOVE_DAMAGE_AND_CLICK,
+        MOVE_CROUCH_AND_CLICK,
+        DAMAGE_CROUCH_AND_CLICK,
+        DAMAGE_CROUCH_MOVE_AND_CLICK
     }
 
-    public record Disturb(DistributionLevels distributionLevel, int disturbableTill, double moveableDistance) {}
+    public record Disturb(DistributionLevels distributionLevel, int disturbableTill, double moveableDistance, int hold) {}
 
     public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst) {
         super(type);
@@ -101,6 +110,17 @@ public abstract class ChanneledSpell extends Spell {
         this.disturb = disturb;
     }
 
+
+    public boolean hasUserClicked(LivingEntity user) {
+        if (user instanceof PlayerEntity player) {
+            if (player.getItemUseTime() >= Math.min(100, disturb.hold())) {
+                if (player.getActiveItem().getItem() instanceof SpellItem) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public abstract int getColor(GrabBag args);
@@ -186,6 +206,37 @@ public abstract class ChanneledSpell extends Spell {
                                     }
                                 }
                             }
+                            case CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user)) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                }
+                            }
                             case MOVE_AND_DAMAGE -> {
                                 if (user.getPos().distanceTo(startPos) <= moveableDistance && startHealth == ctx.user().getHealth()) {
                                     if (tick % intervalTicks == 0) {
@@ -240,8 +291,253 @@ public abstract class ChanneledSpell extends Spell {
                                     }
                                 }
                             }
+                            case CROUCH_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && !user.isSneaking()) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (!user.isSneaking()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case DAMAGE_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && startHealth == ctx.user().getHealth()) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (startHealth == ctx.user().getHealth()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case MOVE_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && user.getPos().distanceTo(startPos) <= moveableDistance) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (user.getPos().distanceTo(startPos) <= moveableDistance) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
                             case DAMAGE_CROUCH_AND_MOVE -> {
                                 if (startHealth == ctx.user().getHealth() && !user.isSneaking() && user.getPos().distanceTo(startPos) <= moveableDistance) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case MOVE_CROUCH_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && user.getPos().distanceTo(startPos) <= moveableDistance && !user.isSneaking()) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (user.getPos().distanceTo(startPos) <= moveableDistance && !user.isSneaking()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case MOVE_DAMAGE_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && user.getPos().distanceTo(startPos) <= moveableDistance && startHealth == ctx.user().getHealth()) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (user.getPos().distanceTo(startPos) <= moveableDistance && startHealth == ctx.user().getHealth()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case DAMAGE_CROUCH_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && startHealth == ctx.user().getHealth() && !user.isSneaking()) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (startHealth == ctx.user().getHealth() && !user.isSneaking()) {
+                                    if (tick % intervalTicks == 0) {
+                                        if (runsOnlyOnce) {
+                                            if (!ranOnce.get()) {
+                                                ranOnce.set(true);
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        } else {
+                                            useChanneled(ctx, args, tick);
+                                        }
+                                    }
+                                } else {
+                                    if (tick <= disturb.disturbableTill) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            case DAMAGE_CROUCH_MOVE_AND_CLICK -> {
+                                if (user instanceof PlayerEntity) {
+                                    if (!hasUserClicked(user) && startHealth == ctx.user().getHealth() && !user.isSneaking() && user.getPos().distanceTo(startPos) <= moveableDistance) {
+                                        if (tick % intervalTicks == 0) {
+                                            if (runsOnlyOnce) {
+                                                if (!ranOnce.get()) {
+                                                    ranOnce.set(true);
+                                                    useChanneled(ctx, args, tick);
+                                                }
+                                            } else {
+                                                useChanneled(ctx, args, tick);
+                                            }
+                                        }
+                                    } else {
+                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                            return true;
+                                        }
+                                    }
+                                } else if (startHealth == ctx.user().getHealth() && !user.isSneaking() && user.getPos().distanceTo(startPos) <= moveableDistance) {
                                     if (tick % intervalTicks == 0) {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {

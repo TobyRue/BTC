@@ -22,6 +22,11 @@ public class DragonStaffItem extends MinimalPredefinedSpellsItem {
     }
 
     @Override
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+        return 100;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         final var stack = user.getStackInHand(hand);
         final var data = this.getSpellDataStore(stack);
@@ -31,7 +36,7 @@ public class DragonStaffItem extends MinimalPredefinedSpellsItem {
         if (this.tryUseSpell(world, user.getEyePos(), user.getRotationVec(1.0F).normalize(), user, stack)) {
             return TypedActionResult.success(stack);
         } else {
-            return super.use(world, user, hand);
+            return TypedActionResult.consume(stack);
         }
     }
 
@@ -50,6 +55,7 @@ public class DragonStaffItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "btc:dragon_scales");
                 put("name", "dragon_scales");

@@ -234,6 +234,7 @@
   "item.btc.spell.type.ender": "Type: Ender",
 
   "item.btc.spell.cooldown": "Cooldown: %d Seconds",
+  "item.btc.spell.hold": "Cancel: %d seconds",
 
   "item.btc.spell.book.set": "Spell Book set to: %s",
   "item.btc.spell.book.water_blast": "Water Blast",

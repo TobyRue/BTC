@@ -34,6 +34,11 @@ public class ScreenTestItem extends PredefinedSpellsItem {
     private final SpellRegistryEnum currentSpell = SpellRegistryEnum.FIREBALL_WEAK;
     private SpellRegistryEnum nextSpell;
 
+    @Override
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+        return 100;
+    }
+
     public ScreenTestItem(Settings settings) {
         super(settings);
     }
@@ -77,7 +82,7 @@ public class ScreenTestItem extends PredefinedSpellsItem {
             if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
                 return TypedActionResult.success(stack);
             } else {
-                return TypedActionResult.fail(stack);
+                return TypedActionResult.consume(stack);
             }
         }//        System.out.println("Current spell: "+ getElement(player.getStackInHand(hand)) + " Client: " + world.isClient);
 //        try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
