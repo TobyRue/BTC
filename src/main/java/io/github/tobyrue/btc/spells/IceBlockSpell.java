@@ -1,16 +1,20 @@
 package io.github.tobyrue.btc.spells;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.MeltingIceBlock;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -19,10 +23,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Optional;
+import java.util.WeakHashMap;
 
-public class IceBlockSpell extends Spell {
+public class IceBlockSpell extends ChanneledSpell {
+    private static final WeakHashMap<LivingEntity, LivingEntity> STORED_TARGET = new WeakHashMap<>();
+    private static final WeakHashMap<LivingEntity, BlockPos> STORED_BLOCK = new WeakHashMap<>();
+
     public IceBlockSpell() {
-        super(SpellTypes.WATER);
+        super(SpellTypes.WATER, 800, 1, new Disturb(DistributionLevels.CROUCH, 0, 1, 100), true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 0, true);
     }
 
     @Override
@@ -32,9 +40,45 @@ public class IceBlockSpell extends Spell {
     }
 
     @Override
-    protected void use(SpellContext ctx, GrabBag args) {
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
         freezeTargetArea(ctx, args, ctx.user(), ctx.world());
     }
+
+    @Override
+    protected void runEnd(SpellContext ctx, GrabBag args, int tick) {
+        var world = ctx.world();
+        var user = ctx.user();
+        var target = STORED_TARGET.get(user);
+        var targetPos = STORED_BLOCK.get(user);
+
+        double entityWidth = target.getWidth();
+        double entityHeight = target.getHeight();
+        double entityLength = target.getWidth();
+
+
+        int rangeX = (int) Math.ceil(entityWidth / 2.0);
+        int rangeY = (int) Math.ceil(entityHeight / 2.0);
+        int rangeZ = (int) Math.ceil(entityLength / 2.0);
+
+        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+
+        for (int x = -rangeX; x <= rangeX; x++) {
+            for (int y = -rangeY; y <= rangeY; y++) {
+                for (int z = -rangeZ; z <= rangeZ; z++) {
+                    mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
+
+                    // Only replace air or water blocks
+                    BlockState state = world.getBlockState(mutablePos);
+                    if (state.getBlock() instanceof MeltingIceBlock) {
+                        world.setBlockState(mutablePos, Blocks.AIR.getDefaultState());
+                    }
+                }
+            }
+        }
+
+        super.runEnd(ctx, args, tick);
+    }
+
     public void freezeTargetArea(SpellContext ctx, GrabBag args, LivingEntity player, World world) {
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         double range = args.getDouble("range", 24d);
@@ -51,6 +95,8 @@ public class IceBlockSpell extends Spell {
             if (target instanceof LivingEntity) {
                 ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, duration, amplifier));
                 ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, durationM, amplifierM));
+                STORED_TARGET.put(player, (LivingEntity) target);
+                STORED_BLOCK.put(player, target.getBlockPos());
 
                 BlockPos targetPos = target.getBlockPos();
                 // Get the size of the entity's bounding box
