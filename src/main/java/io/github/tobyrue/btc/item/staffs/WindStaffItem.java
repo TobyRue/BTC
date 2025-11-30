@@ -37,6 +37,7 @@ public class WindStaffItem extends MinimalPredefinedSpellsItem {
         if (this.tryUseSpell(world, user.getEyePos(), user.getRotationVec(1.0F).normalize(), user, stack)) {
             return TypedActionResult.success(stack);
         } else {
+            user.setCurrentHand(hand);
             return TypedActionResult.consume(stack);
         }
     }
