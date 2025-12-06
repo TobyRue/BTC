@@ -49,6 +49,11 @@ public class PotionSpell extends Spell {
     }
 
     @Override
+    public Text getDescription(GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + "." + (args.getString("name", "normal")) + ".description");
+    }
+
+    @Override
     public Text getName(final GrabBag args) {
         return Text.translatable(this.getTranslationKey() + "." + (args.getString("name", "normal")));
     }

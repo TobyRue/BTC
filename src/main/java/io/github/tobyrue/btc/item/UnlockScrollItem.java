@@ -120,6 +120,7 @@ public class UnlockScrollItem extends Item {
             var c = inst.args().getInt("cooldown");
             tooltip.add(Text.translatable("item.btc.spell.type." + inst.spell().getSpellType()));
             tooltip.add(Text.translatable("item.btc.spell.cooldown", c/20));
+            tooltip.add(inst.spell().getDescription(inst.args()));
             if (type.isAdvanced()) {
                 if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av) {
                     tooltip.add(Text.literal("Adv: " + av.toTranslationKey()).formatted(Formatting.DARK_GRAY));

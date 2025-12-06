@@ -73,8 +73,13 @@ public class FireStormSpell extends Spell {
     }
 
     @Override
+    public Text getDescription(GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + "." + (args.getDouble("maxRadius", 8d) >= 8d ? (args.getDouble("maxRadius", 8d) == 8d ? "normal" : "strong") : "concentrated") + ".description");
+    }
+
+    @Override
     public Text getName(final GrabBag args) {
-        return Text.translatable(this.getTranslationKey() + "." + (args.getDouble("maxRadius", 8d) >= 8d ? (args.getDouble("maxRadius", 8d) == 8d ? "normal" : "strong") : "concentrated"));
+        return Text.translatable(this.getTranslationKey() + "." + (args.getDouble("maxRadius", 9d) >= 9d ? (args.getDouble("maxRadius", 9d) == 9d ? "normal" : "strong") : "concentrated"));
     }
 
     @Override

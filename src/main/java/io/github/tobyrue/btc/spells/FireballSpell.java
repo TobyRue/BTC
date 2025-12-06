@@ -30,6 +30,11 @@ public class FireballSpell extends Spell {
     }
 
     @Override
+    public Text getDescription(final GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + "." + (args.getInt("level") > 3 ? "strong" : "weak") + ".description");
+    }
+
+    @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", Math.max(80, 60 * args.getInt("level", 1))), BTC.identifierOf("fireball"));
     }

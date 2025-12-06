@@ -62,6 +62,14 @@ public abstract class Spell {
         return this.type;
     }
 
+    public Text getDescription(final GrabBag args) {
+        return Text.translatable(this.getTranslationKey() + ".description");
+    }
+
+    public Text getDescription() {
+        return getDescription(GrabBag.empty());
+    }
+
     public Text getName(final GrabBag args) {
         return Text.translatable(this.getTranslationKey());
     }
