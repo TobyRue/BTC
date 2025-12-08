@@ -17,7 +17,7 @@ public class TestSpell extends ChanneledSpell {
     }
 
     @Override
-    protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         System.out.println("Test Spell: " + tick);
     }
 }

@@ -40,7 +40,7 @@ public class IceBlockSpell extends ChanneledSpell {
     }
 
     @Override
-    protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         freezeTargetArea(ctx, args, ctx.user(), ctx.world());
     }
 

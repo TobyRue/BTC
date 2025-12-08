@@ -126,7 +126,9 @@
   "advancements.btc.adventure.get_shadow_step_scroll.title": "Walk Between Worlds",
   "advancements.btc.adventure.get_shadow_step_scroll.description": "Slip through the shadows to move unseen and unhindered.",
   "spell.btc.shadow_step.description": "Slip through the shadows to move unseen and unhindered.",
-
+  "advancements.btc.adventure.get_dragon_scales_scroll.title": "Dragon Scales",
+  "advancements.btc.adventure.get_dragon_scales_scroll.description": "Gain draconic resilience, turning deadly blows into mere scratches.",
+  "spell.btc.potion.dragon_scales.description": "Gain draconic resilience, turning deadly blows into mere scratches.",
 
 
   "advancements.btc.adventure.get_earth_spike_scroll.title": "Roots of Wrath",
@@ -156,8 +158,8 @@
   "advancements.btc.adventure.get_fireball_scroll.description": "Conjure a blazing sphere of fire to blast your foes.",
   "spell.btc.fireball.weak.description": "Conjure a blazing sphere of fire to blast your foes.",
   "advancements.btc.adventure.get_fire_storm_scroll.title": "Blazing Tempest",
-  "advancements.btc.adventure.get_fire_storm_scroll.description": "Ignite nearby foes in a fiery storm — the closer they are, the longer they burn.",
-  "spell.btc.fire_storm.strong.description": "Ignite nearby foes in a fiery storm — the closer they are, the longer they burn.",
+  "advancements.btc.adventure.get_fire_storm_scroll.description": "Ignite nearby foes in a fiery storm - the closer they are, the longer they burn.",
+  "spell.btc.fire_storm.strong.description": "Ignite nearby foes in a fiery storm - the closer they are, the longer they burn.",
   "advancements.btc.adventure.get_concentrated_fire_storm_scroll.title": "Inferno's Core",
   "advancements.btc.adventure.get_concentrated_fire_storm_scroll.description": "Focus searing flame into a tight radius, incinerating nearby enemies with relentless fire.",
   "spell.btc.fire_storm.concentrated.description": "Focus searing flame into a tight radius, incinerating nearby enemies with relentless fire.",

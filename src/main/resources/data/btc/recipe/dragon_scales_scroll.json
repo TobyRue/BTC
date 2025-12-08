@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:end_crystal"
+    },
+    "b": {
+      "item": "btc:empty_scroll"
+    },
+    "c": {
+      "item": "minecraft:dragon_head"
+    },
+    "d": {
+      "item": "btc:dragon_rod"
+    }
+  },
+  "pattern": [
+    "dcd",
+    "aba",
+    "dad"
+  ],
+  "result": {
+    "count": 0,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:unlock_spell": {
+        "advancement": "btc:adventure/get_dragon_scales_scroll",
+        "texture_int": 4,
+        "id": "btc:potion",
+        "args": "{amplifier:0, cooldown:1200, cooldown_name:\"btc:dragon_scales\", duration:400, effect:\"btc:dragon_scales\", name:\"dragon_scales\" }"
+      }
+    }
+  }
+}

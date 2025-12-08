@@ -28,7 +28,7 @@ public class SpellOfDissolution extends ChanneledSpell {
     }
 
     @Override
-    protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         LivingEntity user = ctx.user();
 
         List<StatusEffectInstance> harmful = new ArrayList<>();

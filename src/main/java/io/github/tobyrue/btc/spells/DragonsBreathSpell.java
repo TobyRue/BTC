@@ -20,7 +20,7 @@ import java.util.List;
 public class DragonsBreathSpell extends ChanneledSpell {
 
     public DragonsBreathSpell() {
-        super(SpellTypes.ENDER, 200, 1, new Disturb(DistributionLevels.CLICK, 200, 0, 40));
+        super(SpellTypes.ENDER, 200, 1, new Disturb(DistributionLevels.CLICK, 200, 0, 20));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class DragonsBreathSpell extends ChanneledSpell {
     }
 
     @Override
-    protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         LivingEntity user = ctx.user();
 
         World world = ctx.world();

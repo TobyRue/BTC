@@ -21,7 +21,7 @@ public class BlazeStormSpell extends ChanneledSpell {
     }
 
     @Override
-    protected void useChanneled(SpellContext ctx, GrabBag args, int tick) {
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         double deviation = args.getDouble("deviation", 0.2d);
         int amount = args.getInt("amount", 20);
 

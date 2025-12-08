@@ -8,8 +8,13 @@ import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ChanneledSpell extends Spell {
@@ -48,7 +53,8 @@ public abstract class ChanneledSpell extends Spell {
     }
 
     public record Disturb(DistributionLevels distributionLevel, int disturbableTill, double moveableDistance, int hold) {}
-
+    public record Start(float health, Vec3d pos) {}
+    
     public ChanneledSpell(SpellTypes type, int castTime, int intervalTicks, Disturb disturb, boolean showParticles, ParticleEffect particleType, ParticleAnimation animation, int waitForFirst) {
         super(type);
         this.castTime = castTime;
@@ -111,9 +117,10 @@ public abstract class ChanneledSpell extends Spell {
     }
 
 
-    public boolean hasUserClicked(LivingEntity user) {
+    public boolean hasUserClicked(LivingEntity user, GrabBag args) {
+        int hold = args.getInt("hold", disturb.hold() == -1 ? 100 : disturb.hold());
         if (user instanceof PlayerEntity player) {
-            if (player.getItemUseTime() >= Math.min(100, disturb.hold())) {
+            if (player.getItemUseTime() >= Math.min(100, hold)) {
                 if (player.getActiveItem().getItem() instanceof SpellItem) {
                     return true;
                 }
@@ -132,8 +139,10 @@ public abstract class ChanneledSpell extends Spell {
         var user = ctx.user();
         int castTime = args.getInt("castTime", this.castTime);
         int intervalTicks = args.getInt("intervalTicks", this.intervalTicks);
-        double moveableDistance = args.getDouble("moveableDistance", disturb.moveableDistance);
-
+        int disturbableTill = args.getInt("disturbableTill", this.disturb.disturbableTill == -1 ? castTime : disturb.disturbableTill);
+        double moveableDistance = args.getDouble("moveableDistance", disturb.moveableDistance < 0 ? 0 : disturb.moveableDistance);
+        
+        
         AtomicBoolean ranOnce = new AtomicBoolean(false);
 
         ((Ticker.TickerTarget) (ctx.user())).add(
@@ -145,10 +154,10 @@ public abstract class ChanneledSpell extends Spell {
                                     if (runsOnlyOnce) {
                                         if (!ranOnce.get()) {
                                             ranOnce.set(true);
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     } else {
-                                        useChanneled(ctx, args, tick);
+                                        useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                     }
                                 }
                             }
@@ -158,14 +167,14 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -176,14 +185,14 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -194,33 +203,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user)) {
+                                    if (!hasUserClicked(user, args)) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -229,10 +238,10 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 }
@@ -243,14 +252,14 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -261,14 +270,14 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -279,33 +288,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case CROUCH_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && !user.isSneaking()) {
+                                    if (!hasUserClicked(user, args) && !user.isSneaking()) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -314,33 +323,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case DAMAGE_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && startHealth == ctx.user().getHealth()) {
+                                    if (!hasUserClicked(user, args) && startHealth == ctx.user().getHealth()) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -349,33 +358,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case MOVE_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && user.getPos().distanceTo(startPos) <= moveableDistance) {
+                                    if (!hasUserClicked(user, args) && user.getPos().distanceTo(startPos) <= moveableDistance) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -384,14 +393,14 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -402,33 +411,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case MOVE_CROUCH_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && user.getPos().distanceTo(startPos) <= moveableDistance && !user.isSneaking()) {
+                                    if (!hasUserClicked(user, args) && user.getPos().distanceTo(startPos) <= moveableDistance && !user.isSneaking()) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -437,33 +446,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case MOVE_DAMAGE_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && user.getPos().distanceTo(startPos) <= moveableDistance && startHealth == ctx.user().getHealth()) {
+                                    if (!hasUserClicked(user, args) && user.getPos().distanceTo(startPos) <= moveableDistance && startHealth == ctx.user().getHealth()) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -472,33 +481,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case DAMAGE_CROUCH_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && startHealth == ctx.user().getHealth() && !user.isSneaking()) {
+                                    if (!hasUserClicked(user, args) && startHealth == ctx.user().getHealth() && !user.isSneaking()) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -507,33 +516,33 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
                             }
                             case DAMAGE_CROUCH_MOVE_AND_CLICK -> {
                                 if (user instanceof PlayerEntity) {
-                                    if (!hasUserClicked(user) && startHealth == ctx.user().getHealth() && !user.isSneaking() && user.getPos().distanceTo(startPos) <= moveableDistance) {
+                                    if (!hasUserClicked(user, args) && startHealth == ctx.user().getHealth() && !user.isSneaking() && user.getPos().distanceTo(startPos) <= moveableDistance) {
                                         if (tick % intervalTicks == 0) {
                                             if (runsOnlyOnce) {
                                                 if (!ranOnce.get()) {
                                                     ranOnce.set(true);
-                                                    useChanneled(ctx, args, tick);
+                                                    useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                                 }
                                             } else {
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         }
                                     } else {
-                                        if (tick <= disturb.disturbableTill && tick > 2) {
+                                        if (tick <= disturbableTill && tick > 2) {
                                             return true;
                                         }
                                     }
@@ -542,14 +551,14 @@ public abstract class ChanneledSpell extends Spell {
                                         if (runsOnlyOnce) {
                                             if (!ranOnce.get()) {
                                                 ranOnce.set(true);
-                                                useChanneled(ctx, args, tick);
+                                                useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                             }
                                         } else {
-                                            useChanneled(ctx, args, tick);
+                                            useChanneled(ctx, args, tick, new Start(startHealth, startPos));
                                         }
                                     }
                                 } else {
-                                    if (tick <= disturb.disturbableTill) {
+                                    if (tick <= disturbableTill) {
                                         return true;
                                     }
                                 }
@@ -571,7 +580,7 @@ public abstract class ChanneledSpell extends Spell {
         );
     }
 
-    protected abstract void useChanneled(final SpellContext ctx, final GrabBag args, final int tick);
+    protected abstract void useChanneled(final SpellContext ctx, final GrabBag args, final int tick, final Start start);
 
     protected void runEnd(final SpellContext ctx, final GrabBag args, final int tick) {}
 
