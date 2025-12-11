@@ -38,6 +38,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
@@ -130,7 +131,7 @@ public class BTCClient implements ClientModInitializer {
                                         String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
                                         return new Value(
-                                                Text.translatable(key),
+                                                Text.translatable(key).formatted(Formatting.BLACK),
                                                 "selectspell " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args()),
                                                 "cast " + Spell.getId(inst.spell()) + " " + GrabBag.toNBT(inst.args())
                                         );

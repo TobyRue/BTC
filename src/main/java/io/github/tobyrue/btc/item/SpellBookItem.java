@@ -79,12 +79,13 @@ public class SpellBookItem extends MinimalPredefinedSpellsItem {
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CLUSTER_WIND_CHARGE, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.empty()));
-            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.empty()));
+            addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.empty()));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:regeneration");
                 put("duration", 200);
                 put("amplifier", 2);
                 put("cooldown", 800);
+                put("name", "regeneration");
             }})));
             addSpellToItem(player, s, null, new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.empty()));
         }
