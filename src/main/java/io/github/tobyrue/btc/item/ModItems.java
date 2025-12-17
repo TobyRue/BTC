@@ -53,6 +53,10 @@ public class ModItems {
             new ScreenTestItem(new Item.Settings()),
             "test_screen"
     );
+    public static final Item SCOPED_CROSSBOW = register(
+            new ScopedCrossbow(new Item.Settings().maxCount(1 )),
+            "scoped_crossbow"
+    );
     public static final Item SPELLSTONE = register(
             new SpellstoneItem(new Item.Settings().maxCount(1 )),
             "spellstone"

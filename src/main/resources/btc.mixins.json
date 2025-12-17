@@ -8,6 +8,7 @@
     "BlockEntityProviderMixin",
     "BlockWithEntityInvoker",
     "CopperGolemSpawnMixin",
+    "CrossbowMixin",
     "DispenserBlockEntityMixin",
     "EnchantmentScreenHandlerMixin",
     "LivingEntityMixin",
@@ -16,6 +17,8 @@
     "TuffGolemSpawnMixin"
   ],
   "client": [
+    "FovMixin",
+    "InGameHudMixin",
     "ItemRendererMixin",
     "KeyBindingAccessor",
     "ModelLoaderMixin"
