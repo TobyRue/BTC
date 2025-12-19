@@ -21,7 +21,8 @@
     "InGameHudMixin",
     "ItemRendererMixin",
     "KeyBindingAccessor",
-    "ModelLoaderMixin"
+    "ModelLoaderMixin",
+    "PlayerArmPoseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

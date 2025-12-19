@@ -33,6 +33,7 @@ import org.joml.Vector3f;
 
 public class ScopedCrossbow extends CrossbowItem {
     private static final float VELOCITY_MULTIPLIER = 1.35f;
+    private static final float DIVERGENCE_MULTIPLIER = 0.5f;
 
     public ScopedCrossbow(Settings settings) {
         super(settings);
@@ -63,14 +64,14 @@ public class ScopedCrossbow extends CrossbowItem {
     @Override
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
         float modifiedSpeed = speed * VELOCITY_MULTIPLIER;
-        super.shoot(shooter, projectile, index, modifiedSpeed, divergence, yaw, target);
+        super.shoot(shooter, projectile, index, modifiedSpeed, divergence * DIVERGENCE_MULTIPLIER, yaw, target);
     }
 
 
     @Override
     public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity target) {
         float modifiedSpeed = speed * VELOCITY_MULTIPLIER;
-        super.shootAll(world, shooter, hand, stack, modifiedSpeed, divergence, target);
+        super.shootAll(world, shooter, hand, stack, modifiedSpeed, divergence * DIVERGENCE_MULTIPLIER, target);
     }
 
     @Override
