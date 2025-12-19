@@ -44,17 +44,11 @@ public class ScopedCrossbow extends CrossbowItem {
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        if (MinecraftClient.getInstance().player instanceof ClientPlayerEntity player) {
-            if (player.getActiveItem().isOf(ModItems.SCOPED_CROSSBOW)) {
-                return UseAction.CROSSBOW;
-            } else if (player.isSneaking()) {
-                return UseAction.SPYGLASS;
-            }
-        } else {
-            return UseAction.CROSSBOW;
+    public boolean canBeEnchantedWith(ItemStack stack, RegistryEntry<Enchantment> enchantment, EnchantingContext context) {
+        if (enchantment.value().isAcceptableItem(Items.BOW.getDefaultStack()) || enchantment.value().isAcceptableItem(Items.CROSSBOW.getDefaultStack())) {
+            return true;
         }
-        return super.getUseAction(stack);
+        return super.canBeEnchantedWith(stack, enchantment, context);
     }
 
     @Override

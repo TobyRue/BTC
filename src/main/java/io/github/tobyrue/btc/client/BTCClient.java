@@ -35,6 +35,9 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ChargedProjectilesComponent;
+import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
@@ -212,7 +215,21 @@ public class BTCClient implements ClientModInitializer {
                     }
                     return 0;
                 });
-
+        ModelPredicateProviderRegistry.register(ModItems.SCOPED_CROSSBOW, Identifier.ofVanilla("pull"), (stack, world, entity, seed) -> {
+            if (entity == null) {
+                return 0.0f;
+            }
+            if (CrossbowItem.isCharged(stack)) {
+                return 0.0f;
+            }
+            return (float)(stack.getMaxUseTime(entity) - entity.getItemUseTimeLeft()) / (float)CrossbowItem.getPullTime(stack, entity);
+        });
+        ModelPredicateProviderRegistry.register(ModItems.SCOPED_CROSSBOW, Identifier.ofVanilla("pulling"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack && !CrossbowItem.isCharged(stack) ? 1.0f : 0.0f);
+        ModelPredicateProviderRegistry.register(ModItems.SCOPED_CROSSBOW, Identifier.ofVanilla("charged"), (stack, world, entity, seed) -> CrossbowItem.isCharged(stack) ? 1.0f : 0.0f);
+        ModelPredicateProviderRegistry.register(ModItems.SCOPED_CROSSBOW, Identifier.ofVanilla("firework"), (stack, world, entity, seed) -> {
+            ChargedProjectilesComponent chargedProjectilesComponent = stack.get(DataComponentTypes.CHARGED_PROJECTILES);
+            return chargedProjectilesComponent != null && chargedProjectilesComponent.contains(Items.FIREWORK_ROCKET) ? 1.0f : 0.0f;
+        });
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
             if (tintIndex != 1) return 0xFFFFFFFF;

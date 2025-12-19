@@ -1,0 +1,6 @@
+{
+  "parent": "btc:item/scoped_crossbow",
+  "textures": {
+    "layer0": "btc:item/scoped_crossbow_pulling_0"
+  }
+}
