@@ -33,7 +33,7 @@ import org.joml.Vector3f;
 
 public class ScopedCrossbow extends CrossbowItem {
     private static final float VELOCITY_MULTIPLIER = 1.35f;
-    private static final float DIVERGENCE_MULTIPLIER = 0.5f;
+    private static final float DIVERGENCE_MULTIPLIER = 0.7f;
 
     public ScopedCrossbow(Settings settings) {
         super(settings);
