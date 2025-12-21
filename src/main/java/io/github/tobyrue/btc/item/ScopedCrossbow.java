@@ -58,7 +58,6 @@ public class ScopedCrossbow extends CrossbowItem {
     @Override
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
         float modifiedSpeed = speed * VELOCITY_MULTIPLIER;
-        System.out.println("Divergence: " + divergence);
         super.shoot(shooter, projectile, index, modifiedSpeed, divergence, yaw, target);
     }
 
@@ -66,7 +65,6 @@ public class ScopedCrossbow extends CrossbowItem {
     @Override
     public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity target) {
         float modifiedSpeed = speed * VELOCITY_MULTIPLIER;
-        System.out.println("Divergence All: " + divergence);
         super.shootAll(world, shooter, hand, stack, modifiedSpeed, divergence, target);
     }
 

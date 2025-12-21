@@ -55,6 +55,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModItems.WATER_STAFF, ModItems.DRAGON_STAFF);
             content.addAfter(ModItems.DRAGON_STAFF, ModItems.SPELL_BOOK);
             content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST);
+            content.addAfter(Items.CROSSBOW, ModItems.SCOPED_CROSSBOW);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
             content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE_LEGACY);
