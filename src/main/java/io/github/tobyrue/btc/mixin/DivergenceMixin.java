@@ -36,6 +36,6 @@ public class DivergenceMixin  {
         if (level <= 0) return divergence;
 
         float multiplier = 1.0f - (level * 0.1f);
-        return divergence * Math.max(multiplier, 0.5f);
+        return divergence * Math.max(multiplier, 0f);
     }
 }
