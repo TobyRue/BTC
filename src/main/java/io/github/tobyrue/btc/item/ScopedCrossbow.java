@@ -11,10 +11,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -33,8 +30,6 @@ import org.joml.Vector3f;
 
 public class ScopedCrossbow extends CrossbowItem {
     private static final float VELOCITY_MULTIPLIER = 1.35f;
-    private static final float DIVERGENCE_MULTIPLIER = 0.7f;
-
     public ScopedCrossbow(Settings settings) {
         super(settings);
     }
@@ -60,18 +55,19 @@ public class ScopedCrossbow extends CrossbowItem {
         return ItemUsage.consumeHeldItem(world, user, hand);
     }
 
-
     @Override
     protected void shoot(LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target) {
         float modifiedSpeed = speed * VELOCITY_MULTIPLIER;
-        super.shoot(shooter, projectile, index, modifiedSpeed, divergence * DIVERGENCE_MULTIPLIER, yaw, target);
+        System.out.println("Divergence: " + divergence);
+        super.shoot(shooter, projectile, index, modifiedSpeed, divergence, yaw, target);
     }
 
 
     @Override
     public void shootAll(World world, LivingEntity shooter, Hand hand, ItemStack stack, float speed, float divergence, @Nullable LivingEntity target) {
         float modifiedSpeed = speed * VELOCITY_MULTIPLIER;
-        super.shootAll(world, shooter, hand, stack, modifiedSpeed, divergence * DIVERGENCE_MULTIPLIER, target);
+        System.out.println("Divergence All: " + divergence);
+        super.shootAll(world, shooter, hand, stack, modifiedSpeed, divergence, target);
     }
 
     @Override
