@@ -4,16 +4,16 @@
     "translate": "enchantment.btc.precision"
   },
   "max_cost": {
-    "base": 20,
+    "base": 8,
+    "per_level_above_first": 12
+  },
+  "max_level": 5,
+  "min_cost": {
+    "base": 5,
     "per_level_above_first": 10
   },
-  "max_level": 10,
-  "min_cost": {
-    "base": 1,
-    "per_level_above_first": 8
-  },
   "slots": [
-    "any"
+    "hand"
   ],
   "supported_items": "#minecraft:enchantable/precision",
   "weight": 12

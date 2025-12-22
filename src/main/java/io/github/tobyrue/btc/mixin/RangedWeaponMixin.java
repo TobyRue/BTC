@@ -35,7 +35,7 @@ public class RangedWeaponMixin  {
 
         if (level <= 0) return divergence;
 
-        float multiplier = 1.0f - (level * 0.1f);
+        float multiplier = 1.0f - (level * 0.2f);
         return divergence * Math.max(multiplier, 0f);
     }
     @ModifyVariable(

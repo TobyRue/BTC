@@ -1,19 +1,20 @@
 {
   "anvil_cost": 5,
+  "exclusive_set": "#btc:exclusive_set/scoped_crossbow",
   "description": {
     "translate": "enchantment.btc.velocity"
   },
   "max_cost": {
-    "base": 12,
-    "per_level_above_first": 20
+    "base": 8,
+    "per_level_above_first": 16
   },
   "max_level": 5,
   "min_cost": {
-    "base": 1,
-    "per_level_above_first": 15
+    "base": 4,
+    "per_level_above_first": 12
   },
   "slots": [
-    "any"
+    "hand"
   ],
   "supported_items": "#minecraft:enchantable/velocity",
   "weight": 12
