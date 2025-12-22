@@ -1,35 +1,21 @@
 package io.github.tobyrue.btc.item;
 
 import net.fabricmc.fabric.api.item.v1.EnchantingContext;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 public class ScopedCrossbow extends CrossbowItem {
-    private static final float VELOCITY_MULTIPLIER = 1.35f;
+    private static final float VELOCITY_MULTIPLIER = 1.5f;
     public ScopedCrossbow(Settings settings) {
         super(settings);
     }
@@ -41,7 +27,7 @@ public class ScopedCrossbow extends CrossbowItem {
 
     @Override
     public boolean canBeEnchantedWith(ItemStack stack, RegistryEntry<Enchantment> enchantment, EnchantingContext context) {
-        if (enchantment.value().isAcceptableItem(Items.BOW.getDefaultStack()) || enchantment.value().isAcceptableItem(Items.CROSSBOW.getDefaultStack())) {
+        if (enchantment.value().isAcceptableItem(Items.BOW.getDefaultStack()) || enchantment.value().isAcceptableItem(Items.CROSSBOW.getDefaultStack()) ) {
             return true;
         }
         return super.canBeEnchantedWith(stack, enchantment, context);

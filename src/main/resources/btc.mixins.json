@@ -10,16 +10,16 @@
     "CopperGolemSpawnMixin",
     "CrossbowMixin",
     "DispenserBlockEntityMixin",
-    "DivergenceMixin",
     "EnchantmentScreenHandlerMixin",
     "LivingEntityMixin",
     "NaturalRegenerationMixin",
     "PaperMixin",
+    "PlayerSpyglassMixin",
+    "RangedWeaponMixin",
     "TuffGolemSpawnMixin"
   ],
   "client": [
     "FovMixin",
-    "InGameHudMixin",
     "ItemRendererMixin",
     "KeyBindingAccessor",
     "ModelLoaderMixin",

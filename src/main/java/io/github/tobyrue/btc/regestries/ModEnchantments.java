@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.regestries;
 
 import com.mojang.serialization.MapCodec;
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.enchantments.PrecisionEnchantment;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.effect.EnchantmentEntityEffect;
@@ -20,7 +19,7 @@ public class ModEnchantments {
     public static final RegistryKey<Enchantment> INFUSION = of("infusion");
 
     public static final RegistryKey<Enchantment> PRECISION = of("precision");
-//    public static MapCodec<PrecisionEnchantment> PRECISION_EFFECT = register("precision_effect", PrecisionEnchantment.CODEC);
+    public static final RegistryKey<Enchantment> VELOCITY = of("velocity");
 
     private static RegistryKey<Enchantment> of(String path) {
         Identifier id = BTC.identifierOf(path);

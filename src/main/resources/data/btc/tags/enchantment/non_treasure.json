@@ -1,6 +1,7 @@
 {
   "values": [
     "btc:infusion",
-    "btc:precision"
+    "btc:precision",
+    "btc:velocity"
   ]
 }

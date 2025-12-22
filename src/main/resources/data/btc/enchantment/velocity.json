@@ -1,0 +1,20 @@
+{
+  "anvil_cost": 5,
+  "description": {
+    "translate": "enchantment.btc.velocity"
+  },
+  "max_cost": {
+    "base": 12,
+    "per_level_above_first": 20
+  },
+  "max_level": 5,
+  "min_cost": {
+    "base": 1,
+    "per_level_above_first": 15
+  },
+  "slots": [
+    "any"
+  ],
+  "supported_items": "#minecraft:enchantable/velocity",
+  "weight": 12
+}

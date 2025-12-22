@@ -226,6 +226,7 @@
 
   "enchantment.btc.infusion": "Infusion",
   "enchantment.btc.precision": "Precision",
+  "enchantment.btc.velocity": "Velocity",
 
   "block.btc.dungeon_wire_v2": "Dungeon Wire v2",
   "block.btc.wire.change_operator": "Set operator to %s",

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(RangedWeaponItem.class)
-public class DivergenceMixin  {
+public class RangedWeaponMixin  {
 
     @ModifyVariable(
             method = "shootAll",
@@ -37,5 +37,28 @@ public class DivergenceMixin  {
 
         float multiplier = 1.0f - (level * 0.1f);
         return divergence * Math.max(multiplier, 0f);
+    }
+    @ModifyVariable(
+            method = "shootAll",
+            at = @At("HEAD"),
+            argsOnly = true,
+            ordinal = 0
+    )
+    private float btc$applyVelocityToSpeed(
+            float speed,
+            ServerWorld world,
+            LivingEntity shooter,
+            Hand hand,
+            ItemStack stack
+    ) {
+        int level = ModEnchantments.getLevel(
+                stack,
+                ModEnchantments.VELOCITY
+        );
+
+        if (level <= 0) return speed;
+
+        float multiplier = 1 + (0.1f * level);
+        return speed * multiplier;
     }
 }
