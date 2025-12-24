@@ -92,7 +92,8 @@ public class ModBlocks {
             new ButtonBlock(BlockSetType.STONE, 30, AbstractBlock.Settings.copy(WEATHERED_COPPER_BUTTON)),
             "waxed_copper_button_weathered",
             true
-    );    public static final CopperButtonBlock OXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
+    );
+    public static final CopperButtonBlock OXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
             new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.OXIDIZED),
             "copper_button_oxidized",
             true

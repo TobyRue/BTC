@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.misc.OxidizeOnClick;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.regestries.*;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
@@ -48,6 +49,8 @@ public class BTC implements ModInitializer {
 
     public static final TagKey<Block> WRENCH_BLACKLIST = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "wrench_blacklist"));
     public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
+    public static final TagKey<Block> BUTTONS = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "copper_buttons"));
+
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             identifierOf("wrench_direction"),
@@ -191,6 +194,7 @@ public class BTC implements ModInitializer {
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
 
+        UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
 
 
 

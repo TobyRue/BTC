@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.entity.ai;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.CopperButtonBlock;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.regestries.ModSounds;
@@ -44,11 +45,8 @@ public class CopperGolemButtonPressGoal extends Goal {
         BlockPos golemPos = golem.getBlockPos();
         for (BlockPos pos : BlockPos.iterateOutwards(golemPos, 16, 16, 16)) {
             BlockState state = golem.getWorld().getBlockState(pos);
-            if (state.getBlock() instanceof CopperButtonBlock && !state.get(ButtonBlock.POWERED)) {
+            if (state.isIn(BTC.BUTTONS) && !state.get(ButtonBlock.POWERED)) {
                 targetButtonPos = pos;
-//                if (interest != 0) {
-//                    interest = 100; // Reset interest when finding a new button
-//                }
                 lastPosition = golem.getPos();
                 return true;
             }
