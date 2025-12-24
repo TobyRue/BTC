@@ -194,6 +194,7 @@ public class BTC implements ModInitializer {
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
 
+        //TODO GET RID OF WHEN BUILDING MOD FOR ANY RELEASE
         UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
 
 
