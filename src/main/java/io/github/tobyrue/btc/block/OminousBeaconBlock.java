@@ -22,7 +22,7 @@ public class OminousBeaconBlock extends BlockWithEntity implements ModBlockEntit
 
     public OminousBeaconBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.UP)));
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
     }
 
     public static final MapCodec<OminousBeaconBlock> CODEC = createCodec(OminousBeaconBlock::new);

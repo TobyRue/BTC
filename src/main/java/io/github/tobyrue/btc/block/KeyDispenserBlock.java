@@ -10,6 +10,9 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -32,9 +35,25 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
 
     private static final VoxelShape SHAPE;
 
+    public static final BooleanProperty ALWAYS_ACCEPTABLE  = BooleanProperty.of("always_acceptable");
+    public static final BooleanProperty CHECK_MOBS  = BooleanProperty.of("check_mobs");
+    public static final BooleanProperty LOOKS_DOWN  = BooleanProperty.of("looks_down");
+    public static final IntProperty WIDTH  = IntProperty.of("radius", 1, 16);
+
     public KeyDispenserBlock(Settings settings) {
         super(settings);
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false).with(CHECK_MOBS, false).with(LOOKS_DOWN, false).with(WIDTH, 10));
     }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(ALWAYS_ACCEPTABLE);
+        builder.add(CHECK_MOBS);
+        builder.add(LOOKS_DOWN);
+        builder.add(WIDTH);
+    }
+
     static {
         BOTTOM_SHAPE1 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
         BOTTOM_SHAPE = Block.createCuboidShape(2.0, 1.0, 2.0, 14.0, 2.0, 14.0);
@@ -45,6 +64,7 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
 
         SHAPE = VoxelShapes.union(BOTTOM_SHAPE1, BOTTOM_SHAPE, TOP_MIDDLE_SHAPE, MIDDLE_SHAPE, BOTTOM_MIDDLE_SHAPE, TOP_SHAPE);
     }
+
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
@@ -76,7 +96,7 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
             d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.9;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
-            if (shouldWirePower(state, world, pos, false, true, false)) {
+            if (shouldWirePower(state, world, pos, false, true, false) || state.get(ALWAYS_ACCEPTABLE)) {
                 world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
             }
         }

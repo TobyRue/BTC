@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.wires;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.DungeonDoorBlock;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
@@ -10,6 +11,8 @@ import io.github.tobyrue.btc.item.WrenchItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FrostedIceBlock;
+import net.minecraft.block.TrialSpawnerBlock;
+import net.minecraft.block.spawner.TrialSpawnerLogic;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -169,7 +172,11 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
 
                 if (neighborState.getBlock() instanceof IDungeonWireConstantAction action && property == WireBlock.ConnectionType.OUTPUT) {
                     action.onDungeonWireChange(neighborState, world, neighborPos, state.get(POWERED));
-                    neighborUpdate(state, world, pos, this, pos, true);
+                    if (neighborState.getBlock() instanceof DungeonDoorBlock) {
+                        world.updateNeighbors(pos, state.getBlock());
+//                        world.updateNeighborsExcept(pos, state.getBlock()); //TODO MIGHT WORK???
+//                        neighborUpdate(state, world, pos, this, pos, false);
+                    }
                 }
             }
         }
@@ -305,9 +312,11 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
                         && offsetState.contains(oppositeConnection)
                         && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
                         && offsetState.get(POWERED);
+                    //TODO ^ ADD A " || (offsetState.getBlock() instanceof MobDetector md && offsetState.contains(MobDetector.POWERED) && offsetState.get(MobDetector.POWERED))
                 }).toArray(Boolean[]::new)
         );
     }
+
 
     //    @Nullable
 //    @Override

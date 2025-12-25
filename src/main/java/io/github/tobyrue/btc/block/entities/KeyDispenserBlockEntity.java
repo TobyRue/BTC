@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.KeyDispenserBlock;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.wires.IDungeonWirePowered;
@@ -7,6 +8,8 @@ import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
@@ -23,6 +26,7 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -42,17 +46,43 @@ public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWire
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         var uuid = player.getUuid().toString();
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
-        System.out.println(shouldWirePower(state, world, pos, false, true, false));
-        if (!HASH_SET.contains(uuid) && shouldWirePower(state, world, pos, false, true, false)) {
-            HASH_SET.add(uuid);
-            world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
-            world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
-            if (!world.isClient) {
-                player.getInventory().offerOrDrop(dropStack);
+        if (state.get(KeyDispenserBlock.CHECK_MOBS)) {
+            int width = state.get(KeyDispenserBlock.WIDTH);
+
+            Box box = new Box(
+                    pos.getX() - width,
+                    state.get(KeyDispenserBlock.LOOKS_DOWN) ? pos.getY() - 8 : pos.getY(),
+                    pos.getZ() - width,
+
+                    pos.getX() + 1 + width,
+                    pos.getY() + 8,
+                    pos.getZ() + 1 + width
+            );
+            if (world.getEntitiesByClass(HostileEntity.class, box, HostileEntity::isAlive).isEmpty()) {
+                if (!HASH_SET.contains(uuid) && (shouldWirePower(state, world, pos, false, true, false) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
+                    HASH_SET.add(uuid);
+                    world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+                    world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
+                    if (!world.isClient) {
+                        player.getInventory().offerOrDrop(dropStack);
+                    }
+                    markDirty();
+                    return ActionResult.SUCCESS;
+                }
             }
-            markDirty();
-            return ActionResult.SUCCESS;
+        } else {
+            if (!HASH_SET.contains(uuid) && (shouldWirePower(state, world, pos, false, true, false) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
+                HASH_SET.add(uuid);
+                world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+                world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
+                if (!world.isClient) {
+                    player.getInventory().offerOrDrop(dropStack);
+                }
+                markDirty();
+                return ActionResult.SUCCESS;
+            }
         }
+
         return ActionResult.FAIL;
     }
 
