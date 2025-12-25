@@ -122,66 +122,77 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
     @Override
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.scheduledTick(state, world, pos, random);
-        boolean newPoweredState = hasPower(state, world, pos);
-        if (state.get(POWERED) != newPoweredState) {
-            world.setBlockState(pos, state.with(POWERED, newPoweredState), 3);
-        }
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction));
-
-            if (neighborState.getBlock() instanceof IDungeonWireConstantAction action && property == WireBlock.ConnectionType.OUTPUT) {
-                action.onDungeonWireChange(neighborState, world, neighborPos, state.get(POWERED));
-                neighborUpdate(state, world, pos, this, pos, true);
-            }
-        }
+        updatePowerAndNotify(state, world, pos);
     }
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
 
-        if (!world.isClient && state.getBlock() instanceof WireBlock && state.getBlock() != newState.getBlock()) {
-            for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = pos.offset(direction);
-                BlockState neighborState = world.getBlockState(neighborPos);
-                var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite()));
+        if (!world.isClient && state.getBlock() instanceof WireBlock) {
+            if (state.getBlock() != newState.getBlock()) {
+                for (Direction direction : Direction.values()) {
+                    BlockPos neighborPos = pos.offset(direction);
+                    BlockState neighborState = world.getBlockState(neighborPos);
+                    var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite()));
 
-                if (neighborState.getBlock() instanceof IDungeonWireConstantAction action && property == WireBlock.ConnectionType.OUTPUT) {
-                    action.onDungeonWireChange(neighborState, world, neighborPos, false);
-                    neighborUpdate(state, world, pos, this, pos, true);
+                    if (neighborState.getBlock() instanceof IDungeonWireConstantAction action && property == WireBlock.ConnectionType.OUTPUT) {
+                        action.onDungeonWireChange(neighborState, world, neighborPos, false);
+                        neighborUpdate(state, world, pos, this, pos, true);
+                    }
                 }
-            }
-        }
-    }
-
-
-    @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        if (state.get(DELAY) != 0) {
-            world.scheduleBlockTick(pos, this, state.get(DELAY));
-        } else {
-            boolean newPoweredState = hasPower(state, world, pos);
-            if (state.get(POWERED) != newPoweredState) {
-                world.setBlockState(pos, state.with(POWERED, newPoweredState), 3);
-            }
-            for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = pos.offset(direction);
-                BlockState neighborState = world.getBlockState(neighborPos);
-                var property = state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction));
-
-                if (neighborState.getBlock() instanceof IDungeonWireConstantAction action && property == WireBlock.ConnectionType.OUTPUT) {
-                    action.onDungeonWireChange(neighborState, world, neighborPos, state.get(POWERED));
-                    if (neighborState.getBlock() instanceof DungeonDoorBlock) {
-                        world.updateNeighbors(pos, state.getBlock());
-//                        world.updateNeighborsExcept(pos, state.getBlock()); //TODO MIGHT WORK???
-//                        neighborUpdate(state, world, pos, this, pos, false);
+            } else {
+                if (world instanceof ServerWorld serverWorld) {
+                    boolean newPowered = hasPower(state, world, pos);
+                    for (Direction direction : Direction.values()) {
+                        BlockPos neighborPos = pos.offset(direction);
+                        BlockState neighborState = world.getBlockState(neighborPos);
+                        if (neighborState.getBlock() instanceof IDungeonWireConstantAction action) {
+                            action.onDungeonWireChange(neighborState, world, neighborPos, newPowered);
+                        }
                     }
                 }
             }
         }
+    }
+
+
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos,
+                                  Block sourceBlock, BlockPos sourcePos, boolean notify) {
+
+        if (world instanceof ServerWorld serverWorld) {
+            if (state.get(DELAY) > 0) {
+                world.scheduleBlockTick(pos, this, state.get(DELAY));
+            } else {
+                updatePowerAndNotify(state, serverWorld, pos);
+            }
+        }
+
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
+
+    private void updatePowerAndNotify(BlockState state, ServerWorld world, BlockPos pos) {
+        boolean newPowered = hasPower(state, world, pos);
+
+        if (state.get(POWERED) == newPowered) return;
+
+        BlockState newState = state.with(POWERED, newPowered);
+        world.setBlockState(pos, newState, Block.NOTIFY_ALL);
+
+        for (Direction direction : Direction.values()) {
+            var property = CONNECTION_TO_DIRECTION.get().inverse().get(direction);
+            if (state.get(property) != ConnectionType.OUTPUT) continue;
+
+            BlockPos neighborPos = pos.offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+
+            if (neighborState.getBlock() instanceof IDungeonWireConstantAction action) {
+                action.onDungeonWireChange(neighborState, world, neighborPos, newPowered);
+            }
+        }
+    }
+
 
     @Override
     public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
