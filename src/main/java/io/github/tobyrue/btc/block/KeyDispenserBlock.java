@@ -36,22 +36,16 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
     private static final VoxelShape SHAPE;
 
     public static final BooleanProperty ALWAYS_ACCEPTABLE  = BooleanProperty.of("always_acceptable");
-    public static final BooleanProperty CHECK_MOBS  = BooleanProperty.of("check_mobs");
-    public static final BooleanProperty LOOKS_DOWN  = BooleanProperty.of("looks_down");
-    public static final IntProperty WIDTH  = IntProperty.of("radius", 1, 16);
 
     public KeyDispenserBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false).with(CHECK_MOBS, false).with(LOOKS_DOWN, false).with(WIDTH, 10));
+        this.setDefaultState((this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(ALWAYS_ACCEPTABLE);
-        builder.add(CHECK_MOBS);
-        builder.add(LOOKS_DOWN);
-        builder.add(WIDTH);
     }
 
     static {

@@ -57,7 +57,12 @@ public class ModBlocks {
             "ominous_beacon",
             true
     );
+    public static final MobDetectorBlock MOB_DETECTOR = (MobDetectorBlock) register(
+            new MobDetectorBlock(AbstractBlock.Settings.create().nonOpaque()),
+            "presence_node",
+            true
 
+    );
     public static final DungeonPressurePlateBlock DUNGEON_PRESSURE_PLATE = (DungeonPressurePlateBlock) register(
             new DungeonPressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F).sounds(BlockSoundGroup.COPPER)),
             "dungeon_pressure_plate",

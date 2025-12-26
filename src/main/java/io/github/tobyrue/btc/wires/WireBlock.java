@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.DungeonDoorBlock;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
+import io.github.tobyrue.btc.block.MobDetectorBlock;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.WrenchItem;
@@ -319,10 +320,11 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
                 .map(entry -> {
                     var offsetState = world.getBlockState(pos.offset(entry.getValue()));
                     var oppositeConnection = CONNECTION_TO_DIRECTION.get().inverse().get(entry.getValue().getOpposite());
-                    return offsetState.contains(WireBlock.POWERED)
+                    return (offsetState.contains(WireBlock.POWERED)
                         && offsetState.contains(oppositeConnection)
                         && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
-                        && offsetState.get(POWERED);
+                        && offsetState.get(POWERED)) ||
+                            (offsetState.getBlock() instanceof MobDetectorBlock md && offsetState.contains(MobDetectorBlock.POWERED) && offsetState.get(MobDetectorBlock.POWERED));
                     //TODO ^ ADD A " || (offsetState.getBlock() instanceof MobDetector md && offsetState.contains(MobDetector.POWERED) && offsetState.get(MobDetector.POWERED))
                 }).toArray(Boolean[]::new)
         );

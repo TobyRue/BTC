@@ -46,41 +46,16 @@ public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWire
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         var uuid = player.getUuid().toString();
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
-        if (state.get(KeyDispenserBlock.CHECK_MOBS)) {
-            int width = state.get(KeyDispenserBlock.WIDTH);
 
-            Box box = new Box(
-                    pos.getX() - width,
-                    state.get(KeyDispenserBlock.LOOKS_DOWN) ? pos.getY() - 8 : pos.getY(),
-                    pos.getZ() - width,
-
-                    pos.getX() + 1 + width,
-                    pos.getY() + 8,
-                    pos.getZ() + 1 + width
-            );
-            if (world.getEntitiesByClass(HostileEntity.class, box, HostileEntity::isAlive).isEmpty()) {
-                if (!HASH_SET.contains(uuid) && (shouldWirePower(state, world, pos, false, true, false) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
-                    HASH_SET.add(uuid);
-                    world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
-                    world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
-                    if (!world.isClient) {
-                        player.getInventory().offerOrDrop(dropStack);
-                    }
-                    markDirty();
-                    return ActionResult.SUCCESS;
-                }
+        if (!HASH_SET.contains(uuid) && (shouldWirePower(state, world, pos, false, true, false) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
+            HASH_SET.add(uuid);
+            world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
+            world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
+            if (!world.isClient) {
+                player.getInventory().offerOrDrop(dropStack);
             }
-        } else {
-            if (!HASH_SET.contains(uuid) && (shouldWirePower(state, world, pos, false, true, false) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
-                HASH_SET.add(uuid);
-                world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
-                world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));
-                if (!world.isClient) {
-                    player.getInventory().offerOrDrop(dropStack);
-                }
-                markDirty();
-                return ActionResult.SUCCESS;
-            }
+            markDirty();
+            return ActionResult.SUCCESS;
         }
 
         return ActionResult.FAIL;
