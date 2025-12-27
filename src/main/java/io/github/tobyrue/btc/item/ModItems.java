@@ -3,18 +3,11 @@ package io.github.tobyrue.btc.item;
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.regestries.ModSounds;
-import net.minecraft.block.jukebox.JukeboxSong;
-import net.minecraft.block.jukebox.JukeboxSongs;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.Util;
 
 public class ModItems {
 //    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
@@ -39,6 +32,10 @@ public class ModItems {
 //        }
 //    }
 
+    public static final Item CORNER_SELECTOR = register(
+            new CornerSelectorItem(new Item.Settings().maxCount(1)),
+            "corner_selector"
+    );
 
     public static final Item UNLOCK_SCROLL = register(
             new UnlockScrollItem(),
@@ -54,7 +51,7 @@ public class ModItems {
             "test_screen"
     );
     public static final Item SCOPED_CROSSBOW = register(
-            new ScopedCrossbow(new Item.Settings().maxCount(1 )),
+            new ScopedCrossbow(new Item.Settings().maxCount(1)),
             "scoped_crossbow"
     );
     public static final Item SPELLSTONE = register(

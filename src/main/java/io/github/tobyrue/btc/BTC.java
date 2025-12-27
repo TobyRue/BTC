@@ -2,6 +2,7 @@ package io.github.tobyrue.btc;
 
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
@@ -12,8 +13,6 @@ import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.misc.OxidizeOnClick;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.regestries.*;
-import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
-import io.github.tobyrue.btc.spell.Spell;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -21,15 +20,11 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.*;
-import net.minecraft.client.particle.CampfireSmokeParticle;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
-import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -37,7 +32,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -83,6 +77,16 @@ public class BTC implements ModInitializer {
             ComponentType.<UnlockSpellComponent>builder().codec(UnlockSpellComponent.CODEC).build()
     );
 
+    public static final ComponentType<BlockPosComponent> CORNER_1_POSITION_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("corner_1_position"),
+            ComponentType.<BlockPosComponent>builder().codec(BlockPosComponent.CODEC).build()
+    );
+    public static final ComponentType<BlockPosComponent> CORNER_2_POSITION_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("corner_2_position"),
+            ComponentType.<BlockPosComponent>builder().codec(BlockPosComponent.CODEC).build()
+    );
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 

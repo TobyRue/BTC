@@ -1,28 +1,49 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.*;
+import io.github.tobyrue.btc.item.CornerSelectorItem;
+import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.wires.IWireConnect;
+import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.text.Text;
+import net.minecraft.util.*;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect {
-    public static final BooleanProperty POWERED  = BooleanProperty.of("powered");
+public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect, CornerStorage {
 
 
     public MobDetectorBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((this.stateManager.getDefaultState()).with(POWERED, false));
+        this.setDefaultState(WireBlock.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
+                this.stateManager.getDefaultState().with(WireBlock.POWERED, false),
+                (acc, con) -> acc.with(con, WireBlock.ConnectionType.OUTPUT),
+                (lhs, rhs) -> {
+                    throw new RuntimeException("Don't fold in parallel");
+                }
+        ));
     }
+
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(POWERED);
+        for (var conn : WireBlock.CONNECTION_TO_DIRECTION.get().keySet())
+            builder.add(conn);
+        builder.add(WireBlock.POWERED);
     }
 
     @Override
@@ -31,13 +52,53 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
     }
 
     @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+
+
+        if (!(stack.getItem() instanceof CornerSelectorItem) || player.isSneaking()) {
+            return ItemActionResult.FAIL;
+        }
+
+        var corner1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
+        var corner2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
+
+        if (corner1 == null || corner2 == null) {
+            return ItemActionResult.FAIL;
+        }
+
+        BlockEntity be = world.getBlockEntity(pos);
+        if (be instanceof MobDetectorBlockEntity detector) {
+            var b1 = new BlockPos(corner1.x(), corner1.y(), corner1.z());
+            var b2 = new BlockPos(corner2.x(), corner2.y(), corner2.z());
+            detector.setDetectionBox(b1, b2);
+            detector.markDirty();
+            player.sendMessage(
+                    Text.translatable("item.btc.corner_selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
+                    true
+            );
+            return ItemActionResult.SUCCESS;
+        }
+
+        return ItemActionResult.FAIL;
+    }
+
+
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return state.get(POWERED) ? 15 : 0;
+        return state.get(WireBlock.POWERED) ? 15 : 0;
     }
 
+    @Override
+    public BlockBox getBox(ItemStack stack, BlockPos blockPos, BlockState state, World world) {
+        BlockEntity be = world.getBlockEntity(blockPos);
+        if (be instanceof MobDetectorBlockEntity detector) {
+            return detector.getBox(stack, blockPos, state, world);
+        }
+        return null;
+    }
 }

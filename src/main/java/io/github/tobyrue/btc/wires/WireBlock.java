@@ -323,8 +323,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
                     return (offsetState.contains(WireBlock.POWERED)
                         && offsetState.contains(oppositeConnection)
                         && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
-                        && offsetState.get(POWERED)) ||
-                            (offsetState.getBlock() instanceof MobDetectorBlock md && offsetState.contains(MobDetectorBlock.POWERED) && offsetState.get(MobDetectorBlock.POWERED));
+                        && offsetState.get(POWERED));
                     //TODO ^ ADD A " || (offsetState.getBlock() instanceof MobDetector md && offsetState.contains(MobDetector.POWERED) && offsetState.get(MobDetector.POWERED))
                 }).toArray(Boolean[]::new)
         );
