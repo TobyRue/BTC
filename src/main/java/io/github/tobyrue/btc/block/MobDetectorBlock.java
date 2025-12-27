@@ -6,8 +6,7 @@ import io.github.tobyrue.btc.item.CornerSelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.wires.IWireConnect;
 import io.github.tobyrue.btc.wires.WireBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
@@ -15,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,11 +25,12 @@ import net.minecraft.world.World;
 
 public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect, CornerStorage {
 
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 
     public MobDetectorBlock(Settings settings) {
         super(settings);
         this.setDefaultState(WireBlock.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(WireBlock.POWERED, false),
+                this.stateManager.getDefaultState().with(WireBlock.POWERED, false).with(FACING, Direction.NORTH),
                 (acc, con) -> acc.with(con, WireBlock.ConnectionType.OUTPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
@@ -44,6 +45,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
         for (var conn : WireBlock.CONNECTION_TO_DIRECTION.get().keySet())
             builder.add(conn);
         builder.add(WireBlock.POWERED);
+        builder.add(FACING);
     }
 
     @Override
@@ -100,5 +102,15 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
             return detector.getBox(stack, blockPos, state, world);
         }
         return null;
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 }
