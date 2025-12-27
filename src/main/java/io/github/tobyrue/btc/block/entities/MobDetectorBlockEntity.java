@@ -59,49 +59,45 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         }
 
         if (state.get(MobDetectorBlock.FACING) != lastDirection) {
-            int rotation = 0;
             if (lastDirection == Direction.NORTH) {
-                switch (state.get(MobDetectorBlock.FACING)) {
-                    case DOWN, UP, NORTH -> rotation = 0;
-                    case EAST -> rotation = 90;
-                    case SOUTH -> rotation = 180;
-                    case WEST -> rotation = 270;
-                }
-                var radians = rotation * Math.PI / 180;
-                rotateBlockBox(radians);
+                rotateBlockBox(
+                        switch (state.get(MobDetectorBlock.FACING)) {
+                    case DOWN, UP, NORTH -> 0;
+                    case EAST -> 90;
+                    case SOUTH -> 180;
+                    case WEST -> 270;
+                });
             } else if (lastDirection == Direction.EAST) {
-                switch (state.get(MobDetectorBlock.FACING)) {
-                    case NORTH -> rotation = 270;
-                    case DOWN, UP, EAST -> rotation = 0;
-                    case SOUTH -> rotation = 90;
-                    case WEST -> rotation = 180;
-                }
-                var radians = rotation * Math.PI / 180;
-                rotateBlockBox(radians);
+
+                rotateBlockBox(
+                        switch (state.get(MobDetectorBlock.FACING)) {
+                    case NORTH -> 270;
+                    case DOWN, UP, EAST -> 0;
+                    case SOUTH -> 90;
+                    case WEST -> 180;
+                });
             } else if (lastDirection == Direction.SOUTH) {
-                switch (state.get(MobDetectorBlock.FACING)) {
-                    case NORTH -> rotation = 180;
-                    case EAST -> rotation = 270;
-                    case DOWN, UP, SOUTH -> rotation = 0;
-                    case WEST -> rotation = 90;
-                }
-                var radians = rotation * Math.PI / 180;
-                rotateBlockBox(radians);
+                rotateBlockBox(
+                        switch (state.get(MobDetectorBlock.FACING)) {
+                    case NORTH -> 180;
+                    case EAST -> 270;
+                    case DOWN, UP, SOUTH -> 0;
+                    case WEST -> 90;
+                });
             } else if (lastDirection == Direction.WEST) {
-                switch (state.get(MobDetectorBlock.FACING)) {
-                    case NORTH -> rotation = 90;
-                    case EAST -> rotation = 180;
-                    case SOUTH -> rotation = 270;
-                    case DOWN, UP, WEST -> rotation = 0;
-                }
-                var radians = rotation * Math.PI / 180;
-                rotateBlockBox(radians);
+
+                rotateBlockBox(
+                        switch (state.get(MobDetectorBlock.FACING)) {
+                    case NORTH -> 90;
+                    case EAST -> 180;
+                    case SOUTH -> 270;
+                    case DOWN, UP, WEST -> 0;
+                });
             } else if (lastDirection == Direction.DOWN || lastDirection == Direction.UP) {
-                switch (state.get(MobDetectorBlock.FACING)) {
-                    case NORTH, EAST, SOUTH, WEST, DOWN, UP -> rotation = 0;
-                }
-                var radians = rotation * Math.PI / 180;
-                rotateBlockBox(radians);
+                rotateBlockBox(
+                        switch (state.get(MobDetectorBlock.FACING)) {
+                    case NORTH, EAST, SOUTH, WEST, DOWN, UP -> 0;
+                });
             }
             lastDirection = state.get(MobDetectorBlock.FACING);
         }
@@ -126,18 +122,94 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         }
     }
 
-    private void rotateBlockBox(double radians) {
+    private void rotateBlockBox(int degree) {
         var x1 = distanceArray[0];
         var z1 = distanceArray[2];
         var x2 = distanceArray[3];
         var z2 = distanceArray[5];
 
-        var nx1 =  x1 * Math.cos(radians) + z1 * Math.sin(radians);
-        var nz1 = -x1 * Math.sin(radians) + z1 * Math.cos(radians);
+        int nx1;
+        int nz1;
+        int nx2;
+        int nz2;
+        System.out.println(Math.floorMod(270, 4));
+        switch (degree) {
+            case 0 -> {
+                nx1 = x1;
+                nz1 = z1;
+                nx2 = x2;
+                nz2 = z2;
+                int minX = Math.min(nx1, nx2);
+                int maxX = Math.max(nx1, nx2);
+                int minZ = Math.min(nz1, nz2);
+                int maxZ = Math.max(nz1, nz2);
+                setDistanceArray(
+                        minX,
+                        distanceArray[1],
+                        minZ,
+                        maxX,
+                        distanceArray[4],
+                        maxZ
+                );
+            }
+            case 90 -> {
+                nx1 = z1;
+                nz1 = -x1;
+                nx2 = z2;
+                nz2 = -x2;
+                int minX = Math.min(nx1, nx2);
+                int maxX = Math.max(nx1, nx2);
+                int minZ = Math.min(nz1, nz2);
+                int maxZ = Math.max(nz1, nz2);
 
-        var nx2 =  x2 * Math.cos(radians) + z2 * Math.sin(radians);
-        var nz2 = -x2 * Math.sin(radians) + z2 * Math.cos(radians);
-        setDistanceArray(Math.round((float) nx1), distanceArray[1], Math.round((float) nz1), Math.round((float) nx2), distanceArray[4], Math.round((float) nz2));
+                setDistanceArray(
+                        minX,
+                        distanceArray[1],
+                        minZ,
+                        maxX,
+                        distanceArray[4],
+                        maxZ
+                );
+            }
+            case 180 -> {
+                nx1 = -x1;
+                nz1 = -z1;
+                nx2 = -x2;
+                nz2 = -z2;
+                int minX = Math.min(nx1, nx2);
+                int maxX = Math.max(nx1, nx2);
+                int minZ = Math.min(nz1, nz2);
+                int maxZ = Math.max(nz1, nz2);
+
+                setDistanceArray(
+                        minX,
+                        distanceArray[1],
+                        minZ,
+                        maxX,
+                        distanceArray[4],
+                        maxZ
+                );
+            }
+            case 270 -> {
+                nx1 = -z1;
+                nz1 = x1;
+                nx2 = -z2;
+                nz2 = x2;
+                int minX = Math.min(nx1, nx2);
+                int maxX = Math.max(nx1, nx2);
+                int minZ = Math.min(nz1, nz2);
+                int maxZ = Math.max(nz1, nz2);
+
+                setDistanceArray(
+                        minX,
+                        distanceArray[1],
+                        minZ,
+                        maxX,
+                        distanceArray[4],
+                        maxZ
+                );
+            }
+        }
     }
 
     private @NotNull Box getBox(BlockPos pos) {
