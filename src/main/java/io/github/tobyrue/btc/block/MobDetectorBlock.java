@@ -117,29 +117,19 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
 
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        var shouldFlip = BlockMirror.NONE;
-        /*
-         *North: -Z
-         *East: +X
-         *South: +Z
-         *West: -X
-         */
-        switch (mirror) {
-            case LEFT_RIGHT -> {
-                // North <-> South mirroring (Z axis)
-                if (state.get(FACING) == Direction.NORTH || state.get(FACING) == Direction.SOUTH) {
-                    shouldFlip = BlockMirror.LEFT_RIGHT;
-                }
-            }
-            case FRONT_BACK -> {
-                // East <-> West mirroring (X axis)
-                if (state.get(FACING) == Direction.EAST || state.get(FACING) == Direction.WEST) {
-                    shouldFlip = BlockMirror.FRONT_BACK;
-                }
-            }
-            default -> {}
-        }
-        System.out.println("Should Flip: " + shouldFlip);
-        return state.rotate(mirror.getRotation(state.get(FACING))).with(MIRRORED, shouldFlip);
+        Direction facing = state.get(FACING);
+
+        boolean affectsFacing =
+                (mirror == BlockMirror.LEFT_RIGHT &&
+                        (facing == Direction.EAST || facing == Direction.WEST))
+                        || (mirror == BlockMirror.FRONT_BACK &&
+                        (facing == Direction.NORTH || facing == Direction.SOUTH));
+
+        BlockState rotated = state.rotate(mirror.getRotation(facing));
+
+        return state.with(MIRRORED, mirror);
+//        return affectsFacing
+//                ? state.with(MIRRORED, mirror)
+//                : rotated;
     }
 }

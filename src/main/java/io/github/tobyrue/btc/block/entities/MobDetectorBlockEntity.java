@@ -104,7 +104,11 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         }
         if (state.get(MobDetectorBlock.MIRRORED) != BlockMirror.NONE) {
             mirrorBlockBox(state.get(MobDetectorBlock.MIRRORED));
-            state.with(MobDetectorBlock.MIRRORED, BlockMirror.NONE);
+            world.setBlockState(
+                    pos,
+                    state.with(MobDetectorBlock.MIRRORED, BlockMirror.NONE),
+                    Block.NOTIFY_LISTENERS | Block.NO_REDRAW
+            );
         }
 
         Box box = getBox(pos);
@@ -145,23 +149,27 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
                 );
             }
             case LEFT_RIGHT -> {
-                setDistanceArray(
-                        -x1,
-                        distanceArray[1],
-                        z1,
-                        -x2,
-                        distanceArray[4],
-                        z2
-                );
-            }
-            case FRONT_BACK -> {
+                int nz1 = -z1;
+                int nz2 = -z2;
                 setDistanceArray(
                         x1,
                         distanceArray[1],
-                        -z1,
+                        Math.min(nz1, nz2),
                         x2,
                         distanceArray[4],
-                        -z2
+                        Math.max(nz1, nz2)
+                );
+            }
+            case FRONT_BACK -> {
+                int nx1 = -x1;
+                int nx2 = -x2;
+                setDistanceArray(
+                        Math.min(nx1, nx2),
+                        distanceArray[1],
+                        z1,
+                        Math.max(nx1, nx2),
+                        distanceArray[4],
+                        z2
                 );
             }
         }
