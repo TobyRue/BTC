@@ -12,7 +12,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -24,11 +26,16 @@ import net.minecraft.world.World;
 public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect, CornerStorage {
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    /*
+    * Mirrored is only switched with the last state if for example it is mirrored along North to South while the block has a facing property of north, otherwise it will not change.
+    * This is used to detect if the BlockBox needs to be mirrored, this is done by returning a new distance array with the opposite axis it was mirrored on with the same numbers but negative.
+     */
+    public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
 
     public MobDetectorBlock(Settings settings) {
         super(settings);
         this.setDefaultState(WireBlock.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(WireBlock.POWERED, false).with(FACING, Direction.NORTH),
+                this.stateManager.getDefaultState().with(WireBlock.POWERED, false).with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE),
                 (acc, con) -> acc.with(con, WireBlock.ConnectionType.OUTPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
@@ -44,6 +51,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
             builder.add(conn);
         builder.add(WireBlock.POWERED);
         builder.add(FACING);
+        builder.add(MIRRORED);
     }
 
     @Override
@@ -109,6 +117,29 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
 
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
+        var shouldFlip = BlockMirror.NONE;
+        /*
+         *North: -Z
+         *East: +X
+         *South: +Z
+         *West: -X
+         */
+        switch (mirror) {
+            case LEFT_RIGHT -> {
+                // North <-> South mirroring (Z axis)
+                if (state.get(FACING) == Direction.NORTH || state.get(FACING) == Direction.SOUTH) {
+                    shouldFlip = BlockMirror.LEFT_RIGHT;
+                }
+            }
+            case FRONT_BACK -> {
+                // East <-> West mirroring (X axis)
+                if (state.get(FACING) == Direction.EAST || state.get(FACING) == Direction.WEST) {
+                    shouldFlip = BlockMirror.FRONT_BACK;
+                }
+            }
+            default -> {}
+        }
+        System.out.println("Should Flip: " + shouldFlip);
+        return state.rotate(mirror.getRotation(state.get(FACING))).with(MIRRORED, shouldFlip);
     }
 }

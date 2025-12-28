@@ -13,6 +13,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.BlockMirror;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -101,6 +102,10 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
             }
             lastDirection = state.get(MobDetectorBlock.FACING);
         }
+        if (state.get(MobDetectorBlock.MIRRORED) != BlockMirror.NONE) {
+            mirrorBlockBox(state.get(MobDetectorBlock.MIRRORED));
+            state.with(MobDetectorBlock.MIRRORED, BlockMirror.NONE);
+        }
 
         Box box = getBox(pos);
 
@@ -119,6 +124,46 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
                     state.with(WireBlock.POWERED, shouldBePowered),
                     Block.NOTIFY_ALL
             );
+        }
+    }
+
+    private void mirrorBlockBox(BlockMirror mirror) {
+        var x1 = distanceArray[0];
+        var z1 = distanceArray[2];
+        var x2 = distanceArray[3];
+        var z2 = distanceArray[5];
+
+        switch (mirror) {
+            case NONE -> {
+                setDistanceArray(
+                        x1,
+                        distanceArray[1],
+                        z1,
+                        x2,
+                        distanceArray[4],
+                        z2
+                );
+            }
+            case LEFT_RIGHT -> {
+                setDistanceArray(
+                        -x1,
+                        distanceArray[1],
+                        z1,
+                        -x2,
+                        distanceArray[4],
+                        z2
+                );
+            }
+            case FRONT_BACK -> {
+                setDistanceArray(
+                        x1,
+                        distanceArray[1],
+                        -z1,
+                        x2,
+                        distanceArray[4],
+                        -z2
+                );
+            }
         }
     }
 
