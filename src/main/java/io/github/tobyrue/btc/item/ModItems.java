@@ -32,9 +32,9 @@ public class ModItems {
 //        }
 //    }
 
-    public static final Item CORNER_SELECTOR = register(
-            new CornerSelectorItem(new Item.Settings().maxCount(1)),
-            "corner_selector"
+    public static final Item SELECTOR = register(
+            new SelectorItem(new Item.Settings().maxCount(1)),
+            "selector"
     );
 
     public static final Item UNLOCK_SCROLL = register(

@@ -13,7 +13,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -21,12 +20,11 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
 
 import java.util.List;
 
-public class CornerSelectorItem extends Item {
-    public CornerSelectorItem(Settings settings) {
+public class SelectorItem extends Item {
+    public SelectorItem(Settings settings) {
         super(settings.component(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0, 0, 0)).component(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0, 0, 0)));
     }
 
@@ -36,7 +34,7 @@ public class CornerSelectorItem extends Item {
         var c1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
         var c2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
 
-        if (entity instanceof PlayerEntity player && (!(player.getStackInHand(Hand.MAIN_HAND).isOf(ModItems.CORNER_SELECTOR)) && !(player.getStackInHand(Hand.OFF_HAND).isOf(ModItems.CORNER_SELECTOR)))) {
+        if (entity instanceof PlayerEntity player && (!(player.getStackInHand(Hand.MAIN_HAND).isOf(ModItems.SELECTOR)) && !(player.getStackInHand(Hand.OFF_HAND).isOf(ModItems.SELECTOR)))) {
             return;
         }
 
@@ -131,7 +129,7 @@ public class CornerSelectorItem extends Item {
                 stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(cs.getMinX(), cs.getMinY(), cs.getMinZ()));
                 stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(cs.getMaxX(), cs.getMaxY(), cs.getMaxZ()));
                 player.sendMessage(
-                        Text.translatable("item.btc.corner_selector.corner_1_and_2_set", new BlockPos(cs.getMinX(), cs.getMinY(), cs.getMinZ()).toShortString(), new BlockPos(cs.getMaxX(), cs.getMaxY(), cs.getMaxZ()).toShortString()),
+                        Text.translatable("item.btc.selector.corner_1_and_2_set", new BlockPos(cs.getMinX(), cs.getMinY(), cs.getMinZ()).toShortString(), new BlockPos(cs.getMaxX(), cs.getMaxY(), cs.getMaxZ()).toShortString()),
                         true
                 );
                 return ActionResult.SUCCESS;
@@ -147,13 +145,13 @@ public class CornerSelectorItem extends Item {
         if (!player.isSneaking()) {
             stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(pos.getX(), pos.getY(), pos.getZ()));
             player.sendMessage(
-                    Text.translatable("item.btc.corner_selector.corner_1_set", pos.toShortString()),
+                    Text.translatable("item.btc.selector.corner_1_set", pos.toShortString()),
                     true
             );
         } else {
             stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(pos.getX(), pos.getY(), pos.getZ()));
             player.sendMessage(
-                    Text.translatable("item.btc.corner_selector.corner_2_set", pos.toShortString()),
+                    Text.translatable("item.btc.selector.corner_2_set", pos.toShortString()),
                     true
             );
         }
@@ -165,19 +163,19 @@ public class CornerSelectorItem extends Item {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         var c1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
         var c2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
-        tooltip.add(Text.translatable("item.btc.corner_selector.clear"));
+        tooltip.add(Text.translatable("item.btc.selector.clear"));
         if (c1 != null) {
             assert MinecraftClient.getInstance().player != null;
             if (c1.y() > MinecraftClient.getInstance().player.getWorld().getBottomY() - 1) {
                 var b1 = new BlockPos(c1.x(), c1.y(), c1.z());
-                tooltip.add(Text.translatable("item.btc.corner_selector.corner_1", b1.toShortString()));
+                tooltip.add(Text.translatable("item.btc.selector.corner_1", b1.toShortString()));
             }
         }
         if (c2 != null) {
             assert MinecraftClient.getInstance().player != null;
             if (c2.y() > MinecraftClient.getInstance().player.getWorld().getBottomY() - 1) {
                 var b2 = new BlockPos(c2.x(), c2.y(), c2.z());
-                tooltip.add(Text.translatable("item.btc.corner_selector.corner_2", b2.toShortString()));
+                tooltip.add(Text.translatable("item.btc.selector.corner_2", b2.toShortString()));
             }
         }
         super.appendTooltip(stack, context, tooltip, type);

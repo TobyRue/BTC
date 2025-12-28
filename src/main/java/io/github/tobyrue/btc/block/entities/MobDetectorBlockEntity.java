@@ -132,7 +132,6 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         int nz1;
         int nx2;
         int nz2;
-        System.out.println(Math.floorMod(270, 4));
         switch (degree) {
             case 0 -> {
                 nx1 = x1;

@@ -2,18 +2,16 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.*;
-import io.github.tobyrue.btc.item.CornerSelectorItem;
+import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.wires.IWireConnect;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -57,7 +55,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
 
-        if (!(stack.getItem() instanceof CornerSelectorItem) || player.isSneaking()) {
+        if (!(stack.getItem() instanceof SelectorItem) || player.isSneaking()) {
             return ItemActionResult.FAIL;
         }
 
@@ -75,7 +73,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
             detector.setDetectionBox(b1, b2);
             detector.markDirty();
             player.sendMessage(
-                    Text.translatable("item.btc.corner_selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
+                    Text.translatable("item.btc.selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
                     true
             );
             return ItemActionResult.SUCCESS;
