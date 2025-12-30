@@ -1,0 +1,50 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs"},
+      "when": {"half": "bottom"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs", "x": 180},
+      "when": {"half": "top"}
+    },
+
+
+
+
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 0},
+      "when": {"half": "bottom", "north": "true"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 90},
+      "when": {"half": "bottom", "east": "true"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 180},
+      "when": {"half": "bottom", "south": "true"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 270},
+      "when": {"half": "bottom", "west": "true"}
+    },
+
+
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 0, "x": 180},
+      "when": {"half": "top", "north": "true"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 90, "x": 180},
+      "when": {"half": "top", "east": "true"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 180, "x": 180},
+      "when": {"half": "top", "south": "true"}
+    },
+    {
+      "apply": { "model": "btc:block/tuff_brick_middle_stairs_attachment", "y": 270, "x": 180},
+      "when": {"half": "top", "west": "true"}
+    }
+  ]
+}
