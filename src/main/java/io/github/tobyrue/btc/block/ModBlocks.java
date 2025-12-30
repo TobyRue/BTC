@@ -26,6 +26,23 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+
+    public static final RecessedStairsBlock TUFF_BRICK_RECESSED_STAIRS = (RecessedStairsBlock) register(
+            new RecessedStairsBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICK_STAIRS)),
+            "tuff_brick_recessed_stairs",
+            true
+    );
+    public static final RecessedStairsBlock POLISHED_TUFF_RECESSED_STAIRS = (RecessedStairsBlock) register(
+            new RecessedStairsBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF_STAIRS)),
+            "polished_tuff_recessed_stairs",
+            true
+    );
+    public static final RecessedStairsBlock TUFF_RECESSED_STAIRS = (RecessedStairsBlock) register(
+            new RecessedStairsBlock(AbstractBlock.Settings.copy(Blocks.TUFF_STAIRS)),
+            "tuff_recessed_stairs",
+            true
+    );
+
     public static final Block MELTING_ICE = register(
             new MeltingIceBlock(AbstractBlock.Settings.create().mapColor(MapColor.WATER_BLUE).slipperiness(0.98F).strength(0.5F).sounds(BlockSoundGroup.GLASS).instrument(NoteBlockInstrument.SNARE).nonOpaque()),
             "melting_ice",

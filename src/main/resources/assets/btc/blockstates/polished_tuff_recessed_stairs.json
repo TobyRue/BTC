@@ -1,0 +1,89 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs",
+        "uvlock": true
+      },
+      "when": {"half": "bottom"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs",
+        "uvlock": true,
+        "x": 180
+      },
+      "when": {"half": "top"}
+    },
+
+
+
+
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment",
+        "uvlock": true,
+        "y": 0
+      },
+      "when": {"half": "bottom", "north": "true"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {"half": "bottom", "east": "true"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {"half": "bottom", "south": "true"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {"half": "bottom", "west": "true"}
+    },
+
+
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment_upside_down",
+        "uvlock": true,
+        "y": 0
+      },
+      "when": {"half": "top", "north": "true"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment_upside_down",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {"half": "top", "east": "true"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment_upside_down",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {"half": "top", "south": "true"}
+    },
+    {
+      "apply": {
+        "model": "btc:block/polished_tuff_recessed_stairs_attachment_upside_down",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {"half": "top", "west": "true"}
+    }
+  ]
+}

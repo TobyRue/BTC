@@ -5,6 +5,6 @@
     "has_spyglass": { "conditions": { "items": [ { "items": "minecraft:spyglass" } ] }, "trigger": "minecraft:inventory_changed" },
     "has_the_recipe": { "conditions": { "recipe": "btc:scoped_crossbow" }, "trigger": "minecraft:recipe_unlocked" }
   },
-  "requirements": [ ["has_the_recipe","has_crossbow","has_crossbow"] ],
+  "requirements": [ ["has_the_recipe","has_spyglass","has_crossbow"] ],
   "rewards": { "recipes": ["btc:scoped_crossbow"] }
 }

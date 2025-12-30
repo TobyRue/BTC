@@ -1,0 +1,8 @@
+{
+    "parent": "btc:block/recessed_stair_attachment_upside_down",
+    "textures": {
+      "bottom": "minecraft:block/tuff_bricks",
+      "side": "minecraft:block/tuff_bricks",
+      "top": "minecraft:block/tuff_bricks"
+    }
+}

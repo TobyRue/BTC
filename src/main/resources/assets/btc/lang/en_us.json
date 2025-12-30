@@ -20,6 +20,9 @@
   "block.btc.copper_button_oxidized": "Oxidized Copper Button",
   "block.btc.waxed_copper_button_oxidized": "Waxed Oxidized Copper Button",
   "block.btc.melting_ice": "Melting Ice",
+  "block.btc.tuff_brick_recessed_stairs": "Tuff Brick Recessed Stairs",
+  "block.btc.tuff_recessed_stairs": "Tuff Recessed Stairs",
+  "block.btc.polished_tuff_recessed_stairs": "Polished Tuff Recessed Stairs",
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",
