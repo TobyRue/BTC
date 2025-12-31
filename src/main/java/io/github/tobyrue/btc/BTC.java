@@ -32,6 +32,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -169,7 +170,10 @@ public class BTC implements ModInitializer {
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack stack = player.getStackInHand(hand);
-            Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+            BlockPos blockPos = hitResult.getBlockPos();
+            BlockState state = world.getBlockState(blockPos);
+            Block block = state.getBlock();
+            System.out.println("Block: " + block + " Item: " + stack.getItem());
             if (player.hasStatusEffect(ModStatusEffects.BUILDER_BLUNDER) && !player.isCreative()) {
                 boolean b = (block instanceof ChestBlock) || (block instanceof CraftingTableBlock) ||
                         (block instanceof CrafterBlock) || (block instanceof AnvilBlock) || (block instanceof DispenserBlock) ||
@@ -195,7 +199,10 @@ public class BTC implements ModInitializer {
                 } else if (stack.getItem() instanceof BlockItem && (b && !player.isSneaking())) {
                     return ActionResult.PASS;
                 }
-            } else if (block instanceof ColumnBlock columnBlock && stack == columnBlock.getBaseBlock().asItem().getDefaultStack()) {
+            } else if (block instanceof ColumnBlock columnBlock && stack.getItem() == columnBlock.getBaseBlock().asItem() && !state.get(ColumnBlock.IS_END) && !world.isClient) {
+                System.out.println("Returning fail");
+                world.setBlockState(blockPos, state.with(ColumnBlock.IS_END, true));
+                stack.decrementUnlessCreative(1, player);
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed

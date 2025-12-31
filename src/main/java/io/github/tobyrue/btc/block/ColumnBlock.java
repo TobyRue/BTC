@@ -5,11 +5,11 @@ import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -28,10 +28,9 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class ColumnBlock extends Block implements Waterloggable {
-    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty IS_END = BooleanProperty.of("is_end");
 
     public Block getBaseBlock() {
@@ -77,7 +76,7 @@ public class ColumnBlock extends Block implements Waterloggable {
 
     public ColumnBlock(Settings settings, Block baseBlock) {
         super(settings);
-        this.setDefaultState(this.getDefaultState().with(WATERLOGGED, false).with(FACING, Direction.DOWN).with(IS_END, false));
+        this.setDefaultState(this.getDefaultState().with(Properties.WATERLOGGED, false).with(FacingBlock.FACING, Direction.DOWN).with(IS_END, false));
         this.baseBlock = baseBlock;
     }
 
@@ -87,24 +86,13 @@ public class ColumnBlock extends Block implements Waterloggable {
         Direction facing = ctx.getSide();
         BlockPos blockPos = ctx.getBlockPos();
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
-        BlockState state = this.getDefaultState()
-                .with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER)
-                .with(FACING, facing)
-                .with(IS_END, false);
+        var player = ctx.getPlayer();
 
-        return super.getPlacementState(ctx);
+        return this.getDefaultState()
+                .with(Properties.WATERLOGGED, fluidState.getFluid() == Fluids.WATER)
+                .with(FacingBlock.FACING, player.isSneaking() ? facing : facing.getOpposite());
     }
 
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (stack.getItem() instanceof BlockItem blockItem){
-            if (blockItem.getBlock() == baseBlock && !state.get(IS_END)) {
-                world.setBlockState(pos, state.with(IS_END, true));
-                stack.decrementUnlessCreative(1, player);
-            }
-        }
-        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
-    }
 
 
 
@@ -118,7 +106,7 @@ public class ColumnBlock extends Block implements Waterloggable {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(WATERLOGGED, FACING, IS_END);
+        builder.add(Properties.WATERLOGGED, FacingBlock.FACING, IS_END);
         super.appendProperties(builder);
     }
 
@@ -126,7 +114,7 @@ public class ColumnBlock extends Block implements Waterloggable {
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (state.get(IS_END)) {
-            switch (state.get(FACING)) {
+            switch (state.get(FacingBlock.FACING)) {
                 case NORTH -> {
                     return NORTH_MAIN;
                 }
@@ -148,7 +136,7 @@ public class ColumnBlock extends Block implements Waterloggable {
                 default -> {}
             }
         } else {
-            switch (state.get(FACING).getAxis()) {
+            switch (state.get(FacingBlock.FACING).getAxis()) {
                 case X -> {
                     return COLUMN_EAST_WEST;
                 }
@@ -166,7 +154,7 @@ public class ColumnBlock extends Block implements Waterloggable {
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (state.get(IS_END)) {
-            switch (state.get(FACING)) {
+            switch (state.get(FacingBlock.FACING)) {
                 case NORTH -> {
                     return NORTH_MAIN;
                 }
@@ -188,7 +176,7 @@ public class ColumnBlock extends Block implements Waterloggable {
                 default -> {}
             }
         } else {
-            switch (state.get(FACING).getAxis()) {
+            switch (state.get(FacingBlock.FACING).getAxis()) {
                 case X -> {
                     return COLUMN_EAST_WEST;
                 }
@@ -214,7 +202,7 @@ public class ColumnBlock extends Block implements Waterloggable {
             BlockPos pos,
             BlockPos neighborPos
     ) {
-        if (state.get(WATERLOGGED)) {
+        if (state.get(Properties.WATERLOGGED)) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return state;
@@ -222,8 +210,8 @@ public class ColumnBlock extends Block implements Waterloggable {
 
     @Override
     protected FluidState getFluidState(BlockState state) {
-        if (state.get(WATERLOGGED)) {
-            return Fluids.LAVA.getStill(false);
+        if (state.get(Properties.WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);
     }
