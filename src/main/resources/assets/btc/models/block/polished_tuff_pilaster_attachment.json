@@ -1,5 +1,5 @@
 {
-    "parent": "btc:block/recessed_stair_attachment_upside_down",
+    "parent": "btc:block/pilaster_attachment",
     "textures": {
       "bottom": "minecraft:block/polished_tuff",
       "side": "minecraft:block/polished_tuff",

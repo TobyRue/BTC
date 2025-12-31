@@ -21,9 +21,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class RecessedStairsBlock extends HorizontalConnectingBlock {
+public class PilasterBlock extends HorizontalConnectingBlock {
     public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
-    public static final MapCodec<RecessedStairsBlock> CODEC = RecessedStairsBlock.createCodec(RecessedStairsBlock::new);
+    public static final MapCodec<PilasterBlock> CODEC = PilasterBlock.createCodec(PilasterBlock::new);
     private static final VoxelShape EMPTY = VoxelShapes.union(
             VoxelShapes.cuboid(0, 0, 0, 0, 0, 0)
     );
@@ -61,7 +61,7 @@ public class RecessedStairsBlock extends HorizontalConnectingBlock {
             VoxelShapes.cuboid(0, 0, 0.25, 0.25, 0.5, 0.75)
     );
 
-    protected RecessedStairsBlock(Settings settings) {
+    protected PilasterBlock(Settings settings) {
         super(0, 0, 0, 0, 0, settings);
         this.setDefaultState((this.stateManager.getDefaultState()).with(HALF, BlockHalf.BOTTOM).with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(WATERLOGGED, false));
     }
@@ -108,11 +108,8 @@ public class RecessedStairsBlock extends HorizontalConnectingBlock {
             return state;
         }
 
-        // =========================
-        // PANE / BAR MODE
-        // =========================
         boolean connect =
-                neighborState.isIn(BTC.RECESSED_STAIR) ||
+                neighborState.isIn(BTC.PILASTER) ||
                         neighborState.isIn(BlockTags.FENCES) ||
                         neighborState.isIn(BlockTags.WALLS) ||
                         neighborState.isSideSolidFullSquare(world, neighborPos, dir.getOpposite());
@@ -182,5 +179,6 @@ public class RecessedStairsBlock extends HorizontalConnectingBlock {
         }
         return super.getFluidState(state);
     }
+
 
 }

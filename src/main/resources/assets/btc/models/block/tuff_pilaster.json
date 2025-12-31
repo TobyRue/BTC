@@ -1,5 +1,5 @@
 {
-	"parent": "btc:block/recessed_stair",
+	"parent": "btc:block/pilaster",
 	"textures": {
 		"bottom": "minecraft:block/tuff",
 		"side": "minecraft:block/tuff",

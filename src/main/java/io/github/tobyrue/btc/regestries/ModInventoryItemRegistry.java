@@ -84,9 +84,9 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModBlocks.WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON);
             content.addAfter(ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.OXIDIZED_COPPER_BUTTON);
             content.addAfter(ModBlocks.OXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
-            content.addAfter(Blocks.TUFF_BRICK_STAIRS, ModBlocks.TUFF_BRICK_RECESSED_STAIRS);
-            content.addAfter(Blocks.TUFF_STAIRS, ModBlocks.TUFF_RECESSED_STAIRS);
-            content.addAfter(Blocks.POLISHED_TUFF_STAIRS, ModBlocks.POLISHED_TUFF_RECESSED_STAIRS);
+            content.addAfter(Blocks.TUFF_BRICK_STAIRS, ModBlocks.TUFF_BRICK_PILASTER);
+            content.addAfter(Blocks.TUFF_STAIRS, ModBlocks.TUFF_PILASTER);
+            content.addAfter(Blocks.POLISHED_TUFF_STAIRS, ModBlocks.POLISHED_TUFF_PILASTER);
 
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {

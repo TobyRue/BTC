@@ -2,14 +2,14 @@
   "multipart": [
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs",
+        "model": "btc:block/tuff_pilaster",
         "uvlock": true
       },
       "when": {"half": "bottom"}
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs",
+        "model": "btc:block/tuff_pilaster",
         "uvlock": true,
         "x": 180
       },
@@ -21,7 +21,7 @@
 
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment",
+        "model": "btc:block/tuff_pilaster_attachment",
         "uvlock": true,
         "y": 0
       },
@@ -29,7 +29,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment",
+        "model": "btc:block/tuff_pilaster_attachment",
         "uvlock": true,
         "y": 90
       },
@@ -37,7 +37,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment",
+        "model": "btc:block/tuff_pilaster_attachment",
         "uvlock": true,
         "y": 180
       },
@@ -45,7 +45,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment",
+        "model": "btc:block/tuff_pilaster_attachment",
         "uvlock": true,
         "y": 270
       },
@@ -55,7 +55,7 @@
 
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment_upside_down",
+        "model": "btc:block/tuff_pilaster_attachment_upside_down",
         "uvlock": true,
         "y": 0
       },
@@ -63,7 +63,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment_upside_down",
+        "model": "btc:block/tuff_pilaster_attachment_upside_down",
         "uvlock": true,
         "y": 90
       },
@@ -71,7 +71,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment_upside_down",
+        "model": "btc:block/tuff_pilaster_attachment_upside_down",
         "uvlock": true,
         "y": 180
       },
@@ -79,7 +79,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_recessed_stairs_attachment_upside_down",
+        "model": "btc:block/tuff_pilaster_attachment_upside_down",
         "uvlock": true,
         "y": 270
       },

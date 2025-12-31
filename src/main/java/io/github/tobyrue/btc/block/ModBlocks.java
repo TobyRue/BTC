@@ -27,19 +27,19 @@ public class ModBlocks {
         return Registry.register(Registries.BLOCK, id, block);
     }
 
-    public static final RecessedStairsBlock TUFF_BRICK_RECESSED_STAIRS = (RecessedStairsBlock) register(
-            new RecessedStairsBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICK_STAIRS)),
-            "tuff_brick_recessed_stairs",
+    public static final PilasterBlock TUFF_BRICK_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICK_STAIRS)),
+            "tuff_brick_pilaster",
             true
     );
-    public static final RecessedStairsBlock POLISHED_TUFF_RECESSED_STAIRS = (RecessedStairsBlock) register(
-            new RecessedStairsBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF_STAIRS)),
-            "polished_tuff_recessed_stairs",
+    public static final PilasterBlock POLISHED_TUFF_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF_STAIRS)),
+            "polished_tuff_pilaster",
             true
     );
-    public static final RecessedStairsBlock TUFF_RECESSED_STAIRS = (RecessedStairsBlock) register(
-            new RecessedStairsBlock(AbstractBlock.Settings.copy(Blocks.TUFF_STAIRS)),
-            "tuff_recessed_stairs",
+    public static final PilasterBlock TUFF_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_STAIRS)),
+            "tuff_pilaster",
             true
     );
 
