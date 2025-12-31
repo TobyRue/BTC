@@ -168,9 +168,9 @@ public class BTC implements ModInitializer {
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            ItemStack stack = player.getStackInHand(hand);
+            Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
             if (player.hasStatusEffect(ModStatusEffects.BUILDER_BLUNDER) && !player.isCreative()) {
-                ItemStack stack = player.getStackInHand(hand);
-                Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
                 boolean b = (block instanceof ChestBlock) || (block instanceof CraftingTableBlock) ||
                         (block instanceof CrafterBlock) || (block instanceof AnvilBlock) || (block instanceof DispenserBlock) ||
                         (block instanceof DropperBlock) || (block instanceof TrappedChestBlock) || (block instanceof BarrelBlock) ||
@@ -191,10 +191,12 @@ public class BTC implements ModInitializer {
                         (block instanceof FenceGateBlock) || (block instanceof CakeBlock) || (block instanceof FarmlandBlock);
 
                 if ((stack.getItem() instanceof BlockItem && !b) || ((b && player.isSneaking()) && stack.getItem() instanceof BlockItem) || stack.getItem() instanceof BoneMealItem || stack.getItem() instanceof BucketItem || stack.getItem() instanceof PowderSnowBucketItem || stack.getItem() instanceof EndCrystalItem) {
-                    return ActionResult.FAIL; // Block placement is prevented
+                    return ActionResult.FAIL;
                 } else if (stack.getItem() instanceof BlockItem && (b && !player.isSneaking())) {
                     return ActionResult.PASS;
                 }
+            } else if (block instanceof ColumnBlock columnBlock && stack == columnBlock.getBaseBlock().asItem().getDefaultStack()) {
+                return ActionResult.FAIL;
             }
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });

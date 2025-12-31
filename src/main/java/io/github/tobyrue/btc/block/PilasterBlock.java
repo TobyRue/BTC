@@ -75,7 +75,7 @@ public class PilasterBlock extends HorizontalConnectingBlock {
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
 
         BlockState state = this.getDefaultState()
-                .with(HALF, ctx.getSide() == Direction.DOWN ? BlockHalf.TOP : BlockHalf.BOTTOM)
+                .with(HALF, direction == Direction.DOWN || direction != Direction.UP && ctx.getHitPos().y - (double)blockPos.getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM)
                 .with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
 
         for (Direction dir : Direction.Type.HORIZONTAL) {
@@ -179,6 +179,4 @@ public class PilasterBlock extends HorizontalConnectingBlock {
         }
         return super.getFluidState(state);
     }
-
-
 }

@@ -27,7 +27,12 @@ public class ModBlocks {
         return Registry.register(Registries.BLOCK, id, block);
     }
 
-    public static final PilasterBlock TUFF_BRICK_PILASTER = (PilasterBlock) register(  
+    public static final ColumnBlock STONE_COLUMN = (ColumnBlock) register(
+            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS), Blocks.STONE_BRICKS),
+            "stone_column",
+            true
+    );
+    public static final PilasterBlock TUFF_BRICK_PILASTER = (PilasterBlock) register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICK_STAIRS)),
             "tuff_brick_pilaster",
             true
