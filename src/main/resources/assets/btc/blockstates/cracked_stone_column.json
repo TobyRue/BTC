@@ -1,74 +1,172 @@
 {
-  "variants": {
-    "facing=down,is_end=true": {
-      "model": "btc:block/cracked_stone_column_pilaster",
-      "uvlock": true
+  "multipart": [
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "axis": "x"
+      }
     },
-    "facing=up,is_end=true": {
-      "model": "btc:block/cracked_stone_column_pilaster",
-      "uvlock": true,
-      "x": 180
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column",
+        "y": 0,
+        "x": 0
+      },
+      "when": {
+        "axis": "y"
+      }
     },
-
-    "facing=north,is_end=true": {
-      "model": "btc:block/cracked_stone_column_pilaster",
-      "uvlock": true,
-      "x": 90,
-      "y": 180
-    },
-    "facing=east,is_end=true": {
-      "model": "btc:block/cracked_stone_column_pilaster",
-      "uvlock": true,
-      "x": 90,
-      "y": 270
-    },
-    "facing=south,is_end=true": {
-      "model": "btc:block/cracked_stone_column_pilaster",
-      "uvlock": true,
-      "x": 90
-    },
-    "facing=west,is_end=true": {
-      "model": "btc:block/cracked_stone_column_pilaster",
-      "uvlock": true,
-      "x": 90,
-      "y": 90
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column",
+        "y": 0,
+        "x": 270
+      },
+      "when": {
+        "axis": "z"
+      }
     },
 
 
 
-    "facing=up,is_end=false": {
-      "model": "btc:block/cracked_stone_column",
-      "y": 0,
-      "x": 0
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment_other",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "axis": "x",
+        "north": true
+      }
     },
-    "facing=down,is_end=false": {
-      "model": "btc:block/cracked_stone_column",
-      "y": 0,
-      "x": 0
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment"
+      },
+      "when": {
+        "axis": "y",
+        "north": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "y": 0,
+        "x": 270
+      },
+      "when": {
+        "axis": "z",
+        "north": true
+      }
     },
 
-    "facing=north,is_end=false": {
-      "model": "btc:block/cracked_stone_column",
-      "y": 0,
-      "x": 270
+
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "x": 270,
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "east": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "y": 90,
+        "x": 0
+      },
+      "when": {
+        "axis": "y",
+        "east": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment_other",
+        "x": 270
+      },
+      "when": {
+        "axis": "z",
+        "east": true
+      }
     },
 
-    "facing=south,is_end=false": {
-      "model": "btc:block/cracked_stone_column",
-      "y": 0,
-      "x": 270
+
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment_other",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "south": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "y": 180,
+        "x": 0
+      },
+      "when": {
+        "axis": "y",
+        "south": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "y": 0,
+        "x": 90
+      },
+      "when": {
+        "axis": "z",
+        "south": true
+      }
     },
 
-    "facing=east,is_end=false": {
-      "model": "btc:block/cracked_stone_column",
-      "x": 90,
-      "y": 270
-    },
 
-    "facing=west,is_end=false": {
-      "model": "btc:block/cracked_stone_column",
-      "x": 90,
-      "y": 270
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "west": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment",
+        "y": 270,
+        "x": 0
+      },
+      "when": {
+        "axis": "y",
+        "west": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/cracked_stone_column_attachment_other",
+        "x": 270,
+        "y": 180
+      },
+      "when": {
+        "axis": "z",
+        "west": true
+      }
     }
-  }
+  ]
 }

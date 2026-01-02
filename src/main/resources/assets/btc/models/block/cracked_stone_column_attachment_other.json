@@ -1,0 +1,8 @@
+{
+	"parent": "btc:block/column_attachment_other",
+	"textures": {
+		"bottom": "minecraft:block/chiseled_stone_bricks",
+		"side": "btc:block/cracked_stone_column",
+		"top": "minecraft:block/chiseled_stone_bricks"
+	}
+}

@@ -28,12 +28,12 @@ public class ModBlocks {
     }
 
     public static final ColumnBlock STONE_COLUMN = (ColumnBlock) register(
-            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS), Blocks.STONE_BRICKS),
+            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
             "stone_column",
             true
     );
     public static final ColumnBlock CRACKED_STONE_COLUMN = (ColumnBlock) register(
-            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS), Blocks.STONE_BRICKS),
+            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
             "cracked_stone_column",
             true
     );

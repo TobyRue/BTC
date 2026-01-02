@@ -19,7 +19,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster",
         "uvlock": true,
-        "x": 90
+        "x": 90,
+        "y": 180
       },
       "when": {"facing": "north"}
     },
@@ -28,7 +29,7 @@
         "model": "btc:block/tuff_bricks_pilaster",
         "uvlock": true,
         "x": 90,
-        "y": 90
+        "y": 270
       },
       "when": {"facing": "east"}
     },
@@ -36,7 +37,7 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster",
         "uvlock": true,
-        "x": 270
+        "x": 90
       },
       "when": {"facing": "south"}
     },
@@ -45,7 +46,7 @@
         "model": "btc:block/tuff_bricks_pilaster",
         "uvlock": true,
         "x": 90,
-        "y": 270
+        "y": 90
       },
       "when": {"facing": "west"}
     },
@@ -124,7 +125,7 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "y": 270
+        "y": 90
       },
       "when": {"facing": "north", "north": "true"}
     },
@@ -132,8 +133,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 270,
-        "y": 270
+        "x": 90,
+        "y": 90
       },
       "when": {"facing": "north", "east": "true"}
     },
@@ -142,7 +143,7 @@
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
         "x": 180,
-        "y": 270
+        "y": 90
       },
       "when": {"facing": "north", "south": "true"}
     },
@@ -150,8 +151,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 90,
-        "y": 270
+        "x": 270,
+        "y": 90
       },
       "when": {"facing": "north", "west": "true"}
     },
@@ -159,7 +160,8 @@
     {
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
-        "uvlock": true
+        "uvlock": true,
+        "y": 180
       },
       "when": {"facing": "east", "north": "true"}
     },
@@ -167,7 +169,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 270
+        "x": 90,
+        "y": 180
       },
       "when": {"facing": "east", "east": "true"}
     },
@@ -175,7 +178,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 180
+        "x": 180,
+        "y": 180
       },
       "when": {"facing": "east", "south": "true"}
     },
@@ -183,7 +187,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 90
+        "x": 270,
+        "y": 180
       },
       "when": {"facing": "east", "west": "true"}
     },
@@ -192,7 +197,7 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "y": 90
+        "y": 270
       },
       "when": {"facing": "south", "north": "true"}
     },
@@ -200,8 +205,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 270,
-        "y": 90
+        "x": 90,
+        "y": 270
       },
       "when": {"facing": "south", "east": "true"}
     },
@@ -210,7 +215,7 @@
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
         "x": 180,
-        "y": 90
+        "y": 270
       },
       "when": {"facing": "south", "south": "true"}
     },
@@ -218,8 +223,8 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 90,
-        "y": 90
+        "x": 270,
+        "y": 270
       },
       "when": {"facing": "south", "west": "true"}
     },
@@ -227,8 +232,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
-        "uvlock": true,
-        "y": 180
+        "uvlock": true
       },
       "when": {"facing": "west", "north": "true"}
     },
@@ -236,8 +240,7 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 270,
-        "y": 180
+        "x": 90
       },
       "when": {"facing": "west", "east": "true"}
     },
@@ -245,8 +248,7 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 180,
-        "y": 180
+        "x": 180
       },
       "when": {"facing": "west", "south": "true"}
     },
@@ -254,8 +256,7 @@
       "apply": {
         "model": "btc:block/tuff_bricks_pilaster_attachment_horizontal",
         "uvlock": true,
-        "x": 90,
-        "y": 180
+        "x": 270
       },
       "when": {"facing": "west", "west": "true"}
     }

@@ -46,6 +46,7 @@ public class BTC implements ModInitializer {
     public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
     public static final TagKey<Block> BUTTONS = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "copper_buttons"));
     public static final TagKey<Block> PILASTER = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pilaster"));
+    public static final TagKey<Block> COLUMN = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "column"));
 
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
@@ -196,14 +197,9 @@ public class BTC implements ModInitializer {
 
                 if ((stack.getItem() instanceof BlockItem && !b) || ((b && player.isSneaking()) && stack.getItem() instanceof BlockItem) || stack.getItem() instanceof BoneMealItem || stack.getItem() instanceof BucketItem || stack.getItem() instanceof PowderSnowBucketItem || stack.getItem() instanceof EndCrystalItem) {
                     return ActionResult.FAIL;
-                } else if (stack.getItem() instanceof BlockItem && (b && !player.isSneaking())) {
+                } else if (stack.getItem() instanceof BlockItem && !player.isSneaking()) {
                     return ActionResult.PASS;
                 }
-            } else if (block instanceof ColumnBlock columnBlock && stack.getItem() == columnBlock.getBaseBlock().asItem() && !state.get(ColumnBlock.IS_END) && !world.isClient) {
-                System.out.println("Returning fail");
-                world.setBlockState(blockPos, state.with(ColumnBlock.IS_END, true));
-                stack.decrementUnlessCreative(1, player);
-                return ActionResult.FAIL;
             }
             return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
         });
