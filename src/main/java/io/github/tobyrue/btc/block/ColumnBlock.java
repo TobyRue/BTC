@@ -260,6 +260,8 @@ public class ColumnBlock extends HorizontalConnectingBlock {
                     neighborState.isIn(BTC.PILASTER) ||
                     neighborState.isIn(BlockTags.FENCES) ||
                     neighborState.isIn(BlockTags.WALLS) ||
+                    neighborState.isIn(BTC.PANE) ||
+                    neighborState.getBlock() instanceof PaneBlock ||
                     (state.get(OTHER_BLOCKS) && (neighborState.isSideSolidFullSquare(world, neighborPos, dir.getOpposite())));
         }
         return false;

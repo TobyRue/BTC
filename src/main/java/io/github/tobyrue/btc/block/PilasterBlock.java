@@ -224,10 +224,15 @@ public class PilasterBlock extends HorizontalConnectingBlock {
                             neighborState.isIn(BTC.COLUMN) ||
                             neighborState.isIn(BlockTags.FENCES) ||
                             neighborState.isIn(BlockTags.WALLS) ||
+                            neighborState.isIn(BTC.PANE) ||
+                            neighborState.getBlock() instanceof PaneBlock ||
                             (state.get(OTHER_BLOCKS) && (neighborState.isSideSolidFullSquare(world, neighborPos, dir.getOpposite())));
                 }
             } else {
-                return neighborState.isIn(BTC.PILASTER) || (state.get(OTHER_BLOCKS) && neighborState.isSideSolidFullSquare(world, neighborPos, dir.getOpposite()));
+                return neighborState.isIn(BTC.PILASTER) ||
+                        neighborState.isIn(BTC.PANE) ||
+                        neighborState.getBlock() instanceof PaneBlock ||
+                        (state.get(OTHER_BLOCKS) && neighborState.isSideSolidFullSquare(world, neighborPos, dir.getOpposite()));
             }
         }
         return false;
