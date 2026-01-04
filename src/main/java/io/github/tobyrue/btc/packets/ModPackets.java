@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.entities.MobDetectorBlockEntity;
 import io.github.tobyrue.btc.client.screen.RadialMenuWithPrefixNoHover;
 import io.github.tobyrue.btc.client.screen.RadialValues;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
@@ -35,6 +36,7 @@ public class ModPackets {
     public static final Identifier ADVANCEMENT_SPELL = BTC.identifierOf("advancement");
     public static final Identifier ADVANCEMENT_RESPONSE_SPELL = BTC.identifierOf("advancement_response");
     public static final Identifier OPEN_FAV = BTC.identifierOf("open_favorite");
+    public static final Identifier MOB_DETECTOR_SYNC_ID = BTC.identifierOf("mob_detector_sync");
 
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
@@ -42,7 +44,7 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
-
+        PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(
                 SetElementPayload.ID,
@@ -185,5 +187,21 @@ public class ModPackets {
                         ));
                     }
                 });
+        ClientPlayNetworking.registerGlobalReceiver(
+                MobDetectorSyncPayload.ID,
+                (payload, context) -> {
+                    context.client().execute(() -> {
+                        var world = context.client().world;
+                        if (world == null) return;
+
+                        var be = world.getBlockEntity(payload.pos());
+                        if (be instanceof MobDetectorBlockEntity detector) {
+                            detector.getTrackedEntityIds().clear();
+                            detector.getTrackedEntityIds().addAll(payload.entityIds());
+                        }
+                    });
+                }
+        );
+
     }
 }
