@@ -26,7 +26,11 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
-
+    public static final ColumnBlock TUFF_COLUMN = (ColumnBlock) register(
+            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            "tuff_column",
+            true
+    );
     public static final ColumnBlock STONE_COLUMN = (ColumnBlock) register(
             new ColumnBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
             "stone_column",

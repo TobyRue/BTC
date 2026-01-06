@@ -89,6 +89,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.POLISHED_TUFF_STAIRS, ModBlocks.POLISHED_TUFF_PILASTER);
             content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_COLUMN);
             content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_COLUMN);
+            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_COLUMN);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
             content.addAfter(Items.DEBUG_STICK, ModItems.CREATIVE_WRENCH);

@@ -5,14 +5,15 @@ import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -97,8 +98,8 @@ public class SelectorItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        var stack = user.getStackInHand(hand);
         if (hand == Hand.OFF_HAND) {
-            var stack = user.getStackInHand(hand);
             stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
             stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
             return TypedActionResult.success(user.getStackInHand(hand), true);
