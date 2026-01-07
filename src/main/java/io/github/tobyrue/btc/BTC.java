@@ -175,7 +175,6 @@ public class BTC implements ModInitializer {
             BlockPos blockPos = hitResult.getBlockPos();
             BlockState state = world.getBlockState(blockPos);
             Block block = state.getBlock();
-            System.out.println("Block: " + block + " Item: " + stack.getItem());
             if (player.hasStatusEffect(ModStatusEffects.BUILDER_BLUNDER) && !player.isCreative()) {
                 boolean b = (block instanceof ChestBlock) || (block instanceof CraftingTableBlock) ||
                         (block instanceof CrafterBlock) || (block instanceof AnvilBlock) || (block instanceof DispenserBlock) ||
@@ -196,7 +195,7 @@ public class BTC implements ModInitializer {
                         (block instanceof HopperBlock) || (block instanceof TrapdoorBlock) || (block instanceof DoorBlock) ||
                         (block instanceof FenceGateBlock) || (block instanceof CakeBlock) || (block instanceof FarmlandBlock);
 
-                if ((stack.getItem() instanceof BlockItem && !b) || ((b && player.isSneaking()) && stack.getItem() instanceof BlockItem) || stack.getItem() instanceof BoneMealItem || stack.getItem() instanceof BucketItem || stack.getItem() instanceof PowderSnowBucketItem || stack.getItem() instanceof EndCrystalItem) {
+                if ((stack.getItem() instanceof BlockItem && !b) || ((b && player.isSneaking()) && stack.getItem() instanceof BlockItem) || stack.getItem() instanceof BoneMealItem || stack.getItem() instanceof BucketItem || stack.getItem() instanceof PowderSnowBucketItem || stack.getItem() instanceof EndCrystalItem || stack.getItem() instanceof BoatItem || stack.getItem() instanceof MinecartItem) {
                     return ActionResult.FAIL;
                 } else if (stack.getItem() instanceof BlockItem && !player.isSneaking()) {
                     return ActionResult.PASS;
