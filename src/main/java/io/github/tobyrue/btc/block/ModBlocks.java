@@ -99,6 +99,11 @@ public class ModBlocks {
             "dungeon_pressure_plate",
             true
     );
+    public static final PressurePlateBlock POLISHED_TUFF_PRESSURE_PLATE = (PressurePlateBlock) register(
+            new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
+            "polished_tuff_pressure_plate",
+            true
+    );
     public static final CopperButtonBlock UNOXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
             new CopperButtonBlock(BlockSetType.STONE, 10, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
             "copper_button_unoxidized",
