@@ -39,9 +39,10 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModBlocks.ANTIER, ModBlocks.DUNGEON_DOOR);
             content.addAfter(ModBlocks.DUNGEON_DOOR, ModBlocks.FIRE_DISPENSER);
             content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_FIRE);
-            content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_WIRE_LEGACY);
-            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
-            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModItems.IRON_WRENCH);
+            content.addAfter(ModBlocks.DUNGEON_FIRE, ModBlocks.DUNGEON_WIRE);
+//            content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_WIRE_LEGACY);
+//            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
+//            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModItems.IRON_WRENCH);
             content.addAfter(ModItems.IRON_WRENCH, ModItems.GOLD_WRENCH);
             content.addAfter(Blocks.VAULT, ModBlocks.MELTING_ICE);
 
@@ -58,13 +59,13 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.CROSSBOW, ModItems.SCOPED_CROSSBOW);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
-            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE_LEGACY);
-            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
-            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModBlocks.KEY_DISPENSER_BLOCK);
+            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE);
+//            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
+//            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModBlocks.KEY_DISPENSER_BLOCK);
             content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.DUNGEON_DOOR);
             content.addAfter(ModBlocks.DUNGEON_DOOR, ModBlocks.FIRE_DISPENSER);
             content.addAfter(Blocks.STONE_PRESSURE_PLATE, ModBlocks.DUNGEON_PRESSURE_PLATE);
-            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE_LEGACY);
+//            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE_LEGACY);
             content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON);
             content.addAfter(ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON);
             content.addAfter(ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON);

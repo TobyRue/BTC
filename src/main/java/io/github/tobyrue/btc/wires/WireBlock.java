@@ -55,7 +55,8 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         NOR("nor", 0x3333D7 /* Blue */,args -> !OR.apply(args)),
         NAND("nand", 0x33BED7 /* Cyan */,args ->  !AND.apply(args)),
         XOR("xor", 0xCC9528 /* Orange */,args -> Arrays.stream(args).filter(b -> b).toList().size() == 1), // 1 and only 1
-        XNOR("xnor", 0x8A28CC /* Purple */,args -> !XOR.apply(args));
+        XNOR("xnor", 0x8A28CC /* Purple */,args -> !XOR.apply(args)),
+        REDSTONE("redstone", 0xFF745B /* Coral */,args -> false);
 
         private final String name;
         private final ApplyOperator operator;
@@ -312,6 +313,10 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         return rotatedState;
     }
     protected boolean hasPower(BlockState state, World world, BlockPos pos) {
+        // REDSTONE is special cased since it depends on world not exactly inputs.
+        if (state.get(OPERATOR) == Operator.REDSTONE && world.isReceivingRedstonePower(pos)) {
+            return true;
+        }
         return state.get(OPERATOR).apply(
                 CONNECTION_TO_DIRECTION.get().entrySet().stream()
                         .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)

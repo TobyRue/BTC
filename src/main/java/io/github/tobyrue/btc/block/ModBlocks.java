@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block;
 
+import com.mojang.datafixers.DataFixer;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
@@ -7,6 +8,7 @@ import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
@@ -15,7 +17,7 @@ import net.minecraft.util.Identifier;
 public class ModBlocks {
     public static Block register(Block block, String name, boolean shouldRegisterItem) {
         // Register the block and its item.
-            Identifier id = Identifier.of(BTC.MOD_ID, name);
+        Identifier id = Identifier.of(BTC.MOD_ID, name);
 
         // Sometimes, you may not want to register an item for the block.
         // Eg: if it's a technical block like `minecraft:air` or `minecraft:end_gateway`
@@ -67,7 +69,7 @@ public class ModBlocks {
             "chiseled_copper_bricks",
             true
     );
-    public static final Block DUNGEON_WIRE_V2 = register(
+    public static final Block DUNGEON_WIRE = register(
             new WireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
             "dungeon_wire_v2",
             true
@@ -175,21 +177,21 @@ public class ModBlocks {
             "key_acceptor",
             true
     );
-    public static final DungeonWireBlock DUNGEON_WIRE_LEGACY = (DungeonWireBlock) register(
-            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
-                    DungeonWireBlock::getLuminance)
-            ),
-
-            "dungeon_wire",
-            true
-    );
-    public static final CopperWireBlock COPPER_WIRE_LEGACY = (CopperWireBlock) register(
-            new CopperWireBlock(AbstractBlock.Settings.create().requiresTool().strength(8F, 3600000.0F).luminance(
-                    CopperWireBlock::getLuminance)
-            ),
-            "copper_wire",
-            true
-    );
+//    public static final DungeonWireBlock DUNGEON_WIRE_LEGACY = (DungeonWireBlock) register(
+//            new DungeonWireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).luminance(
+//                    DungeonWireBlock::getLuminance)
+//            ),
+//
+//            "dungeon_wire",
+//            true
+//    );
+//    public static final CopperWireBlock COPPER_WIRE_LEGACY = (CopperWireBlock) register(
+//            new CopperWireBlock(AbstractBlock.Settings.create().requiresTool().strength(8F, 3600000.0F).luminance(
+//                    CopperWireBlock::getLuminance)
+//            ),
+//            "copper_wire",
+//            true
+//    );
     public static final FireDispenserBlock FIRE_DISPENSER = (FireDispenserBlock) register(
             new FireDispenserBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
                     FireDispenserBlock::getLuminance)

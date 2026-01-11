@@ -247,6 +247,7 @@
   "block.btc.wire.operator.nand": "NAND",
   "block.btc.wire.operator.xor": "XOR",
   "block.btc.wire.operator.xnor": "XNOR",
+  "block.btc.wire.operator.redstone": "REDSTONE",
   "block.btc.wire.change_connection": "Set %s connection to %s",
   "block.btc.wire.connection.none": "NONE",
   "block.btc.wire.connection.input": "INPUT",
