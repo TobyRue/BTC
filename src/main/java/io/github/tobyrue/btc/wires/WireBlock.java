@@ -9,10 +9,7 @@ import io.github.tobyrue.btc.block.MobDetectorBlock;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.WrenchItem;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FrostedIceBlock;
-import net.minecraft.block.TrialSpawnerBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.spawner.TrialSpawnerLogic;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -103,6 +100,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
 
     public static final EnumProperty<Operator> OPERATOR = EnumProperty.of("operator", Operator.class);
     public static final BooleanProperty LATCHED = BooleanProperty.of("latched");
+    public static final BooleanProperty WITH_REDTONE = BooleanProperty.of("with_redstone");
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final IntProperty DELAY = IntProperty.of("delay", 0 ,7);
 
@@ -112,7 +110,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         super(settings);
         IMMUTABLE = immutable;
         this.setDefaultState(CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(POWERED, false).with(DELAY, 0),
+                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(WITH_REDTONE, false).with(POWERED, false).with(DELAY, 0),
                 (acc, con) -> acc.with(con, ConnectionType.INPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
@@ -314,17 +312,17 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         return rotatedState;
     }
     protected boolean hasPower(BlockState state, World world, BlockPos pos) {
-           return state.get(OPERATOR).apply(
-            CONNECTION_TO_DIRECTION.get().entrySet().stream()
-                .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)
-                .map(entry -> {
-                    var offsetState = world.getBlockState(pos.offset(entry.getValue()));
-                    var oppositeConnection = CONNECTION_TO_DIRECTION.get().inverse().get(entry.getValue().getOpposite());
-                    return (offsetState.contains(WireBlock.POWERED)
-                        && offsetState.contains(oppositeConnection)
-                        && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
-                        && offsetState.get(POWERED));
-                }).toArray(Boolean[]::new)
+        return state.get(OPERATOR).apply(
+                CONNECTION_TO_DIRECTION.get().entrySet().stream()
+                        .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)
+                        .map(entry -> {
+                            var offsetState = world.getBlockState(pos.offset(entry.getValue()));
+                            var oppositeConnection = CONNECTION_TO_DIRECTION.get().inverse().get(entry.getValue().getOpposite());
+                            return (offsetState.contains(WireBlock.POWERED)
+                                    && offsetState.contains(oppositeConnection)
+                                    && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
+                                    && offsetState.get(POWERED));
+                        }).toArray(Boolean[]::new)
         );
     }
 
@@ -357,6 +355,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         for (var conn : CONNECTION_TO_DIRECTION.get().keySet())
             builder.add(conn);
         builder.add(LATCHED);
+        builder.add(WITH_REDTONE);
         builder.add(POWERED);
         builder.add(DELAY);
     }
