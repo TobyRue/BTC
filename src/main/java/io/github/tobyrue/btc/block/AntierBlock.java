@@ -105,7 +105,7 @@ public class AntierBlock extends Block implements ModBlockEntityProvider<AntierB
         }
 
         BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof MobDetectorBlockEntity detector) {
+        if (be instanceof AntierBlockEntity detector) {
             var b1 = new BlockPos(corner1.x(), corner1.y(), corner1.z());
             var b2 = new BlockPos(corner2.x(), corner2.y(), corner2.z());
             detector.setDetectionBox(b1, b2);
