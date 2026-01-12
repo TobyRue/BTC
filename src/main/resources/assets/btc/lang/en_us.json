@@ -237,7 +237,6 @@
   "enchantment.btc.precision": "Precision",
   "enchantment.btc.velocity": "Velocity",
 
-  "block.btc.dungeon_wire_v2": "Dungeon Wire v2",
   "block.btc.wire.change_operator": "Set operator to %s",
   "block.btc.wire.operator.true": "TRUE",
   "block.btc.wire.operator.false": "FALSE",

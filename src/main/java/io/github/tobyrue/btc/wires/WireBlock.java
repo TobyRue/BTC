@@ -6,11 +6,13 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.DungeonDoorBlock;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.block.MobDetectorBlock;
+import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.WrenchItem;
 import net.minecraft.block.*;
 import net.minecraft.block.spawner.TrialSpawnerLogic;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -24,7 +26,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.apache.http.impl.conn.Wire;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -192,7 +196,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
             }
         }
     }
-
 
     @Override
     public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {

@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.block;
 
-import com.mojang.datafixers.DataFixer;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
@@ -15,6 +14,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
+
     public static Block register(Block block, String name, boolean shouldRegisterItem) {
         // Register the block and its item.
         Identifier id = Identifier.of(BTC.MOD_ID, name);
@@ -71,10 +71,9 @@ public class ModBlocks {
     );
     public static final Block DUNGEON_WIRE = register(
             new WireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
-            "dungeon_wire_v2",
+            "dungeon_wire",
             true
     );
-
     public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
             new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
                 return 15;
@@ -207,7 +206,20 @@ public class ModBlocks {
     );
 
 
+
     public static void initialize() {
+        Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
+        Registries.ITEM.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
+
+
+//        Schema schema57 = DataFixerBuilder..addSchema(1484, EMPTY_IDENTIFIER_NORMALIZE);
+//        builder.addFixer(ItemNameFix.create(schema57, "Rename seagrass items", replacing(ImmutableMap.of("minecraft:sea_grass", "minecraft:seagrass", "minecraft:tall_sea_grass", "minecraft:tall_seagrass"))));
+//        builder.addFixer(BlockNameFix.create(schema57, "Rename seagrass blocks", replacing(ImmutableMap.of("minecraft:sea_grass", "minecraft:seagrass", "minecraft:tall_sea_grass", "minecraft:tall_seagrass"))));
     }
 
+//    private static UnaryOperator<String> replacing(Map<String, String> replacements) {
+//        return (string) -> {
+//            return (String)replacements.getOrDefault(IdentifierNormalizingSchema.normalize(string), string);
+//        };
+//    }
 }

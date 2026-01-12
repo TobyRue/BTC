@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BTCModelLoadingPlugin implements ModelLoadingPlugin {
-    public static final Identifier DUNGEON_WIRE_V2 = BTC.identifierOf("dungeon_wire_v2");
+    public static final Identifier DUNGEON_WIRE = BTC.identifierOf("dungeon_wire");
     public static final Identifier SPELL_SCROLL = BTC.identifierOf("spell_scroll");
 
 
@@ -20,7 +20,7 @@ public class BTCModelLoadingPlugin implements ModelLoadingPlugin {
         pluginContext.modifyModelOnLoad().register((original, context) -> {
             // This is called for every model that is loaded, so make sure we only target ours
             final Identifier id = context.topLevelId().id();
-            if (id != null && id.equals(DUNGEON_WIRE_V2)) {
+            if (id != null && id.equals(DUNGEON_WIRE)) {
                 return new WireModel();
             } else {
                 // If we don't modify the model we just return the original as-is
