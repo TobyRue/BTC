@@ -16,14 +16,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class PedestalBlock extends Block implements BlockEntityProvider{
-    private static final VoxelShape BOTTOM_SHAPE1;
-    private static final VoxelShape BOTTOM_SHAPE2;
-    private static final VoxelShape BOTTOM_SHAPE3;
-    private static final VoxelShape MIDDLE_SHAPE;
-    private static final VoxelShape TOP_SHAPE1;
-    private static final VoxelShape TOP_SHAPE2;
-    private static final VoxelShape TOP_SHAPE3;
-    private static final VoxelShape TOP_SHAPE4;
 
     private static final VoxelShape SHAPE;
 
@@ -31,15 +23,18 @@ public class PedestalBlock extends Block implements BlockEntityProvider{
         super(settings);
     }
     static {
-        BOTTOM_SHAPE1 = Block.createCuboidShape(1, 0.0, 1.0, 15.0, 1.0, 15.0);
-        BOTTOM_SHAPE2 = Block.createCuboidShape(2.0, 1.0, 2.0, 14.0, 2.0, 14.0);
-        BOTTOM_SHAPE3 = Block.createCuboidShape(3.0, 2.0, 3.0, 13.0, 3.0, 13.0);
-        MIDDLE_SHAPE = Block.createCuboidShape(4.0, 3.0, 4.0, 12.0, 12.0, 12.0);
-        TOP_SHAPE1 = Block.createCuboidShape(3.0, 12.0, 3.0, 13.0, 13.0, 13.0);
-        TOP_SHAPE2 = Block.createCuboidShape(2.0, 13.0, 2.0, 14.0, 14.0, 14.0);
-        TOP_SHAPE3 = Block.createCuboidShape(1, 14.0, 1.0, 15.0, 15.0, 15.0);
-        TOP_SHAPE4 = Block.createCuboidShape(2.0, 15.0, 2.0, 14.0, 16.0, 14.0);
-        SHAPE = VoxelShapes.union(BOTTOM_SHAPE1, BOTTOM_SHAPE2, BOTTOM_SHAPE3, MIDDLE_SHAPE, MIDDLE_SHAPE, TOP_SHAPE1, TOP_SHAPE2, TOP_SHAPE3, TOP_SHAPE4);
+        SHAPE = VoxelShapes.union(
+                VoxelShapes.cuboid(0.0625, 0, 0.0625, 0.9375, 0.0625, 0.9375),
+                VoxelShapes.cuboid(0.125, 0.0625, 0.125, 0.875, 0.1875, 0.875),
+                VoxelShapes.cuboid(0.1875, 0.1875, 0.1875, 0.8125, 0.375, 0.8125),
+                VoxelShapes.cuboid(0.1875, 0.75, 0.1875, 0.8125, 0.8125, 0.8125),
+                VoxelShapes.cuboid(0.125, 0.8125, 0.125, 0.875, 1, 0.875),
+                VoxelShapes.cuboid(0.4375, 0.5, 0.1875, 0.5625, 0.625, 0.25),
+                VoxelShapes.cuboid(0.4375, 0.5, 0.75, 0.5625, 0.625, 0.8125),
+                VoxelShapes.cuboid(0.75, 0.5, 0.4375, 0.8125, 0.625, 0.5625),
+                VoxelShapes.cuboid(0.1875, 0.5, 0.4375, 0.25, 0.625, 0.5625),
+                VoxelShapes.cuboid(0.25, 0.375, 0.25, 0.75, 0.75, 0.75)
+        );
     }
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {

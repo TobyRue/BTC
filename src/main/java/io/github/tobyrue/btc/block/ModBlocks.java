@@ -210,16 +210,5 @@ public class ModBlocks {
     public static void initialize() {
         Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
         Registries.ITEM.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
-
-
-//        Schema schema57 = DataFixerBuilder..addSchema(1484, EMPTY_IDENTIFIER_NORMALIZE);
-//        builder.addFixer(ItemNameFix.create(schema57, "Rename seagrass items", replacing(ImmutableMap.of("minecraft:sea_grass", "minecraft:seagrass", "minecraft:tall_sea_grass", "minecraft:tall_seagrass"))));
-//        builder.addFixer(BlockNameFix.create(schema57, "Rename seagrass blocks", replacing(ImmutableMap.of("minecraft:sea_grass", "minecraft:seagrass", "minecraft:tall_sea_grass", "minecraft:tall_seagrass"))));
     }
-
-//    private static UnaryOperator<String> replacing(Map<String, String> replacements) {
-//        return (string) -> {
-//            return (String)replacements.getOrDefault(IdentifierNormalizingSchema.normalize(string), string);
-//        };
-//    }
 }
