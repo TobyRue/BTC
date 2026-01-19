@@ -3,7 +3,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"2": "minecraft:block/polished_deepslate",
-		"3": "btc:block/infernal_magma",
+		"3": "minecraft:block/crying_obsidian",
 		"particle": "minecraft:block/polished_deepslate"
 	},
 	"elements": [

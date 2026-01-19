@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import net.minecraft.block.*;
+import net.minecraft.client.render.entity.DragonFireballEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.HighEnergyPelletEntity;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
@@ -24,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 
@@ -78,13 +80,24 @@ public class ScreenTestItem extends PredefinedSpellsItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         final var stack = player.getStackInHand(hand);
 
-        if (!player.isSneaking()) {
-            if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
-                return TypedActionResult.success(stack);
-            } else {
-                return TypedActionResult.consume(stack);
-            }
-        }//        System.out.println("Current spell: "+ getElement(player.getStackInHand(hand)) + " Client: " + world.isClient);
+        Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
+
+        world.spawnEntity(new HighEnergyPelletEntity(player.getX(), player.getY(), player.getZ(), velocity, world));
+
+//        if (!player.isSneaking()) {
+//            if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
+//                return TypedActionResult.success(stack);
+//            } else {
+//                return TypedActionResult.consume(stack);
+//            }
+//        }
+
+
+
+
+
+//
+//        System.out.println("Current spell: "+ getElement(player.getStackInHand(hand)) + " Client: " + world.isClient);
 //        try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
 //            player.sendMessage(Codex.Text.parse(reader));
 //            SpellScreenTest.string = this.string;
