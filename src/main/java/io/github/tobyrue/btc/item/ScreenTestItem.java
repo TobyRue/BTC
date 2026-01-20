@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.regestries.ModSpells;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellItem;
+import io.github.tobyrue.btc.util.AABB;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.component.DataComponentTypes;

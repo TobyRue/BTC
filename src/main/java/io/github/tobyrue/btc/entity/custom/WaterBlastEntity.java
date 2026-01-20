@@ -88,6 +88,10 @@ public class WaterBlastEntity extends ProjectileEntity {
             this.discard();
         }
 
+        if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getBottomY() - 30) {
+            this.discard();
+        }
+
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 
         if (hitResult.getType() != HitResult.Type.MISS) {
