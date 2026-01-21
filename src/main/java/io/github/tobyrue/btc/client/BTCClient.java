@@ -3,7 +3,7 @@ package io.github.tobyrue.btc.client;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.client.screen.HighEnergyPelletEntityRenderer;
+import io.github.tobyrue.btc.client.screen.SuperHappyKillBallEntityRenderer;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
@@ -374,7 +374,7 @@ public class BTCClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.EARTH_SPIKE, EarthSpikeRenderer::new);
         EntityRendererRegistry.register(ModEntities.CREEPER_PILLAR, CreeperPillarRenderer::new);
         EntityRendererRegistry.register(ModEntities.WIND_TORNADO, WindTornadoEntityRenderer::new);
-        EntityRendererRegistry.register(ModEntities.HIGH_ENERGY_PELLET, HighEnergyPelletEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.SUPER_HAPPY_KILL_BALL, SuperHappyKillBallEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARY, EldritchLuminaryModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.WATER_BURST, WaterBlastEntityModel::getTexturedModelData);

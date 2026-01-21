@@ -1,53 +1,41 @@
 package io.github.tobyrue.btc.entity.custom;
 
-import com.google.common.collect.ImmutableList;
 import io.github.tobyrue.btc.entity.ModEntities;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
-import it.unimi.dsi.fastutil.floats.FloatArraySet;
-import it.unimi.dsi.fastutil.floats.FloatArrays;
-import it.unimi.dsi.fastutil.floats.FloatSet;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class HighEnergyPelletEntity extends ProjectileEntity {
+public class SuperHappyKillBallEntity extends ProjectileEntity {
     public double accelerationPower;
 
-    public HighEnergyPelletEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
+    public SuperHappyKillBallEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
         this.accelerationPower = 0.1;
         this.noClip = false;
     }
 
-    protected HighEnergyPelletEntity(double x, double y, double z, World world) {
-        this(ModEntities.HIGH_ENERGY_PELLET, world);
+    protected SuperHappyKillBallEntity(double x, double y, double z, World world) {
+        this(ModEntities.SUPER_HAPPY_KILL_BALL, world);
         this.setPosition(x, y, z);
         this.noClip = false;
     }
 
-    public HighEnergyPelletEntity(double x, double y, double z, Vec3d velocity, World world) {
-        this(ModEntities.HIGH_ENERGY_PELLET, world);
+    public SuperHappyKillBallEntity(double x, double y, double z, Vec3d velocity, World world) {
+        this(ModEntities.SUPER_HAPPY_KILL_BALL, world);
         this.setPosition(x, y, z);
         this.setVelocity(velocity);
         this.noClip = false;

@@ -1,17 +1,14 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.entity.custom.HighEnergyPelletEntity;
+import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.ModSpells;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
-import io.github.tobyrue.btc.spell.SpellItem;
-import io.github.tobyrue.btc.util.AABB;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
@@ -83,7 +80,7 @@ public class ScreenTestItem extends PredefinedSpellsItem {
 
         Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
 
-        world.spawnEntity(new HighEnergyPelletEntity(player.getX(), player.getY(), player.getZ(), velocity, world));
+        world.spawnEntity(new SuperHappyKillBallEntity(player.getX(), player.getY(), player.getZ(), velocity, world));
 
 //        if (!player.isSneaking()) {
 //            if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
