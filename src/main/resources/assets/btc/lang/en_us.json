@@ -26,7 +26,7 @@
   "block.btc.tuff_column": "Tuff Column",
   "block.btc.stone_column": "Stone Column",
   "block.btc.cracked_stone_column": "Cracked Stone Column",
-  "block.btc.presence_node": "Presence Node",
+  "block.btc.mob_detector": "Mob Detector",
   "block.btc.polished_tuff_pressure_plate": "Polished Tuff Pressure Plate",
 
   "item.btc.copper_wrench": "Copper Wrench",
@@ -47,7 +47,7 @@
   "item.btc.crystal_forest_music_disc": "Crystal Forest Music Disc",
   "item.btc.crystal_forest_music_disc.desc": "SianaBeeblebrox - Crystal Forest",
   "item.btc.scoped_crossbow": "Scoped Crossbow",
-  "item.btc.selector": "Selector",
+  "item.btc.selector": "Area Selector",
 
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",

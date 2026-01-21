@@ -91,7 +91,7 @@ public class ModBlocks {
     );
     public static final MobDetectorBlock MOB_DETECTOR = (MobDetectorBlock) register(
             new MobDetectorBlock(AbstractBlock.Settings.create().nonOpaque()),
-            "presence_node",
+            "mob_detector",
             true
 
     );
@@ -210,5 +210,7 @@ public class ModBlocks {
     public static void initialize() {
         Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
         Registries.ITEM.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
+        Registries.ITEM.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
     }
 }
