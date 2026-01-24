@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ModEntities;
+import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -21,6 +22,7 @@ import java.util.function.Predicate;
 
 public class SuperHappyKillBallEntity extends ProjectileEntity {
     public double accelerationPower;
+    public final AnimationState state = new AnimationState();
 
     public SuperHappyKillBallEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -87,6 +89,8 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
     @Override
     public void tick() {
+        this.state.startIfNotRunning(this.age);
+
         // 1. Basic Setup
 
         // 2. MOVE FIRST (Using your custom move method)

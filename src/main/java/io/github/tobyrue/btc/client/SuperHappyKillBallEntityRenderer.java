@@ -1,7 +1,8 @@
-package io.github.tobyrue.btc.client.screen;
+package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
+import io.github.tobyrue.btc.regestries.ModModelLayers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
@@ -10,6 +11,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -17,10 +19,11 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class SuperHappyKillBallEntityRenderer extends EntityRenderer<SuperHappyKillBallEntity>{
     private static final Identifier TEXTURE = BTC.identifierOf("textures/entity/high_energy_pellet.png");
-    private static final RenderLayer LAYER;
+    protected SuperHappyKillBallEntityModel model;
 
     public SuperHappyKillBallEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
+        this.model = new SuperHappyKillBallEntityModel(ctx.getPart(ModModelLayers.SHKB));
     }
 
     protected int getBlockLight(SuperHappyKillBallEntity entity, BlockPos blockPos) {
@@ -28,28 +31,18 @@ public class SuperHappyKillBallEntityRenderer extends EntityRenderer<SuperHappyK
     }
 
     public void render(SuperHappyKillBallEntity entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        matrixStack.push();
-        matrixStack.scale(2.0F, 2.0F, 2.0F);
-        matrixStack.multiply(this.dispatcher.getRotation());
-        MatrixStack.Entry entry = matrixStack.peek();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
-        produceVertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
-        produceVertex(vertexConsumer, entry, i, 1.0F, 0, 1, 1);
-        produceVertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
-        produceVertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
-        matrixStack.pop();
         super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
+        matrixStack.push();
+        float h = (float)entity.age + g;
+        VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider,
+                this.model.getLayer(getTexture(entity)), false, false);
+        this.model.render(matrixStack, vertexconsumer, i, OverlayTexture.DEFAULT_UV);
+        this.model.setAngles(entity, 0.0f, 0.0f, h, 0.0f, 0.0f);
+        matrixStack.pop();
     }
 
-    private static void produceVertex(VertexConsumer vertexConsumer, MatrixStack.Entry matrix, int light, float x, int z, int textureU, int textureV) {
-        vertexConsumer.vertex(matrix, x - 0.5F, (float)z - 0.25F, 0.0F).color(-1).texture((float)textureU, (float)textureV).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix, 0.0F, 1.0F, 0.0F);
-    }
 
     public Identifier getTexture(SuperHappyKillBallEntity entity) {
         return TEXTURE;
-    }
-
-    static {
-        LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
     }
 }

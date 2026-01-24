@@ -3,7 +3,6 @@ package io.github.tobyrue.btc.client;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.client.screen.SuperHappyKillBallEntityRenderer;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
@@ -383,5 +382,7 @@ public class BTCClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.EARTH_SPIKE, EarthSpikeModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.CREEPER_PILLAR, CreeperPillarModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.WIND_TORNADO, WindTornadoEntityModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SHKB, SuperHappyKillBallEntityModel::getTexturedModelData);
+
     }
 }

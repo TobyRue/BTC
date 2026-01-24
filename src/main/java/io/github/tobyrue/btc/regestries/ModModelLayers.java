@@ -19,4 +19,6 @@ public class ModModelLayers {
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "creeper_pillar"), "main");
     public static final EntityModelLayer WIND_TORNADO =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "wind_tornado"), "main");
+    public static final EntityModelLayer SHKB =
+            new EntityModelLayer(Identifier.of(BTC.MOD_ID, "super_happy_kill_ball"), "main");
 }
