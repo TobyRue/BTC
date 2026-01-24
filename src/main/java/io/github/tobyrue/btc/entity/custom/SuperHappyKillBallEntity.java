@@ -1,13 +1,14 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
-import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MovementType;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
+import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -128,6 +129,7 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
             this.discard();
         }
     }
+
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
