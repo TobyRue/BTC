@@ -27,7 +27,7 @@ public class SuperHappyKillBallEntityModel<T extends SuperHappyKillBallEntity> e
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData SHKB = modelPartData.addChild("SHKB", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 16.0F, 0.0F));
+		ModelPartData SHKB = modelPartData.addChild("SHKB", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 8.0F, 0.0F));
 
 		ModelPartData Core = SHKB.addChild("Core", ModelPartBuilder.create().uv(48, 32).cuboid(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
@@ -36,11 +36,10 @@ public class SuperHappyKillBallEntityModel<T extends SuperHappyKillBallEntity> e
 		ModelPartData Layer2 = SHKB.addChild("Layer2", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 		return TexturedModelData.of(modelData, 64, 64);
 	}
-
 	@Override
 	public void setAngles(SuperHappyKillBallEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.updateAnimation(entity.state, SuperHappyKillBallAnimation.ROTATE, animationProgress, 1f);
+		this.updateAnimation(entity.state, SuperHappyKillBallAnimation.ROTATE, animationProgress, 2f);
 	}
 
 	@Override

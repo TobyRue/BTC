@@ -118,7 +118,7 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
         // 6. PARTICLES
         if (this.getWorld().isClient) {
-            this.getWorld().addParticle(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+            this.getWorld().addParticle(ParticleTypes.END_ROD, this.getX(), this.getY() + 0.5, this.getZ(), 0, 0, 0);
         }
 
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
