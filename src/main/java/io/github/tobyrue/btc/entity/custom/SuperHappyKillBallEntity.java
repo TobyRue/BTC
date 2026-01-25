@@ -1,40 +1,54 @@
 package io.github.tobyrue.btc.entity.custom;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.entity.ModEntities;
-import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public class SuperHappyKillBallEntity extends ProjectileEntity {
-    public double accelerationPower;
     public final AnimationState state = new AnimationState();
+    private static final TrackedData<Integer> BOUNCES = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Float> SIZE = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Boolean> SET = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private boolean set = false;
+
+    public float getSize() {
+        return this.dataTracker.get(SIZE);
+    }
+    public int getBounces() {
+        return this.dataTracker.get(BOUNCES);
+    }
+    public void setSize(float size) {
+        this.dataTracker.set(SIZE, size);
+    }
+    public void setBounces(int bounces) {
+        this.dataTracker.set(BOUNCES, bounces);
+    }
 
     public SuperHappyKillBallEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
-        this.accelerationPower = 0.1;
         this.noClip = false;
+        this.dataTracker.set(BOUNCES, -1);
+        this.dataTracker.set(SIZE, 1f);
     }
 
     protected SuperHappyKillBallEntity(double x, double y, double z, World world) {
         this(ModEntities.SUPER_HAPPY_KILL_BALL, world);
         this.setPosition(x, y, z);
         this.noClip = false;
+        this.dataTracker.set(BOUNCES, -1);
+        this.dataTracker.set(SIZE, 1f);
     }
 
     public SuperHappyKillBallEntity(double x, double y, double z, Vec3d velocity, World world) {
@@ -42,10 +56,27 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         this.setPosition(x, y, z);
         this.setVelocity(velocity);
         this.noClip = false;
-//        this.setVelocityWithAcceleration(velocity, 2);
+        this.dataTracker.set(BOUNCES, -1);
+        this.dataTracker.set(SIZE, 1f);
+    }
+    public SuperHappyKillBallEntity(double x, double y, double z, Vec3d velocity, World world, int bounces) {
+        this(ModEntities.SUPER_HAPPY_KILL_BALL, world);
+        this.setPosition(x, y, z);
+        this.setVelocity(velocity);
+        this.noClip = false;
+        this.dataTracker.set(BOUNCES, bounces);
+        this.dataTracker.set(SIZE, 1f);
+    }
+    public SuperHappyKillBallEntity(double x, double y, double z, Vec3d velocity, World world, int bounces, float size) {
+        this(ModEntities.SUPER_HAPPY_KILL_BALL, world);
+        this.setPosition(x, y, z);
+        this.setVelocity(velocity);
+        this.noClip = false;
+        this.dataTracker.set(BOUNCES, bounces);
+        this.dataTracker.set(SIZE, size);
     }
 
-    public final Vec3d getVelocityFromDirection(Direction direction, double speed) {
+    public static Vec3d getVelocityFromDirection(Direction direction, double speed) {
         return switch (direction) {
             case NORTH -> new Vec3d(0, 0, -speed);
             case EAST -> new Vec3d(speed, 0, 0);
@@ -56,7 +87,14 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         };
     }
 
-    public final Vec3d getVelocityFromDirection(Direction xDir, Direction yDir, Direction zDir, double speedX, double speedY, double speedZ) {
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        builder.add(BOUNCES, -1);
+        builder.add(SIZE, 1f);
+        builder.add(SET, false);
+    }
+
+    public static Vec3d getVelocityFromDirection(Direction xDir, Direction yDir, Direction zDir, double speedX, double speedY, double speedZ) {
         var xAxis = switch (xDir) {
             case NORTH -> -1;
             case EAST -> 0;
@@ -90,6 +128,15 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
     @Override
     public void tick() {
+        System.out.println("Count: " + this.dataTracker.get(BOUNCES));
+        if (getBounces() != -1 && !this.dataTracker.get(SET)) {
+            setBounces(getBounces() + 1);
+            this.dataTracker.set(SET, true);
+        }
+        if (this.dataTracker.get(SIZE) == 0) {
+            this.dataTracker.set(SIZE, 1f);
+            this.calculateDimensions();
+        }
         this.state.startIfNotRunning(this.age);
 
         // 1. Basic Setup
@@ -102,10 +149,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         // 3. APPLY ACCELERATION SECOND
         // Get the velocity again (it might have changed due to a bounce)
         Vec3d velocityAfterMove = this.getVelocity();
-//        if (velocityAfterMove.lengthSquared() > 0.0001) {
-//            // Accelerate in the direction we are NOW heading
-//            velocityAfterMove = velocityAfterMove.add(velocityAfterMove.normalize().multiply(this.accelerationPower));
-//        }
 
         // 4. APPLY DRAG
         this.setVelocity(velocityAfterMove.multiply(this.isTouchingWater() ? 0.8 : 1));
@@ -119,7 +162,7 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
         // 6. PARTICLES
         if (this.getWorld().isClient) {
-            this.getWorld().addParticle(ParticleTypes.END_ROD, this.getX(), this.getY() + 0.5, this.getZ(), 0, 0, 0);
+            this.getWorld().addParticle(ParticleTypes.END_ROD, this.getX(), this.getY() + (getHeight() / 2f), this.getZ(), 0, 0, 0);
         }
 
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
@@ -130,6 +173,11 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         }
     }
 
+    public float getRotationSpeed() {
+        final float s = 2;
+        final float k = (float) Math.E/10;
+        return (float) ((s - 1)*Math.exp(-k*(getSize() - 1)) + 1);
+    }
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
@@ -150,59 +198,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         this.setPosition(this.getPos().add(nudge));
     }
 
-    protected float getDrag() {
-        return 0.95F;
-    }
-
-    protected float getDragInWater() {
-        return 0.8F;
-    }
-
-
-    @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-
-    }
-
-    public static BlockHitResult getCollision(Entity entity, Predicate<Entity> predicate) {
-        Vec3d velocity = entity.getVelocity();
-        World world = entity.getWorld();
-        Vec3d vec3d2 = entity.getPos();
-        Vec3d vec3d = vec3d2.add(velocity);
-        BlockHitResult hitResult = world.raycast(new RaycastContext(vec3d2, vec3d, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity));
-        if (hitResult.getType() != HitResult.Type.MISS) {
-            vec3d = hitResult.getPos();
-        }
-        return hitResult;
-    }
-
-//    @Override
-//    protected void onBlockCollision(BlockState state) {
-//        System.out.println("=== onBlockCollision CALLED ===");
-//        System.out.println("Position: " + this.getPos());
-//        System.out.println("Velocity BEFORE: " + this.getVelocity());
-//
-//        BlockPos pos = this.getBlockPos();
-//        VoxelShape shape = state.getCollisionShape(this.getWorld(), pos);
-//
-//        if (shape.isEmpty()) {
-//            System.out.println("EMPTY collision shape — skipping");
-//            return;
-//        }
-//
-//        var entityBox = this.getBoundingBox();
-//        var blockBox = shape.getBoundingBox().offset(pos);
-//
-//        System.out.println("Entity BB: " + entityBox);
-//        System.out.println("Block BB: " + blockBox);
-//
-//        if (!entityBox.intersects(blockBox)) {
-//            System.out.println("NO INTERSECTION");
-//            return;
-//        }
-//
-//        System.out.println("INTERSECTION DETECTED");
-//    }
     @Override
     protected boolean canHit(Entity entity) {
         return super.canHit(entity);
@@ -211,16 +206,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
     }
-
-    protected void onDeflected(@Nullable Entity deflector, boolean fromAttack) {
-        super.onDeflected(deflector, fromAttack);
-        if (fromAttack) {
-            this.accelerationPower = 0.1;
-        } else {
-            this.accelerationPower *= 0.5;
-        }
-    }
-
 
 
 
@@ -249,6 +234,9 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         boolean hitZ = !MathHelper.approximatelyEquals(movement.z, collidedMovement.z);
 
         if (hitX || hitY || hitZ) {
+            if (this.dataTracker.get(BOUNCES) == 0) {
+                this.discard();
+            }
             Vec3d currentVel = this.getVelocity();
 
             double newX = hitX ? -currentVel.x : currentVel.x;
@@ -257,6 +245,9 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
             this.setVelocity(newX, newY, newZ);
             this.velocityDirty = true;
+            if (this.dataTracker.get(BOUNCES) > 0) {
+                this.dataTracker.set(BOUNCES, this.dataTracker.get(BOUNCES) - 1);
+            }
         }
 
 
@@ -267,15 +258,38 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         this.getWorld().getProfiler().pop();
     }
 
-    @Override
-    public float getTargetingMargin() {
-        return 0.0F;
-    }
-
     private Vec3d adjustMovementForCollisions(Vec3d movement) {
         Box box = this.getBoundingBox();
         List<VoxelShape> list = this.getWorld().getEntityCollisions(this, box.stretch(movement));
         // Just return the standard collision adjustment without the 'stepping' logic
         return movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.getWorld(), list);
+    }
+
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return super.getDimensions(pose).scaled(this.dataTracker.get(SIZE));
+    }
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (SIZE.equals(data)) {
+            System.out.println("Ran");
+            this.calculateDimensions();
+        }
+
+        super.onTrackedDataSet(data);
+    }
+
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Bounces", this.dataTracker.get(BOUNCES) + 1);
+        nbt.putFloat("Size", this.dataTracker.get(SIZE));
+        nbt.putBoolean("Set", this.dataTracker.get(SET));
+        this.calculateDimensions();
+    }
+
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.dataTracker.set(BOUNCES, nbt.getInt("Bounces") - 1);
+        this.dataTracker.set(SIZE, nbt.getFloat("Size"));
+        this.dataTracker.set(SET, nbt.getBoolean("Set"));
     }
 }

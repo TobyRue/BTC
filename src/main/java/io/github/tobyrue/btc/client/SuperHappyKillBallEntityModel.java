@@ -8,6 +8,7 @@ import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.render.entity.model.SlimeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 
 // Made with Blockbench 5.0.7
@@ -39,7 +40,7 @@ public class SuperHappyKillBallEntityModel<T extends SuperHappyKillBallEntity> e
 	@Override
 	public void setAngles(SuperHappyKillBallEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.updateAnimation(entity.state, SuperHappyKillBallAnimation.ROTATE, animationProgress, 2f);
+		this.updateAnimation(entity.state, SuperHappyKillBallAnimation.ROTATE, animationProgress, entity.getRotationSpeed());
 	}
 
 	@Override
