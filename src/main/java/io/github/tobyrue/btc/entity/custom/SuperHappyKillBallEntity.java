@@ -2,14 +2,17 @@ package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ModEntities;
 import net.minecraft.entity.*;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
@@ -21,6 +24,8 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     private static final TrackedData<Integer> BOUNCES = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> SIZE = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> SET = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> WAIT = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> DMG = DataTracker.registerData(SuperHappyKillBallEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private boolean set = false;
 
     public float getSize() {
@@ -29,13 +34,24 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     public int getBounces() {
         return this.dataTracker.get(BOUNCES);
     }
+    public int getWait() {
+        return this.dataTracker.get(WAIT);
+    }
+    public int getDamage() {
+        return this.dataTracker.get(DMG);
+    }
     public void setSize(float size) {
         this.dataTracker.set(SIZE, size);
     }
     public void setBounces(int bounces) {
         this.dataTracker.set(BOUNCES, bounces);
     }
-
+    public void setWait(int wait) {
+        this.dataTracker.set(WAIT, wait);
+    }
+    public void setDamage(int damage) {
+        this.dataTracker.set(DMG, damage);
+    }
     public SuperHappyKillBallEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
         this.noClip = false;
@@ -92,6 +108,8 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         builder.add(BOUNCES, -1);
         builder.add(SIZE, 1f);
         builder.add(SET, false);
+        builder.add(WAIT, 0);
+        builder.add(DMG, 4);
     }
 
     public static Vec3d getVelocityFromDirection(Direction xDir, Direction yDir, Direction zDir, double speedX, double speedY, double speedZ) {
@@ -128,7 +146,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
     @Override
     public void tick() {
-        System.out.println("Count: " + this.dataTracker.get(BOUNCES));
         if (getBounces() != -1 && !this.dataTracker.get(SET)) {
             setBounces(getBounces() + 1);
             this.dataTracker.set(SET, true);
@@ -138,7 +155,12 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
             this.calculateDimensions();
         }
         this.state.startIfNotRunning(this.age);
-
+        if (this.dataTracker.get(WAIT) > 0) {
+            this.dataTracker.set(WAIT, this.dataTracker.get(WAIT) - 1);
+        }
+        if (this.dataTracker.get(DMG) <= 0) {
+            this.dataTracker.set(DMG, 4);
+        }
         // 1. Basic Setup
 
         // 2. MOVE FIRST (Using your custom move method)
@@ -152,7 +174,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
         // 4. APPLY DRAG
         this.setVelocity(velocityAfterMove.multiply(this.isTouchingWater() ? 0.8 : 1));
-
         // 5. UPDATE ROTATION
         // Face the direction of current velocity
         Vec3d finalVel = this.getVelocity();
@@ -171,6 +192,8 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         if (!this.getWorld().isClient && this.getBlockY() < this.getWorld().getBottomY() - 30) {
             this.discard();
         }
+        HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
+        this.hitOrDeflect(hitResult);
     }
 
     public float getRotationSpeed() {
@@ -204,6 +227,10 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     }
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
+        if (this.dataTracker.get(WAIT) <= 0) {
+            this.dataTracker.set(WAIT, 20);
+            entityHitResult.getEntity().damage(this.getDamageSources().magic(), this.dataTracker.get(DMG));
+        }
         super.onEntityHit(entityHitResult);
     }
 
@@ -271,7 +298,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     }
     public void onTrackedDataSet(TrackedData<?> data) {
         if (SIZE.equals(data)) {
-            System.out.println("Ran");
             this.calculateDimensions();
         }
 
@@ -283,6 +309,8 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         nbt.putInt("Bounces", this.dataTracker.get(BOUNCES) + 1);
         nbt.putFloat("Size", this.dataTracker.get(SIZE));
         nbt.putBoolean("Set", this.dataTracker.get(SET));
+        nbt.putInt("WaitForNextHit", this.dataTracker.get(WAIT));
+        nbt.putInt("Damage", this.dataTracker.get(DMG));
         this.calculateDimensions();
     }
 
@@ -291,5 +319,7 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         this.dataTracker.set(BOUNCES, nbt.getInt("Bounces") - 1);
         this.dataTracker.set(SIZE, nbt.getFloat("Size"));
         this.dataTracker.set(SET, nbt.getBoolean("Set"));
+        this.dataTracker.set(WAIT, nbt.getInt("WaitForNextHit"));
+        this.dataTracker.set(DMG, nbt.getInt("Damage"));
     }
 }

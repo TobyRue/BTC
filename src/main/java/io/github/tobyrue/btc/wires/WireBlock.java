@@ -105,7 +105,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
 
     public static final EnumProperty<Operator> OPERATOR = EnumProperty.of("operator", Operator.class);
     public static final BooleanProperty LATCHED = BooleanProperty.of("latched");
-    public static final BooleanProperty WITH_REDTONE = BooleanProperty.of("with_redstone");
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final IntProperty DELAY = IntProperty.of("delay", 0 ,7);
 
@@ -115,7 +114,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         super(settings);
         IMMUTABLE = immutable;
         this.setDefaultState(CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(WITH_REDTONE, false).with(POWERED, false).with(DELAY, 0),
+                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(POWERED, false).with(DELAY, 0),
                 (acc, con) -> acc.with(con, ConnectionType.INPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
@@ -363,7 +362,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         for (var conn : CONNECTION_TO_DIRECTION.get().keySet())
             builder.add(conn);
         builder.add(LATCHED);
-        builder.add(WITH_REDTONE);
         builder.add(POWERED);
         builder.add(DELAY);
     }
