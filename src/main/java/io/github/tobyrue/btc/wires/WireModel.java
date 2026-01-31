@@ -56,6 +56,8 @@ public class WireModel implements IBlockStateBakedModel {
             .put(7, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_output")), null))
             .put(8, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_operator_overlay")), null))
             .put(9, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_none_overlay")), null))
+            .put(10, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_redstone")), null))
+            .put(11, new Pair<>(new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection_redstone")), null))
             .build()
     );
 
@@ -181,6 +183,9 @@ public class WireModel implements IBlockStateBakedModel {
                 case OUTPUT:
                     addFaceLayer(emitter, direction, getSprite(7), null, BlendMode.CUTOUT, getBakeFlags(0, true));
                     break;
+                case REDSTONE:
+                    addFaceLayer(emitter, direction, getSprite(10), null, BlendMode.CUTOUT, getBakeFlags(0, true));
+                    break;
             }
 
 
@@ -194,6 +199,8 @@ public class WireModel implements IBlockStateBakedModel {
                     addFaceLayer(emitter, direction, getSprite(4), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
                 } else if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlock.ConnectionType.OUTPUT) {
                     addFaceLayer(emitter, direction, getSprite(5), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
+                } else if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlock.ConnectionType.REDSTONE) {
+                    addFaceLayer(emitter, direction, getSprite(11), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
                 }
             }
             if (!(Direction.stream().filter(d -> state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(d)) == WireBlock.ConnectionType.INPUT).count() == 1 && state.get(WireBlock.OPERATOR) == WireBlock.Operator.OR)) {

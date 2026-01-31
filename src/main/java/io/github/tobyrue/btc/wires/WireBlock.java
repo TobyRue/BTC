@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions {
 
@@ -59,8 +60,8 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         NOR("nor", 0x3333D7 /* Blue */,args -> !OR.apply(args)),
         NAND("nand", 0x33BED7 /* Cyan */,args ->  !AND.apply(args)),
         XOR("xor", 0xCC9528 /* Orange */,args -> Arrays.stream(args).filter(b -> b).toList().size() == 1), // 1 and only 1
-        XNOR("xnor", 0x8A28CC /* Purple */,args -> !XOR.apply(args)),
-        REDSTONE("redstone", 0xFF745B /* Coral */,args -> false);
+        XNOR("xnor", 0x8A28CC /* Purple */,args -> !XOR.apply(args));
+//        REDSTONE("redstone", 0xFF745B /* Coral */,args -> false);
 
         private final String name;
         private final ApplyOperator operator;
@@ -89,7 +90,8 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
     public enum ConnectionType implements StringIdentifiable {
         NONE("none"),
         INPUT("input"),
-        OUTPUT("output");
+        OUTPUT("output"),
+        REDSTONE("redstone");
 
         private final String name;
 
@@ -104,7 +106,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
     }
 
     public static final EnumProperty<Operator> OPERATOR = EnumProperty.of("operator", Operator.class);
-    public static final BooleanProperty LATCHED = BooleanProperty.of("latched");
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final IntProperty DELAY = IntProperty.of("delay", 0 ,7);
 
@@ -114,7 +115,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         super(settings);
         IMMUTABLE = immutable;
         this.setDefaultState(CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(LATCHED, false).with(POWERED, false).with(DELAY, 0),
+                this.stateManager.getDefaultState().with(OPERATOR, Operator.OR).with(POWERED, false).with(DELAY, 0),
                 (acc, con) -> acc.with(con, ConnectionType.INPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
@@ -254,9 +255,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
                 return ActionResult.SUCCESS;
             }
         }
-        if (world.isClient) {
-            player.sendMessage(Text.literal("Has power: " + hasPower(state, world, pos)));
-        }
         return ActionResult.FAIL;
     }
 
@@ -316,20 +314,25 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
     }
     protected boolean hasPower(BlockState state, World world, BlockPos pos) {
         // REDSTONE is special cased since it depends on world not exactly inputs.
-        if (state.get(OPERATOR) == Operator.REDSTONE && world.isReceivingRedstonePower(pos)) {
-            return true;
-        }
+//        if (state.get(OPERATOR) == Operator.REDSTONE && world.isReceivingRedstonePower(pos)) {
+//            return true;
+//        }
         return state.get(OPERATOR).apply(
-                CONNECTION_TO_DIRECTION.get().entrySet().stream()
-                        .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)
-                        .map(entry -> {
-                            var offsetState = world.getBlockState(pos.offset(entry.getValue()));
-                            var oppositeConnection = CONNECTION_TO_DIRECTION.get().inverse().get(entry.getValue().getOpposite());
-                            return (offsetState.contains(WireBlock.POWERED)
-                                    && offsetState.contains(oppositeConnection)
-                                    && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
-                                    && offsetState.get(POWERED));
-                        }).toArray(Boolean[]::new)
+                Stream.concat(
+                        CONNECTION_TO_DIRECTION.get().entrySet().stream()
+                                .filter(entry -> state.get(entry.getKey()) == ConnectionType.INPUT)
+                                .map(entry -> {
+                                    var offsetState = world.getBlockState(pos.offset(entry.getValue()));
+                                    var oppositeConnection = CONNECTION_TO_DIRECTION.get().inverse().get(entry.getValue().getOpposite());
+                                    return (offsetState.contains(WireBlock.POWERED)
+                                            && offsetState.contains(oppositeConnection)
+                                            && offsetState.get(oppositeConnection) == ConnectionType.OUTPUT
+                                            && offsetState.get(POWERED));
+                                }),
+                        CONNECTION_TO_DIRECTION.get().entrySet().stream()
+                                .filter(entry -> state.get(entry.getKey()) == ConnectionType.REDSTONE)
+                                .map(entry -> world.getEmittedRedstonePower(pos.offset(entry.getValue()), entry.getValue().getOpposite()) > 0)
+                ).toArray(Boolean[]::new)
         );
     }
 
@@ -361,7 +364,6 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
         builder.add(OPERATOR);
         for (var conn : CONNECTION_TO_DIRECTION.get().keySet())
             builder.add(conn);
-        builder.add(LATCHED);
         builder.add(POWERED);
         builder.add(DELAY);
     }
