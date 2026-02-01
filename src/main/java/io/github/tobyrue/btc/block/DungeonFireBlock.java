@@ -1,14 +1,15 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.*;
-import net.minecraft.client.render.entity.DragonFireballEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.WindChargeItem;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -19,10 +20,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,16 +41,14 @@ public class DungeonFireBlock extends Block {
 
     private static final VoxelShape SHAPE;
 
-    public static final IntProperty DAMAGE = IntProperty.of("damage", 0, 31);
-    public static final BooleanProperty INFERNAL = BooleanProperty.of("infernal");
-    public static final IntProperty FIRE_TIME = IntProperty.of("fire_time", 0, 31);
+    public static final BooleanProperty OMINOUS = BooleanProperty.of("ominous");
+    public static final BooleanProperty DAMAGES = BooleanProperty.of("damages");
 
     public DungeonFireBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(INFERNAL, false)
-                .with(FIRE_TIME, 4)
-                .with(DAMAGE, 2));
+                .with(OMINOUS, false)
+                .with(DAMAGES, true));
     }
 
     static {
@@ -62,208 +63,31 @@ public class DungeonFireBlock extends Block {
         SHAPE = VoxelShapes.union(BOTTOM_SHAPE, MIDDLE_SHAPE, MIDDLE_SHAPE2, TOP_SHAPE, COAL_SHAPE1, COAL_SHAPE2, COAL_SHAPE3, COAL_SHAPE4);
     }
 
-    public void incrementDamage(World world, BlockPos pos, BlockState state, int incrementD) {
-        // Check if the block has the FIRE_TIME property
-        if (state.contains(DungeonFireBlock.DAMAGE)) {
-            // Get the current fire time value
-            int currentDamage = state.get(DungeonFireBlock.DAMAGE);
 
-            // Increment the fire time value by 1, ensuring it does not exceed the maximum allowed value
-            int newDamage = Math.min(31, currentDamage + incrementD); // Ensure fire time does not exceed 31
-
-            // Create a new BlockState with the updated FIRE_TIME value
-            BlockState newState = state.with(DungeonFireBlock.DAMAGE, newDamage);
-
-            // Update the block state in the world
-            world.setBlockState(pos, newState);
-        }
-    }
-
-    public void decrementDamage(World world, BlockPos pos, BlockState state, int decrementD) {
-        // Check if the block has the FIRE_TIME property
-        if (state.contains(DungeonFireBlock.DAMAGE)) {
-            // Get the current fire time value
-            int currentDamage = state.get(DungeonFireBlock.DAMAGE);
-
-            // Decrease the fire time value by 1, ensuring it does not go below 0
-            int newDamage = Math.max(0, currentDamage - decrementD); // Ensure fire time does not go below 0
-            // Create a new BlockState with the updated FIRE_TIME value
-            BlockState newState = state.with(DungeonFireBlock.DAMAGE, newDamage);
-
-            // Update the block state in the world
-            world.setBlockState(pos, newState);
-        }
-    }
-
-    public void incrementFireTime(World world, BlockPos pos, BlockState state) {
-        // Check if the block has the FIRE_TIME property
-        if (state.contains(DungeonFireBlock.FIRE_TIME)) {
-            // Get the current fire time value
-            int currentFireTime = state.get(DungeonFireBlock.FIRE_TIME);
-
-            // Increment the fire time value by 1, ensuring it does not exceed the maximum allowed value
-            int newFireTime = Math.min(31, currentFireTime + 1); // Ensure fire time does not exceed 31
-
-            // Create a new BlockState with the updated FIRE_TIME value
-            BlockState newState = state.with(DungeonFireBlock.FIRE_TIME, newFireTime);
-
-            // Update the block state in the world
-            world.setBlockState(pos, newState);
-        }
-    }
-
-    public void decrementFireTime(World world, BlockPos pos, BlockState state, int decrementF) {
-        // Check if the block has the FIRE_TIME property
-        if (state.contains(DungeonFireBlock.FIRE_TIME)) {
-            // Get the current fire time value
-            int currentFireTime = state.get(DungeonFireBlock.FIRE_TIME);
-
-            // Decrease the fire time value by 1, ensuring it does not go below 0
-            int newFireTime = Math.max(0, currentFireTime - decrementF); // Ensure fire time does not go below 0
-            // Create a new BlockState with the updated FIRE_TIME value
-            BlockState newState = state.with(DungeonFireBlock.FIRE_TIME, newFireTime);
-
-            // Update the block state in the world
-            world.setBlockState(pos, newState);
-        }
-    }
 
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (stack.getItem() == Items.OMINOUS_BOTTLE && !state.get(INFERNAL)) {
-            BlockState newState1 = state.with(DungeonFireBlock.INFERNAL, true);
-            player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-            world.setBlockState(pos, newState1);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-            }
+        if (!state.get(OMINOUS) && stack.isOf(Items.OMINOUS_BOTTLE)) {
+            world.setBlockState(pos, state.with(OMINOUS, true));
+            stack.decrementUnlessCreative(1, player);
             return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == Items.BLUE_ICE && state.get(INFERNAL)) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            BlockState newState2 = state.with(DungeonFireBlock.INFERNAL, false).with(DungeonFireBlock.FIRE_TIME, 4).with(DungeonFireBlock.DAMAGE, 2);
-            world.setBlockState(pos, newState2);
+        }
+        if (state.get(OMINOUS) && stack.isOf(Items.GLASS_BOTTLE)) {
+            world.setBlockState(pos, state.with(OMINOUS, false));
+            stack.decrementUnlessCreative(1, player);
             if (!player.isCreative()) {
-                stack.decrement(1);
+                ItemStack dropStack = new ItemStack(Items.OMINOUS_BOTTLE);
+                player.getInventory().offerOrDrop(dropStack);
             }
             return ItemActionResult.SUCCESS;
         }
-        if (state.get(INFERNAL)) {
-            if (stack.getItem() == Items.STICK && state.get(FIRE_TIME) <= 5) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementFireTime(world, pos, state);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                return ItemActionResult.SUCCESS;
-            } else if (stack.getItem() == Items.COAL && state.get(FIRE_TIME) <= 10 && state.get(FIRE_TIME) > 5) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementFireTime(world, pos, state);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                return ItemActionResult.SUCCESS;
-            } else if (stack.getItem() == Items.BLAZE_POWDER && state.get(FIRE_TIME) > 10 && state.get(FIRE_TIME) <= 20) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementFireTime(world, pos, state);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                return ItemActionResult.SUCCESS;
-            } else if (stack.getItem() == Items.LAVA_BUCKET && state.get(FIRE_TIME) > 20 && state.get(FIRE_TIME) < 31) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementFireTime(world, pos, state);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                ItemStack emptyBucket1 = new ItemStack(Items.BUCKET);
-                if (!world.isClient) {
-                    player.getInventory().offerOrDrop(emptyBucket1);
-                }
-                return ItemActionResult.SUCCESS;
-            }
-        }
-        if (stack.getItem() == Items.POTION) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementFireTime(world, pos, state, 1);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-                ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
-                if (!world.isClient) {
-                    player.getInventory().offerOrDrop(emptyBottle);
-                }
-            }
-            // Remove one water bottle from the player's inventory
-
-            return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == Items.WATER_BUCKET) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementFireTime(world, pos, state, 2);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-                ItemStack emptyBucket = new ItemStack(Items.BUCKET);
-                if (!world.isClient) {
-                    player.getInventory().offerOrDrop(emptyBucket);
-                }
-            }
-            return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == Items.ICE && state.get(FIRE_TIME) >= 2) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementFireTime(world, pos, state, 4);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-            }
-            return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == Items.PACKED_ICE && state.get(FIRE_TIME) >= 4) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementFireTime(world, pos, state, 8);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-            }
+        if (!state.get(DAMAGES) && stack.isOf(Items.BLAZE_POWDER)) {
+            world.setBlockState(pos, state.with(DAMAGES, true));
+            stack.decrementUnlessCreative(1, player);
             return ItemActionResult.SUCCESS;
         }
-        if (state.get(INFERNAL)) {
-            if (stack.getItem() == Items.BLAZE_ROD && state.get(DAMAGE) < 10) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementDamage(world, pos, state, 1);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                return ItemActionResult.SUCCESS;
-            } else if (stack.getItem() == Items.END_CRYSTAL && state.get(DAMAGE) >= 8 && state.get(DAMAGE) < 17) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementDamage(world, pos, state, 3);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                return ItemActionResult.SUCCESS;
-            } else if (stack.getItem() == Items.NETHER_STAR && state.get(DAMAGE) >= 12 && state.get(DAMAGE) < 31) {
-                player.playSound(SoundEvents.ITEM_FIRECHARGE_USE);
-                incrementDamage(world, pos, state, 8);
-                if (!player.isCreative()) {
-                    stack.decrement(1);
-                }
-                return ItemActionResult.SUCCESS;
-            }
-        }
-        if (stack.getItem() == Items.GLOW_LICHEN) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementDamage(world, pos, state, 1);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-            }
-            return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == Items.PRISMARINE_SHARD || stack.getItem() == Items.PRISMARINE_CRYSTALS) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementDamage(world, pos, state, 2);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-            }
-            return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == Items.NAUTILUS_SHELL) {
-            player.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH);
-            decrementDamage(world, pos, state, 4);
-            if (!player.isCreative()) {
-                stack.decrement(1);
-            }
+        if (state.get(DAMAGES) && stack.isOf(Items.SNOWBALL)) {
+            world.setBlockState(pos, state.with(DAMAGES, false));
+            stack.decrementUnlessCreative(1, player);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.FAIL;
@@ -273,16 +97,13 @@ public class DungeonFireBlock extends Block {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
-                .with(INFERNAL, false)
-                .with(FIRE_TIME, 4)
-                .with(DAMAGE, 2);
+                .with(OMINOUS, false)
+                .with(DAMAGES, true);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(INFERNAL);
-        builder.add(FIRE_TIME);
-        builder.add(DAMAGE);
+        builder.add(OMINOUS, DAMAGES);
     }
 
     @Override
@@ -301,23 +122,33 @@ public class DungeonFireBlock extends Block {
     }
 
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!entity.bypassesSteppingEffects() && entity instanceof LivingEntity) {
-            int fireTimeValue = state.get(FIRE_TIME);
-            int damageValue = state.get(DAMAGE);
-            // Convert the damage value to float
-            float fireTimeFloat = (float) fireTimeValue;
-            float damageFloat = (float) damageValue;
-            entity.damage(world.getDamageSources().hotFloor(), damageFloat);
-            entity.setOnFireFor(fireTimeFloat);
+        if (state.get(DAMAGES)) {
+            if (!state.get(OMINOUS)) {
+                if (entity instanceof LivingEntity) {
+                    entity.damage(world.getDamageSources().hotFloor(), 2);
+                    if (!entity.isFireImmune()) {
+                        entity.setFireTicks(entity.getFireTicks() + 1);
+                        if (entity.getFireTicks() == 0) {
+                            entity.setOnFireFor(8.0F);
+                        }
+                    }
+                }
+            } else {
+                if (entity instanceof LivingEntity livingEntity) {
+                    if (!livingEntity.isInvulnerableTo(world.getDamageSources().wither())) {
+                        livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 120));
+                    }
+                }
+            }
         }
         super.onSteppedOn(world, pos, state, entity);
     }
+
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (random.nextInt(8) == 0) {
             world.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 2.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.3F, false);
         }
-
         int i;
         double d2;
         double e2;
@@ -327,9 +158,9 @@ public class DungeonFireBlock extends Block {
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
             world.addParticle(ParticleTypes.SMOKE, d2, e2, f2, 0.0, 0.0, 0.0);
-            if(state.get(INFERNAL)) {
+            if(state.get(OMINOUS)) {
                 world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
-            } else if(!state.get(INFERNAL)) {
+            } else if(!state.get(OMINOUS)) {
                 world.addParticle(ParticleTypes.FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
             }
         }

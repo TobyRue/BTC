@@ -1,6 +1,6 @@
 {
   "variants": {
-    "infernal=false": { "model": "btc:block/dungeon_fire" },
-    "infernal=true": { "model": "btc:block/dungeon_fire_infernal" }
+    "ominous=false": { "model": "btc:block/dungeon_fire" },
+    "ominous=true": { "model": "btc:block/dungeon_fire_ominous" }
   }
 }

@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.Monster;
@@ -39,24 +40,36 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
     public static final EnumProperty<DetectorType> TYPE = EnumProperty.of("detector_type", DetectorType.class);
 
     public enum DetectorType implements StringIdentifiable {
-        HOSTILE("hostile", HostileEntity.class),
-        PASSIVE("passive", PassiveEntity.class),
-        PLAYER("player", PlayerEntity.class);
+        HOSTILE("hostile") {
+            @Override
+            public boolean canSee(Entity entity) {
+                return entity instanceof Monster;
+            }
+        },
+        PASSIVE("passive") {
+            @Override
+            public boolean canSee(Entity entity) {
+                return entity instanceof PassiveEntity;
+            }
+        },
+        PLAYER("player") {
+            @Override
+            public boolean canSee(Entity entity) {
+                return entity instanceof PlayerEntity;
+            }
+        };
         private final String name;
-        private final Class<? extends LivingEntity> entity;
 
-        DetectorType(String name, Class<? extends LivingEntity> entity) {
+        DetectorType(String name) {
             this.name = name;
-            this.entity = entity;
         }
 
         @Override
         public String asString() {
             return name;
         }
-        public Class<? extends LivingEntity> getEntity() {
-            return entity;
-        }
+
+        public abstract boolean canSee(final Entity entity);
     }
 
     public MobDetectorBlock(Settings settings) {
