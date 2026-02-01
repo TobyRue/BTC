@@ -1,0 +1,17 @@
+{
+  "values": [
+    "minecraft:chest",
+    "minecraft:trapped_chest",
+    "minecraft:barrel",
+    "minecraft:furnace",
+    "minecraft:smoker",
+    "minecraft:blast_furnace",
+    "minecraft:dropper",
+    "minecraft:dispenser",
+    "minecraft:crafter",
+    "minecraft:lectern",
+    "minecraft:chiseled_bookshelf",
+    "#minecraft:signs",
+    "btc:dungeon_wire"
+  ]
+}

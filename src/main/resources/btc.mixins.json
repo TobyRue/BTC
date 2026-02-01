@@ -11,9 +11,12 @@
     "CrossbowMixin",
     "DispenserBlockEntityMixin",
     "EnchantmentScreenHandlerMixin",
+    "FireballEntityAccessor",
     "LivingEntityMixin",
     "NaturalRegenerationMixin",
     "PaperMixin",
+    "PistonBlockEntityMixin",
+    "PistonBlockMixin",
     "PlayerSpyglassMixin",
     "RangedWeaponMixin",
     "TuffGolemSpawnMixin"

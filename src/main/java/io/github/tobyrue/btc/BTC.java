@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.component.ComponentType;
@@ -34,6 +35,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
 
 import java.util.Arrays;
@@ -240,5 +242,22 @@ public class BTC implements ModInitializer {
     }
     public static Identifier identifierOf(String id) {
         return Identifier.of(BTC.MOD_ID, id);
+    }
+
+
+
+    public static final TagKey<Block> PISTONS_CAN_MOVE_BLOCK_ENTITY;
+
+
+    public static void HandleBlockEntityShenanigans(BlockEntity input, BlockEntity output, World world) {
+        if (input != null && output != null && world != null) {
+            output.readComponentlessNbt(input.createComponentlessNbt(world.getRegistryManager()), world.getRegistryManager());
+            output.setComponents(input.getComponents());
+            output.markDirty();
+        }
+    }
+
+    static {
+        PISTONS_CAN_MOVE_BLOCK_ENTITY = TagKey.of(RegistryKeys.BLOCK, identifierOf("pistons_can_move_block_entity"));
     }
 }

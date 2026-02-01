@@ -150,7 +150,7 @@ public class BTCClient implements ClientModInitializer {
                                         Text.translatable("radial.btc.spell.select_spell"),
                                         spellValues,
                                         radialMenuKeyBinding,
-                                        new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_gold.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_gold_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f)
+                                        new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_gold.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_gold_sector_"), 150f, 60, 30, 40, 6, true, false, 582, 603, 0.3f)
                                 ));
                             }
                         } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {

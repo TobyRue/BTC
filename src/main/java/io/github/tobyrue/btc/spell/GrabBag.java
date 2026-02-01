@@ -68,8 +68,6 @@ public interface GrabBag {
     }
 
     default boolean equalsOther(@Nullable final Object o) {
-
-
         if (this == o) {
             return true;
         }
