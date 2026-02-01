@@ -162,6 +162,7 @@ public class ModBlocks {
             "pedestal",
             true
     );
+
     public static final KeyDispenserBlock KEY_DISPENSER_BLOCK = (KeyDispenserBlock) register(
             new KeyDispenserBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
@@ -199,7 +200,7 @@ public class ModBlocks {
             true
     );
     public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
-            new DungeonDoorBlock(AbstractBlock.Settings.create().requiresTool().strength(6.5F, 3600000.0F)),
+            new DungeonDoorBlock(AbstractBlock.Settings.create().requiresTool().strength(6.5F, .0F)),
 
             "dungeon_door",
             true

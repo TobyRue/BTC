@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "btc:block/dungeon_door"
+    "all": "btc:block/dungeon_door_locked"
   }
 }

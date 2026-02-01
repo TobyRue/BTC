@@ -15,7 +15,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
@@ -171,8 +177,12 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
 
         Box box = getBox(pos);
 
-        List<HostileEntity> entities =
-                world.getEntitiesByClass(HostileEntity.class, box, e -> true);
+        List<LivingEntity> entities =
+                world.getEntitiesByClass(LivingEntity.class, box, e -> switch ((state.get(MobDetectorBlock.TYPE))) {
+                    case HOSTILE -> e instanceof HostileEntity || e instanceof Angerable;
+                    case PLAYER -> e instanceof PlayerEntity;
+                    case PASSIVE -> e instanceof PassiveEntity;
+                });
 
         List<Integer> newIds = entities.stream()
                 .map(Entity::getId)

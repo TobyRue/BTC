@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.ICopperWireConnect;
+import io.github.tobyrue.btc.enums.Connection;
 import io.github.tobyrue.btc.wires.IDungeonWireConstantAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.item.ModItems;
@@ -10,15 +11,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.Pair;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,9 +35,27 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class DungeonDoorBlock extends Block implements IDungeonWireConstantAction, IDungeonWireConnect, ICopperWireConnect {
-    public static final BooleanProperty WIRED = BooleanProperty.of("wired");
+    public static final EnumProperty<DoorType> TYPE = EnumProperty.of("door_type", DoorType.class);
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
     public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");
+
+    public enum DoorType implements StringIdentifiable {
+        NORMAL("normal"),
+        WIRED("wired"),
+        LOCKED("locked"),
+        KEYHOLE("keyhole");
+
+        private final String name;
+
+        DoorType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String asString() {
+            return name;
+        }
+    }
 
     // Define the 4x4x4 cube shape.
     private static final VoxelShape CUBE_SHAPE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
@@ -48,12 +66,13 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+
     public DungeonDoorBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OPEN, false)
                 .with(SURVIVAL, true)
-                .with(WIRED, false));
+                .with(TYPE, DoorType.NORMAL));
     }
 
     @Nullable
@@ -62,14 +81,14 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
         return this.getDefaultState()
                 .with(OPEN, false)
                 .with(SURVIVAL, true)
-                .with(WIRED, false);
+                .with(TYPE, DoorType.NORMAL);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
         builder.add(SURVIVAL);
-        builder.add(WIRED);
+        builder.add(TYPE);
     }
 //    @Override
 //    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
@@ -116,28 +135,45 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
 //    }
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!state.get(OPEN) && stack.getItem() == ModItems.IRON_WRENCH && state.get(SURVIVAL)) {
-            boolean currentState = state.get(WIRED);
-            BlockState newState = state.with(WIRED, !state.get(WIRED));
-            String message = "Wires Powering Doors has been: " + (!currentState ? "enabled" : "disabled");
-            player.sendMessage(Text.literal(message), true);
-            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+        if (stack.isOf(Items.TRIAL_KEY) && state.get(TYPE) == DoorType.KEYHOLE && !state.get(OPEN)) {
+            stack.decrementUnlessCreative(1, player);
+            for (BlockPos offsetPos : findDoors(world, pos)) {
+                setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+            }
             return ItemActionResult.SUCCESS;
-        } else if (stack.getItem() == ModItems.CREATIVE_WRENCH && player.isCreative()) {
-            boolean currentState = state.get(SURVIVAL);
-            BlockState newState = state.with(SURVIVAL, !state.get(SURVIVAL));
-            String message = "Survival Friendly has been: " + (!currentState ? "enabled" : "disabled");
-            player.sendMessage(Text.literal(message), true);
-            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
-            return ItemActionResult.SUCCESS;
-        } else if(!state.get(WIRED) && !state.get(OPEN) && stack.getItem() != ModItems.GOLD_WRENCH && stack.getItem() != ModItems.IRON_WRENCH && stack.getItem() != ModItems.CREATIVE_WRENCH) {
-            world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
+        } else if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
             }
             return ItemActionResult.SUCCESS;
         }
+//        if (!state.get(OPEN) && stack.getItem() == ModItems.IRON_WRENCH && state.get(SURVIVAL)) {
+//            var currentState = state.get(TYPE);
+//            BlockState newState = state.with(TYPE, TYPE.);
+//            String message = "Wires Powering Doors has been: " + (!currentState ? "enabled" : "disabled");
+//            player.sendMessage(Text.literal(message), true);
+//            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+//            return ItemActionResult.SUCCESS;
+//        }
+//            else if(!state.get(WIRED) && !state.get(OPEN) && stack.getItem() != ModItems.GOLD_WRENCH && stack.getItem() != ModItems.IRON_WRENCH && stack.getItem() != ModItems.CREATIVE_WRENCH) {
+//            world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
+//            for (BlockPos offsetPos : findDoors(world, pos)) {
+//                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
+//            }
+//            return ItemActionResult.SUCCESS;
+//        }
         return ItemActionResult.FAIL;
+    }
+
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
+            for (BlockPos offsetPos : findDoors(world, pos)) {
+                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
+            }
+            return ActionResult.SUCCESS;
+        }
+        return super.onUse(state, world, pos, player, hit);
     }
 
     private Set<BlockPos> findDoors(World world, BlockPos originPos) {
@@ -158,7 +194,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
                     var neighborPos = pos.offset(direction);
                     var neighborState = world.getBlockState(neighborPos);
 
-                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock && neighborState.get(WIRED) == originState.get(WIRED)) {
+                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock && ((neighborState.get(TYPE) == originState.get(TYPE)) || ((neighborState.get(TYPE) == DoorType.KEYHOLE) && (originState.get(TYPE) == DoorType.LOCKED)) || ((originState.get(TYPE) == DoorType.KEYHOLE) && (neighborState.get(TYPE) == DoorType.LOCKED)))) {
                         queue.add(new Pair<>(neighborPos, distance + 1));
                         found.add(neighborPos);
                     }
@@ -211,7 +247,15 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
         }
         return ActionResult.PASS;
     }
-    
+
+    private ActionResult setOpenNoClose(BlockState state, World world, BlockPos pos) {
+        if(!state.get(OPEN)) {
+            world.setBlockState(pos, state.with(OPEN, true));
+            world.playSound(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f, true);
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
+    }
 
 
     @Override
@@ -283,7 +327,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireConstantActio
 
     @Override
     public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
-        if(state.get(WIRED)) {
+        if(state.get(TYPE) == DoorType.WIRED) {
 //            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);

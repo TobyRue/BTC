@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 
@@ -27,8 +28,10 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.LIGHT, ModItems.TEST);
             content.addAfter(ModItems.TEST, ModItems.SPELLSTONE);
         });
+
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH);
+            content.addAfter(ModItems.COPPER_WRENCH, ModItems.SELECTOR);
             content.addAfter(Items.MUSIC_DISC_PIGSTEP, ModItems.CRYSTAL_FOREST_MUSIC_DISC);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
@@ -43,8 +46,9 @@ public class ModInventoryItemRegistry {
 //            content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_WIRE_LEGACY);
 //            content.addAfter(ModBlocks.DUNGEON_WIRE_LEGACY, ModBlocks.COPPER_WIRE_LEGACY);
 //            content.addAfter(ModBlocks.COPPER_WIRE_LEGACY, ModItems.IRON_WRENCH);
-            content.addAfter(ModItems.IRON_WRENCH, ModItems.GOLD_WRENCH);
-            content.addAfter(Blocks.VAULT, ModBlocks.MELTING_ICE);
+//            content.addAfter(ModItems.IRON_WRENCH, ModItems.GOLD_WRENCH);
+            content.addAfter(Blocks.VAULT, ModBlocks.MOB_DETECTOR);
+            content.addAfter(ModBlocks.MOB_DETECTOR, ModBlocks.MELTING_ICE);
 
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {

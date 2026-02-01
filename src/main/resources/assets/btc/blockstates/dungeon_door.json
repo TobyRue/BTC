@@ -1,8 +1,9 @@
 {
   "variants": {
-      "open=true,wired=true": { "model": "btc:block/dungeon_door_open"},
-      "open=true,wired=false": { "model": "btc:block/dungeon_door_open" },
-      "open=false,wired=true": { "model": "btc:block/dungeon_door" },
-      "open=false,wired=false": { "model": "btc:block/dungeon_door" }
+      "open=true": { "model": "btc:block/dungeon_door_open"},
+      "open=false,door_type=normal": { "model": "btc:block/dungeon_door_normal" },
+      "open=false,door_type=wired": { "model": "btc:block/dungeon_door_wired" },
+      "open=false,door_type=locked": { "model": "btc:block/dungeon_door_locked" },
+      "open=false,door_type=keyhole": { "model": "btc:block/dungeon_door_keyhole" }
   }
 }

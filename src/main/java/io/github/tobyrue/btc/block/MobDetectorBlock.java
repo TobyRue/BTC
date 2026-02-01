@@ -9,10 +9,13 @@ import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
@@ -23,6 +26,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.Optional;
+
 public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect, CornerStorage {
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -31,11 +36,33 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
     * This is used to detect if the BlockBox needs to be mirrored, this is done by returning a new distance array with the opposite axis it was mirrored on with the same numbers but negative.
      */
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
+    public static final EnumProperty<DetectorType> TYPE = EnumProperty.of("detector_type", DetectorType.class);
+
+    public enum DetectorType implements StringIdentifiable {
+        HOSTILE("hostile", HostileEntity.class),
+        PASSIVE("passive", PassiveEntity.class),
+        PLAYER("player", PlayerEntity.class);
+        private final String name;
+        private final Class<? extends LivingEntity> entity;
+
+        DetectorType(String name, Class<? extends LivingEntity> entity) {
+            this.name = name;
+            this.entity = entity;
+        }
+
+        @Override
+        public String asString() {
+            return name;
+        }
+        public Class<? extends LivingEntity> getEntity() {
+            return entity;
+        }
+    }
 
     public MobDetectorBlock(Settings settings) {
         super(settings);
         this.setDefaultState(WireBlock.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(WireBlock.POWERED, false).with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE),
+                this.stateManager.getDefaultState().with(WireBlock.POWERED, false).with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE).with(TYPE, DetectorType.HOSTILE),
                 (acc, con) -> acc.with(con, WireBlock.ConnectionType.OUTPUT),
                 (lhs, rhs) -> {
                     throw new RuntimeException("Don't fold in parallel");
@@ -52,6 +79,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
         builder.add(WireBlock.POWERED);
         builder.add(FACING);
         builder.add(MIRRORED);
+        builder.add(TYPE);
     }
 
     @Override
