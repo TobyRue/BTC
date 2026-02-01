@@ -11,6 +11,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.command.GameModeCommand;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -69,6 +71,10 @@ public class DungeonFireBlock extends Block {
         if (!state.get(OMINOUS) && stack.isOf(Items.OMINOUS_BOTTLE)) {
             world.setBlockState(pos, state.with(OMINOUS, true));
             stack.decrementUnlessCreative(1, player);
+            if (!player.isCreative()) {
+                ItemStack dropStack = new ItemStack(Items.GLASS_BOTTLE);
+                player.getInventory().offerOrDrop(dropStack);
+            }
             return ItemActionResult.SUCCESS;
         }
         if (state.get(OMINOUS) && stack.isOf(Items.GLASS_BOTTLE)) {
