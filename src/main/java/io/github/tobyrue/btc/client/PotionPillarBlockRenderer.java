@@ -63,8 +63,8 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         int index = Math.floorMod((int)t, TEXT.length());
         int alpha = getAlpha(t);
 
-        Text glyph = Text.literal(String.valueOf(TEXT.charAt(index)));
-//                .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
+        Text glyph = Text.literal(String.valueOf(TEXT.charAt(index)))
+                .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
 
         for (int i = 0; i < 4; i++) {
             matrices.push();
@@ -106,7 +106,7 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
     }
 
     private static int getAlpha(float t) {
-        float progress = t % 1.0f;
+        float progress = (float) Math.min(0.99, Math.max(0.1, t % 1.0f));
         System.out.println(progress);
         if (progress < 0) progress += 1.0f;
 
