@@ -107,7 +107,6 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
 
     private static int getAlpha(float t) {
         float progress = (float) Math.min(0.99, Math.max(0.1, t % 1.0f));
-        System.out.println(progress);
         if (progress < 0) progress += 1.0f;
 
         float fadeInEnd = 0.25f;
