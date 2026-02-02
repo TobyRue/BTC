@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "btc:block/potion_pillar",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "btc:block/potion_pillar"
+    },
+    "axis=z": {
+      "model": "btc:block/potion_pillar",
+      "x": 90
+    }
+  }
+}

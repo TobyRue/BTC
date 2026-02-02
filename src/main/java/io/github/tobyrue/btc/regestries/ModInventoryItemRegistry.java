@@ -4,7 +4,6 @@ import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 
@@ -38,8 +37,8 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);
             content.addAfter(Blocks.ENCHANTING_TABLE, ModBlocks.PEDESTAL);
             content.addAfter(ModBlocks.PEDESTAL, ModBlocks.KEY_DISPENSER_BLOCK);
-            content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.ANTIER);
-            content.addAfter(ModBlocks.ANTIER, ModBlocks.DUNGEON_DOOR);
+            content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.POTION_PILLAR);
+            content.addAfter(ModBlocks.POTION_PILLAR, ModBlocks.DUNGEON_DOOR);
             content.addAfter(ModBlocks.DUNGEON_DOOR, ModBlocks.FIRE_DISPENSER);
             content.addAfter(ModBlocks.FIRE_DISPENSER, ModBlocks.DUNGEON_FIRE);
             content.addAfter(ModBlocks.DUNGEON_FIRE, ModBlocks.DUNGEON_WIRE);

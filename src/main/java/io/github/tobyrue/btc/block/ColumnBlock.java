@@ -11,6 +11,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -348,4 +349,21 @@ public class ColumnBlock extends HorizontalConnectingBlock {
             }
         }
     }
+    @Override
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(AXIS, switch (state.get(AXIS)) {
+            case X -> switch (rotation) {
+                case NONE, CLOCKWISE_180 -> state.get(AXIS);
+                case CLOCKWISE_90, COUNTERCLOCKWISE_90 -> Direction.Axis.Z;
+            };
+            case Y -> switch (rotation) {
+                case NONE, CLOCKWISE_180, CLOCKWISE_90, COUNTERCLOCKWISE_90 -> state.get(AXIS);
+            };
+            case Z -> switch (rotation) {
+                case NONE, CLOCKWISE_180 -> state.get(AXIS);
+                case CLOCKWISE_90, COUNTERCLOCKWISE_90 -> Direction.Axis.X;
+            };
+        });
+    }
+
 }

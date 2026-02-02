@@ -1,10 +1,8 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.DungeonWireBlock;
-import io.github.tobyrue.btc.block.AntierBlock;
+import io.github.tobyrue.btc.block.PotionPillar;
 import io.github.tobyrue.btc.enums.AntierType;
-import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.AntierBlock;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import io.github.tobyrue.btc.wires.WireBlock;
@@ -13,12 +11,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -32,116 +27,116 @@ import java.util.List;
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 
-public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<AntierBlockEntity>, CornerStorage {
+public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityTicker<PotionPillarBlockEntity>, CornerStorage {
     private BlockBox customBox;
     private int[] distanceArray;
     private Direction lastDirection = Direction.NORTH;
     
-    public AntierBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ANTIER_BLOCK_ENTITY, pos, state);
+    public PotionPillarBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, pos, state);
     }
     private int tickCounter = 0; // Counter to track ticks
 
-    public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
-        List<ServerPlayerEntity> players = world.getPlayers();
-
-        for (ServerPlayerEntity player : players) {
-            Vec3d playerPos = player.getPos();
-            double distance = playerPos.squaredDistanceTo(Vec3d.ofCenter(blockPos));
-            if (distance <= range * range) {
-                if (!state.get(AntierBlock.DISABLE)) {
-                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
-                    }
-                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
-                    }
-                } else {
-                    for(Direction direction : Direction.values()) {
-                        BlockPos neighborPos = blockPos.offset(direction);
-                        BlockState neighborState = world.getBlockState(neighborPos);
-
-                        if (neighborState.getBlock() instanceof WireBlock) {
-                            var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
-                            if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
-                                if (!neighborState.get(WireBlock.POWERED)) {
-                                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
-                                    }
-                                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
-                                    }
-                                }
-                            }
-                        }
-
-                        if (neighborState.getBlock() instanceof DungeonWireBlock) {
-                            if (!neighborState.get(POWERED)) {
-                                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
-                                }
-                                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    public void checkPlayersInRangeViaSelector(ServerWorld world, BlockPos blockPos, BlockState state) {
-        Box box = getBox(pos);
-
-        List<PlayerEntity> entities =
-                world.getEntitiesByClass(PlayerEntity.class, box, e -> true);
-
-        for (PlayerEntity player : entities) {
-            if (player instanceof ServerPlayerEntity) {
-                if (!state.get(AntierBlock.DISABLE)) {
-                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
-                    }
-                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH ) {
-                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
-                    }
-                } else {
-                    for(Direction direction : Direction.values()) {
-                        BlockPos neighborPos = blockPos.offset(direction);
-                        BlockState neighborState = world.getBlockState(neighborPos);
-
-                        if (neighborState.getBlock() instanceof WireBlock) {
-                            var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
-                            if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
-                                if (!neighborState.get(WireBlock.POWERED)) {
-                                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
-                                    }
-                                    if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
-                                    }
-                                }
-                            }
-                        }
-
-                        if (neighborState.getBlock() instanceof DungeonWireBlock) {
-                            if (!neighborState.get(POWERED)) {
-                                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_MINE || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
-                                }
-                                if (state.get(AntierBlock.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(AntierBlock.ANTIER_TYPE) == AntierType.BOTH) {
-                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
+//        List<ServerPlayerEntity> players = world.getPlayers();
+//
+//        for (ServerPlayerEntity player : players) {
+//            Vec3d playerPos = player.getPos();
+//            double distance = playerPos.squaredDistanceTo(Vec3d.ofCenter(blockPos));
+//            if (distance <= range * range) {
+//                if (!state.get(PotionPillar.DISABLE)) {
+//                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_MINE || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH ) {
+//                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
+//                    }
+//                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH ) {
+//                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
+//                    }
+//                } else {
+//                    for(Direction direction : Direction.values()) {
+//                        BlockPos neighborPos = blockPos.offset(direction);
+//                        BlockState neighborState = world.getBlockState(neighborPos);
+//
+//                        if (neighborState.getBlock() instanceof WireBlock) {
+//                            var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
+//                            if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
+//                                if (!neighborState.get(WireBlock.POWERED)) {
+//                                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_MINE || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
+//                                    }
+//                                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//                        if (neighborState.getBlock() instanceof DungeonWireBlock) {
+//                            if (!neighborState.get(POWERED)) {
+//                                if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_MINE || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
+//                                }
+//                                if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    public void checkPlayersInRangeViaSelector(ServerWorld world, BlockPos blockPos, BlockState state) {
+//        Box box = getBox(pos);
+//
+//        List<PlayerEntity> entities =
+//                world.getEntitiesByClass(PlayerEntity.class, box, e -> true);
+//
+//        for (PlayerEntity player : entities) {
+//            if (player instanceof ServerPlayerEntity) {
+//                if (!state.get(PotionPillar.DISABLE)) {
+//                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_MINE || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH ) {
+//                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
+//                    }
+//                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH ) {
+//                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
+//                    }
+//                } else {
+//                    for(Direction direction : Direction.values()) {
+//                        BlockPos neighborPos = blockPos.offset(direction);
+//                        BlockState neighborState = world.getBlockState(neighborPos);
+//
+//                        if (neighborState.getBlock() instanceof WireBlock) {
+//                            var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
+//                            if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
+//                                if (!neighborState.get(WireBlock.POWERED)) {
+//                                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_MINE || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
+//                                    }
+//                                    if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                        player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//                        if (neighborState.getBlock() instanceof DungeonWireBlock) {
+//                            if (!neighborState.get(POWERED)) {
+//                                if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_MINE || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.MINER_MISHAP, 300, 100));
+//                                }
+//                                if (state.get(PotionPillar.ANTIER_TYPE) == AntierType.NO_BUILD || state.get(PotionPillar.ANTIER_TYPE) == AntierType.BOTH) {
+//                                    player.addStatusEffect(new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100));
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     @Override
-    public void tick(World world, BlockPos blockPos, BlockState state, AntierBlockEntity blockEntity) {
+    public void tick(World world, BlockPos blockPos, BlockState state, PotionPillarBlockEntity blockEntity) {
         if (world.isClient) return;
         if (distanceArray == null) {
             if (customBox == null) {
@@ -170,10 +165,10 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             );
         }
 
-        if (state.get(AntierBlock.FACING) != lastDirection) {
+        if (state.get(PotionPillar.FACING) != lastDirection) {
             if (lastDirection == Direction.NORTH) {
                 rotateBlockBox(
-                        switch (state.get(AntierBlock.FACING)) {
+                        switch (state.get(PotionPillar.FACING)) {
                             case DOWN, UP, NORTH -> 0;
                             case EAST -> 90;
                             case SOUTH -> 180;
@@ -182,7 +177,7 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             } else if (lastDirection == Direction.EAST) {
 
                 rotateBlockBox(
-                        switch (state.get(AntierBlock.FACING)) {
+                        switch (state.get(PotionPillar.FACING)) {
                             case NORTH -> 270;
                             case DOWN, UP, EAST -> 0;
                             case SOUTH -> 90;
@@ -190,7 +185,7 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
                         });
             } else if (lastDirection == Direction.SOUTH) {
                 rotateBlockBox(
-                        switch (state.get(AntierBlock.FACING)) {
+                        switch (state.get(PotionPillar.FACING)) {
                             case NORTH -> 180;
                             case EAST -> 270;
                             case DOWN, UP, SOUTH -> 0;
@@ -199,7 +194,7 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             } else if (lastDirection == Direction.WEST) {
 
                 rotateBlockBox(
-                        switch (state.get(AntierBlock.FACING)) {
+                        switch (state.get(PotionPillar.FACING)) {
                             case NORTH -> 90;
                             case EAST -> 180;
                             case SOUTH -> 270;
@@ -207,17 +202,17 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
                         });
             } else if (lastDirection == Direction.DOWN || lastDirection == Direction.UP) {
                 rotateBlockBox(
-                        switch (state.get(AntierBlock.FACING)) {
+                        switch (state.get(PotionPillar.FACING)) {
                             case NORTH, EAST, SOUTH, WEST, DOWN, UP -> 0;
                         });
             }
-            lastDirection = state.get(AntierBlock.FACING);
+            lastDirection = state.get(PotionPillar.FACING);
         }
-        if (state.get(AntierBlock.MIRRORED) != BlockMirror.NONE) {
-            mirrorBlockBox(state.get(AntierBlock.MIRRORED));
+        if (state.get(PotionPillar.MIRRORED) != BlockMirror.NONE) {
+            mirrorBlockBox(state.get(PotionPillar.MIRRORED));
             world.setBlockState(
                     pos,
-                    state.with(AntierBlock.MIRRORED, BlockMirror.NONE),
+                    state.with(PotionPillar.MIRRORED, BlockMirror.NONE),
                     Block.NOTIFY_LISTENERS | Block.NO_REDRAW
             );
         }
@@ -230,11 +225,11 @@ public class AntierBlockEntity extends BlockEntity implements BlockEntityTicker<
             tickCounter++;
 
             if (tickCounter % 20 == 0) {
-                if (state.get(AntierBlock.USES_SELECTOR)) {
-                    checkPlayersInRangeViaSelector(serverWorld, blockPos, state);
-                } else {
-                    checkPlayersInRange(serverWorld, blockPos, state, 15.0);
-                }
+//                if (state.get(PotionPillar.USES_SELECTOR)) {
+//                    checkPlayersInRangeViaSelector(serverWorld, blockPos, state);
+//                } else {
+//                    checkPlayersInRange(serverWorld, blockPos, state, 15.0);
+//                }
             }
         }
     }

@@ -7,7 +7,6 @@ import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
@@ -147,11 +146,11 @@ public class ModBlocks {
             true
     );
 
-    public static final AntierBlock ANTIER = (AntierBlock) register(
-            new AntierBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
+    public static final PotionPillar POTION_PILLAR = (PotionPillar) register(
+            new PotionPillar(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 7;
             }).strength(-1.0F, 3600000.0F)),
-            "antier",
+            "potion_pillar",
             true
     );
 
@@ -213,5 +212,7 @@ public class ModBlocks {
         Registries.ITEM.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
         Registries.BLOCK.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
         Registries.ITEM.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("antier"), BTC.identifierOf("potion_pillar"));
+        Registries.ITEM.addAlias(BTC.identifierOf("antier"), BTC.identifierOf("potion_pillar"));
     }
 }
