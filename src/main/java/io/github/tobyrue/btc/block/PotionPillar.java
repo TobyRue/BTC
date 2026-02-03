@@ -87,9 +87,11 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-
-
+        BlockEntity be = world.getBlockEntity(pos);
         if (!(stack.getItem() instanceof SelectorItem) || player.isSneaking()) {
+            if (be instanceof PotionPillarBlockEntity detector) {
+                return detector.onUseWithItem(stack, state, world, pos, player, hand, hit);
+            }
             return ItemActionResult.FAIL;
         }
 
@@ -100,7 +102,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
             return ItemActionResult.FAIL;
         }
 
-        BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof PotionPillarBlockEntity detector) {
             var b1 = new BlockPos(corner1.x(), corner1.y(), corner1.z());
             var b2 = new BlockPos(corner2.x(), corner2.y(), corner2.z());
@@ -112,7 +113,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
             );
             return ItemActionResult.SUCCESS;
         }
-
         return ItemActionResult.FAIL;
     }
 

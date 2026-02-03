@@ -15,6 +15,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpyglassItem;
 import net.minecraft.text.OrderedText;
@@ -69,13 +70,10 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         for (int i = 0; i < 4; i++) {
             matrices.push();
 
-            // Rotate to face
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F * i));
 
-            // Push to face of 8x16x8 pillar
             matrices.translate(0.0, 0.0, -0.251);
 
-            // Flip quad so text faces outward
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 
             // Scale
@@ -84,7 +82,7 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
 
             Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-            int color = (alpha << 24) | 0xFFFFFF;
+            int color = (alpha << 24) | blockEntity.getColor();
 
             textRenderer.draw(
                     glyph,
@@ -122,5 +120,4 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         }
         return MathHelper.clamp((int)(fade * 255), 0, 255);
     }
-
 }
