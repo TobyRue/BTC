@@ -56,6 +56,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     private BlockBox customBox;
     private int[] distanceArray;
     private Direction lastDirection = Direction.NORTH;
+    private int runeIndex = 1;
 
     private RegistryEntry<StatusEffect> storedEffect = ModStatusEffects.BUILDER_BLUNDER;
     private int amplifier = 0;
@@ -80,6 +81,10 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         return storedEffect.value().getColor();
     }
 
+    public int getRuneIndex() {
+        return runeIndex;
+    }
+
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.getComponents().contains(DataComponentTypes.POTION_CONTENTS) && Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().isPresent()) {
             setPotionContents(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getEffectType());
@@ -90,6 +95,11 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         return ItemActionResult.FAIL;
     }
 
+    public void assignRandomRune(World world) {
+        if (world.isClient) return;
+        runeIndex = world.getRandom().nextInt(256); // wraps safely
+        markDirty();
+    }
 
     public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
         if (storedEffect == null) {
@@ -461,6 +471,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         }
         nbt.putInt("Duration", duration);
         nbt.putInt("Amplifier", amplifier);
+        nbt.putInt("RuneIndex", runeIndex);
     }
 
     public void setPotionContents(RegistryEntry<StatusEffect> storedEffect) {
@@ -502,6 +513,9 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         }
         if (nbt.contains("Amplifier")) {
             setAmplifier(nbt.getInt("Amplifier"));
+        }
+        if (nbt.contains("RuneIndex")) {
+            runeIndex = nbt.getInt("RuneIndex");
         }
     }
 

@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.misc.CornerStorage;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -83,6 +84,14 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
         builder.add(MIRRORED);
         builder.add(AXIS);
         builder.add(USES_SELECTOR);
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        if (world.getBlockEntity(pos) instanceof PotionPillarBlockEntity be) {
+            be.assignRandomRune(world);
+        }
     }
 
     @Override

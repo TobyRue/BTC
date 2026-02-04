@@ -33,7 +33,7 @@ import java.util.List;
 public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPillarBlockEntity> {
     private final TextRenderer textRenderer;
     private static final int TICKS_PER_GLYPH = 20;
-    private static final String TEXT = "Insert Bee Movie Script Here";
+//    private static final String TEXT = "Insert Bee Movie Script Here";
 
     public PotionPillarBlockRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
@@ -59,15 +59,15 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         }
 //        Text text = Text.literal("Insert Bee Movie Script Here")
 //                .styled(style -> style.withFont(Identifier.of("minecraft", "illageralt")));
-
+        String rune = RuneTextLoader.get(blockEntity.getRuneIndex());
         long time = blockEntity.getWorld().getTime();
         float t = (time + tickDelta) / TICKS_PER_GLYPH;
 
-        int index = Math.floorMod((int)t, TEXT.length());
+        int index = Math.floorMod((int)t, rune.length());
         int alpha = getAlpha(t);
 
-        Text glyph = Text.literal(String.valueOf(TEXT.charAt(index)))
-                .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
+        Text glyph = Text.literal(String.valueOf(rune.charAt(index)));
+//                .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
 
         for (int i = 0; i < 4; i++) {
             matrices.push();
