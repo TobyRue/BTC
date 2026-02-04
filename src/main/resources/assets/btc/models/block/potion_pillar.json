@@ -1,5 +1,5 @@
 {
-  "parent": "btc:block/column",
+  "parent": "btc:block/pillar",
   "textures": {
     "bottom": "minecraft:block/polished_tuff",
     "side": "btc:block/wire_base",

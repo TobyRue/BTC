@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class ColumnBlock extends HorizontalConnectingBlock {
+public class PillarBlock extends HorizontalConnectingBlock {
     public static final BooleanProperty OTHER_BLOCKS = BooleanProperty.of("other_blocks");
     public static final BooleanProperty CONNECTS = BooleanProperty.of("connects");
     public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
@@ -76,9 +76,9 @@ public class ColumnBlock extends HorizontalConnectingBlock {
             VoxelShapes.cuboid(0, 0.25, 0, 0.25, 0.75, 1)
     );
 
-    public static final MapCodec<ColumnBlock> CODEC = ColumnBlock.createCodec(ColumnBlock::new);
+    public static final MapCodec<PillarBlock> CODEC = PillarBlock.createCodec(PillarBlock::new);
 
-    public ColumnBlock(Settings settings) {
+    public PillarBlock(Settings settings) {
         super(0, 0, 0, 0, 0, settings);
         this.setDefaultState(this.getDefaultState().with(Properties.WATERLOGGED, false).with(AXIS, Direction.Axis.Y).with(CONNECTS, true).with(OTHER_BLOCKS, true).with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false));
     }

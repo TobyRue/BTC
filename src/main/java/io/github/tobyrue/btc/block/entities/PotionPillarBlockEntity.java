@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import com.mojang.logging.LogUtils;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.block.PotionPillar;
@@ -56,40 +57,48 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     private int[] distanceArray;
     private Direction lastDirection = Direction.NORTH;
 
-    private StatusEffectInstance storedEffect = new StatusEffectInstance(ModStatusEffects.BUILDER_BLUNDER, 300, 100);
+    private RegistryEntry<StatusEffect> storedEffect = ModStatusEffects.BUILDER_BLUNDER;
+    private int amplifier = 0;
+    private int duration = 160;
 
     public PotionPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, pos, state);
     }
     private int tickCounter = 0; // Counter to track ticks
 
-    public StatusEffectInstance getStoredEffect() {
+    public RegistryEntry<StatusEffect> getStoredEffect() {
         return storedEffect;
     }
+    public int getStoredAmplifier() {
+        return amplifier;
+    }
+    public int getStoredDuration() {
+        return duration;
+    }
+
     public int getColor() {
-        return storedEffect.getEffectType().value().getColor();
+        return storedEffect.value().getColor();
     }
 
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.getComponents().contains(DataComponentTypes.POTION_CONTENTS) && Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().isPresent()) {
-            setPotionContents(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst());
+            setPotionContents(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getEffectType());
+            setDuration(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getDuration());
+            setAmplifier(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getAmplifier());
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.FAIL;
     }
-    public void setEffect(StatusEffectInstance effect) {
-        this.storedEffect = effect;
-        markDirty();
-        if (world != null) {
-            world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-        }
-    }
+
 
     public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
+        if (storedEffect == null) {
+            return;
+        }
         Box box = new Box(new Vec3d(pos.getX() - range, pos.getY() - range, pos.getZ() - range), new Vec3d(pos.getX() + range, pos.getY() + range, pos.getZ() + range));
         for (var l : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
             if (!state.get(PotionPillar.DISABLE)) {
-                l.addStatusEffect(storedEffect);
+                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
             } else {
                 for (Direction direction : Direction.values()) {
                     BlockPos neighborPos = blockPos.offset(direction);
@@ -98,7 +107,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                         var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
                         if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
                             if (!neighborState.get(WireBlock.POWERED)) {
-                                l.addStatusEffect(storedEffect);
+                                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
                             }
                         }
                     }
@@ -108,11 +117,13 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     }
 
     public void checkPlayersInRangeViaSelector(ServerWorld world, BlockPos blockPos, BlockState state) {
+        if (storedEffect == null) {
+            return;
+        }
         Box box = getBox(pos);
-
         for (var l : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
             if (!state.get(PotionPillar.DISABLE)) {
-                l.addStatusEffect(storedEffect);
+                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
             } else {
                 for (Direction direction : Direction.values()) {
                     BlockPos neighborPos = blockPos.offset(direction);
@@ -121,7 +132,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                         var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
                         if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
                             if (!neighborState.get(WireBlock.POWERED)) {
-                                l.addStatusEffect(storedEffect);
+                                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
                             }
                         }
                     }
@@ -444,24 +455,29 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                 case WEST -> 4;
             });
         }
-        assert world != null;
-        RegistryOps<NbtElement> registryOps = world.getRegistryManager().getOps(NbtOps.INSTANCE);
 
         if (storedEffect != null) {
-            NbtElement nbtElement = StatusEffectInstance.CODEC.encodeStart(registryOps, this.storedEffect).getOrThrow();
-            nbt.put("Effect", nbtElement);
+            nbt.put("Effect", StatusEffect.ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, storedEffect).getOrThrow());
         }
+        nbt.putInt("Duration", duration);
+        nbt.putInt("Amplifier", amplifier);
     }
 
-    public void setPotionContents(StatusEffectInstance storedEffect) {
+    public void setPotionContents(RegistryEntry<StatusEffect> storedEffect) {
         this.storedEffect = storedEffect;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setAmplifier(int amplifier) {
+        this.amplifier = amplifier;
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        assert world != null;
-        RegistryOps<NbtElement> registryOps = world.getRegistryManager().getOps(NbtOps.INSTANCE);
 
         if (nbt.contains("CustomBox")) {
             distanceArray = nbt.getIntArray("CustomBox");
@@ -477,9 +493,15 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
             };
         }
         if (nbt.contains("Effect")) {
-            StatusEffectInstance.CODEC.parse(registryOps, nbt.get("Effect")).resultOrPartial((string) -> {
-                throw new RuntimeException("Failed to parse potions: '{}'" + string);
-            }).ifPresent(this::setPotionContents);
+            if (nbt.get("Effect") instanceof NbtCompound compound) {
+                setPotionContents(StatusEffect.ENTRY_CODEC.parse(NbtOps.INSTANCE, compound).resultOrPartial(LogUtils.getLogger()::error).orElse(null));
+            }
+        }
+        if (nbt.contains("Duration")) {
+            setDuration(nbt.getInt("Duration"));
+        }
+        if (nbt.contains("Amplifier")) {
+            setAmplifier(nbt.getInt("Amplifier"));
         }
     }
 

@@ -13,11 +13,13 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.entity.DrownedEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpyglassItem;
+import net.minecraft.item.WrittenBookItem;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -94,7 +96,7 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
                     vertexConsumers,
                     TextRenderer.TextLayerType.POLYGON_OFFSET, // depth-respecting
                     0,
-                    light
+                    15728864
             );
 
             matrices.pop();

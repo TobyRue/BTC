@@ -27,19 +27,19 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
-    public static final ColumnBlock TUFF_COLUMN = (ColumnBlock) register(
-            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
-            "tuff_column",
+    public static final PillarBlock TUFF_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            "tuff_pillar",
             true
     );
-    public static final ColumnBlock STONE_COLUMN = (ColumnBlock) register(
-            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
-            "stone_column",
+    public static final PillarBlock STONE_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
+            "stone_pillar",
             true
     );
-    public static final ColumnBlock CRACKED_STONE_COLUMN = (ColumnBlock) register(
-            new ColumnBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
-            "cracked_stone_column",
+    public static final PillarBlock CRACKED_STONE_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
+            "cracked_stone_pillar",
             true
     );
     public static final PilasterBlock TUFF_BRICK_PILASTER = (PilasterBlock) register(
@@ -147,9 +147,7 @@ public class ModBlocks {
     );
 
     public static final PotionPillar POTION_PILLAR = (PotionPillar) register(
-            new PotionPillar(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
-                return 7;
-            }).strength(-1.0F, 3600000.0F)),
+            new PotionPillar(AbstractBlock.Settings.create().nonOpaque().strength(-1.0F, 3600000.0F)),
             "potion_pillar",
             true
     );
@@ -214,5 +212,11 @@ public class ModBlocks {
         Registries.ITEM.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
         Registries.BLOCK.addAlias(BTC.identifierOf("antier"), BTC.identifierOf("potion_pillar"));
         Registries.ITEM.addAlias(BTC.identifierOf("antier"), BTC.identifierOf("potion_pillar"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("tuff_column"), BTC.identifierOf("tuff_pillar"));
+        Registries.ITEM.addAlias(BTC.identifierOf("tuff_column"), BTC.identifierOf("tuff_pillar"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("stone_column"), BTC.identifierOf("stone_pillar"));
+        Registries.ITEM.addAlias(BTC.identifierOf("stone_column"), BTC.identifierOf("stone_pillar"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("cracked_stone_column"), BTC.identifierOf("cracked_stone_pillar"));
+        Registries.ITEM.addAlias(BTC.identifierOf("cracked_stone_column"), BTC.identifierOf("cracked_stone_pillar"));
     }
 }
