@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.block.PotionPillar;
+import io.github.tobyrue.btc.client.RuneTextLoader;
 import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
@@ -96,8 +97,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     }
 
     public void assignRandomRune(World world) {
-        if (world.isClient) return;
-        runeIndex = world.getRandom().nextInt(256); // wraps safely
+        runeIndex = world.getRandom().nextInt(RuneTextLoader.getRunes().size() - 1); // wraps safely
         markDirty();
     }
 
@@ -471,7 +471,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         }
         nbt.putInt("Duration", duration);
         nbt.putInt("Amplifier", amplifier);
-        nbt.putInt("RuneIndex", runeIndex);
+        nbt.putInt("RuneIndex", Math.min(runeIndex, RuneTextLoader.getRunes().size() - 1));
     }
 
     public void setPotionContents(RegistryEntry<StatusEffect> storedEffect) {
@@ -515,7 +515,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
             setAmplifier(nbt.getInt("Amplifier"));
         }
         if (nbt.contains("RuneIndex")) {
-            runeIndex = nbt.getInt("RuneIndex");
+            runeIndex = Math.min(nbt.getInt("RuneIndex"), RuneTextLoader.getRunes().size() - 1);
         }
     }
 

@@ -27,7 +27,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.joml.Matrix4f;
 
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPillarBlockEntity> {
@@ -37,6 +43,49 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
 
     public PotionPillarBlockRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
+    }
+
+    public String getHoliday() {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("dd MMM")
+                .parseDefaulting(ChronoField.YEAR, Year.now().getValue())
+                .toFormatter(Locale.US);
+
+        LocalDate today = LocalDate.now();
+
+        if (LocalDate.parse("25 Dec", formatter).equals(today)) {
+            return "Merry Christmas!";
+        }
+        if (LocalDate.parse("31 Oct", formatter).equals(today)) {
+            return "Happy Halloween!";
+        }
+        if (LocalDate.parse("01 Jan", formatter).equals(today)) {
+            return "Happy New Year!";
+        }
+        if (LocalDate.parse("14 Feb", formatter).equals(today)) {
+            return "Happy Valentine's Day!";
+        }
+        if (LocalDate.parse("17 Mar", formatter).equals(today)) {
+            return "Happy St. Patrick's Day!";
+        }
+
+
+        return "[Empty]";
+    }
+
+    public boolean isHoliday() {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("dd MMM")
+                .parseDefaulting(ChronoField.YEAR, Year.now().getValue())
+                .toFormatter(Locale.US);
+
+        LocalDate today = LocalDate.now();
+
+        return today.equals(LocalDate.parse("25 Dec", formatter))
+                || today.equals(LocalDate.parse("31 Oct", formatter))
+                || today.equals(LocalDate.parse("01 Jan", formatter))
+                || today.equals(LocalDate.parse("14 Feb", formatter))
+                || today.equals(LocalDate.parse("17 Mar", formatter));
     }
 
     @Override
@@ -66,8 +115,8 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         int index = Math.floorMod((int)t, rune.length());
         int alpha = getAlpha(t);
 
-        Text glyph = Text.literal(String.valueOf(rune.charAt(index)));
-//                .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
+        Text glyph = isHoliday() ? Text.literal(String.valueOf(getHoliday().charAt(index))) : Text.literal(String.valueOf(rune.charAt(index)))
+                .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
 
         for (int i = 0; i < 4; i++) {
             matrices.push();

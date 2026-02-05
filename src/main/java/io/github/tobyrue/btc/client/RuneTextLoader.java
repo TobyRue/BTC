@@ -43,7 +43,6 @@ public final class RuneTextLoader {
     public static String get(int index) {
         List<String> runes = getRunes();
         if (runes.isEmpty()) return "?";
-        System.out.println(runes.get(4));
-        return runes.get(Math.min(index, runes.size()));
+        return runes.get(Math.min(index, runes.size() - 1));
     }
 }
