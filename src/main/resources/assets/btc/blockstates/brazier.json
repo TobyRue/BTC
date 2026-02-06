@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "ominous=false": { "model": "btc:block/brazier" },
+    "ominous=true": { "model": "btc:block/ominous_brazier" }
+  }
+}

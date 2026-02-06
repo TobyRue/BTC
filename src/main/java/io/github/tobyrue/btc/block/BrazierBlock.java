@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -11,27 +10,22 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.GameModeCommand;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class DungeonFireBlock extends Block {
+public class BrazierBlock extends Block {
     private static final VoxelShape BOTTOM_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE2;
@@ -46,7 +40,7 @@ public class DungeonFireBlock extends Block {
     public static final BooleanProperty OMINOUS = BooleanProperty.of("ominous");
     public static final BooleanProperty DAMAGES = BooleanProperty.of("damages");
 
-    public DungeonFireBlock(Settings settings) {
+    public BrazierBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OMINOUS, false)

@@ -1,24 +1,20 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.ICopperWireConnect;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.block.entities.FireDispenserBlockEntity;
-import io.github.tobyrue.btc.block.entities.ModBlockEntities;
-import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
-import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
-import io.github.tobyrue.btc.enums.FireDispenserType;
-import io.github.tobyrue.btc.enums.FireSwich;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -26,20 +22,21 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class FireDispenserBlock extends Block implements ModBlockEntityProvider<FireDispenserBlockEntity>, ModTickBlockEntityProvider<FireDispenserBlockEntity>, IDungeonWireConnect, ICopperWireConnect {
-    public static final EnumProperty<FireDispenserType> FIRE_DISPENSER_TYPE = EnumProperty.of("fire_dispenser_type", FireDispenserType.class);
-    public static final EnumProperty<FireSwich> FIRE_SWICH = EnumProperty.of("fire_swich", FireSwich.class);
+public class DungeonFlameBlock extends Block implements IDungeonWireConnect {
+    public static final BooleanProperty LIT = BooleanProperty.of("lit");
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
     private static final VoxelShape BOTTOM_SHAPE;
-
     private static final VoxelShape SHAPE;
+    private final @Nullable ParticleEffect particle0, particle1;
 
-    public FireDispenserBlock(Settings settings) {
+
+    public DungeonFlameBlock(Settings settings, @Nullable ParticleEffect particle0, @Nullable ParticleEffect particle1) {
         super(settings);
+        this.particle0 = particle0;
+        this.particle1 = particle1;
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE)
-                .with(FIRE_SWICH, FireSwich.SHORT_TO_TALL));
+                .with(LIT, false));
     }
     static {
         BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -51,13 +48,11 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
-                .with(FIRE_DISPENSER_TYPE, FireDispenserType.NO_FIRE)
-                .with(FIRE_SWICH, FireSwich.SHORT_TO_TALL);
+                .with(LIT, false);
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FIRE_DISPENSER_TYPE);
-        builder.add(FIRE_SWICH);
+        builder.add(LIT);
     }
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -77,7 +72,7 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (random.nextInt(8) == 0) {
-            if (!(state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.NO_FIRE)) {
+            if (state.get(LIT)) {
                 world.playSound((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 2.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.3F, false);
             }
         }
@@ -90,38 +85,32 @@ public class FireDispenserBlock extends Block implements ModBlockEntityProvider<
             d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
-            if (!(state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.NO_FIRE)) {
+            if (!(state.get(CURRENT_FIRE) == FireType.NONE)) {
                 world.addParticle(ParticleTypes.SMOKE, d2, e2, f2, 0.0, 0.0, 0.0);
             }
-            if ((state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.SHORT_FIRE) || (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.TALL_FIRE)) {
+            if ((state.get(CURRENT_FIRE) == FireType.FIRE)) {
                 world.addParticle(ParticleTypes.FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
             }
-            if ((state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.SHORT_FIRE_SOUL) || (state.get(FireDispenserBlock.FIRE_DISPENSER_TYPE) == FireDispenserType.TALL_FIRE_SOUL)) {
+            if ((state.get(CURRENT_FIRE) == FireType.SOUL)) {
                 world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
             }
         }
         super.randomDisplayTick(state, world, pos, random);
     }
 
-    @Override
-    public BlockEntityType<FireDispenserBlockEntity> getBlockEntityType() {
-        return ModBlockEntities.FIRE_DISPENSER_ENTITY;
-    }
     public static int getLuminance(BlockState currentBlockState) {
-        // Check the FIRE_DISPENSER_TYPE property
-        FireDispenserType fireType = currentBlockState.get(FIRE_DISPENSER_TYPE);
+        return currentBlockState.get(LIT) ? 15 : 0;
+    }
 
-        // Return 15 if the fire type is not NO_FIRE, otherwise return 0
-        return fireType != FireDispenserType.NO_FIRE ? 15 : 0;
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        world.setBlockState(pos, state.with(LIT, world.getBlockState(pos.down()).getBlock() instanceof IDungeonWire wire && wire.isEmittingDungeonWirePower(world.getBlockState(pos.down()), world, pos.down(), Direction.UP)));
+
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
 
     @Override
     public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean shouldCopperConnect(BlockState state, World world, BlockPos pos) {
         return true;
     }
 }

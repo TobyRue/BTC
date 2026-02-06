@@ -1,6 +1,0 @@
-{
-  "variants": {
-    "ominous=false": { "model": "btc:block/dungeon_fire" },
-    "ominous=true": { "model": "btc:block/dungeon_fire_ominous" }
-  }
-}

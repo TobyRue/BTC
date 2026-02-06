@@ -1,14 +1,12 @@
 package io.github.tobyrue.btc.wires;
 
-import io.github.tobyrue.btc.block.DungeonWireBlock;
-import io.github.tobyrue.btc.block.FireDispenserBlock;
-import io.github.tobyrue.btc.enums.FireDispenserType;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public interface IDungeonWirePowered {
+    //TODO Make static and add to wire
     default boolean shouldWirePower(BlockState state, World world, BlockPos pos, boolean top, boolean bottom, boolean sides) {
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);

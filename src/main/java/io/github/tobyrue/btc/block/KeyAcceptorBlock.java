@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.block.entities.*;
-import io.github.tobyrue.btc.enums.FireDispenserType;
-import io.github.tobyrue.btc.enums.FireSwich;
 import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.Block;

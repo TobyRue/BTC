@@ -1,11 +1,8 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.ICopperWireConnect;
-import io.github.tobyrue.btc.enums.Connection;
-import io.github.tobyrue.btc.wires.IDungeonWireConstantAction;
+import io.github.tobyrue.btc.wires.IDungeonWireAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
-import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +14,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DungeonDoorBlock extends Block implements IDungeonWireConstantAction, IDungeonWireConnect, ICopperWireConnect {
+public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect {
     public static final EnumProperty<DoorType> TYPE = EnumProperty.of("door_type", DoorType.class);
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
     public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");

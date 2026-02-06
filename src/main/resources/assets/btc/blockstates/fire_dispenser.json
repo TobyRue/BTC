@@ -1,9 +1,7 @@
 {
   "variants": {
-    "fire_dispenser_type=no_fire": { "model": "btc:block/fire_dispenser_no_fire" },
-    "fire_dispenser_type=short_fire_soul": { "model": "btc:block/fire_dispenser_short_fire_soul" },
-    "fire_dispenser_type=tall_fire_soul": { "model": "btc:block/fire_dispenser_tall_fire_soul" },
-    "fire_dispenser_type=short_fire": { "model": "btc:block/fire_dispenser_short_fire" },
-    "fire_dispenser_type=tall_fire": { "model": "btc:block/fire_dispenser_tall_fire" }
+    "fire=none": { "model": "btc:block/fire_dispenser_no_fire" },
+    "fire=fire": { "model": "btc:block/fire_dispenser_fire" },
+    "fire=soul": { "model": "btc:block/fire_dispenser_soul_fire" }
   }
 }

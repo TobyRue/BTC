@@ -7,6 +7,7 @@ import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
@@ -73,11 +74,11 @@ public class ModBlocks {
             "dungeon_wire",
             true
     );
-    public static final DungeonFireBlock DUNGEON_FIRE = (DungeonFireBlock) register(
-            new DungeonFireBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
+    public static final BrazierBlock BRAZIER = (BrazierBlock) register(
+            new BrazierBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
                 return 15;
             }).strength(3.5F, 3600000.0F)),
-            "dungeon_fire",
+            "brazier",
             true
 
             );
@@ -189,11 +190,28 @@ public class ModBlocks {
 //            "copper_wire",
 //            true
 //    );
-    public static final FireDispenserBlock FIRE_DISPENSER = (FireDispenserBlock) register(
-            new FireDispenserBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
-                    FireDispenserBlock::getLuminance)
+    //TODO :/ dungeon flambeaux
+    public static final DungeonFlameBlock DUNGEON_FLAME = (DungeonFlameBlock) register(
+            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
+                    DungeonFlameBlock::getLuminance), null, ParticleTypes.FLAME
     ),
-            "fire_dispenser",
+            "dungeon_flame",
+            true
+    );
+    //TODO :/ deep flambeaux
+    public static final DungeonFlameBlock DEEP_FLAME = (DungeonFlameBlock) register(
+            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
+                    DungeonFlameBlock::getLuminance), null, ParticleTypes.SOUL_FIRE_FLAME
+            ),
+            "deep_flame",
+            true
+    );
+    //TODO :/ fortress flambeaux
+    public static final DungeonFlameBlock FORTRESS_FLAME = (DungeonFlameBlock) register(
+            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
+                    DungeonFlameBlock::getLuminance), ParticleTypes.FLAME, ParticleTypes.SOUL_FIRE_FLAME
+            ),
+            "fortress_flame",
             true
     );
     public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
@@ -218,5 +236,9 @@ public class ModBlocks {
         Registries.ITEM.addAlias(BTC.identifierOf("stone_column"), BTC.identifierOf("stone_pillar"));
         Registries.BLOCK.addAlias(BTC.identifierOf("cracked_stone_column"), BTC.identifierOf("cracked_stone_pillar"));
         Registries.ITEM.addAlias(BTC.identifierOf("cracked_stone_column"), BTC.identifierOf("cracked_stone_pillar"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_fire"), BTC.identifierOf("brazier"));
+        Registries.ITEM.addAlias(BTC.identifierOf("dungeon_fire"), BTC.identifierOf("brazier"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("fire_dispenser"), BTC.identifierOf("dungeon_flame"));
+        Registries.ITEM.addAlias(BTC.identifierOf("fire_dispenser"), BTC.identifierOf("dungeon_flame"));
     }
 }
