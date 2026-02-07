@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
+import net.fabricmc.fabric.mixin.object.builder.AbstractBlockSettingsAccessor;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -193,7 +194,7 @@ public class ModBlocks {
     //TODO :/ dungeon flambeaux
     public static final DungeonFlameBlock DUNGEON_FLAME = (DungeonFlameBlock) register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
-                    DungeonFlameBlock::getLuminance), null, ParticleTypes.FLAME
+                    DungeonFlameBlock::getLuminance).emissiveLighting((state,blockView,pos) -> DungeonFlameBlock.getLuminance(state) > 0), null, ParticleTypes.FLAME
     ),
             "dungeon_flame",
             true
@@ -201,15 +202,14 @@ public class ModBlocks {
     //TODO :/ deep flambeaux
     public static final DungeonFlameBlock DEEP_FLAME = (DungeonFlameBlock) register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
-                    DungeonFlameBlock::getLuminance), null, ParticleTypes.SOUL_FIRE_FLAME
+                    DungeonFlameBlock::getLuminance).emissiveLighting((state,blockView,pos) -> DungeonFlameBlock.getLuminance(state) > 0), null, ParticleTypes.SOUL_FIRE_FLAME
             ),
             "deep_flame",
             true
     );
     //TODO :/ fortress flambeaux
     public static final DungeonFlameBlock FORTRESS_FLAME = (DungeonFlameBlock) register(
-            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
-                    DungeonFlameBlock::getLuminance), ParticleTypes.FLAME, ParticleTypes.SOUL_FIRE_FLAME
+            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(state -> 15).emissiveLighting((state,blockView,pos) -> true), ParticleTypes.FLAME, ParticleTypes.SOUL_FIRE_FLAME
             ),
             "fortress_flame",
             true

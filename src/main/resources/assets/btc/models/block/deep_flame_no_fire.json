@@ -3,7 +3,7 @@
   "textures": {
     "top": "minecraft:block/reinforced_deepslate_top",
     "bottom": "minecraft:block/reinforced_deepslate_bottom",
-    "side": "minecraft:block/reinforced_deepslate_side",
+    "side": "btc:block/deep_flame_reinforced_deepslate",
     "particle": "minecraft:block/reinforced_deepslate_top"
   }
 }

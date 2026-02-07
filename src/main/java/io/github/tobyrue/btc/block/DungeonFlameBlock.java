@@ -96,7 +96,7 @@ public class DungeonFlameBlock extends Block implements IDungeonWireConnect {
     }
 
     public static int getLuminance(BlockState currentBlockState) {
-        return currentBlockState.get(LIT) || currentBlockState.isOf(ModBlocks.FORTRESS_FLAME) ? 15 : 0;
+        return currentBlockState.get(LIT) ? 15 : 0;
     }
 
     @Override
