@@ -1,0 +1,9 @@
+{
+  "parent": "btc:block/base_dungeon_flame_no_fire",
+  "textures": {
+    "top": "minecraft:block/chiseled_tuff_top",
+    "bottom": "minecraft:block/chiseled_tuff_top",
+    "side": "minecraft:block/chiseled_tuff_top",
+    "particle": "minecraft:block/chiseled_tuff_top"
+  }
+}

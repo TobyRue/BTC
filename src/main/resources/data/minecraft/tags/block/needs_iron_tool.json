@@ -1,7 +1,9 @@
 {
   "replace": false,
   "values": [
-    "btc:dungeon_fire",
-    "btc:fire_dispenser"
+    "btc:brazier",
+    "btc:dungeon_flame",
+    "btc:deep_flame",
+    "btc:fortress_flame"
   ]
 }

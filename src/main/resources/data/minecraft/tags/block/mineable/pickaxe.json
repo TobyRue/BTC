@@ -2,11 +2,17 @@
   "replace": false,
   "values": [
     "btc:ominous_beacon",
-    "btc:copper_wire",
     "btc:dungeon_door",
-    "btc:dungeon_fire",
-    "btc:fire_dispenser",
-    "btc:chiseled_copper_bricks",
-    "btc:dungeon_pressure_plate"
+    "btc:brazier",
+    "btc:dungeon_flame",
+    "btc:deep_flame",
+    "btc:fortress_flame",
+    "btc:dungeon_pressure_plate",
+    "btc:stone_pillar",
+    "btc:cracked_stone_pillar",
+    "btc:tuff_pillar",
+    "btc:tuff_brick_pilaster",
+    "btc:tuff_pilaster",
+    "btc:polished_tuff_pilaster"
   ]
 }

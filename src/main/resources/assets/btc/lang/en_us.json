@@ -11,6 +11,8 @@
   "block.btc.key_dispenser": "Key Dispenser",
   "block.btc.key_acceptor": "Key Acceptor",
   "block.btc.dungeon_flame": "Dungeon Flame",
+  "block.btc.deep_flame": "Deep Flame",
+  "block.btc.fortress_flame": "Fortress Flame",
   "block.btc.copper_button_unoxidized": "Copper Button",
   "block.btc.waxed_copper_button_unoxidized": "Waxed Copper Button",
   "block.btc.copper_button_exposed": "Exposed Copper Button",

@@ -5,7 +5,12 @@ import io.github.tobyrue.btc.block.entities.PedestalBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -15,12 +20,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class PedestalBlock extends Block implements BlockEntityProvider{
+public class PedestalBlock extends Block implements BlockEntityProvider, Waterloggable {
 
     private static final VoxelShape SHAPE;
 
     public PedestalBlock(Settings settings) {
         super(settings);
+        this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.WATERLOGGED, false));
     }
     static {
         SHAPE = VoxelShapes.union(
@@ -36,6 +42,19 @@ public class PedestalBlock extends Block implements BlockEntityProvider{
                 VoxelShapes.cuboid(0.25, 0.375, 0.25, 0.75, 0.75, 0.75)
         );
     }
+
+    @Nullable
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(Properties.WATERLOGGED, false);
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(Properties.WATERLOGGED);
+    }
+
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return world.getBlockEntity(pos, ModBlockEntities.PEDESTAL_BLOCK_ENTITY).get().onUseWithItem(stack, state, world, pos, player, hand, hit);
@@ -59,5 +78,12 @@ public class PedestalBlock extends Block implements BlockEntityProvider{
     @Override
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return SHAPE;
+    }
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        if (state.get(Properties.WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
     }
 }

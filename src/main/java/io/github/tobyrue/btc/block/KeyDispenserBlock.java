@@ -7,12 +7,17 @@ import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -22,10 +27,11 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
-public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>, IDungeonWirePowered {
+public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>, IDungeonWirePowered, Waterloggable {
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape TOP_MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
@@ -39,13 +45,13 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
 
     public KeyDispenserBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false));
+        this.setDefaultState((this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false).with(Properties.WATERLOGGED, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(ALWAYS_ACCEPTABLE);
+        builder.add(ALWAYS_ACCEPTABLE, Properties.WATERLOGGED);
     }
 
     static {
@@ -57,6 +63,12 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
         TOP_SHAPE = Block.createCuboidShape(2.0, 12.0, 2.0, 14.0, 14.0, 14.0);
 
         SHAPE = VoxelShapes.union(BOTTOM_SHAPE1, BOTTOM_SHAPE, TOP_MIDDLE_SHAPE, MIDDLE_SHAPE, BOTTOM_MIDDLE_SHAPE, TOP_SHAPE);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(ALWAYS_ACCEPTABLE, false).with(Properties.WATERLOGGED, false);
     }
 
     @Override
@@ -100,5 +112,12 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
     @Override
     public BlockEntityType<KeyDispenserBlockEntity> getBlockEntityType() {
         return ModBlockEntities.KEY_DISPENSER_ENTITY;
+    }
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        if (state.get(Properties.WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
     }
 }

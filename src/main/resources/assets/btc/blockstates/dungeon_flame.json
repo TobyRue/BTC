@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "btc:block/dungeon_flame_no_fire" },
+    "lit=true": { "model": "btc:block/dungeon_flame_with_fire" }
+  }
+}

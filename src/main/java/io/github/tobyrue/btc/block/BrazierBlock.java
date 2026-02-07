@@ -6,6 +6,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -14,6 +16,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,7 +28,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class BrazierBlock extends Block {
+public class BrazierBlock extends Block implements Waterloggable {
     private static final VoxelShape BOTTOM_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE2;
@@ -44,7 +47,8 @@ public class BrazierBlock extends Block {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OMINOUS, false)
-                .with(DAMAGES, true));
+                .with(DAMAGES, true)
+                .with(Properties.WATERLOGGED, false));
     }
 
     static {
@@ -98,12 +102,13 @@ public class BrazierBlock extends Block {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(OMINOUS, false)
-                .with(DAMAGES, true);
+                .with(DAMAGES, true)
+                .with(Properties.WATERLOGGED, false);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(OMINOUS, DAMAGES);
+        builder.add(OMINOUS, DAMAGES, Properties.WATERLOGGED);
     }
 
     @Override
@@ -166,4 +171,13 @@ public class BrazierBlock extends Block {
         }
         super.randomDisplayTick(state, world, pos, random);
     }
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        if (state.get(Properties.WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
+    }
+
 }

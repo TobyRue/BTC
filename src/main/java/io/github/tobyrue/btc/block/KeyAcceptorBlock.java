@@ -6,13 +6,17 @@ import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
@@ -26,7 +30,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<KeyAcceptorBlockEntity>, ModTickBlockEntityProvider<KeyAcceptorBlockEntity> {
+public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<KeyAcceptorBlockEntity>, ModTickBlockEntityProvider<KeyAcceptorBlockEntity>, Waterloggable {
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape TOP_MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
@@ -40,17 +44,17 @@ public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<Ke
 
     public KeyAcceptorBlock(Settings settings) {
         super(settings);
-        this.stateManager.getDefaultState().with(POWERED, false);
+        this.stateManager.getDefaultState().with(POWERED, false).with(Properties.WATERLOGGED, false);
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(POWERED);
+        builder.add(POWERED, Properties.WATERLOGGED);
     }
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
-                .with(POWERED, false);
+                .with(POWERED, false).with(Properties.WATERLOGGED, false);
     }
 
     static {
@@ -103,5 +107,12 @@ public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<Ke
     @Override
     public BlockEntityType<KeyAcceptorBlockEntity> getBlockEntityType() {
         return ModBlockEntities.KEY_ACCEPTOR_ENTITY;
+    }
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        if (state.get(Properties.WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
     }
 }

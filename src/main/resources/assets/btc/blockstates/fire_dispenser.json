@@ -1,7 +1,0 @@
-{
-  "variants": {
-    "fire=none": { "model": "btc:block/fire_dispenser_no_fire" },
-    "fire=fire": { "model": "btc:block/fire_dispenser_fire" },
-    "fire=soul": { "model": "btc:block/fire_dispenser_soul_fire" }
-  }
-}

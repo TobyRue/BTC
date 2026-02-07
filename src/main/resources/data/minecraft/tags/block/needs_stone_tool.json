@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "btc:chiseled_copper_bricks",
     "btc:dungeon_pressure_plate"
   ]
 }

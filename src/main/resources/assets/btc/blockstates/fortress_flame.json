@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "btc:block/fortress_flame_with_fire" },
+    "lit=true": { "model": "btc:block/fortress_flame_with_soul_fire" }
+  }
+}

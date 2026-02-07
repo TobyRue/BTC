@@ -1,11 +1,8 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.IDungeonWireConnect;
-import io.github.tobyrue.btc.block.entities.FireDispenserBlockEntity;
 import io.github.tobyrue.btc.wires.IDungeonWire;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.*;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -85,21 +82,21 @@ public class DungeonFlameBlock extends Block implements IDungeonWireConnect {
             d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
             e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
             f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
-            if (!(state.get(CURRENT_FIRE) == FireType.NONE)) {
+            if ((particle0 != null && !state.get(LIT)) || (particle1 != null && state.get(LIT))) {
                 world.addParticle(ParticleTypes.SMOKE, d2, e2, f2, 0.0, 0.0, 0.0);
             }
-            if ((state.get(CURRENT_FIRE) == FireType.FIRE)) {
-                world.addParticle(ParticleTypes.FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
+            if (particle0 != null && !state.get(LIT)) {
+                world.addParticle(particle0, d2, e2, f2, 0.0, 0.0, 0.0);
             }
-            if ((state.get(CURRENT_FIRE) == FireType.SOUL)) {
-                world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d2, e2, f2, 0.0, 0.0, 0.0);
+            if (particle1 != null && state.get(LIT)) {
+                world.addParticle(particle1, d2, e2, f2, 0.0, 0.0, 0.0);
             }
         }
         super.randomDisplayTick(state, world, pos, random);
     }
 
     public static int getLuminance(BlockState currentBlockState) {
-        return currentBlockState.get(LIT) ? 15 : 0;
+        return currentBlockState.get(LIT) || currentBlockState.isOf(ModBlocks.FORTRESS_FLAME) ? 15 : 0;
     }
 
     @Override

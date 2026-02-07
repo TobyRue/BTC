@@ -1,0 +1,11 @@
+{
+  "parent": "btc:block/base_dungeon_flame_with_fire",
+  "textures": {
+    "top": "minecraft:block/chiseled_nether_bricks",
+    "bottom": "minecraft:block/chiseled_nether_bricks",
+    "side": "minecraft:block/nether_bricks",
+    "particle": "minecraft:block/nether_bricks",
+    "fire_0": "minecraft:block/fire_0",
+    "fire_1": "minecraft:block/fire_1"
+  }
+}

@@ -11,6 +11,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -31,9 +33,10 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class PotionPillar extends Block implements ModBlockEntityProvider<PotionPillarBlockEntity>, ModTickBlockEntityProvider<PotionPillarBlockEntity>, IDungeonWireConnect, CornerStorage {
+public class PotionPillar extends Block implements ModBlockEntityProvider<PotionPillarBlockEntity>, ModTickBlockEntityProvider<PotionPillarBlockEntity>, IDungeonWireConnect, CornerStorage, Waterloggable {
 //    public static final EnumProperty<AntierType> ANTIER_TYPE = EnumProperty.of("antier_type", AntierType.class);
     public static final BooleanProperty DISABLE = BooleanProperty.of("disable");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -61,20 +64,24 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
                 .with(DISABLE, false)
                 .with(USES_SELECTOR, false)
                 .with(FACING, Direction.NORTH)
-                .with(MIRRORED, BlockMirror.NONE).with(AXIS, Direction.Axis.Y));
+                .with(MIRRORED, BlockMirror.NONE).with(AXIS, Direction.Axis.Y)
+                .with(Properties.WATERLOGGED, false));
     }
 
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         Direction direction = ctx.getPlayerLookDirection();
+        BlockPos blockPos = ctx.getBlockPos();
+        FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
 
         return this.getDefaultState()
                 .with(DISABLE, false)
                 .with(USES_SELECTOR, false)
                 .with(AXIS, direction.getAxis())
                 .with(FACING, Direction.NORTH)
-                .with(MIRRORED, BlockMirror.NONE);
+                .with(MIRRORED, BlockMirror.NONE)
+                .with(Properties.WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
@@ -84,6 +91,7 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
         builder.add(MIRRORED);
         builder.add(AXIS);
         builder.add(USES_SELECTOR);
+        builder.add(Properties.WATERLOGGED);
     }
 
     @Override
@@ -92,6 +100,14 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
         if (world.getBlockEntity(pos) instanceof PotionPillarBlockEntity be) {
             be.assignRandomRune(world);
         }
+    }
+
+    @Override
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(Properties.WATERLOGGED)) {
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        }
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -211,6 +227,13 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
                 case CLOCKWISE_90, COUNTERCLOCKWISE_90 -> Direction.Axis.X;
             };
         });
+    }
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        if (state.get(Properties.WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
     }
 
     @Override
