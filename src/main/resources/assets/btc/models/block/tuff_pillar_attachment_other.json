@@ -1,8 +1,8 @@
 {
 	"parent": "btc:block/pillar_attachment_other",
 	"textures": {
-		"bottom": "minecraft:block/polished_tuff",
-		"side": "btc:block/tuff_pillar",
-		"top": "minecraft:block/polished_tuff"
+		"bottom": "minecraft:block/tuff",
+		"side": "minecraft:block/tuff",
+		"top": "minecraft:block/tuff"
 	}
 }

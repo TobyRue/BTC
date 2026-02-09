@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
-import net.fabricmc.fabric.mixin.object.builder.AbstractBlockSettingsAccessor;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -29,33 +28,73 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+    public static final PillarBlock CHISELED_TUFF_BRICKS_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
+            "chiseled_tuff_bricks_pillar",
+            true
+    );
     public static final PillarBlock TUFF_PILLAR = (PillarBlock) register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
             "tuff_pillar",
             true
     );
     public static final PillarBlock STONE_PILLAR = (PillarBlock) register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
             "stone_pillar",
             true
     );
-    public static final PillarBlock CRACKED_STONE_PILLAR = (PillarBlock) register(
+    public static final PillarBlock CRACKED_STONE_BRICKS_PILLAR = (PillarBlock) register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
-            "cracked_stone_pillar",
+            "cracked_stone_bricks_pillar",
+            true
+    );
+    public static final PillarBlock STONE_BRICKS_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
+            "stone_bricks_pillar",
+            true
+    );
+    public static final PillarBlock POLISHED_TUFF_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
+            "polished_tuff_pillar",
+            true
+    );
+    public static final PillarBlock TUFF_BRICKS_PILLAR = (PillarBlock) register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            "tuff_bricks_pillar",
+            true
+    );
+    public static final PilasterBlock STONE_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "stone_pilaster",
+            true
+    );
+    public static final PilasterBlock STONE_BRICKS_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
+            "stone_bricks_pilaster",
+            true
+    );
+    public static final PilasterBlock CRACKED_STONE_BRICKS_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
+            "cracked_stone_bricks_pilaster",
             true
     );
     public static final PilasterBlock TUFF_BRICK_PILASTER = (PilasterBlock) register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICK_STAIRS)),
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
             "tuff_brick_pilaster",
             true
     );
+    public static final PilasterBlock CHISELED_TUFF_BRICKS_PILASTER = (PilasterBlock) register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
+            "chiseled_tuff_bricks_pilaster",
+            true
+    );
     public static final PilasterBlock POLISHED_TUFF_PILASTER = (PilasterBlock) register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF_STAIRS)),
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
             "polished_tuff_pilaster",
             true
     );
     public static final PilasterBlock TUFF_PILASTER = (PilasterBlock) register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_STAIRS)),
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
             "tuff_pilaster",
             true
     );
@@ -240,5 +279,7 @@ public class ModBlocks {
         Registries.ITEM.addAlias(BTC.identifierOf("dungeon_fire"), BTC.identifierOf("brazier"));
         Registries.BLOCK.addAlias(BTC.identifierOf("fire_dispenser"), BTC.identifierOf("dungeon_flame"));
         Registries.ITEM.addAlias(BTC.identifierOf("fire_dispenser"), BTC.identifierOf("dungeon_flame"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("cracked_stone_pillar"), BTC.identifierOf("cracked_stone_bricks_pillar"));
+        Registries.ITEM.addAlias(BTC.identifierOf("cracked_stone_pillar"), BTC.identifierOf("cracked_stone_bricks_pillar"));
     }
 }

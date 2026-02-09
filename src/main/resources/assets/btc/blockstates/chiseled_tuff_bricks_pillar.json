@@ -1,0 +1,172 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "axis": "x"
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar",
+        "y": 0,
+        "x": 0
+      },
+      "when": {
+        "axis": "y"
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar",
+        "y": 0,
+        "x": 270
+      },
+      "when": {
+        "axis": "z"
+      }
+    },
+
+
+
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment_other",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "axis": "x",
+        "north": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment"
+      },
+      "when": {
+        "axis": "y",
+        "north": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "y": 0,
+        "x": 270
+      },
+      "when": {
+        "axis": "z",
+        "north": true
+      }
+    },
+
+
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "x": 270,
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "east": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "y": 90,
+        "x": 0
+      },
+      "when": {
+        "axis": "y",
+        "east": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment_other",
+        "x": 270
+      },
+      "when": {
+        "axis": "z",
+        "east": true
+      }
+    },
+
+
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment_other",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "south": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "y": 180,
+        "x": 0
+      },
+      "when": {
+        "axis": "y",
+        "south": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "y": 0,
+        "x": 90
+      },
+      "when": {
+        "axis": "z",
+        "south": true
+      }
+    },
+
+
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "axis": "x",
+        "west": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment",
+        "y": 270,
+        "x": 0
+      },
+      "when": {
+        "axis": "y",
+        "west": true
+      }
+    },
+    {
+      "apply": {
+        "model": "btc:block/chiseled_tuff_bricks_pillar_attachment_other",
+        "x": 270,
+        "y": 180
+      },
+      "when": {
+        "axis": "z",
+        "west": true
+      }
+    }
+  ]
+}

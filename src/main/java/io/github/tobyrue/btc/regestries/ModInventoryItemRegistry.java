@@ -63,11 +63,16 @@ public class ModInventoryItemRegistry {
                     ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WEATHERED_COPPER_BUTTON,
                     ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.OXIDIZED_COPPER_BUTTON,
                     ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON, ModBlocks.TUFF_BRICK_PILASTER,
-                    ModBlocks.TUFF_PILASTER, ModBlocks.POLISHED_TUFF_PILASTER);
+                    ModBlocks.TUFF_PILASTER, ModBlocks.POLISHED_TUFF_PILASTER, ModBlocks.CHISELED_TUFF_BRICKS_PILASTER, ModBlocks.STONE_PILASTER,
+                    ModBlocks.STONE_BRICKS_PILASTER, ModBlocks.CRACKED_STONE_BRICKS_PILASTER);
 
-            content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_PILLAR);
-            content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_PILLAR);
+            content.addAfter(Blocks.STONE, ModBlocks.STONE_PILLAR);
+            content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_BRICKS_PILLAR);
+            content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_BRICKS_PILLAR);
             content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_PILLAR);
+            content.addAfter(Blocks.CHISELED_TUFF_BRICKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR);
+            content.addAfter(Blocks.POLISHED_TUFF, ModBlocks.POLISHED_TUFF_PILLAR);
+            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR);
         });
     }
 }

@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar",
+        "model": "btc:block/stone_bricks_pillar",
         "x": 90,
         "y": 270
       },
@@ -12,7 +12,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar",
+        "model": "btc:block/stone_bricks_pillar",
         "y": 0,
         "x": 0
       },
@@ -22,7 +22,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar",
+        "model": "btc:block/stone_bricks_pillar",
         "y": 0,
         "x": 270
       },
@@ -35,7 +35,7 @@
 
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment_other",
+        "model": "btc:block/stone_bricks_pillar_attachment_other",
         "x": 90,
         "y": 270
       },
@@ -46,7 +46,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment"
+        "model": "btc:block/stone_bricks_pillar_attachment"
       },
       "when": {
         "axis": "y",
@@ -55,7 +55,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "y": 0,
         "x": 270
       },
@@ -68,7 +68,7 @@
 
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "x": 270,
         "y": 90
       },
@@ -79,7 +79,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "y": 90,
         "x": 0
       },
@@ -90,7 +90,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment_other",
+        "model": "btc:block/stone_bricks_pillar_attachment_other",
         "x": 270
       },
       "when": {
@@ -102,7 +102,7 @@
 
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment_other",
+        "model": "btc:block/stone_bricks_pillar_attachment_other",
         "x": 90,
         "y": 90
       },
@@ -113,7 +113,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "y": 180,
         "x": 0
       },
@@ -124,7 +124,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "y": 0,
         "x": 90
       },
@@ -137,7 +137,7 @@
 
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "x": 90,
         "y": 90
       },
@@ -148,7 +148,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment",
+        "model": "btc:block/stone_bricks_pillar_attachment",
         "y": 270,
         "x": 0
       },
@@ -159,7 +159,7 @@
     },
     {
       "apply": {
-        "model": "btc:block/cracked_stone_pillar_attachment_other",
+        "model": "btc:block/stone_bricks_pillar_attachment_other",
         "x": 270,
         "y": 180
       },

@@ -48,7 +48,7 @@ public class BTC implements ModInitializer {
     public static final TagKey<Item> WRENCHES = TagKey.of(RegistryKeys.ITEM,  Identifier.of(MOD_ID, "wrenches"));
     public static final TagKey<Block> BUTTONS = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "copper_buttons"));
     public static final TagKey<Block> PILASTER = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pilaster"));
-    public static final TagKey<Block> COLUMN = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "column"));
+    public static final TagKey<Block> PILLAR = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pillar"));
     public static final TagKey<Block> PANE = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pane"));
 
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(

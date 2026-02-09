@@ -1,7 +1,11 @@
 {
   "values": [
-    "btc:tuff_brick_pilaster",
+    "btc:stone_pilaster",
+    "btc:stone_bricks_pilaster",
+    "btc:cracked_stone_bricks_pilaster",
+    "btc:tuff_pilaster",
     "btc:polished_tuff_pilaster",
-    "btc:tuff_pilaster"
+    "btc:tuff_brick_pilaster",
+    "btc:chiseled_tuff_bricks_pilaster"
   ]
 }

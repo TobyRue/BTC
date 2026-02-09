@@ -257,7 +257,7 @@ public class PillarBlock extends HorizontalConnectingBlock {
 
     public boolean canConnect(WorldAccess world, BlockState state, BlockPos pos, BlockState neighborState, BlockPos neighborPos, Direction dir) {
         if (state.get(CONNECTS)) {
-            return neighborState.isIn(BTC.COLUMN) ||
+            return neighborState.isIn(BTC.PILLAR) ||
                     neighborState.isIn(BTC.PILASTER) ||
                     neighborState.isIn(BlockTags.FENCES) ||
                     neighborState.isIn(BlockTags.WALLS) ||

@@ -2,7 +2,7 @@
 	"parent": "btc:block/pillar_attachment",
 	"textures": {
 		"bottom": "minecraft:block/chiseled_stone_bricks",
-		"side": "btc:block/stone_pillar",
+		"side": "minecraft:block/stone",
 		"top": "minecraft:block/chiseled_stone_bricks"
 	}
 }

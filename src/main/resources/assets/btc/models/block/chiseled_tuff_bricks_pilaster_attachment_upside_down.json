@@ -1,0 +1,8 @@
+{
+    "parent": "btc:block/pilaster_attachment_upside_down",
+    "textures": {
+      "bottom": "minecraft:block/chiseled_tuff_bricks_top",
+      "side": "minecraft:block/chiseled_tuff_bricks",
+      "top": "minecraft:block/chiseled_tuff_bricks_top"
+    }
+}

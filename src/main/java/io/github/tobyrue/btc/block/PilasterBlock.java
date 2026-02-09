@@ -221,7 +221,7 @@ public class PilasterBlock extends HorizontalConnectingBlock {
             if (facing.getAxis().isVertical()) {
                 if (dir.getAxis().isHorizontal()) {
                     return neighborState.isIn(BTC.PILASTER) ||
-                            neighborState.isIn(BTC.COLUMN) ||
+                            neighborState.isIn(BTC.PILLAR) ||
                             neighborState.isIn(BlockTags.FENCES) ||
                             neighborState.isIn(BlockTags.WALLS) ||
                             neighborState.isIn(BTC.PANE) ||
