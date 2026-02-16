@@ -7,6 +7,7 @@ import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
+import io.github.tobyrue.btc.entity.custom.KeyGolemEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
@@ -167,10 +168,12 @@ public class BTC implements ModInitializer {
         ModInventoryItemRegistry.initialize();
         ModPackets.initialize();
         ModSpells.initialize();
+        ModEvents.init();
 
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
+        FabricDefaultAttributeRegistry.register(ModEntities.KEY_GOLEM, KeyGolemEntity.createKeyGolemAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack stack = player.getStackInHand(hand);

@@ -177,10 +177,6 @@ public class EldritchLuminaryModel<T extends EldritchLuminaryEntity> extends Sin
 		return this.root;
 	}
 
-//	@Override
-//	public ModelPart getPart() {
-//		return eldritch_luminary;
-//	}
 
 	public void renderCape(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
 		this.cape.render(matrices, vertices, light, overlay);

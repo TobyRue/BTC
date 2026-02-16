@@ -45,4 +45,9 @@ public class ModEntities {
             Identifier.of(BTC.MOD_ID, "high_energy_pellet"),
             EntityType.Builder.<SuperHappyKillBallEntity>create(SuperHappyKillBallEntity::new, SpawnGroup.MISC)
                     .dimensions(1f, 1f).eyeHeight(0.5f).makeFireImmune().build());
+    public static final EntityType<KeyGolemEntity> KEY_GOLEM = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "key_golem"),
+            EntityType.Builder.<KeyGolemEntity>create(KeyGolemEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.75f, 1.5f).eyeHeight(0.5f).makeFireImmune().build());
+
 }

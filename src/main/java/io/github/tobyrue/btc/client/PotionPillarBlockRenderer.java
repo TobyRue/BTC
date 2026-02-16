@@ -112,7 +112,7 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         long time = blockEntity.getWorld().getTime();
         float t = (time + tickDelta) / TICKS_PER_GLYPH;
 
-        int index = Math.floorMod((int)t, rune.length());
+        int index = isHoliday() ? Math.floorMod((int)t, getHoliday().length()) : Math.floorMod((int)t, rune.length());
         int alpha = getAlpha(t);
 
         Text glyph = isHoliday() ? Text.literal(String.valueOf(getHoliday().charAt(index))) : Text.literal(String.valueOf(rune.charAt(index)))

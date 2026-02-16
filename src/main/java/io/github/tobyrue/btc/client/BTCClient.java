@@ -385,6 +385,7 @@ public class BTCClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.CREEPER_PILLAR, CreeperPillarRenderer::new);
         EntityRendererRegistry.register(ModEntities.WIND_TORNADO, WindTornadoEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.SUPER_HAPPY_KILL_BALL, SuperHappyKillBallEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.KEY_GOLEM, KeyGolemEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARY, EldritchLuminaryModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.WATER_BURST, WaterBlastEntityModel::getTexturedModelData);
@@ -394,6 +395,6 @@ public class BTCClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.CREEPER_PILLAR, CreeperPillarModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.WIND_TORNADO, WindTornadoEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SHKB, SuperHappyKillBallEntityModel::getTexturedModelData);
-
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.KEY_GOLEM, KeyGolemModel::getTexturedModelData);
     }
 }
