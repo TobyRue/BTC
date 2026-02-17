@@ -39,9 +39,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     private boolean movedLastTick = false;
     private int idleTimer = 0;
     private int animationTimer = 0;
-    private int movementStopDelay = 0;
-    private static final int MOVEMENT_STOP_TICKS = 2; // overlap for 2 ticks
-    private static final int IDLE_PLAYS = 1;
+     private static final int IDLE_PLAYS = 2;
 
     private static final TrackedData<Boolean> IS_PANICKED = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> WAS_PICKED_UP = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -190,12 +188,8 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     }
 
     public void setAnimation(ActionAnim requested) {
-        if (this.getWorld().isClient) {
-            System.out.println(requested);
-        }
         if (didMove() && !requested.playsOverMovement) {
             requested = ActionAnim.NONE;
-            System.out.println("Hello mf: " + didMove() + " 2: " + !requested.playsOverMovement);
         }
         if (animationTimer > 0 && !currentAnim.canBeStopped && !requested.canOveride) {
             return;
