@@ -14,7 +14,6 @@ import net.minecraft.entity.passive.TameableShoulderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -26,32 +25,23 @@ import java.util.UUID;
 
 public class KeyGolemEntity extends TameableShoulderEntity {
     public final AnimationState idleAnimationState = new AnimationState();
-    public final AnimationState disappointedAnimationState = new AnimationState();
+    public final AnimationState playerDie1AnimationState = new AnimationState();
+    public final AnimationState playerDie2AnimationState = new AnimationState();
     public final AnimationState fallAsleepAnimationState = new AnimationState();
     public final AnimationState wakeUpAnimationState = new AnimationState();
     public final AnimationState sleepAnimationState = new AnimationState();
     public final AnimationState baseAnimationState = new AnimationState();
     private ActionAnim currentAnim = ActionAnim.NONE;
-    private ActionAnim desiredAnim = ActionAnim.NONE;
-    private int idleTime = 0;
-    private boolean sleeping = false;
-    private boolean didMoveLastTick = false;
-    private boolean didMoveThisTick = false;
+    private ActionAnim lastAnim = ActionAnim.NONE;
     private Vec3d currentPos;
     private Vec3d lastPos;
-    private int disappointTimer = 0;
-    private int animationLock = 0;
-
-    public boolean isWakingUp() {
-        return wakingUp;
-    }
-
-    public void setWakingUp(boolean wakingUp) {
-        this.wakingUp = wakingUp;
-    }
-
-    private boolean wakingUp = false;
-
+    private boolean movedThisTick = false;
+    private boolean movedLastTick = false;
+    private int idleTimer = 0;
+    private int animationTimer = 0;
+    private int movementStopDelay = 0;
+    private static final int MOVEMENT_STOP_TICKS = 2; // overlap for 2 ticks
+    private static final int IDLE_PLAYS = 1;
 
     private static final TrackedData<Boolean> IS_PANICKED = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> WAS_PICKED_UP = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -112,62 +102,73 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     }
 
 
-    private void playAction(ActionAnim anim) {
-
-        if (anim.priority < currentAnim.priority)
-            return;
-
-        stopActionsNotCurrent(anim);
-
-        currentAnim = anim;
-        switch (anim) {
-            case IDLE -> idleAnimationState.startIfNotRunning(this.age);
-            case FALL_ASLEEP -> fallAsleepAnimationState.startIfNotRunning(this.age);
-            case SLEEP -> sleepAnimationState.startIfNotRunning(this.age);
-            case WAKE_UP -> wakeUpAnimationState.startIfNotRunning(this.age);
-            case DISAPPOINTED -> disappointedAnimationState.startIfNotRunning(this.age);
-        }
-    }
-
-    private void stopActionsNotCurrent(ActionAnim anim) {
-        switch (anim) {
-            case IDLE -> {
-                disappointedAnimationState.stop();
-                fallAsleepAnimationState.stop();
-                sleepAnimationState.stop();
-                wakeUpAnimationState.stop();
-            }
-            case FALL_ASLEEP -> {
-                idleAnimationState.stop();
-                disappointedAnimationState.stop();
-                sleepAnimationState.stop();
-                wakeUpAnimationState.stop();
-            }
-            case SLEEP -> {
-                idleAnimationState.stop();
-                disappointedAnimationState.stop();
-                fallAsleepAnimationState.stop();
-                wakeUpAnimationState.stop();
-            }
-            case WAKE_UP -> {
-                idleAnimationState.stop();
-                disappointedAnimationState.stop();
-                fallAsleepAnimationState.stop();
-                sleepAnimationState.stop();
-            }
-            case DISAPPOINTED -> {
-                idleAnimationState.stop();
-                fallAsleepAnimationState.stop();
-                sleepAnimationState.stop();
-                wakeUpAnimationState.stop();
-            }
-        }
-    }
-
+//    private void playAction(ActionAnim anim) {
+//
+//
+//        stopActionsNotCurrent(anim);
+//
+//        currentAnim = anim;
+//        switch (anim) {
+//            case IDLE -> idleAnimationState.startIfNotRunning(this.age);
+//            case FALL_ASLEEP -> fallAsleepAnimationState.startIfNotRunning(this.age);
+//            case SLEEP -> sleepAnimationState.startIfNotRunning(this.age);
+//            case WAKE_UP -> wakeUpAnimationState.startIfNotRunning(this.age);
+//            case PLAYER_DEATH_1 -> playerDie1AnimationState.startIfNotRunning(this.age);
+//        }
+//    }
+//
+//    private void stopActionsNotCurrent(ActionAnim anim) {
+//        switch (anim) {
+//            case IDLE -> {
+//                playerDie1AnimationState.stop();
+//                playerDie2AnimationState.stop();
+//                fallAsleepAnimationState.stop();
+//                sleepAnimationState.stop();
+//                wakeUpAnimationState.stop();
+//            }
+//            case FALL_ASLEEP -> {
+//                idleAnimationState.stop();
+//                playerDie1AnimationState.stop();
+//                playerDie2AnimationState.stop();
+//                sleepAnimationState.stop();
+//                wakeUpAnimationState.stop();
+//            }
+//            case SLEEP -> {
+//                idleAnimationState.stop();
+//                playerDie1AnimationState.stop();
+//                playerDie2AnimationState.stop();
+//                fallAsleepAnimationState.stop();
+//                wakeUpAnimationState.stop();
+//            }
+//            case WAKE_UP -> {
+//                idleAnimationState.stop();
+//                playerDie1AnimationState.stop();
+//                playerDie2AnimationState.stop();
+//                fallAsleepAnimationState.stop();
+//                sleepAnimationState.stop();
+//            }
+//            case PLAYER_DEATH_1 -> {
+//                idleAnimationState.stop();
+//                playerDie2AnimationState.stop();
+//                fallAsleepAnimationState.stop();
+//                sleepAnimationState.stop();
+//                wakeUpAnimationState.stop();
+//            }
+//            case PLAYER_DEATH_2 -> {
+//                idleAnimationState.stop();
+//                playerDie1AnimationState.stop();
+//                fallAsleepAnimationState.stop();
+//                sleepAnimationState.stop();
+//                wakeUpAnimationState.stop();
+//            }
+//        }
+//    }
+//
 
     private void stopActions() {
         idleAnimationState.stop();
-        disappointedAnimationState.stop();
+        playerDie1AnimationState.stop();
+        playerDie2AnimationState.stop();
         fallAsleepAnimationState.stop();
         sleepAnimationState.stop();
         wakeUpAnimationState.stop();
@@ -188,98 +189,86 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         return super.damage(source, amount);
     }
 
+    public void setAnimation(ActionAnim requested) {
+        if (this.getWorld().isClient) {
+            System.out.println(requested);
+        }
+        if (didMove() && !requested.playsOverMovement) {
+            requested = ActionAnim.NONE;
+            System.out.println("Hello mf: " + didMove() + " 2: " + !requested.playsOverMovement);
+        }
+        if (animationTimer > 0 && !currentAnim.canBeStopped && !requested.canOveride) {
+            return;
+        }
+        if (requested == currentAnim && !currentAnim.repeats) {
+            return;
+        }
+
+        switch (currentAnim) {
+            case IDLE -> idleAnimationState.stop();
+            case SLEEP -> sleepAnimationState.stop();
+            case WAKE_UP -> wakeUpAnimationState.stop();
+            case FALL_ASLEEP -> fallAsleepAnimationState.stop();
+            case PLAYER_DEATH_1 -> playerDie1AnimationState.stop();
+            case PLAYER_DEATH_2 -> playerDie2AnimationState.stop();
+            case null, default -> stopActions();
+        }
+
+        lastAnim = currentAnim;
+        currentAnim = requested;
+
+        switch (currentAnim) {
+            case IDLE -> idleAnimationState.startIfNotRunning(this.age);
+            case SLEEP -> sleepAnimationState.startIfNotRunning(this.age);
+            case WAKE_UP -> wakeUpAnimationState.startIfNotRunning(this.age);
+            case FALL_ASLEEP -> fallAsleepAnimationState.startIfNotRunning(this.age);
+            case PLAYER_DEATH_1 -> playerDie1AnimationState.startIfNotRunning(this.age);
+            case PLAYER_DEATH_2 -> playerDie2AnimationState.startIfNotRunning(this.age);
+            case null, default -> baseAnimationState.startIfNotRunning(this.age);
+        }
+        animationTimer = currentAnim.canBeStopped ? 0 : currentAnim.duration;
+    }
+
+
+    public boolean didMove() {
+        return this.getVelocity().lengthSquared() > 0.01 || (lastPos != null && currentPos != null && !lastPos.equals(currentPos));
+    }
+
     @Override
     public void tick() {
         super.tick();
+        baseAnimationState.startIfNotRunning(this.age);
 
-        lastPos = currentPos;
-        currentPos = this.getPos();
-
-        didMoveLastTick = didMoveThisTick;
-        didMoveThisTick = (this.getVelocity().lengthSquared() > 0.001) ||
-                (lastPos != null && currentPos != null && !lastPos.equals(currentPos));
-        if (disappointTimer > 0) {
-            disappointTimer--;
-        }
-        // Panic sync
+        this.lastPos = currentPos;
+        this.currentPos = this.getPos();
+        this.movedLastTick = movedThisTick;
+        this.movedThisTick = didMove();
         if (this.isPanicked() != (this.getMaxHealth() == this.getHealth())) {
             this.setIsPanicked(!this.isPanicked());
         }
 
-        if (!this.getWorld().isClient)
+        if (animationTimer > 0) {
+            animationTimer--;
+        }
+
+        if (animationTimer == 0 && currentAnim.next != null) {
+            setAnimation(currentAnim.next);
             return;
-
-        baseAnimationState.startIfNotRunning(this.age);
-
-
-        if (getIsDisappointed() > 0) {
-            desiredAnim = ActionAnim.DISAPPOINTED;
         }
 
-        else if (didMoveThisTick) {
-
-            idleTime = 0;
-
-            if (currentAnim == ActionAnim.SLEEP || currentAnim == ActionAnim.FALL_ASLEEP)
-                desiredAnim = ActionAnim.WAKE_UP;
-            else
-                desiredAnim = ActionAnim.IDLE;
-
-            sleeping = false;
-        }
-        else {
-
-            idleTime++;
-
-            if (!sleeping && idleTime > 20 * 20) {
-                desiredAnim = ActionAnim.FALL_ASLEEP;
+        if (didMove()) {
+            idleTimer = 0;
+            if (currentAnim == ActionAnim.SLEEP || currentAnim == ActionAnim.FALL_ASLEEP) {
+                setAnimation(ActionAnim.WAKE_UP);
+            } else if (!currentAnim.playsOverMovement) {
+                setAnimation(ActionAnim.NONE);
             }
-            else if (sleeping) {
-                desiredAnim = ActionAnim.SLEEP;
-            }
-            else {
-                desiredAnim = ActionAnim.IDLE;
-            }
-        }
-
-        /*  TRANSITIONS  */
-
-        if (animationLock > 0)
-            animationLock--;
-
-        if (animationLock <= 0 && getIsDisappointed() > 0) {
-            setIsDisappointed(0);
-            disappointedAnimationState.stop();
-        }
-
-        // only allow switching when not locked
-        if (animationLock == 0 && desiredAnim != currentAnim) {
-
-            stopActions();
-            currentAnim = desiredAnim;
-
-            switch (currentAnim) {
-
-                case IDLE -> idleAnimationState.start(this.age);
-
-                case FALL_ASLEEP -> {
-                    fallAsleepAnimationState.start(this.age);
-                    sleeping = true;
-                    animationLock = 60; // length of fall asleep animation
-                }
-
-                case SLEEP -> sleepAnimationState.start(this.age);
-
-                case WAKE_UP -> {
-                    wakeUpAnimationState.start(this.age);
-                    sleeping = false;
-                    animationLock = 20;
-                }
-
-                case DISAPPOINTED -> {
-                    disappointedAnimationState.start(this.age);
-                    animationLock = disappointTimer; // exact duration
-                }
+        } else {
+            idleTimer++;
+            if (idleTimer == 100 * IDLE_PLAYS) {
+                setAnimation(ActionAnim.FALL_ASLEEP);
+            } else if (idleTimer < 100 * IDLE_PLAYS && currentAnim == ActionAnim.NONE) {
+                setAnimation(ActionAnim.IDLE);
             }
         }
     }
@@ -290,9 +279,16 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         if (this.getPlayerUUID().isEmpty()) return;
         if (!player.getUuid().equals(this.getPlayerUUID().get())) return;
         setIsDisappointed(this.random.nextInt(2) + 1);
-        disappointTimer = (this.random.nextInt(2) + 1) == 1 ? 30 : 75;
     }
 
+    @Override
+    public void onTrackedDataSet(TrackedData<?> data) {
+        super.onTrackedDataSet(data);
+
+        if (IS_DISAPPOINTED.equals(data)) {
+            setAnimation(getIsDisappointed() == 0 ? ActionAnim.NONE : getIsDisappointed() == 1 ? ActionAnim.PLAYER_DEATH_1 : ActionAnim.PLAYER_DEATH_2);
+        }
+    }
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
@@ -338,16 +334,29 @@ public class KeyGolemEntity extends TameableShoulderEntity {
             this.setPlayerUUID(Optional.empty());
         }
     }
-    private enum ActionAnim {
-        NONE(0),
-        IDLE(1),
-        SLEEP(2),
-        WAKE_UP(3),
-        FALL_ASLEEP(4),
-        DISAPPOINTED(10);
+    public enum ActionAnim {
+        NONE(true, false, false, false, 0, null),
+        IDLE(true, false,  false, true, 10 * 20, null),
+        SLEEP(true, false, true, true, (int) (9.25 * 20), null),
+        WAKE_UP(false, false, true, false, 1 * 20, IDLE),
+        FALL_ASLEEP(false, false, false, false, 3 * 20, SLEEP),
+        PLAYER_DEATH_1(false, true, true, false, 30, IDLE),
+        PLAYER_DEATH_2(false, true, true, false, 75, IDLE);
 
-        final int priority;
-        ActionAnim(int priority) { this.priority = priority; }
+        final boolean canBeStopped;
+        final boolean canOveride;
+        final boolean playsOverMovement;
+        final boolean repeats;
+        final int duration;
+        @Nullable final ActionAnim next;
+        ActionAnim(boolean canBeStopped, boolean canOveride, boolean playsOverMovement, boolean repeats, int duration, @Nullable ActionAnim next) {
+            this.canBeStopped = canBeStopped;
+            this.canOveride = canOveride;
+            this.playsOverMovement = playsOverMovement;
+            this.repeats = repeats;
+            this.duration = duration;
+            this.next = next;
+        }
     }
 
 }

@@ -1,12 +1,7 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.animation.KeyGolemAnimations;
-import io.github.tobyrue.btc.entity.animation.LuminaryAnimations;
-import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
-import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.KeyGolemEntity;
-import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
@@ -137,11 +132,10 @@ public class KeyGolemModel<T extends KeyGolemEntity> extends SinglePartEntityMod
 		this.updateAnimation(entity.fallAsleepAnimationState, KeyGolemAnimations.FALL_ASLEEP, animationProgress, 1f);
 		this.updateAnimation(entity.sleepAnimationState, KeyGolemAnimations.SLEEP, animationProgress, 1f);
 		this.updateAnimation(entity.wakeUpAnimationState, KeyGolemAnimations.WAKE_UP, animationProgress, 1f);
-		this.updateAnimation(entity.disappointedAnimationState, entity.getIsDisappointed() == 1 ?
-				KeyGolemAnimations.PLAYER_DIE_1 : entity.getIsDisappointed() == 2 ?
-				KeyGolemAnimations.PLAYER_DIE_2 : KeyGolemAnimations.BASE, animationProgress, 1f);
-		if (!entity.isWakingUp()) {
-			this.animateMovement(entity.isPanicked() ? KeyGolemAnimations.PANIC :  KeyGolemAnimations.RUN, limbAngle, limbDistance, 2f, 2.5f);
+		this.updateAnimation(entity.playerDie1AnimationState, KeyGolemAnimations.PLAYER_DIE_1, animationProgress, 1f);
+		this.updateAnimation(entity.playerDie2AnimationState, KeyGolemAnimations.PLAYER_DIE_2, animationProgress, 1f);
+		if (entity.didMove()) {
+			this.animateMovement(entity.isPanicked() ? KeyGolemAnimations.PANIC : KeyGolemAnimations.RUN, limbAngle, limbDistance, 2f, 2.5f);
 		}
 	}
 
