@@ -26,7 +26,8 @@
     "ItemRendererMixin",
     "KeyBindingAccessor",
     "ModelLoaderMixin",
-    "PlayerArmPoseMixin"
+    "PlayerArmPoseMixin",
+    "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

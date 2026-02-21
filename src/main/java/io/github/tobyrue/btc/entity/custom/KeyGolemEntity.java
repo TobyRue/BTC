@@ -225,7 +225,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
 
 
     public boolean didMove() {
-        return this.getVelocity().lengthSquared() > 0.01 || (lastPos != null && currentPos != null && !lastPos.equals(currentPos));
+        return this.getVelocity().lengthSquared() > 0.02 || (lastPos != null && currentPos != null && !lastPos.equals(currentPos));
     }
 
     @Override

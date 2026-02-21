@@ -4,9 +4,11 @@ import io.github.tobyrue.btc.entity.animation.KeyGolemAnimations;
 import io.github.tobyrue.btc.entity.custom.KeyGolemEntity;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.ParrotEntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Vector3f;
 
 // Made with Blockbench 5.0.7
 // Exported for Minecraft version 1.17+ for Yarn
@@ -145,6 +147,13 @@ public class KeyGolemModel<T extends KeyGolemEntity> extends SinglePartEntityMod
 
 		this.head.yaw = headYaw * 0.017453292F;
 		this.head.pitch = headPitch * 0.017453292F;
+	}
+
+	public void poseOnShoulder(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float limbAngle, float limbDistance, float headYaw, float headPitch, int danceAngle) {
+		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		this.animate(KeyGolemAnimations.BASE);
+		this.animate(KeyGolemAnimations.SLEEP);
+		this.root.render(matrices, vertexConsumer, light, overlay);
 	}
 
 	@Override

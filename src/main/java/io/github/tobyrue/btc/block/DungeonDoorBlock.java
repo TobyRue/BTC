@@ -1,14 +1,17 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.ICopperWireConnect;
+import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.wires.IDungeonWireAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import net.minecraft.block.*;
+import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -39,7 +42,8 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         NORMAL("normal"),
         WIRED("wired"),
         LOCKED("locked"),
-        KEYHOLE("keyhole");
+        KEYHOLE("keyhole"),
+        GOLEM("golem");
 
         private final String name;
 
@@ -53,9 +57,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         }
     }
 
-    // Define the 4x4x4 cube shape.
     private static final VoxelShape CUBE_SHAPE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
-    // Define the full block shape.
     private static final VoxelShape FULL_BLOCK_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 
     public static final int MAX_DISTANCE = 7;
@@ -131,7 +133,29 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
 //    }
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (stack.isOf(Items.TRIAL_KEY) && state.get(TYPE) == DoorType.KEYHOLE && !state.get(OPEN)) {
+        if (state.get(TYPE) == DoorType.GOLEM && !state.get(OPEN)) {
+            NbtCompound leftShoulder = player.getShoulderEntityLeft();
+            NbtCompound rightShoulder = player.getShoulderEntityLeft();
+            if (!leftShoulder.isEmpty()) {
+                String entityId = leftShoulder.getString("id");
+                if (entityId.equals("btc:key_golem")) {
+                    player.setShoulderEntityLeft(new NbtCompound());
+                    for (BlockPos offsetPos : findDoors(world, pos)) {
+                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+                    }
+                    return ItemActionResult.SUCCESS;
+                }
+            } else if (!rightShoulder.isEmpty()) {
+                String entityId = rightShoulder.getString("id");
+                if (entityId.equals("btc:key_golem")) {
+                    player.setShoulderEntityRight(new NbtCompound());
+                    for (BlockPos offsetPos : findDoors(world, pos)) {
+                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+                    }
+                    return ItemActionResult.SUCCESS;
+                }
+            }
+        } else if (stack.isOf(Items.TRIAL_KEY) && state.get(TYPE) == DoorType.KEYHOLE && !state.get(OPEN)) {
             stack.decrementUnlessCreative(1, player);
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
@@ -163,6 +187,33 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        System.out.println("Type: " + state.get(TYPE));
+        if (state.get(TYPE) == DoorType.GOLEM && !state.get(OPEN)) {
+            System.out.println("Left Shoulder: " + player.getShoulderEntityLeft() + " ID: " + player.getShoulderEntityLeft().getString("id"));
+            System.out.println("Right Shoulder: " + player.getShoulderEntityRight() + " ID: " + player.getShoulderEntityRight().getString("id"));
+            NbtCompound leftShoulder = player.getShoulderEntityLeft();
+            NbtCompound rightShoulder = player.getShoulderEntityLeft();
+            if (!leftShoulder.isEmpty()) {
+                String entityId = leftShoulder.getString("id");
+                if (entityId.equals("btc:key_golem")) {
+                    player.setShoulderEntityLeft(new NbtCompound());
+                    for (BlockPos offsetPos : findDoors(world, pos)) {
+                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+                    }
+                    return ActionResult.SUCCESS;
+                }
+            } else if (!rightShoulder.isEmpty()) {
+                String entityId = rightShoulder.getString("id");
+                if (entityId.equals("btc:key_golem")) {
+                    player.setShoulderEntityRight(new NbtCompound());
+                    for (BlockPos offsetPos : findDoors(world, pos)) {
+                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+                    }
+                    return ActionResult.SUCCESS;
+                }
+            }
+        }
+
         if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
             for (BlockPos offsetPos : findDoors(world, pos)) {
                 setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
@@ -190,7 +241,11 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
                     var neighborPos = pos.offset(direction);
                     var neighborState = world.getBlockState(neighborPos);
 
-                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock && ((neighborState.get(TYPE) == originState.get(TYPE)) || ((neighborState.get(TYPE) == DoorType.KEYHOLE) && (originState.get(TYPE) == DoorType.LOCKED)) || ((originState.get(TYPE) == DoorType.KEYHOLE) && (neighborState.get(TYPE) == DoorType.LOCKED)))) {
+                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock &&
+                            ((neighborState.get(TYPE) == originState.get(TYPE))
+                                    || (((neighborState.get(TYPE) == DoorType.KEYHOLE) || (neighborState.get(TYPE) == DoorType.GOLEM)) && (originState.get(TYPE) == DoorType.LOCKED))
+                                    || (((originState.get(TYPE) == DoorType.KEYHOLE) || (originState.get(TYPE) == DoorType.GOLEM)) && (neighborState.get(TYPE) == DoorType.LOCKED))
+                            )) {
                         queue.add(new Pair<>(neighborPos, distance + 1));
                         found.add(neighborPos);
                     }

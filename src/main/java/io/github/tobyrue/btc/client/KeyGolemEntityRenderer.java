@@ -15,9 +15,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class KeyGolemEntityRenderer extends MobEntityRenderer<KeyGolemEntity, KeyGolemModel<KeyGolemEntity>> {
-    private static final Identifier GOLD = Identifier.of(BTC.MOD_ID, "textures/entity/key_golem_gold.png");
+    public static final Identifier GOLD = Identifier.of(BTC.MOD_ID, "textures/entity/key_golem_gold.png");
     //TODO Make texture for diamond
-    private static final Identifier DIAMOND = Identifier.of(BTC.MOD_ID, "textures/entity/key_golem_diamond.png");
+    public static final Identifier DIAMOND = Identifier.of(BTC.MOD_ID, "textures/entity/key_golem_diamond.png");
 
     public KeyGolemEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new KeyGolemModel<>(context.getPart(ModModelLayers.KEY_GOLEM)), 0.5f);

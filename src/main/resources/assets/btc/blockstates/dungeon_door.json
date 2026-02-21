@@ -4,6 +4,7 @@
       "open=false,door_type=normal": { "model": "btc:block/dungeon_door_normal" },
       "open=false,door_type=wired": { "model": "btc:block/dungeon_door_wired" },
       "open=false,door_type=locked": { "model": "btc:block/dungeon_door_locked" },
-      "open=false,door_type=keyhole": { "model": "btc:block/dungeon_door_keyhole" }
+    "open=false,door_type=keyhole": { "model": "btc:block/dungeon_door_keyhole" },
+    "open=false,door_type=golem": { "model": "btc:block/dungeon_door_keyhole" }
   }
 }
