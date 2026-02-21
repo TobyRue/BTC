@@ -41,6 +41,12 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     private int animationTimer = 0;
      private static final int IDLE_PLAYS = 2;
 
+    public static final AnimationState DUMMY_STATE = new AnimationState();
+
+    static {
+        DUMMY_STATE.start(0);
+    }
+
     private static final TrackedData<Boolean> IS_PANICKED = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> WAS_PICKED_UP = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> IS_DISAPPOINTED = DataTracker.registerData(KeyGolemEntity.class, TrackedDataHandlerRegistry.INTEGER);

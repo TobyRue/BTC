@@ -149,10 +149,15 @@ public class KeyGolemModel<T extends KeyGolemEntity> extends SinglePartEntityMod
 		this.head.pitch = headPitch * 0.017453292F;
 	}
 
-	public void poseOnShoulder(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float limbAngle, float limbDistance, float headYaw, float headPitch, int danceAngle) {
+	public void poseOnShoulder(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float limbAngle, float limbDistance, float headYaw, float headPitch, int time, boolean isSleeping) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.animate(KeyGolemAnimations.BASE);
-		this.animate(KeyGolemAnimations.SLEEP);
+		float animationTime = (float)time;
+		this.updateAnimation(KeyGolemEntity.DUMMY_STATE, KeyGolemAnimations.BASE, animationTime, 1f);
+		if (isSleeping) {
+			this.updateAnimation(KeyGolemEntity.DUMMY_STATE, KeyGolemAnimations.SLEEP, animationTime, 1f);
+		} else {
+			this.updateAnimation(KeyGolemEntity.DUMMY_STATE, KeyGolemAnimations.IDLE, animationTime, 1f);
+		}
 		this.root.render(matrices, vertexConsumer, light, overlay);
 	}
 

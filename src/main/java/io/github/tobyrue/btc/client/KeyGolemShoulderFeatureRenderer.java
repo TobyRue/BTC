@@ -36,14 +36,20 @@ public class KeyGolemShoulderFeatureRenderer<T extends PlayerEntity> extends Fea
 
     private void renderShoulderGolem(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T player, float limbAngle, float limbDistance, float headYaw, float headPitch, boolean leftShoulder) {
         NbtCompound nbt = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
-        if (nbt.getString("id").equals("btc:key_golem")) {
-            matrices.push();
 
-            matrices.translate(leftShoulder ? 0.4F : -0.4F, player.isInSneakingPose() ? -0.7F : -0.9F, 0.0F);
+        if (nbt.getString("id").equals("btc:key_golem")) {
+            long uuidLsb = nbt.contains("UUID") ? nbt.getUuid("UUID").getLeastSignificantBits() : 0L;
+
+            boolean randomVariant = (uuidLsb % 2 == 0);
+            var y = randomVariant ? (player.isInSneakingPose() ? -0.7F : -0.9F) : (player.isInSneakingPose() ? -0.73F : -0.93F);
+            matrices.push();
+            matrices.translate(leftShoulder ? 0.4F : -0.4F, y, 0.0F);
             matrices.scale(0.6f, 0.6f, 0.6f);
+
             VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(KeyGolemEntityRenderer.GOLD));
 
-            this.model.poseOnShoulder(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, limbAngle, limbDistance, headYaw, headPitch, player.age);
+            this.model.poseOnShoulder(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV,
+                    limbAngle, limbDistance, headYaw, headPitch, player.age, randomVariant);
 
             matrices.pop();
         }
