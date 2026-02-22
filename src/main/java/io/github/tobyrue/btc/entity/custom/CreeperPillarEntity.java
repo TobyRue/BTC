@@ -78,7 +78,6 @@ public class CreeperPillarEntity extends Entity implements Ownable {
         return super.createSpawnPacket(entityTrackerEntry);
     }
 
-
     public void setOwner(@Nullable LivingEntity owner) {
         this.owner = owner;
         this.ownerUuid = owner == null ? null : owner.getUuid();
@@ -106,7 +105,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
 
     @Override
     public boolean canHit() {
-        return true;
+        return !this.isRemoved();
     }
 
     @Override

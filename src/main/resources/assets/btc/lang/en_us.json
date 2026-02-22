@@ -109,6 +109,9 @@
   "entity.btc.earth_spike": "Earth Spike",
   "entity.btc.creeper_pillar": "Creeper Pillar",
   "entity.btc.wind_tornado": "Wind Tornado",
+  "entity.btc.high_energy_pellet": "High Energy Pellet",
+  "entity.btc.key_golem": "Key Golem",
+  "entity.btc.mine": "Mine",
 
   "subtitles.entity.btc.copper_golem.copper_arm_move": "Copper Golem presses button",
   "subtitles.entity.btc.copper_golem.copper_head_spin": "Copper Golem wakes up",

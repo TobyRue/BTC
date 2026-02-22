@@ -47,7 +47,11 @@ public class ModEntities {
                     .dimensions(1f, 1f).eyeHeight(0.5f).makeFireImmune().build());
     public static final EntityType<KeyGolemEntity> KEY_GOLEM = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(BTC.MOD_ID, "key_golem"),
-            EntityType.Builder.<KeyGolemEntity>create(KeyGolemEntity::new, SpawnGroup.MISC)
+            EntityType.Builder.<KeyGolemEntity>create(KeyGolemEntity::new, SpawnGroup.CREATURE)
                     .dimensions(0.75f, 1.5f).eyeHeight(0.5f).makeFireImmune().build());
+    public static final EntityType<MineEntity> MINE = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "mine"),
+            EntityType.Builder.<MineEntity>create(MineEntity::new, SpawnGroup.MISC)
+                    .dimensions(1f, 1f).eyeHeight(0.5f).makeFireImmune().build());
 
 }

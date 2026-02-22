@@ -43,6 +43,11 @@ public class EarthSpikeEntity extends Entity implements Ownable {
     }
 
     @Override
+    public boolean canHit() {
+        return !this.isRemoved();
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (!setBaseY) {

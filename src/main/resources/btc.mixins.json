@@ -17,6 +17,7 @@
     "PaperMixin",
     "PistonBlockEntityMixin",
     "PistonBlockMixin",
+    "PlayerShoulderedEntityMixin",
     "PlayerSpyglassMixin",
     "RangedWeaponMixin",
     "TuffGolemSpawnMixin"

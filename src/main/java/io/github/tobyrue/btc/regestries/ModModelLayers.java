@@ -23,4 +23,6 @@ public class ModModelLayers {
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "super_happy_kill_ball"), "main");
     public static final EntityModelLayer KEY_GOLEM =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "key_golem"), "main");
+    public static final EntityModelLayer MINE =
+            new EntityModelLayer(Identifier.of(BTC.MOD_ID, "mine"), "main");
 }

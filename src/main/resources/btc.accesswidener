@@ -2,3 +2,5 @@ accessWidener v1 named
 
 accessible method net/minecraft/entity/player/PlayerEntity setShoulderEntityLeft (Lnet/minecraft/nbt/NbtCompound;)V
 accessible method net/minecraft/entity/player/PlayerEntity setShoulderEntityRight (Lnet/minecraft/nbt/NbtCompound;)V
+accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntity (Lnet/minecraft/nbt/NbtCompound;)V
+accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntities ()V

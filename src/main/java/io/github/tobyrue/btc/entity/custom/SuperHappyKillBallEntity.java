@@ -222,9 +222,10 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     }
 
     @Override
-    protected boolean canHit(Entity entity) {
-        return super.canHit(entity);
+    public boolean canHit() {
+        return !this.isRemoved();
     }
+    
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         if (this.dataTracker.get(WAIT) <= 0) {

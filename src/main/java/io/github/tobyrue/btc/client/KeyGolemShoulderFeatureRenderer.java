@@ -41,7 +41,7 @@ public class KeyGolemShoulderFeatureRenderer<T extends PlayerEntity> extends Fea
             long uuidLsb = nbt.contains("UUID") ? nbt.getUuid("UUID").getLeastSignificantBits() : 0L;
 
             boolean randomVariant = (uuidLsb % 2 == 0);
-            var y = randomVariant ? (player.isInSneakingPose() ? -0.7F : -0.9F) : (player.isInSneakingPose() ? -0.73F : -0.93F);
+            var y = randomVariant ? (player.isInSneakingPose() ? -0.7F : -0.9F) : (player.isInSneakingPose() ? -0.72F : -0.92F);
             matrices.push();
             matrices.translate(leftShoulder ? 0.4F : -0.4F, y, 0.0F);
             matrices.scale(0.6f, 0.6f, 0.6f);
