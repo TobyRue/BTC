@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class MineEntityRenderer extends EntityRenderer<MineEntity> {
-    private static final Identifier TEXTURE = BTC.identifierOf("textures/entity/mine.png");
+    private static final Identifier TEXTURE = BTC.identifierOf("textures/entity/copper_mine.png");
     protected MineEntityModel model;
 
     protected MineEntityRenderer(EntityRendererFactory.Context ctx) {
