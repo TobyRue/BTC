@@ -105,7 +105,7 @@ public class MineEntity extends Entity {
             }
         }
 
-        
+
         FluidState fluidState = this.getWorld().getFluidState(pos);
         Vec3d velocity = this.getVelocity();
 
@@ -118,11 +118,10 @@ public class MineEntity extends Entity {
             float topWaterHeight = this.getWorld().getFluidState(surfacePos).getHeight(this.getWorld(), surfacePos);
             double actualSurfaceY = (double)surfacePos.getY() + topWaterHeight;
             double targetY = actualSurfaceY - 0.75;
+            double springForce = (targetY - this.getY()) * 0.01;
+            double currentDamping = 0.85;
 
-            double springForce = (targetY - this.getY()) * 0.002;
-            double currentDamping = 0.998;
-
-            if (Math.abs(this.getY() - targetY) < 0.1 && velocity.y > 0) {
+            if (Math.abs(this.getY() - targetY) < 0.15 && velocity.y > 0) {
                 currentDamping = 0.4;
             }
 
@@ -131,19 +130,11 @@ public class MineEntity extends Entity {
                     (velocity.y + springForce) * currentDamping,
                     Math.signum(velocity.z) * Math.max(0, Math.abs(velocity.z) - 0.005)
             );
-        } else {
+        } else if (!hasNoGravity()) {
             if (this.isOnGround()) {
-                BlockPos belowPos = this.getBlockPos().down();
-                BlockState belowState = this.getWorld().getBlockState(belowPos);
-
-                float slipperiness = belowState.getBlock().getSlipperiness();
-                float friction = slipperiness * 0.91F;
-
-                this.setVelocity(
-                        this.getVelocity().x * friction,
-                        this.getVelocity().y * 0.98,
-                        this.getVelocity().z * friction
-                );
+                BlockState belowState = this.getWorld().getBlockState(this.getBlockPos().down());
+                float friction = belowState.getBlock().getSlipperiness() * 0.91F;
+                this.setVelocity(velocity.x * friction, velocity.y, velocity.z * friction);
             } else {
                 this.applyGravity();
                 this.setVelocity(this.getVelocity().multiply(0.98));
@@ -152,13 +143,13 @@ public class MineEntity extends Entity {
 
         this.move(MovementType.SELF, this.getVelocity());
 
-        Box proximityBox = this.getBoundingBox().expand(getProximity());
-
-        List<? extends Entity> nearbyEntities = this.getWorld().getOtherEntities(this, proximityBox, MineEntity::doesEntityTrigger);
-
-        boolean hasProximity = !nearbyEntities.isEmpty();
-        if (hasProximity && !isDefused()) {
-            explode();
+        // Proximity/Explosion Logic
+        if (!this.getWorld().isClient && !isDefused()) {
+            Box proximityBox = this.getBoundingBox().expand(getProximity());
+            List<? extends Entity> nearbyEntities = this.getWorld().getOtherEntities(this, proximityBox, MineEntity::doesEntityTrigger);
+            if (!nearbyEntities.isEmpty()) {
+                explode();
+            }
         }
     }
 
@@ -170,6 +161,16 @@ public class MineEntity extends Entity {
                 || entity instanceof VehicleEntity
                 || entity instanceof FallingBlockEntity
         );
+    }
+
+    private void applyWaterBuoyancy() {
+        Vec3d vec3d = this.getVelocity();
+        this.setVelocity(vec3d.x * 0.9900000095367432, vec3d.y + (double)(vec3d.y < 0.05999999865889549 ? 5.0E-5F : 0.0F), vec3d.z * 0.9900000095367432);
+    }
+
+    private void applyLavaBuoyancy() {
+        Vec3d vec3d = this.getVelocity();
+        this.setVelocity(vec3d.x * 0.949999988079071, vec3d.y + (double)(vec3d.y < 0.05999999865889549 ? 5.0E-4F : 0.0F), vec3d.z * 0.949999988079071);
     }
 
     private void explode() {
