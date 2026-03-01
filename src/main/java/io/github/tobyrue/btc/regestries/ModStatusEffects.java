@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.PotionPillar;
 import io.github.tobyrue.btc.status_effects.*;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;

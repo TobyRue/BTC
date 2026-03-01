@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.OminousBeaconBlock;
+import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
 import io.github.tobyrue.btc.enums.SpellRegistryEnum;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
@@ -89,7 +91,6 @@ public class ScreenTestItem extends PredefinedSpellsItem {
 //                return TypedActionResult.consume(stack);
 //            }
 //        }
-
 
 
 

@@ -1,28 +1,29 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.client.BTCClient;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChainBlock;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.thrown.PotionEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -34,18 +35,27 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import static net.minecraft.block.PillarBlock.AXIS;
 
 public class MineEntity extends Entity {
+    private int oxidationTicks = 0;
+    private int nextOxidationDelay = -1;
+    private static final int MINIMUM_OXIDATION_TICKS = 20 * 60 * 6; // 6 minutes
+    private static final int RANDOM_MIN_DELAY = 20 * 30;        // 30 seconds
+    private static final int RANDOM_MAX_DELAY = 20 * 60 * 4;       // 4 minutes
+
     private static final TrackedData<Float> PROXIMITY =
             DataTracker.registerData(MineEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> POWER =
             DataTracker.registerData(MineEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> DEFUSED =
+            DataTracker.registerData(MineEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Byte> OXIDATION_STATE =
+            DataTracker.registerData(MineEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Boolean> WAXED_STATE =
             DataTracker.registerData(MineEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private static final ExplosionBehavior TELEPORTED_EXPLOSION_BEHAVIOR = new ExplosionBehavior() {
@@ -68,6 +78,8 @@ public class MineEntity extends Entity {
         builder.add(PROXIMITY, 1f);
         builder.add(POWER, 4f);
         builder.add(DEFUSED, false);
+        builder.add(OXIDATION_STATE, (byte) CopperGolemEntity.Oxidation.UNOXIDIZED.ordinal());
+        builder.add(WAXED_STATE, false);
     }
     public float getPower() {
         return this.dataTracker.get(POWER);
@@ -89,6 +101,33 @@ public class MineEntity extends Entity {
     public void setDefused(boolean defused) {
         this.dataTracker.set(DEFUSED, defused);
     }
+
+    public void setOxidation(CopperGolemEntity.Oxidation oxidation) {
+        this.dataTracker.set(OXIDATION_STATE, (byte) oxidation.ordinal());
+    }
+
+    public CopperGolemEntity.Oxidation getOxidation() {
+        return CopperGolemEntity.Oxidation.values()[this.dataTracker.get(OXIDATION_STATE)];
+    }
+
+    public boolean isWaxed() {
+        return this.dataTracker.get(WAXED_STATE);
+    }
+
+    public void setWaxed(boolean waxed) {
+        this.dataTracker.set(WAXED_STATE, waxed);
+    }
+
+    public float getProximityMultiplier() {
+        return switch (this.getOxidation()) {
+            case UNOXIDIZED -> 1.0f;
+            case EXPOSED -> 0.9f;
+            case WEATHERED -> 0.825f;
+            case OXIDIZED -> 0.775f;
+        };
+    }
+
+
     @Override
     public void tick() {
         super.tick();
@@ -143,14 +182,51 @@ public class MineEntity extends Entity {
 
         this.move(MovementType.SELF, this.getVelocity());
 
-        // Proximity/Explosion Logic
         if (!this.getWorld().isClient && !isDefused()) {
-            Box proximityBox = this.getBoundingBox().expand(getProximity());
+            Box proximityBox = this.getBoundingBox().expand(getProximity() * getProximityMultiplier());
             List<? extends Entity> nearbyEntities = this.getWorld().getOtherEntities(this, proximityBox, MineEntity::doesEntityTrigger);
             if (!nearbyEntities.isEmpty()) {
                 explode();
             }
         }
+        if (!this.getWorld().isClient) {
+
+            if (!isWaxed() && this.getOxidation() != CopperGolemEntity.Oxidation.OXIDIZED ) {
+                oxidationTicks++;
+                if (oxidationTicks >= MINIMUM_OXIDATION_TICKS) {
+                    if (nextOxidationDelay == -1) {
+                        nextOxidationDelay = RANDOM_MIN_DELAY + random.nextInt(RANDOM_MAX_DELAY - RANDOM_MIN_DELAY + 1);
+                    }
+
+                    if (oxidationTicks >= MINIMUM_OXIDATION_TICKS + nextOxidationDelay) {
+                        advanceOxidation();
+
+                        oxidationTicks = 0;
+                        nextOxidationDelay = -1;
+                    }
+                }
+            }
+        }
+    }
+
+    private void advanceOxidation() {
+        CopperGolemEntity.Oxidation currentState = this.getOxidation();
+        CopperGolemEntity.Oxidation nextState = switch (currentState) {
+            case UNOXIDIZED -> CopperGolemEntity.Oxidation.EXPOSED;
+            case EXPOSED -> CopperGolemEntity.Oxidation.WEATHERED;
+            case WEATHERED, OXIDIZED -> CopperGolemEntity.Oxidation.OXIDIZED;
+        };
+        this.setOxidation(nextState);
+    }
+
+    private void lowerOxidation() {
+        CopperGolemEntity.Oxidation currentState = this.getOxidation();
+        CopperGolemEntity.Oxidation nextState = switch (currentState) {
+            case OXIDIZED -> CopperGolemEntity.Oxidation.WEATHERED;
+            case WEATHERED -> CopperGolemEntity.Oxidation.EXPOSED;
+            case EXPOSED, UNOXIDIZED -> CopperGolemEntity.Oxidation.UNOXIDIZED;
+        };
+        this.setOxidation(nextState);
     }
 
     protected static boolean doesEntityTrigger(final Entity entity) {
@@ -163,14 +239,38 @@ public class MineEntity extends Entity {
         );
     }
 
-    private void applyWaterBuoyancy() {
-        Vec3d vec3d = this.getVelocity();
-        this.setVelocity(vec3d.x * 0.9900000095367432, vec3d.y + (double)(vec3d.y < 0.05999999865889549 ? 5.0E-5F : 0.0F), vec3d.z * 0.9900000095367432);
-    }
+    @Override
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+        if (itemStack.isOf(Items.HONEYCOMB)) {
+            if (!this.isWaxed()) {
+                this.setWaxed(true);
+                this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
-    private void applyLavaBuoyancy() {
-        Vec3d vec3d = this.getVelocity();
-        this.setVelocity(vec3d.x * 0.949999988079071, vec3d.y + (double)(vec3d.y < 0.05999999865889549 ? 5.0E-4F : 0.0F), vec3d.z * 0.949999988079071);
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.decrement(1);
+                }
+
+                return ActionResult.SUCCESS;
+            }
+        } else if (itemStack.isIn(ItemTags.AXES)) {
+            if (this.isWaxed()) {
+                this.setWaxed(false);
+                this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.damage(3, player, EquipmentSlot.MAINHAND);
+                }
+                return ActionResult.SUCCESS;
+            } else if (this.getOxidation() != CopperGolemEntity.Oxidation.UNOXIDIZED) {
+                lowerOxidation();
+                this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_SCRAPE, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                if (!player.getAbilities().creativeMode) {
+                    itemStack.damage(3, player, EquipmentSlot.MAINHAND);
+                }
+                return ActionResult.SUCCESS;
+            }
+        }
+        return super.interact(player, hand);
     }
 
     private void explode() {
@@ -225,6 +325,12 @@ public class MineEntity extends Entity {
         if (nbt.contains("Defused")) {
             setDefused(nbt.getBoolean("Defused"));
         }
+        if (nbt.contains("OxidationState", NbtElement.BYTE_TYPE)) {
+            this.setOxidation(CopperGolemEntity.Oxidation.values()[nbt.getByte("OxidationState")]);
+        }
+        if (nbt.contains("Waxed")) {
+            this.setWaxed(nbt.getBoolean("Waxed"));
+        }
     }
 
     @Override
@@ -232,6 +338,8 @@ public class MineEntity extends Entity {
         nbt.putFloat("Proximity", getProximity());
         nbt.putFloat("Power", getPower());
         nbt.putBoolean("Defused", isDefused());
+        nbt.putByte("OxidationState", (byte) this.getOxidation().ordinal());
+        nbt.putBoolean("Waxed", this.isWaxed());
     }
 
 

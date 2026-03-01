@@ -103,14 +103,6 @@ public class SpellBookItem extends MinimalPredefinedSpellsItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-        if (!world.isClient && entity instanceof LivingEntity) {
-            this.tickCooldowns(stack);
-        }
-    }
-
-    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         final var stack = user.getStackInHand(hand);
         final var data = this.getSpellDataStore(stack);

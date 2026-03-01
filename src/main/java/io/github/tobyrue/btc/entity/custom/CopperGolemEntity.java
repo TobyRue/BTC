@@ -44,9 +44,6 @@ public class CopperGolemEntity extends GolemEntity {
     private static final int MINIMUM_OXIDATION_TICKS = 20 * 60 * 6; // 6 minutes
     private static final int RANDOM_MIN_DELAY = 20 * 30;        // 30 seconds
     private static final int RANDOM_MAX_DELAY = 20 * 60 * 4;       // 4 minutes
-//    private static final int MINIMUM_OXIDATION_TICKS = 20 ;
-//    private static final int RANDOM_MIN_DELAY = 20 ;
-//    private static final int RANDOM_MAX_DELAY = 20 ;
     protected double targetX;
     protected double targetY;
     protected double targetZ;
@@ -63,8 +60,8 @@ public class CopperGolemEntity extends GolemEntity {
 
     private static final TrackedData<Byte> OXIDATION_STATE;
     private static final TrackedData<Byte> BUTTON_STATE;
-    private static final TrackedData<Boolean> WAXED_STATE; // New waxed state
-    private static final TrackedData<Boolean> WAKE_UP_PLAYED; // New wake-up state
+    private static final TrackedData<Boolean> WAXED_STATE;
+    private static final TrackedData<Boolean> WAKE_UP_PLAYED;
     private static final TrackedData<Boolean> CAN_MOVE_DELAY_ONE;
     private static final TrackedData<Boolean> CAN_MOVE_DELAY_TWO;
     private static final TrackedData<Integer> AGE_LOCK;
@@ -343,27 +340,17 @@ public class CopperGolemEntity extends GolemEntity {
             setupAnimationStatesServer();
         }
         if (!this.getWorld().isClient) {
-//            if (!this.isWaxed()) {
-//                this.oxidationTimer++;
-//
-//                if (this.oxidationTimer >= OXIDATION_INTERVAL) {
-//                    this.oxidationTimer = 0;
-//                    this.advanceOxidation();
-//                }
-//            }
+
             if (!isWaxed() && this.getOxidation() != Oxidation.OXIDIZED ) {
                 oxidationTicks++;
                 if (oxidationTicks >= MINIMUM_OXIDATION_TICKS) {
                     if (nextOxidationDelay == -1) {
-                        // Set a random delay once minimum has passed
                         nextOxidationDelay = RANDOM_MIN_DELAY + random.nextInt(RANDOM_MAX_DELAY - RANDOM_MIN_DELAY + 1);
                     }
 
                     if (oxidationTicks >= MINIMUM_OXIDATION_TICKS + nextOxidationDelay) {
-                        // Advance oxidation stage
                         advanceOxidation();
 
-                        // Reset for next stage
                         oxidationTicks = 0;
                         nextOxidationDelay = -1;
                     }
@@ -378,7 +365,7 @@ public class CopperGolemEntity extends GolemEntity {
 
         if (itemStack.isOf(Items.HONEYCOMB)) {
             if (!this.isWaxed()) {
-                this.setWaxed(true); // Mark as waxed
+                this.setWaxed(true);
                 this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.PLAYERS, 1.0F, 1.0F);
 
                 if (!player.getAbilities().creativeMode) {
@@ -389,7 +376,7 @@ public class CopperGolemEntity extends GolemEntity {
             }
         } else if (itemStack.isIn(ItemTags.AXES)) {
             if (this.isWaxed()) {
-                this.setWaxed(false); // Mark as waxed
+                this.setWaxed(false);
                 this.getWorld().playSound(this, this.getBlockPos(), SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.PLAYERS, 1.0F, 1.0F);
                 if (!player.getAbilities().creativeMode) {
                     itemStack.damage(3, player, EquipmentSlot.MAINHAND);
@@ -421,11 +408,11 @@ public class CopperGolemEntity extends GolemEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putByte("OxidationState", (byte) this.getOxidation().ordinal());  // Save the oxidation state
-        nbt.putBoolean("Waxed", this.isWaxed());  // Save the waxed state
-        nbt.putBoolean("WakeUpState", this.hasWokenUp());  // Save the wake-up state
-        nbt.putBoolean("CanMoveDelayOne", this.getCanMoveDelayOne());  // Save the spawn state
-        nbt.putBoolean("CanMoveDelayTwo", this.getCanMoveDelayTwo());  // Save the spawn state
+        nbt.putByte("OxidationState", (byte) this.getOxidation().ordinal());
+        nbt.putBoolean("Waxed", this.isWaxed());
+        nbt.putBoolean("WakeUpState", this.hasWokenUp());
+        nbt.putBoolean("CanMoveDelayOne", this.getCanMoveDelayOne());
+        nbt.putBoolean("CanMoveDelayTwo", this.getCanMoveDelayTwo());
     }
 
     @Override
@@ -434,16 +421,16 @@ public class CopperGolemEntity extends GolemEntity {
         if (nbt.contains("OxidationState", NbtElement.BYTE_TYPE)) {
             this.setOxidation(Oxidation.values()[nbt.getByte("OxidationState")]);
         }
-        if (nbt.contains("Waxed")) {  // No type check needed for booleans
+        if (nbt.contains("Waxed")) {
             this.setWaxed(nbt.getBoolean("Waxed"));
         }
-        if (nbt.contains("WakeUpState")) {  // No type check needed for booleans
+        if (nbt.contains("WakeUpState")) {
             this.setWokenUp(nbt.getBoolean("WakeUpState"));
         }
-        if (nbt.contains("CanMoveDelayOne")) {  // No type check needed for booleans
+        if (nbt.contains("CanMoveDelayOne")) {
             this.setCanMoveDelayOne(nbt.getBoolean("CanMoveDelayOne"));
         }
-        if (nbt.contains("CanMoveDelayTwo")) {  // No type check needed for booleans
+        if (nbt.contains("CanMoveDelayTwo")) {
             this.setCanMoveDelayTwo(nbt.getBoolean("CanMoveDelayTwo"));
         }
     }

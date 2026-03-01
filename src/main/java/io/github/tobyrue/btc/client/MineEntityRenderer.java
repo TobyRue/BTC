@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.MineEntity;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import net.fabricmc.api.EnvType;
@@ -12,11 +13,15 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.HoneycombItem;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class MineEntityRenderer extends EntityRenderer<MineEntity> {
-    private static final Identifier TEXTURE = BTC.identifierOf("textures/entity/copper_mine.png");
+    private static final Identifier NORM = Identifier.of(BTC.MOD_ID, "textures/entity/copper_mine.png");
+    private static final Identifier EXPOSED = Identifier.of(BTC.MOD_ID, "textures/entity/exposed_copper_mine.png");
+    private static final Identifier WEATHERED = Identifier.of(BTC.MOD_ID, "textures/entity/weathered_copper_mine.png");
+    private static final Identifier OXIDIZED = Identifier.of(BTC.MOD_ID, "textures/entity/oxidized_copper_mine.png");
     protected MineEntityModel model;
 
     protected MineEntityRenderer(EntityRendererFactory.Context ctx) {
@@ -36,6 +41,14 @@ public class MineEntityRenderer extends EntityRenderer<MineEntity> {
 
     @Override
     public Identifier getTexture(MineEntity entity) {
-        return TEXTURE;
+        if (entity.getOxidation() == CopperGolemEntity.Oxidation.UNOXIDIZED) {
+            return NORM;
+        } else if (entity.getOxidation() == CopperGolemEntity.Oxidation.EXPOSED) {
+            return EXPOSED;
+        } else if (entity.getOxidation() == CopperGolemEntity.Oxidation.WEATHERED) {
+            return WEATHERED;
+        } else {
+            return OXIDIZED;
+        }
     }
 }

@@ -111,7 +111,6 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
         final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
         final var cooldowns = nbt.getCompound("cooldowns");
 
-        // copy keys to avoid ConcurrentModificationException
         final var keys = new ArrayList<>(cooldowns.getKeys());
 
         for (final var key : keys) {

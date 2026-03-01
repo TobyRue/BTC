@@ -6,10 +6,7 @@ import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
-import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.item.SpellBookItem;
-import io.github.tobyrue.btc.item.SpellstoneItem;
-import io.github.tobyrue.btc.item.UnlockScrollItem;
+import io.github.tobyrue.btc.item.*;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
@@ -143,14 +140,44 @@ public class BTCClient implements ClientModInitializer {
                                         Text.translatable("radial.btc.spell.select_spell"),
                                         spellValues,
                                         radialMenuKeyBinding,
-                                        new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f)
+                                        new RadialIdentifiers(
+                                                BTC.identifierOf("textures/gui/honeycomb_outline_book.png"),
+                                                255f,
+                                                BTC.identifierOf("textures/gui/honeycomb_book.png"),
+                                                215f,
+                                                BTC.identifierOf("textures/gui/honeycomb_book_sector_"),
+                                                180f,
+                                                60,
+                                                30,
+                                                40,
+                                                6,
+                                                false,
+                                                true,
+                                                582,
+                                                603,
+                                                0.3f)
                                 ));
                             } else {
                                 client.setScreen(new RadialMenu(
                                         Text.translatable("radial.btc.spell.select_spell"),
                                         spellValues,
                                         radialMenuKeyBinding,
-                                        new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_gold.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_gold_sector_"), 150f, 60, 30, 40, 6, true, false, 582, 603, 0.3f)
+                                        new RadialIdentifiers(
+                                                BTC.identifierOf("textures/gui/honeycomb.png"),
+                                                255f,
+                                                BTC.identifierOf("textures/gui/honeycomb_gold.png"),
+                                                200f,
+                                                BTC.identifierOf("textures/gui/honeycomb_gold_sector_"),
+                                                150f,
+                                                60,
+                                                30,
+                                                40,
+                                                6,
+                                                false,
+                                                false,
+                                                582,
+                                                603,
+                                                0.3f)
                                 ));
                             }
                         } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {

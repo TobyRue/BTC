@@ -12,6 +12,7 @@
     "minecraft:lectern",
     "minecraft:chiseled_bookshelf",
     "#minecraft:signs",
-    "btc:dungeon_wire"
+    "btc:dungeon_wire",
+    "btc:ominous_beacon"
   ]
 }
