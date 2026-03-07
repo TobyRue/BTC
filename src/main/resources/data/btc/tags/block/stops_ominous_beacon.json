@@ -1,0 +1,15 @@
+{
+  "values": [
+    "minecraft:obsidian",
+    "minecraft:reinforced_deepslate",
+    "minecraft:command_block",
+    "minecraft:chain_command_block",
+    "minecraft:repeating_command_block",
+    "minecraft:jigsaw",
+    "minecraft:structure_block",
+    "minecraft:respawn_anchor",
+    "minecraft:crying_obsidian",
+    "minecraft:respawn_anchor",
+    "btc:dungeon_wire"
+  ]
+}

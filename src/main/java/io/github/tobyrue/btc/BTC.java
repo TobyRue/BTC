@@ -32,6 +32,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -51,6 +53,8 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> PILASTER = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pilaster"));
     public static final TagKey<Block> PILLAR = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pillar"));
     public static final TagKey<Block> PANE = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pane"));
+    public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
+    public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
 
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
@@ -93,6 +97,21 @@ public class BTC implements ModInitializer {
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("corner_2_position"),
             ComponentType.<BlockPosComponent>builder().codec(BlockPosComponent.CODEC).build()
+    );
+    public static final ComponentType<Text> KEY_NAME = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("key_name"),
+            ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
+    );
+    public static final ComponentType<Text> PLAYER_UUID = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("player_uuid"),
+            ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
+    );
+    public static final ComponentType<Text> PLAYER_NAME = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("player_name"),
+            ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
     );
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));

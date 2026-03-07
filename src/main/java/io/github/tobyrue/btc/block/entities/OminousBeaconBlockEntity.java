@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.DungeonDoorBlock;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.block.OminousBeaconBlock;
@@ -62,6 +63,11 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             for(int l = 1; l < MAX_LENGTH + 2; l++) {
                 var offsetPos = pos.offset(direction, l);
                 var offsetState = world.getBlockState(offsetPos);
+                if(offsetState.isIn(BTC.STOPS_OMINOUS_BEACON) || (offsetState.getBlock() instanceof DungeonDoorBlock door && !offsetState.get(DungeonDoorBlock.OPEN))) {
+                    this.beamLength = 0;
+                    break;
+                }
+
                 if(offsetState.getBlock() == ModBlocks.OMINOUS_BEACON && offsetState.get(OminousBeaconBlock.FACING) == direction.getOpposite()) {
                     this.beamLength = l - 1;
                     break;
@@ -70,9 +76,9 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             for(int l = 1; l < this.beamLength + 1; l++) {
                 var offsetPos = pos.offset(direction, l);
                 var offsetState = world.getBlockState(offsetPos);
-                if(offsetState.isOf(Blocks.BEDROCK) || offsetState.getOpacity(world, offsetPos) < 15) {
+                if(offsetState.getOpacity(world, offsetPos) < 15 || offsetState.isIn(BTC.OMINOUS_BEACON_IGNORES)) {
                     continue;
-                } else {
+                } else if (!offsetState.isIn(BTC.STOPS_OMINOUS_BEACON)) {
                     world.breakBlock(offsetPos, true);
                 }
             }

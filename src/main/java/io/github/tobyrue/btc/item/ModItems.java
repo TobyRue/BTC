@@ -31,6 +31,10 @@ public class ModItems {
 //            }
 //        }
 //    }
+    public static final Item BLOCK_KEY = register(
+            new BlockKeyItem(new Item.Settings().maxCount(1)),
+            "block_key"
+    );
 
     public static final Item SELECTOR = register(
             new SelectorItem(new Item.Settings().maxCount(1)),

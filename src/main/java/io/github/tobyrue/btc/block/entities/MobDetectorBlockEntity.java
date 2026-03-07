@@ -402,7 +402,7 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
 
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
 
         if (nbt.contains("CustomBox")) {

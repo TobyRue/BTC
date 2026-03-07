@@ -77,9 +77,8 @@ public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWire
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
 
-        // Deserialize the NbtList back to HashSet<String>
         HASH_SET.clear();
-        NbtList nbtList = nbt.getList("CustomData", NbtElement.STRING_TYPE); // Use STRING_TYPE
+        NbtList nbtList = nbt.getList("CustomData", NbtElement.STRING_TYPE);
         for (int i = 0; i < nbtList.size(); i++) {
             String uuid = nbtList.getString(i);
             HASH_SET.add(uuid);

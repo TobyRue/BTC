@@ -487,7 +487,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
 
         if (nbt.contains("CustomBox")) {
