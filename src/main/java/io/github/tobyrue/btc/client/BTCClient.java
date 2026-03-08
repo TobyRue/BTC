@@ -294,6 +294,24 @@ public class BTCClient implements ClientModInitializer {
             return 0xFFFFFFFF; // base always visible
         }, ModItems.SPELLSTONE);
 
+
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            if (stack.getItem() instanceof BlockKeyItem keyItem) {
+
+                if (tintIndex == 1 && stack.contains(BTC.KEY_UUID)) {
+                    try {
+                        return 0xFF000000 | Integer.parseInt(Objects.requireNonNull(stack.get(BTC.KEY_UUID)).getString(), 0, 6, 16) & 0xFFF0F0F0;
+                    } catch (NumberFormatException | IndexOutOfBoundsException | NullPointerException ignored) {}
+                }
+                if (tintIndex == 2) {
+                    return 0x30FFFFFF;
+                }
+            }
+
+            return 0xFFFFFFFF;
+        }, ModItems.BLOCK_KEY);
+
 //        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 //            if (stack.getItem() instanceof SpellstoneItem spellstoneItem) {
 //                var data = spellstoneItem.getSpellDataStore(stack);

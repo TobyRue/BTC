@@ -1,6 +1,8 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "btc:item/block_key"
+    "layer0": "btc:item/block_key",
+    "layer1": "btc:item/block_key_gem",
+    "layer2": "btc:item/block_key_gem_glint"
   }
 }

@@ -13,6 +13,7 @@ import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.misc.OxidizeOnClick;
 import io.github.tobyrue.btc.packets.ModPackets;
+import io.github.tobyrue.btc.recipes.KeyDuplicateRecipe;
 import io.github.tobyrue.btc.regestries.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -28,6 +29,11 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.recipe.RawShapedRecipe;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -98,21 +104,25 @@ public class BTC implements ModInitializer {
             BTC.identifierOf("corner_2_position"),
             ComponentType.<BlockPosComponent>builder().codec(BlockPosComponent.CODEC).build()
     );
-    public static final ComponentType<Text> KEY_NAME = Registry.register(
+    public static final ComponentType<Text> KEY_UUID = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("key_name"),
+            BTC.identifierOf("key_uuid"),
             ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
     );
-    public static final ComponentType<Text> PLAYER_UUID = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("player_uuid"),
-            ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
-    );
+
     public static final ComponentType<Text> PLAYER_NAME = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("player_name"),
             ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
     );
+
+    public static final RecipeSerializer<KeyDuplicateRecipe> KEY_DUPLICATE_SERIALIZER =
+            Registry.register(
+                    Registries.RECIPE_SERIALIZER,
+                    Identifier.of("btc", "key_duplicate"),
+                    new SpecialRecipeSerializer<>(KeyDuplicateRecipe::new)
+            );
+
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 

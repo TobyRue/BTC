@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.item.BlockKeyItem;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -12,8 +10,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Objects;
 
 @Mixin(ContainerLock.class)
 public class ContainerLockMixin {
@@ -27,7 +23,7 @@ public class ContainerLockMixin {
             return;
         }
 
-        Text stackKeyComponent = stack.get(BTC.KEY_NAME);
+        Text stackKeyComponent = stack.get(BTC.KEY_UUID);
         if (stackKeyComponent != null) {
             String stackKeyStr = stackKeyComponent.getString();
 
