@@ -82,15 +82,14 @@ public class ScreenTestItem extends PredefinedSpellsItem {
 
         Vec3d velocity = player.getRotationVec(1.0f).multiply(1.5f);
 
-        world.spawnEntity(new SuperHappyKillBallEntity(player.getX(), player.getY(), player.getZ(), velocity, world));
 
-//        if (!player.isSneaking()) {
-//            if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
-//                return TypedActionResult.success(stack);
-//            } else {
-//                return TypedActionResult.consume(stack);
-//            }
-//        }
+        if (!player.isSneaking()) {
+            if (this.tryUseSpell(world, player.getEyePos(), player.getRotationVec(1.0F).normalize(), player, stack)) {
+                return TypedActionResult.success(stack);
+            } else {
+                return TypedActionResult.consume(stack);
+            }
+        }
 
 
 
