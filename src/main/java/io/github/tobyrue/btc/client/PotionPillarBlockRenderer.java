@@ -95,10 +95,8 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
 
         matrices.push();
 
-        // Move to block center
         matrices.translate(0.5, 0.5, 0.5);
 
-        // Respect AXIS
         Direction.Axis axis = blockEntity.getCachedState().get(PotionPillar.AXIS);
         if (axis == Direction.Axis.X) {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));

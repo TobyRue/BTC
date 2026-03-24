@@ -1,17 +1,15 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.*;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.IWireConnect;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,8 +24,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-
-import java.util.Optional;
 
 public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect, CornerStorage {
 
@@ -108,8 +104,8 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
             return ItemActionResult.FAIL;
         }
 
-        var corner1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
-        var corner2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
+        var corner1 = stack.get(ModComponents.CORNER_1_POSITION_COMPONENT);
+        var corner2 = stack.get(ModComponents.CORNER_2_POSITION_COMPONENT);
 
         if (corner1 == null || corner2 == null) {
             return ItemActionResult.FAIL;

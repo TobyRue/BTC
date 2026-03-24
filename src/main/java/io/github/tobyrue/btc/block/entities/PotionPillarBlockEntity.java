@@ -1,43 +1,28 @@
 package io.github.tobyrue.btc.block.entities;
 
-import com.mojang.logging.LogUtils;
-import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.block.PotionPillar;
 import io.github.tobyrue.btc.client.RuneTextLoader;
-import io.github.tobyrue.btc.enums.AntierType;
-import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
+import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.PotionItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.Potions;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryOps;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -48,13 +33,12 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 
 import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 
-public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityTicker<PotionPillarBlockEntity>, CornerStorage {
+public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityTicker<PotionPillarBlockEntity>, CornerStorage, StatusEffectHolderBlockEntity {
     private BlockBox customBox;
     private int[] distanceArray;
     private Direction lastDirection = Direction.NORTH;
@@ -87,8 +71,9 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         return runeIndex;
     }
 
+
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (stack.getComponents().contains(DataComponentTypes.POTION_CONTENTS) && Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().isPresent()) {
+        if (stack.getComponents().contains(DataComponentTypes.POTION_CONTENTS) && Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().isPresent() && player.isCreative() && player.hasPermissionLevel(2)) {
             setPotionContents(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getEffectType());
             setDuration(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getDuration());
             setAmplifier(Objects.requireNonNull(stack.getComponents().get(DataComponentTypes.POTION_CONTENTS)).potion().get().value().getEffects().getFirst().getAmplifier());
@@ -98,7 +83,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     }
 
     public void assignRandomRune(World world) {
-        runeIndex = world.getRandom().nextInt(RuneTextLoader.getRunes().size() - 1); // wraps safely
+        runeIndex = world.getRandom().nextInt(RuneTextLoader.getRunes().size() - 1);
         markDirty();
     }
 
@@ -236,7 +221,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
 
         if (world instanceof ServerWorld serverWorld) {
             if (!serverWorld.isChunkLoaded(blockPos)) {
-                return; // Prevent ticking if the chunk is unloaded
+                return;
             }
 
             tickCounter++;
@@ -398,7 +383,6 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                     customBox.getMaxZ() + 1
             );
         } else {
-            // fallback to default range
             box = new Box(
                     pos.getX(),
                     pos.getY(),
@@ -467,21 +451,23 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         }
 
         if (storedEffect != null) {
-            nbt.put("Effect", StatusEffect.ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, storedEffect).getOrThrow());
+            nbt.putString("Effect", String.valueOf(storedEffect.getKey().get().getValue()));
         }
         nbt.putInt("Duration", duration);
         nbt.putInt("Amplifier", amplifier);
         nbt.putInt("RuneIndex", Math.min(runeIndex, RuneTextLoader.getRunes().size() - 1));
     }
 
+    @Override
     public void setPotionContents(RegistryEntry<StatusEffect> storedEffect) {
         this.storedEffect = storedEffect;
+        this.markDirty();
     }
-
+    @Override
     public void setDuration(int duration) {
         this.duration = duration;
     }
-
+    @Override
     public void setAmplifier(int amplifier) {
         this.amplifier = amplifier;
     }
@@ -504,9 +490,12 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
             };
         }
         if (nbt.contains("Effect")) {
-            if (nbt.get("Effect") instanceof NbtCompound compound) {
-                setPotionContents(StatusEffect.ENTRY_CODEC.parse(NbtOps.INSTANCE, compound).resultOrPartial(LogUtils.getLogger()::error).orElse(null));
-            }
+
+            Identifier id = Identifier.of(nbt.getString("Effect"));
+
+            setPotionContents(
+                    Objects.requireNonNull(Registries.STATUS_EFFECT.getEntry(id).orElse(null))
+            );
         }
         if (nbt.contains("Duration")) {
             setDuration(nbt.getInt("Duration"));
@@ -518,8 +507,16 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
             runeIndex = Math.min(nbt.getInt("RuneIndex"), RuneTextLoader.getRunes().size() - 1);
         }
     }
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
 
-
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
+    }
 //    @Override
 //    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
 //        if (state.get(AntierBlock.DISABLE)) {

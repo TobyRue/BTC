@@ -1,7 +1,6 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.client.BTCClient;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -35,14 +34,14 @@ public class BlockKeyItem extends Item {
 
         if (world instanceof ServerWorld serverWorld) {
             if (entity instanceof PlayerEntity player) {
-                if (!stack.contains(BTC.PLAYER_NAME)) {
-                    stack.set(BTC.PLAYER_NAME, player.getName());
+                if (!stack.contains(ModComponents.PLAYER_NAME)) {
+                    stack.set(ModComponents.PLAYER_NAME, player.getName());
 
                     Text prettyName = player.getName().copy().append(Text.translatable("item.btc.block_key.of"));
 
                     stack.set(DataComponentTypes.CUSTOM_NAME, prettyName);
-                    if (!stack.contains(BTC.KEY_UUID)) {
-                        stack.set(BTC.KEY_UUID, Text.literal(UUID.randomUUID().toString()));
+                    if (!stack.contains(ModComponents.KEY_UUID)) {
+                        stack.set(ModComponents.KEY_UUID, Text.literal(UUID.randomUUID().toString()));
                     }
                 }
             }
@@ -60,8 +59,8 @@ public class BlockKeyItem extends Item {
             NbtCompound nbt = be.createNbtWithId(world.getRegistryManager());
             ItemStack key = context.getStack();
 
-            if (!nbt.contains("Lock") && be instanceof LockableContainerBlockEntity lockable && key.contains(BTC.KEY_UUID)) {
-                Text keyText = key.get(BTC.KEY_UUID);
+            if (!nbt.contains("Lock") && be instanceof LockableContainerBlockEntity lockable && key.contains(ModComponents.KEY_UUID)) {
+                Text keyText = key.get(ModComponents.KEY_UUID);
                 if (keyText == null) return ActionResult.PASS;
 
                 String lockString = keyText.getString();
@@ -83,12 +82,12 @@ public class BlockKeyItem extends Item {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
 
-        Text keyText = stack.get(BTC.KEY_UUID);
+        Text keyText = stack.get(ModComponents.KEY_UUID);
         if (keyText != null) {
             String fullKey = keyText.getString();
 
 
-            tooltip.add(Text.literal("Player: " + Objects.requireNonNull(stack.get(BTC.PLAYER_NAME)).getString()).formatted(Formatting.GRAY));
+            tooltip.add(Text.literal("Player: " + Objects.requireNonNull(stack.get(ModComponents.PLAYER_NAME)).getString()).formatted(Formatting.GRAY));
 
 
             tooltip.add(Text.literal("UUID: " + fullKey).formatted(Formatting.GRAY));

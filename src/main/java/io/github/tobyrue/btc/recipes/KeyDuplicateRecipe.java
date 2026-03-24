@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.recipes;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.item.BlockKeyItem;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
@@ -42,7 +43,7 @@ public class KeyDuplicateRecipe extends ShapedRecipe {
         }
         // Ensure the key in the middle actually has data to copy
         ItemStack key = findKey(input);
-        return !key.isEmpty() && key.contains(BTC.KEY_UUID);
+        return !key.isEmpty() && key.contains(ModComponents.KEY_UUID);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class KeyDuplicateRecipe extends ShapedRecipe {
 
         ItemStack result = sourceKey.copyWithCount(2);
 
-        result.set(BTC.KEY_UUID, sourceKey.get(BTC.KEY_UUID));
+        result.set(ModComponents.KEY_UUID, sourceKey.get(ModComponents.KEY_UUID));
 
         return result;
     }

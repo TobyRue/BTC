@@ -1,11 +1,10 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.block.entities.*;
-import io.github.tobyrue.btc.enums.AntierType;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -120,8 +119,8 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
             return ItemActionResult.FAIL;
         }
 
-        var corner1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
-        var corner2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
+        var corner1 = stack.get(ModComponents.CORNER_1_POSITION_COMPONENT);
+        var corner2 = stack.get(ModComponents.CORNER_2_POSITION_COMPONENT);
 
         if (corner1 == null || corner2 == null) {
             return ItemActionResult.FAIL;

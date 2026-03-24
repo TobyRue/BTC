@@ -2,8 +2,10 @@ package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.MobDetectorBlockEntity;
+import io.github.tobyrue.btc.block.entities.ObsidianChestBlockEntity;
 import io.github.tobyrue.btc.client.screen.RadialMenuWithPrefixNoHover;
 import io.github.tobyrue.btc.client.screen.RadialValues;
+import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -28,6 +30,7 @@ import io.github.tobyrue.btc.client.screen.RadialNoHoverValues.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ModPackets {
 
@@ -37,6 +40,8 @@ public class ModPackets {
     public static final Identifier ADVANCEMENT_RESPONSE_SPELL = BTC.identifierOf("advancement_response");
     public static final Identifier OPEN_FAV = BTC.identifierOf("open_favorite");
     public static final Identifier MOB_DETECTOR_SYNC_ID = BTC.identifierOf("mob_detector_sync");
+    public static final Identifier STATUS_EFFECT_SYNC = BTC.identifierOf("status_effect_sync");
+    public static final Identifier MARK_LOOTED = BTC.identifierOf("mark_looted_sync");
 
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
@@ -45,6 +50,8 @@ public class ModPackets {
         PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(
                 SetElementPayload.ID,
@@ -202,6 +209,27 @@ public class ModPackets {
                     });
                 }
         );
+        ClientPlayNetworking.registerGlobalReceiver(
+                SetStatusEffectPayload.ID, (payload, context) -> {
+                    var blockEntity = Objects.requireNonNull(context.client().world).getBlockEntity(payload.pos());
 
+                    if (blockEntity != null) {
+                        if (blockEntity instanceof StatusEffectHolderBlockEntity statusEffectHolder) {
+                            statusEffectHolder.setEffect(payload.effect(), payload.duration(), payload.amplifier());
+                            blockEntity.markDirty();
+                        }
+                    }
+                }
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+                MarkPlayerLootedS2CPayload.ID, (payload, context) -> {
+                    var uuid = payload.uuid();
+                    var world = context.player().getWorld();
+                    var pos = payload.pos();
+                    if (world.getBlockEntity(pos) instanceof ObsidianChestBlockEntity be && !be.hasPlayerLooted(uuid)) {
+                        be.markPlayerLooted(uuid);
+                    }
+                }
+        );
     }
 }

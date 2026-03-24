@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.util;
 
-import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.WeakHashMap;
 
 public final class UnlockScrollCache {
@@ -21,7 +20,7 @@ public final class UnlockScrollCache {
         Spell.InstancedSpell inst = CACHE.get(stack);
         if (inst != null) return inst;
 
-        var comp = stack.get(BTC.UNLOCK_SPELL_COMPONENT);
+        var comp = stack.get(ModComponents.UNLOCK_SPELL_COMPONENT);
         if (comp == null) return null;
 
         Identifier id = comp.id();

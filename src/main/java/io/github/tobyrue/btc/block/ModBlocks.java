@@ -28,6 +28,11 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+    public static final ObsidianChestBlock OBSIDIAN_CHEST = (ObsidianChestBlock) register(
+            new ObsidianChestBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
+            "obsidian_chest",
+            true
+    );
     public static final PillarBlock CHISELED_TUFF_BRICKS_PILLAR = (PillarBlock) register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
             "chiseled_tuff_bricks_pillar",

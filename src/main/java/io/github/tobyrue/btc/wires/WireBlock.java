@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -189,7 +190,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
     @Override
     public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
         ItemStack heldItem = player.getStackInHand(hand);
-        WrenchType type = stack.getOrDefault(BTC.WRENCH_TYPE, WrenchType.ROTATE);
+        WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
         if (heldItem.isIn(BTC.WRENCHES) && (player.isCreative() || !this.IMMUTABLE)) {
             if (hand == Hand.OFF_HAND && type == WrenchType.WIRE) {
                 var newState = state.cycle(OPERATOR);
@@ -227,7 +228,7 @@ public class WireBlock extends Block implements IWireConnect, IHaveWrenchActions
                 }
 
                 } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
-                Direction dir = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
+                Direction dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
                 var property = switch (dir) {
                     case DOWN -> CONNECTION_TO_DIRECTION.get().inverse().get(Direction.DOWN);
                     case UP ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.UP);

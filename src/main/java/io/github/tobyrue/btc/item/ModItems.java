@@ -31,6 +31,14 @@ public class ModItems {
 //            }
 //        }
 //    }
+    public static final Item ETERNAL_UPGRADE_TEMPLATE = register(
+            new Item(new Item.Settings().maxCount(1)),
+            "eternal_upgrade_template"
+    );
+    public static final PetTotemItem PET_TOTEM = register(
+            new PetTotemItem(new Item.Settings().maxCount(1)),
+            "pet_totem"
+    );
     public static final Item BLOCK_KEY = register(
             new BlockKeyItem(new Item.Settings().maxCount(1)),
             "block_key"

@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
-import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -23,7 +23,7 @@ public class ContainerLockMixin {
             return;
         }
 
-        Text stackKeyComponent = stack.get(BTC.KEY_UUID);
+        Text stackKeyComponent = stack.get(ModComponents.KEY_UUID);
         if (stackKeyComponent != null) {
             String stackKeyStr = stackKeyComponent.getString();
 

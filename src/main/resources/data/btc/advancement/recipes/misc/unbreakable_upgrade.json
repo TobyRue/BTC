@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_template": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["btc:eternal_totem"]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_template"]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:unbreakable_upgrade"
+    ]
+  }
+}

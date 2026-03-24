@@ -1,0 +1,12 @@
+{
+  "type": "btc:unbreakable_smithing",
+  "template": {
+    "item": "btc:eternal_upgrade_template"
+  },
+  "base": {
+    "tag": "minecraft:enchantable/durability"
+  },
+  "addition": {
+    "item": "minecraft:diamond"
+  }
+}

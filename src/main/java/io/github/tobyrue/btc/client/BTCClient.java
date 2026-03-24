@@ -10,6 +10,7 @@ import io.github.tobyrue.btc.item.*;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
@@ -27,6 +28,7 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
@@ -233,8 +235,8 @@ public class BTCClient implements ClientModInitializer {
 
         ModelPredicateProviderRegistry.register(ModItems.UNLOCK_SCROLL, Identifier.ofVanilla("texture"),
                 (stack, world, entity, seed) -> {
-                    if (stack.getItem() instanceof UnlockScrollItem item && stack.contains(BTC.UNLOCK_SPELL_COMPONENT)) {
-                        var number = Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).textureInt();
+                    if (stack.getItem() instanceof UnlockScrollItem item && stack.contains(ModComponents.UNLOCK_SPELL_COMPONENT)) {
+                        var number = Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).textureInt();
                         return (number / 100f);
                     }
                     return 0;
@@ -258,7 +260,7 @@ public class BTCClient implements ClientModInitializer {
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
             if (tintIndex != 1) return 0xFFFFFFFF;
             if (!(stack.getItem() instanceof UnlockScrollItem)) return 0xFFFFFFFF;
-            if (!stack.contains(BTC.UNLOCK_SPELL_COMPONENT)) return 0xFFFFFFFF;
+            if (!stack.contains(ModComponents.UNLOCK_SPELL_COMPONENT)) return 0xFFFFFFFF;
 
             Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
             if (inst == null || inst.spell() == null) return 0xFFFFFFFF;
@@ -299,9 +301,9 @@ public class BTCClient implements ClientModInitializer {
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
             if (stack.getItem() instanceof BlockKeyItem keyItem) {
 
-                if (tintIndex == 1 && stack.contains(BTC.KEY_UUID)) {
+                if (tintIndex == 1 && stack.contains(ModComponents.KEY_UUID)) {
                     try {
-                        return 0xFF000000 | Integer.parseInt(Objects.requireNonNull(stack.get(BTC.KEY_UUID)).getString(), 0, 6, 16) & 0xFFF0F0F0;
+                        return 0xFF000000 | Integer.parseInt(Objects.requireNonNull(stack.get(ModComponents.KEY_UUID)).getString(), 0, 6, 16) & 0xFFF0F0F0;
                     } catch (NumberFormatException | IndexOutOfBoundsException | NullPointerException ignored) {}
                 }
                 if (tintIndex == 2) {
@@ -381,12 +383,13 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POLISHED_TUFF_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TUFF_BRICKS_PILLAR, RenderLayer.getCutoutMipped());
 
-        BlockEntityRendererRegistry.register(ModBlockEntities.PEDESTAL_BLOCK_ENTITY, PedestalBlockRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, OminousBeaconBlockRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlockEntities.KEY_DISPENSER_ENTITY, KeyDispenserBlockRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlockEntities.KEY_ACCEPTOR_ENTITY, KeyAcceptorBlockRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlockEntities.MOB_DETECTOR_BLOCK_ENTITY, MobDetectorBlockRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.PEDESTAL_BLOCK_ENTITY, PedestalBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, OminousBeaconBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.KEY_DISPENSER_ENTITY, KeyDispenserBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.KEY_ACCEPTOR_ENTITY, KeyAcceptorBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.MOB_DETECTOR_BLOCK_ENTITY, MobDetectorBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(WIND_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
         BuiltinItemRendererRegistry.INSTANCE.register(ModItems.WIND_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

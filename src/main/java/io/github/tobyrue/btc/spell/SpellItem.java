@@ -1,11 +1,10 @@
 package io.github.tobyrue.btc.spell;
 
-import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -47,18 +46,18 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
         return new SpellDataStore() {
             @Override
             public Spell getSpell() {
-                final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+                final var nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
                 return ModRegistries.SPELL.get(Identifier.tryParse(nbt.getString("name")));
             }
 
             @Override
             public GrabBag getArgs() {
-                return GrabBag.fromNBT(stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt().getCompound("args"));
+                return GrabBag.fromNBT(stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt().getCompound("args"));
             }
 
             @Override
             public void setSpell(final Spell spell, @Nullable final GrabBag args) {
-                final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+                final var nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
 
                 nbt.putString("name", Objects.requireNonNull(ModRegistries.SPELL.getId(spell)).toString());
 
@@ -66,13 +65,13 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
                     nbt.put("args", GrabBag.toNBT(args));
                 }
 
-                stack.set(BTC.SPELL_COMPONENT, NbtComponent.of(nbt));
+                stack.set(ModComponents.SPELL_COMPONENT, NbtComponent.of(nbt));
             }
 
             @Override
             public int getCooldown(final @Nullable Spell.SpellCooldown cooldown) {
                 if (cooldown != null) {
-                    final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+                    final var nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
                     return nbt.getCompound("cooldowns").getCompound(cooldown.key().toString()).getInt("value");
                 }
                 return 0;
@@ -81,7 +80,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
             @Override
             public float getCooldownPercent(final @Nullable Spell.SpellCooldown cooldown) {
                 if (cooldown != null) {
-                    final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+                    final var nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
                     return getCooldown(cooldown) / (float) nbt.getCompound("cooldowns").getCompound(cooldown.key().toString()).getInt("max");
                 }
                 return 0f;
@@ -90,7 +89,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
             @Override
             public void setCooldown(@Nullable final Spell.SpellCooldown cooldown) {
                 if (cooldown != null) {
-                    final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+                    final var nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
 
                     final var cooldowns = nbt.getCompound("cooldowns");
                     nbt.put("cooldowns", cooldowns);
@@ -100,7 +99,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
                     c.putInt("max", cooldown.ticks());
                     cooldowns.put(cooldown.key().toString(), c);
 
-                    stack.set(BTC.SPELL_COMPONENT, NbtComponent.of(nbt));
+                    stack.set(ModComponents.SPELL_COMPONENT, NbtComponent.of(nbt));
                 }
             }
         };
@@ -108,7 +107,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
 
     @Override
     public void tickCooldowns(ItemStack stack) {
-        final var nbt = stack.getOrDefault(BTC.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+        final var nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
         final var cooldowns = nbt.getCompound("cooldowns");
 
         final var keys = new ArrayList<>(cooldowns.getKeys());
@@ -123,7 +122,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
             }
         }
 
-        stack.set(BTC.SPELL_COMPONENT, NbtComponent.of(nbt));
+        stack.set(ModComponents.SPELL_COMPONENT, NbtComponent.of(nbt));
     }
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {

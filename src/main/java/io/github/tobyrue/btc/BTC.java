@@ -2,22 +2,22 @@ package io.github.tobyrue.btc;
 
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
-import io.github.tobyrue.btc.component.BlockPosComponent;
-import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.entity.custom.KeyGolemEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
-import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.PetTotemItem;
 import io.github.tobyrue.btc.misc.OxidizeOnClick;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.recipes.KeyDuplicateRecipe;
+import io.github.tobyrue.btc.recipes.UnbreakableSmithingRecipe;
 import io.github.tobyrue.btc.regestries.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -25,29 +25,29 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Saddleable;
+import net.minecraft.entity.Tameable;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.HorseEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.recipe.RawShapedRecipe;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class BTC implements ModInitializer {
 
@@ -62,67 +62,18 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
     public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
 
-    public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            identifierOf("wrench_direction"),
-            ComponentType.<Direction>builder()
-                    .codec(Direction.CODEC)
-                    .build()
-    );
-    public static final ComponentType<WrenchType> WRENCH_TYPE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            identifierOf("wrench_type"),
-            ComponentType.<WrenchType>builder()
-                    .codec(WrenchType.CODEC)
-                    .build()
-    );
-
-    public static final ComponentType<NbtComponent> SPELL_COMPONENT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("spell"),
-            ComponentType.<NbtComponent>builder().codec(NbtComponent.CODEC).build()
-    );
-//    public static final ComponentType<Identifier> UNLOCK_SPELL_COMPONENT = Registry.register(
-//            Registries.DATA_COMPONENT_TYPE,
-//            BTC.identifierOf("unlock_spell"),
-//            ComponentType.<Identifier>builder().codec(Identifier.CODEC).build()
-//    );
-//
-    public static final ComponentType<UnlockSpellComponent> UNLOCK_SPELL_COMPONENT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("unlock_spell"),
-            ComponentType.<UnlockSpellComponent>builder().codec(UnlockSpellComponent.CODEC).build()
-    );
-
-    public static final ComponentType<BlockPosComponent> CORNER_1_POSITION_COMPONENT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("corner_1_position"),
-            ComponentType.<BlockPosComponent>builder().codec(BlockPosComponent.CODEC).build()
-    );
-    public static final ComponentType<BlockPosComponent> CORNER_2_POSITION_COMPONENT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("corner_2_position"),
-            ComponentType.<BlockPosComponent>builder().codec(BlockPosComponent.CODEC).build()
-    );
-    public static final ComponentType<Text> KEY_UUID = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("key_uuid"),
-            ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
-    );
-
-    public static final ComponentType<Text> PLAYER_NAME = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            BTC.identifierOf("player_name"),
-            ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
-    );
-
     public static final RecipeSerializer<KeyDuplicateRecipe> KEY_DUPLICATE_SERIALIZER =
             Registry.register(
                     Registries.RECIPE_SERIALIZER,
-                    Identifier.of("btc", "key_duplicate"),
+                    BTC.identifierOf("key_duplicate"),
                     new SpecialRecipeSerializer<>(KeyDuplicateRecipe::new)
             );
-
+    public static final RecipeSerializer<UnbreakableSmithingRecipe> UNBREAKABLE_SMITHING =
+            Registry.register(
+                    Registries.RECIPE_SERIALIZER,
+                    BTC.identifierOf("unbreakable_smithing"),
+                    new UnbreakableSmithingRecipe.Serializer()
+            );
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
@@ -134,51 +85,6 @@ public class BTC implements ModInitializer {
     // Register our custom particle type in the mod initializer.
     @Override
     public void onInitialize() {
-
-//        System.out.println(SpellBookXMLParser.loadResource());
-//
-////        var xmlFilePath = "test.xml";
-//
-//        var builderFactory = DocumentBuilderFactory.newInstance();
-//        DocumentBuilder builder;
-//        try {
-//            builder = builderFactory.newDocumentBuilder();
-//        } catch (ParserConfigurationException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        var xmlString = SpellBookXMLParser.loadResource();
-//        var reader = new StringReader(xmlString);
-//        var inputSource = new InputSource(reader);
-//        Document document;
-//        try {
-//            document = builder.parse(inputSource);
-//        } catch (SAXException | IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        var root = document.getDocumentElement();
-//        var pages = root.getElementsByTagName("page");
-//
-//        for (int i = 0; i < pages.getLength(); i++) {
-//            var page = (Element) pages.item(i);
-//
-//            // Get attribute id
-//
-//            var id = page.getAttribute("id");
-//            System.out.println("Page ID: " + id);
-//
-//            // Get all <line> elements inside this page
-//            var lines = page.getElementsByTagName("line");
-//
-//            for (int j = 0; j < lines.getLength(); j++) {
-//                var line = (Element) lines.item(j);
-//                String align = line.hasAttribute("align") ? line.getAttribute("align") : "left";
-//                String textContent = line.getTextContent().trim();
-//                System.out.println("  Line (align=" + align + "): " + textContent);
-//            }
-//        }
-
 
 
         //Adds a trade in another class, BetterTrialChambersMapTrade
@@ -235,13 +141,43 @@ public class BTC implements ModInitializer {
                     return ActionResult.PASS;
                 }
             }
-            return ActionResult.PASS; // Other interactions (like opening chests, using tools) are allowed
+            return ActionResult.PASS;
         });
 
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            var stack = player.getStackInHand(hand);
+            if (stack.isOf(ModItems.PET_TOTEM)) {
+                if (entity instanceof TameableEntity tameableEntity) {
+                    if (tameableEntity.getOwner() == player && !stack.contains(ModComponents.STORED_MOB_UUID)) {
+                        UUID uuid = tameableEntity.getUuid();
+                        stack.set(ModComponents.STORED_MOB_UUID, uuid);
+                        tameableEntity.setInvulnerable(true);
+                        tameableEntity.setPersistent();
+                        var nbt = tameableEntity.writeNbt(new NbtCompound());
+                        stack.set(ModComponents.STORED_MOB_NBT, nbt);
+                        stack.set(ModComponents.STORED_ENTITY_TYPE, tameableEntity.getType());
+                        player.sendMessage(Text.literal("Pet bound to totem"), true);
+                        return ActionResult.SUCCESS;
+                    }
+                } else if (entity instanceof Tameable tameable && entity instanceof MobEntity mob) {
+                    System.out.println("Owner: " + tameable.getOwner() + " Player: " + player);
+                    if (tameable.getOwner() == player && !stack.contains(ModComponents.STORED_MOB_UUID)) {
+                        UUID uuid = mob.getUuid();
+                        stack.set(ModComponents.STORED_MOB_UUID, uuid);
+                        mob.setInvulnerable(true);
+                        mob.setPersistent();
+                        var nbt = mob.writeNbt(new NbtCompound());
+                        stack.set(ModComponents.STORED_MOB_NBT, nbt);
+                        stack.set(ModComponents.STORED_ENTITY_TYPE, mob.getType());
+                        player.sendMessage(Text.literal("Pet bound to totem"), true);
+                        return ActionResult.SUCCESS;
+                    }
+                }
+            }
+            return ActionResult.PASS;
+        });
         //TODO GET RID OF WHEN BUILDING MOD FOR ANY RELEASE
         UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
-
-
 
 //        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
 //            if (!world.isClient && hand == Hand.MAIN_HAND) {

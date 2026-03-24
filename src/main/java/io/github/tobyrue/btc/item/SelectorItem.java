@@ -1,19 +1,16 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.misc.CornerStorage;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -26,14 +23,14 @@ import java.util.List;
 
 public class SelectorItem extends Item {
     public SelectorItem(Settings settings) {
-        super(settings.component(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0, 0, 0)).component(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0, 0, 0)));
+        super(settings.component(ModComponents.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0, 0, 0)).component(ModComponents.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0, 0, 0)));
     }
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        var c1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
-        var c2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
+        var c1 = stack.get(ModComponents.CORNER_1_POSITION_COMPONENT);
+        var c2 = stack.get(ModComponents.CORNER_2_POSITION_COMPONENT);
 
         if (entity instanceof PlayerEntity player && (!(player.getStackInHand(Hand.MAIN_HAND).isOf(ModItems.SELECTOR)) && !(player.getStackInHand(Hand.OFF_HAND).isOf(ModItems.SELECTOR)))) {
             return;
@@ -100,8 +97,8 @@ public class SelectorItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var stack = user.getStackInHand(hand);
         if (hand == Hand.OFF_HAND) {
-            stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
-            stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
+            stack.set(ModComponents.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
+            stack.set(ModComponents.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
             return TypedActionResult.success(user.getStackInHand(hand), true);
         }
         return super.use(world, user, hand);
@@ -127,8 +124,8 @@ public class SelectorItem extends Item {
         if (state.getBlock() instanceof CornerStorage cornerStorage && player.isSneaking()) {
             var cs = cornerStorage.getBox(stack, pos, state, world);
             if (cs != null) {
-                stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(cs.getMinX(), cs.getMinY(), cs.getMinZ()));
-                stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(cs.getMaxX(), cs.getMaxY(), cs.getMaxZ()));
+                stack.set(ModComponents.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(cs.getMinX(), cs.getMinY(), cs.getMinZ()));
+                stack.set(ModComponents.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(cs.getMaxX(), cs.getMaxY(), cs.getMaxZ()));
                 player.sendMessage(
                         Text.translatable("item.btc.selector.corner_1_and_2_set", new BlockPos(cs.getMinX(), cs.getMinY(), cs.getMinZ()).toShortString(), new BlockPos(cs.getMaxX(), cs.getMaxY(), cs.getMaxZ()).toShortString()),
                         true
@@ -138,19 +135,19 @@ public class SelectorItem extends Item {
         }
 
         if (hand == Hand.OFF_HAND) {
-            stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
-            stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
+            stack.set(ModComponents.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
+            stack.set(ModComponents.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(0,world.getBottomY() - 50,0));
             return ActionResult.SUCCESS;
         }
 
         if (!player.isSneaking()) {
-            stack.set(BTC.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(pos.getX(), pos.getY(), pos.getZ()));
+            stack.set(ModComponents.CORNER_1_POSITION_COMPONENT, new BlockPosComponent(pos.getX(), pos.getY(), pos.getZ()));
             player.sendMessage(
                     Text.translatable("item.btc.selector.corner_1_set", pos.toShortString()),
                     true
             );
         } else {
-            stack.set(BTC.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(pos.getX(), pos.getY(), pos.getZ()));
+            stack.set(ModComponents.CORNER_2_POSITION_COMPONENT, new BlockPosComponent(pos.getX(), pos.getY(), pos.getZ()));
             player.sendMessage(
                     Text.translatable("item.btc.selector.corner_2_set", pos.toShortString()),
                     true
@@ -162,8 +159,8 @@ public class SelectorItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        var c1 = stack.get(BTC.CORNER_1_POSITION_COMPONENT);
-        var c2 = stack.get(BTC.CORNER_2_POSITION_COMPONENT);
+        var c1 = stack.get(ModComponents.CORNER_1_POSITION_COMPONENT);
+        var c2 = stack.get(ModComponents.CORNER_2_POSITION_COMPONENT);
         tooltip.add(Text.translatable("item.btc.selector.clear"));
         if (c1 != null) {
             assert MinecraftClient.getInstance().player != null;

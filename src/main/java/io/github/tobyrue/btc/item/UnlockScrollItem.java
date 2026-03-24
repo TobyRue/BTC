@@ -4,16 +4,12 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
-import io.github.tobyrue.btc.util.AdvancementUtils;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
 import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -25,14 +21,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
 public class UnlockScrollItem extends Item {
     public UnlockScrollItem() {
-        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(BTC.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("err"),  0, Identifier.of("empty"), "{}")));
+        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(ModComponents.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("err"),  0, Identifier.of("empty"), "{}")));
     }
 
     @Override
@@ -68,7 +63,7 @@ public class UnlockScrollItem extends Item {
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 
         if ((user instanceof ServerPlayerEntity player)
-                && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av
+                && Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av
                 && player.server.getAdvancementLoader().get(av) instanceof AdvancementEntry advancement) {
             if (!player.getAdvancementTracker().getProgress(advancement).isDone()) {
 
@@ -78,7 +73,7 @@ public class UnlockScrollItem extends Item {
                 );
                 stack.decrementUnlessCreative(1, user);
             }
-            if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
+            if (Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
 
                 Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(id), GrabBag.fromNBT(args));
                 MinecraftServer server = player.getServer();
@@ -122,7 +117,7 @@ public class UnlockScrollItem extends Item {
             tooltip.add(Text.translatable("item.btc.spell.cooldown", c/20));
             tooltip.add(inst.spell().getDescription(inst.args()));
             if (type.isAdvanced()) {
-                if (Objects.requireNonNull(stack.get(BTC.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av) {
+                if (Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av) {
                     tooltip.add(Text.literal("Adv: " + av.toTranslationKey()).formatted(Formatting.DARK_GRAY));
                 }
                 tooltip.add(Text.literal("NBT: " + GrabBag.toNBT(inst.args())).formatted(Formatting.DARK_GRAY));

@@ -38,6 +38,7 @@
   "block.btc.chiseled_tuff_bricks_pillar": "Chiseled Tuff Bricks Pillar",
   "block.btc.mob_detector": "Mob Detector",
   "block.btc.polished_tuff_pressure_plate": "Polished Tuff Pressure Plate",
+  "block.btc.obsidian_chest": "Obsidian Chest",
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",
@@ -61,6 +62,8 @@
   "item.btc.block_key": "Block Key",
   "item.btc.block_key.of": "'s Key",
   "item.btc.block_key.lock": "Block Locked",
+  "item.btc.eternal_upgrade_template": "Eternal Upgrade Template",
+  "item.btc.pet_totem": "Pet Totem",
 
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
@@ -466,5 +469,8 @@
   "spell.btc.dissolution": "Dissolution",
 
   "radial.btc.spell.select_spell": "Select Spell",
-  "radial.btc.spell.select_slot": "Select Slot"
+  "radial.btc.spell.select_slot": "Select Slot",
+
+  "commands.btc.block_effect.no_block": "No valid StatusEffectHolder block found at position given",
+  "container.obsidian_chest": "Obsidian Chest"
 }

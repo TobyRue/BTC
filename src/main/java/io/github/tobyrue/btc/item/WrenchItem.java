@@ -1,8 +1,8 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.CopperWireBlock;
 import io.github.tobyrue.btc.enums.WrenchType;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +14,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -40,22 +39,22 @@ public class WrenchItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        WrenchType type = stack.getOrDefault(BTC.WRENCH_TYPE, WrenchType.ROTATE);
+        WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
         WrenchType nextWrench = nextWrench(type);
 
         if (player.isSneaking() && hand != Hand.OFF_HAND) {
-            stack.set(BTC.WRENCH_TYPE, nextWrench);
+            stack.set(ModComponents.WRENCH_TYPE, nextWrench);
             if (world.isClient) {
                 player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
             }
             return TypedActionResult.success(stack);
         } else if (type == WrenchType.WIRE_COMPLEX) {
             if (hand == Hand.OFF_HAND) {
-                Direction current = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
+                Direction current = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
 
                 Direction next = next(current);
 
-                stack.set(BTC.WRENCH_DIRECTION, next);
+                stack.set(ModComponents.WRENCH_DIRECTION, next);
 
                 if (world.isClient) {
                     player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
@@ -71,7 +70,7 @@ public class WrenchItem extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockState state = context.getWorld().getBlockState(context.getBlockPos());
         ItemStack stack = context.getStack();
-        WrenchType type = stack.getOrDefault(BTC.WRENCH_TYPE, WrenchType.ROTATE);
+        WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
         WrenchType nextWrench = nextWrench(type);
         PlayerEntity player = context.getPlayer();
         Hand hand = context.getHand();
@@ -82,18 +81,18 @@ public class WrenchItem extends Item {
         if (state.getBlock() instanceof IHaveWrenchActions actions) {
             return actions.onWrenchUse(stack, state, world, pos, player, hand, hitSide);
         } else if (player.isSneaking() && hand != Hand.OFF_HAND) {
-            stack.set(BTC.WRENCH_TYPE, nextWrench);
+            stack.set(ModComponents.WRENCH_TYPE, nextWrench);
             if (world.isClient) {
                 player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
             }
             return ActionResult.SUCCESS;
         } else if (type == WrenchType.WIRE_COMPLEX) {
             if (hand == Hand.OFF_HAND) {
-                Direction current = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
+                Direction current = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
 
                 Direction next = next(current);
 
-                stack.set(BTC.WRENCH_DIRECTION, next);
+                stack.set(ModComponents.WRENCH_DIRECTION, next);
 
                 if (world.isClient) {
                     player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
@@ -133,8 +132,8 @@ public class WrenchItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        var dir = stack.getOrDefault(BTC.WRENCH_DIRECTION, Direction.UP);
-        var typeWrench = stack.getOrDefault(BTC.WRENCH_TYPE, WrenchType.ROTATE);
+        var dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
+        var typeWrench = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
         tooltip.add(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + typeWrench.asString())).formatted(Formatting.BLUE));
         tooltip.add(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + dir.asString())).formatted(Formatting.BLUE));
         tooltip.add(Text.translatable("item.btc.wrench.description").formatted(Formatting.DARK_RED));
