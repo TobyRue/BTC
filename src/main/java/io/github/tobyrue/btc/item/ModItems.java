@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
@@ -31,6 +32,11 @@ public class ModItems {
 //            }
 //        }
 //    }
+    public static final Item ELDRITCH_ARMOR_TRIM = register(
+            SmithingTemplateItem.of(BTC.identifierOf("eldritch")),
+            "eldritch_armor_trim_smithing_template"
+    );
+
     public static final Item ETERNAL_UPGRADE_TEMPLATE = register(
             new Item(new Item.Settings().maxCount(1)),
             "eternal_upgrade_template"

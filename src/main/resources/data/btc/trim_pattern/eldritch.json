@@ -1,0 +1,7 @@
+{
+  "asset_id": "btc:eldritch",
+  "description": {
+    "translate": "trim_pattern.btc.eldritch"
+  },
+  "template_item": "btc:eldritch_armor_trim_smithing_template"
+}

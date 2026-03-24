@@ -15,7 +15,7 @@
 //    private static final WeakHashMap<LivingEntity, Float> STORED_DAMAGE = new WeakHashMap<>();
 //
 //    public EldritchReprieveEffect() {
-//        super(StatusEffectCategory.HARMFUL, 0x4B0082); // deep eldritch purple
+//        super(StatusEffectCategory.HARMFUL, 0x4B0082);
 //    }
 //
 //

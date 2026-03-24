@@ -33,7 +33,7 @@ public class PetTotemItem extends Item {
     public PetTotemItem(Settings settings) {
         super(settings);
     }
-    
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         var stack = player.getStackInHand(hand);
