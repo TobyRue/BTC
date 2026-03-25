@@ -17,7 +17,7 @@ public record SetStatusEffectPayload(
 ) implements CustomPayload {
 
     public static final Id<SetStatusEffectPayload> ID =
-            new Id<>(ModPackets.STATUS_EFFECT_SYNC);
+            new Id<>(ModClientPackets.STATUS_EFFECT_SYNC);
 
     public static final PacketCodec<RegistryByteBuf, SetStatusEffectPayload> CODEC =
             PacketCodec.tuple(

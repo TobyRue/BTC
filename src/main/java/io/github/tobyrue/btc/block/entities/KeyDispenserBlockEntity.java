@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.KeyDispenserBlock;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.block.DungeonWireBlock;
 import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.BlockState;
@@ -33,7 +32,6 @@ import net.minecraft.world.event.GameEvent;
 
 import java.util.HashSet;
 
-import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWirePowered {
 

@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.spells;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.Ticker;
+import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
@@ -52,7 +53,7 @@ public class WaterWaveSpell extends ChanneledSpell {
                 double xSpeed = Math.sin(angle) * 0.2;
                 double zSpeed = Math.cos(angle) * 0.2;
 
-                serverWorld.spawnParticles(BTC.WATER_DROP, x, y, z, 0, xSpeed, 0.0, zSpeed, 0);
+                serverWorld.spawnParticles(BTCClient.WATER_DROP, x, y, z, 0, xSpeed, 0.0, zSpeed, 0);
             }
 
             for (LivingEntity target : serverWorld.getEntitiesByClass(LivingEntity.class, ctx.user().getBoundingBox().expand(maxRadius), e -> e.isAlive() && e != ctx.user())) {

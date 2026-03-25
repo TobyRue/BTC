@@ -26,7 +26,7 @@ public class ModInventoryItemRegistry {
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
-            content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH, ModItems.SELECTOR);
+//            content.addAfter(Items.NETHERITE_HOE, ModItems.COPPER_WRENCH, ModItems.SELECTOR);
             content.addAfter(Items.MUSIC_DISC_PIGSTEP, ModItems.CRYSTAL_FOREST_MUSIC_DISC);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {

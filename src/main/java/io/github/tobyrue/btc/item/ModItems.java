@@ -7,18 +7,19 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
 public class ModItems {
 //    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
 
-    public static<T extends Item> T register(T item, String id) {
+    public static Item register(Item item, String id) {
         // Create the identifier for the item.
         Identifier itemID = Identifier.of(BTC.MOD_ID, id);
 
         // Register the item.
-        T registeredItem = Registry.register(Registries.ITEM, itemID, item);
+        Item registeredItem = Registry.register(Registries.ITEM, itemID, item);
 
         // Return the registered item!
         return registeredItem;
@@ -33,7 +34,7 @@ public class ModItems {
 //        }
 //    }
     public static final Item ELDRITCH_ARMOR_TRIM = register(
-            SmithingTemplateItem.of(BTC.identifierOf("eldritch")),
+            SmithingTemplateItem.of(BTC.identifierOf("eldritch"), FeatureFlags.VANILLA),
             "eldritch_armor_trim_smithing_template"
     );
 
@@ -41,7 +42,7 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1)),
             "eternal_upgrade_template"
     );
-    public static final PetTotemItem PET_TOTEM = register(
+    public static final PetTotemItem PET_TOTEM = (PetTotemItem) register(
             new PetTotemItem(new Item.Settings().maxCount(1)),
             "pet_totem"
     );
@@ -83,12 +84,12 @@ public class ModItems {
     public static final Item COPPER_WRENCH = register(new WrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),
             "copper_wrench"
     );
-    public static final Item IRON_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),
-        "iron_wrench"
-    );
-    public static final Item GOLD_WRENCH = register(new GoldWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
-            "gold_wrench"
-    );
+//    public static final Item IRON_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),
+//        "iron_wrench"
+//    );
+//    public static final Item GOLD_WRENCH = register(new GoldWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)),
+//            "gold_wrench"
+//    );
     public static final Item CREATIVE_WRENCH = register(new CreativeWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
             "creative_wrench"
     );
@@ -98,27 +99,27 @@ public class ModItems {
     public static final Item ENCHANTED_PAPER = register(new Item(new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)),
             "enchanted_paper"
     );
-    public static final StaffItem STAFF = register(
+    public static final StaffItem STAFF = (StaffItem) register(
             new StaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "staff"
     );
-    public static final io.github.tobyrue.btc.item.staffs.WindStaffItem WIND_STAFF = register(
+    public static final io.github.tobyrue.btc.item.staffs.WindStaffItem WIND_STAFF = (io.github.tobyrue.btc.item.staffs.WindStaffItem) register(
         new io.github.tobyrue.btc.item.staffs.WindStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "wind_staff"
     );
-    public static final io.github.tobyrue.btc.item.staffs.FireStaffItem FIRE_STAFF = register(
+    public static final io.github.tobyrue.btc.item.staffs.FireStaffItem FIRE_STAFF = (io.github.tobyrue.btc.item.staffs.FireStaffItem) register(
             new io.github.tobyrue.btc.item.staffs.FireStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "fire_staff"
     );
-    public static final io.github.tobyrue.btc.item.staffs.DragonStaffItem DRAGON_STAFF = register(
+    public static final io.github.tobyrue.btc.item.staffs.DragonStaffItem DRAGON_STAFF = (io.github.tobyrue.btc.item.staffs.DragonStaffItem) register(
             new io.github.tobyrue.btc.item.staffs.DragonStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "dragon_staff"
     );
-    public static final io.github.tobyrue.btc.item.staffs.WaterStaffItem WATER_STAFF = register(
+    public static final io.github.tobyrue.btc.item.staffs.WaterStaffItem WATER_STAFF = (io.github.tobyrue.btc.item.staffs.WaterStaffItem) register(
             new io.github.tobyrue.btc.item.staffs.WaterStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "water_staff"
     );
-    public static final io.github.tobyrue.btc.item.staffs.EarthStaffItem EARTH_STAFF = register(
+    public static final io.github.tobyrue.btc.item.staffs.EarthStaffItem EARTH_STAFF = (io.github.tobyrue.btc.item.staffs.EarthStaffItem) register(
             new io.github.tobyrue.btc.item.staffs.EarthStaffItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)),
             "earth_staff"
     );

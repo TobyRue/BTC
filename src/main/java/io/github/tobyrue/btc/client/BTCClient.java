@@ -7,6 +7,7 @@ import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.*;
+import io.github.tobyrue.btc.packets.ModClientPackets;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
@@ -22,11 +23,15 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.particle.FlameParticle;
+import net.minecraft.client.particle.GustParticle;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
@@ -35,6 +40,9 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Items;
+import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -57,6 +65,8 @@ public class BTCClient implements ClientModInitializer {
     public static final EntityModelLayer DRAGON_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "dragon_staff"), "main");
     public static final EntityModelLayer WATER_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "water_staff"), "main");
     public static final EntityModelLayer EARTH_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "earth_staff"), "main");
+    public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
+    public static final SimpleParticleType WATER_DROP = FabricParticleTypes.simple();
 
     public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
 
@@ -101,6 +111,12 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(BTC.MOD_ID, "water_blast"), WATER_BLAST);
+        ParticleFactoryRegistry.getInstance().register(WATER_BLAST, GustParticle.Factory::new);
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(BTC.MOD_ID, "water_drop"), WATER_DROP);
+        ParticleFactoryRegistry.getInstance().register(WATER_DROP, FlameParticle.Factory::new);
+
+        ModClientPackets.initialize();
 
         radialMenuKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.btc.open_spellbook", // The translation key of the keybinding's name

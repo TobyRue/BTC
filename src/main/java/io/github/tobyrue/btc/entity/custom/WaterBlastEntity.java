@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import net.minecraft.block.*;
@@ -83,7 +84,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         }
         if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             if (this.getWorld() instanceof ServerWorld serverWorld) {
-                serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+                serverWorld.spawnParticles(BTCClient.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
             }
             this.discard();
         }
@@ -97,7 +98,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         if (hitResult.getType() != HitResult.Type.MISS) {
             this.hitOrDeflect(hitResult);
             if (this.getWorld() instanceof ServerWorld serverWorld) {
-                serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+                serverWorld.spawnParticles(BTCClient.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
             }
         }
     }
@@ -106,7 +107,7 @@ public class WaterBlastEntity extends ProjectileEntity {
     protected void onBlockHit(BlockHitResult blockHitResult) {
         super.onBlockHit(blockHitResult);
         if (this.getWorld() instanceof ServerWorld serverWorld) {
-            serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+            serverWorld.spawnParticles(BTCClient.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         }
         BlockPos hitPos = blockHitResult.getBlockPos();
         Direction hitSide = blockHitResult.getSide();
@@ -157,7 +158,7 @@ public class WaterBlastEntity extends ProjectileEntity {
             }
         }
         if (this.getWorld() instanceof ServerWorld serverWorld) {
-            serverWorld.spawnParticles(BTC.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
+            serverWorld.spawnParticles(BTCClient.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
         }
         if (!this.getWorld().isClient()) {
             this.getWorld().sendEntityStatus(this, (byte)3);

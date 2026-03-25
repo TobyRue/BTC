@@ -10,18 +10,18 @@
   "contact": {
     "repo": "https://github.com/TobyRue/BTC"
   },
-  "license": "MIT",
+  "license": "BTC-GPL-v1",
   "icon": "assets/btc/icon.png",
   "environment": "*",
   "entrypoints": {
+    "main": [
+      "io.github.tobyrue.btc.BTC"
+    ],
     "fabric-datagen": [
       "io.github.tobyrue.btc.ExampleModDataGenerator"
     ],
     "client": [
       "io.github.tobyrue.btc.client.BTCClient"
-    ],
-    "main": [
-      "io.github.tobyrue.btc.BTC"
     ],
     "mm:early_risers": [
       "io.github.tobyrue.btc.regestries.EarlyRiser"

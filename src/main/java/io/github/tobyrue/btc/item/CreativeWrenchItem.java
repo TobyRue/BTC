@@ -1,7 +1,6 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.CopperWireBlock;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;

@@ -1,5 +1,6 @@
 {
   "asset_id": "btc:eldritch",
+  "decal": false,
   "description": {
     "translate": "trim_pattern.btc.eldritch"
   },

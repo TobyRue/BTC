@@ -15,7 +15,7 @@ public class StaffItem extends Item implements ItemCooldownProvider {
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-        if (!world.isClient && entity instanceof LivingEntity) {
+        if (entity instanceof LivingEntity) {
             this.tickCooldowns(stack);
         }
     }

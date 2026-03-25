@@ -77,10 +77,6 @@ public class BTC implements ModInitializer {
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
-    public static final SimpleParticleType WATER_BLAST = FabricParticleTypes.simple();
-    public static final SimpleParticleType WATER_DROP = FabricParticleTypes.simple();
-
-
 
     // Register our custom particle type in the mod initializer.
     @Override
@@ -199,11 +195,6 @@ public class BTC implements ModInitializer {
 //            return ActionResult.PASS;
 //        });
 
-        //TODO COMMENT THESE BACK IN WHEN NOT DOING DATA GEN WITH THESE IT BREAKS IT
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_blast"), WATER_BLAST);
-        ParticleFactoryRegistry.getInstance().register(BTC.WATER_BLAST, GustParticle.Factory::new);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(MOD_ID, "water_drop"), WATER_DROP);
-        ParticleFactoryRegistry.getInstance().register(BTC.WATER_DROP, FlameParticle.Factory::new);
     }
     public static void println(Object... args) {
         System.out.println(String.join(" ", Arrays.stream(args).map(Object::toString).toArray(String[]::new)));

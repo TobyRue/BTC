@@ -65,13 +65,11 @@ public class BlockKeyItem extends Item {
 
                 String lockString = keyText.getString();
 
-                if (!world.isClient) {
-                    nbt.putString("Lock", lockString);
-                    be.readNbt(nbt, world.getRegistryManager());
-                    be.markDirty();
+                nbt.putString("Lock", lockString);
+                be.readNbt(nbt, world.getRegistryManager());
+                be.markDirty();
 
-                    player.sendMessage(Text.translatable("item.btc.block_key.lock"), true);
-                }
+                player.sendMessage(Text.translatable("item.btc.block_key.lock"), true);
                 return ActionResult.SUCCESS;
             }
         }

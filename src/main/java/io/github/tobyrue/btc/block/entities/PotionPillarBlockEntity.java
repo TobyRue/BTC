@@ -35,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-import static io.github.tobyrue.btc.block.DungeonWireBlock.POWERED;
 
 
 public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityTicker<PotionPillarBlockEntity>, CornerStorage, StatusEffectHolderBlockEntity {

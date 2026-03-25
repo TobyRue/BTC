@@ -37,21 +37,12 @@ public class ModPackets {
     public static final Identifier SPELL_PACKET_ID = BTC.identifierOf("selected_spell");
     public static final Identifier QUICK_SPELL_PACKET_ID = BTC.identifierOf("quick_spell");
     public static final Identifier ADVANCEMENT_SPELL = BTC.identifierOf("advancement");
-    public static final Identifier ADVANCEMENT_RESPONSE_SPELL = BTC.identifierOf("advancement_response");
-    public static final Identifier OPEN_FAV = BTC.identifierOf("open_favorite");
-    public static final Identifier MOB_DETECTOR_SYNC_ID = BTC.identifierOf("mob_detector_sync");
-    public static final Identifier STATUS_EFFECT_SYNC = BTC.identifierOf("status_effect_sync");
-    public static final Identifier MARK_LOOTED = BTC.identifierOf("mark_looted_sync");
 
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
+
 
         ServerPlayNetworking.registerGlobalReceiver(
                 SetElementPayload.ID,
@@ -127,109 +118,6 @@ public class ModPackets {
                     });
                 });
 
-        ClientPlayNetworking.registerGlobalReceiver(
-                ServerAdvancementResponsePayload.ID, (payload, context) -> {
-            Identifier adv = payload.advancement();
-            boolean has = payload.has();
 
-            context.client().execute(() -> AdvancementUtils.advancementCache.put(adv, has));
-        });
-        ClientPlayNetworking.registerGlobalReceiver(
-                OpenFavoritePayload.ID, (payload, context) -> {
-                    var client = context.client();
-                    var player = context.player();
-                    var stack = player.getMainHandStack();
-                    var item = stack.getItem();
-                    //TODO crashes on server not on single player
-                    var server = client.getServer().getOverworld().getServer();
-
-                    SpellPersistentState spellState = SpellPersistentState.get(server);
-                    PlayerSpellData playerData = spellState.getPlayerData(client.player);
-
-                    if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                        var spells = PredefinedSpellsItem.getKnownSpells(playerData);
-
-                        // Convert available spells into PrefixValue objects
-                        var spellValues = spells.stream()
-                                .map(inst -> {
-
-                                    // Get raw string (translation{key='...', args=[...]})
-                                    String raw = inst.spell().getName(inst.args()).toString();
-
-                                    // Extract just the translation key with regex
-                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
-
-                                    // Build the base command prefix
-                                    System.out.println("Spell: " + inst.spell() + " Args as NBT: " + GrabBag.toNBT(inst.args()));
-                                    String spellId = Spell.getId(inst.spell()).toString();
-                                    NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
-                                    String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
-
-                                    // Generate suffix values 1..maxKnown
-                                    List<SuffixValueNoHover> suffixValues =
-                                            java.util.stream.IntStream.rangeClosed(0, 5)
-                                                    .mapToObj(i -> new SuffixValueNoHover(
-                                                            Text.literal(String.valueOf(i + 1)).formatted(Formatting.BLACK),
-                                                            String.valueOf(i)  // suffixClick
-                                                    ))
-                                                    .toList();
-
-                                    return new PrefixValueNoHover(
-                                            Text.translatable(key, inst.args()).formatted(Formatting.BLACK), // display
-                                            commandPrefix,  // click command (before suffix)
-                                            suffixValues    // suffix menu options
-                                    );
-                                })
-                                .toList();
-
-                        int maxSlots = spellValues.size();
-
-                        client.setScreen(new RadialMenuWithPrefixNoHover(
-                                Text.translatable("radial.btc.spell.select_spell"),
-                                new ArrayList<>(spellValues),
-                                0,
-                                Math.min(maxSlots, 6),
-                                new RadialValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f),
-                                Text.translatable("radial.btc.spell.select_slot")
-                        ));
-                    }
-                });
-        ClientPlayNetworking.registerGlobalReceiver(
-                MobDetectorSyncPayload.ID,
-                (payload, context) -> {
-                    context.client().execute(() -> {
-                        var world = context.client().world;
-                        if (world == null) return;
-
-                        var be = world.getBlockEntity(payload.pos());
-                        if (be instanceof MobDetectorBlockEntity detector) {
-                            detector.getTrackedEntityIds().clear();
-                            detector.getTrackedEntityIds().addAll(payload.entityIds());
-                        }
-                    });
-                }
-        );
-        ClientPlayNetworking.registerGlobalReceiver(
-                SetStatusEffectPayload.ID, (payload, context) -> {
-                    var blockEntity = Objects.requireNonNull(context.client().world).getBlockEntity(payload.pos());
-
-                    if (blockEntity != null) {
-                        if (blockEntity instanceof StatusEffectHolderBlockEntity statusEffectHolder) {
-                            statusEffectHolder.setEffect(payload.effect(), payload.duration(), payload.amplifier());
-                            blockEntity.markDirty();
-                        }
-                    }
-                }
-        );
-        ClientPlayNetworking.registerGlobalReceiver(
-                MarkPlayerLootedS2CPayload.ID, (payload, context) -> {
-                    var uuid = payload.uuid();
-                    var world = context.player().getWorld();
-                    var pos = payload.pos();
-                    if (world.getBlockEntity(pos) instanceof ObsidianChestBlockEntity be && !be.hasPlayerLooted(uuid)) {
-                        be.markPlayerLooted(uuid);
-                    }
-                }
-        );
     }
 }

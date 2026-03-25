@@ -117,7 +117,7 @@ public class SelectorItem extends Item {
 
 
 
-        if (player == null || !player.isCreative() || world.isClient) {
+        if (player == null || !player.isCreative()) {
             return super.useOnBlock(context);
         }
 
@@ -162,20 +162,20 @@ public class SelectorItem extends Item {
         var c1 = stack.get(ModComponents.CORNER_1_POSITION_COMPONENT);
         var c2 = stack.get(ModComponents.CORNER_2_POSITION_COMPONENT);
         tooltip.add(Text.translatable("item.btc.selector.clear"));
-        if (c1 != null) {
-            assert MinecraftClient.getInstance().player != null;
-            if (c1.y() > MinecraftClient.getInstance().player.getWorld().getBottomY() - 1) {
-                var b1 = new BlockPos(c1.x(), c1.y(), c1.z());
-                tooltip.add(Text.translatable("item.btc.selector.corner_1", b1.toShortString()));
-            }
-        }
-        if (c2 != null) {
-            assert MinecraftClient.getInstance().player != null;
-            if (c2.y() > MinecraftClient.getInstance().player.getWorld().getBottomY() - 1) {
-                var b2 = new BlockPos(c2.x(), c2.y(), c2.z());
-                tooltip.add(Text.translatable("item.btc.selector.corner_2", b2.toShortString()));
-            }
-        }
+//        if (c1 != null) {
+//            assert MinecraftClient.getInstance().player != null;
+//            if (c1.y() > MinecraftClient.getInstance().player.getWorld().getBottomY() - 1) {
+//                var b1 = new BlockPos(c1.x(), c1.y(), c1.z());
+//                tooltip.add(Text.translatable("item.btc.selector.corner_1", b1.toShortString()));
+//            }
+//        }
+//        if (c2 != null) {
+//            assert MinecraftClient.getInstance().player != null;
+//            if (c2.y() > MinecraftClient.getInstance().player.getWorld().getBottomY() - 1) {
+//                var b2 = new BlockPos(c2.x(), c2.y(), c2.z());
+//                tooltip.add(Text.translatable("item.btc.selector.corner_2", b2.toShortString()));
+//            }
+//        }
         super.appendTooltip(stack, context, tooltip, type);
     }
 }

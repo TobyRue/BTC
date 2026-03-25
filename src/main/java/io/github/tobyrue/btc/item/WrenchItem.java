@@ -44,9 +44,7 @@ public class WrenchItem extends Item {
 
         if (player.isSneaking() && hand != Hand.OFF_HAND) {
             stack.set(ModComponents.WRENCH_TYPE, nextWrench);
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
-            }
+            player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
             return TypedActionResult.success(stack);
         } else if (type == WrenchType.WIRE_COMPLEX) {
             if (hand == Hand.OFF_HAND) {
@@ -56,9 +54,7 @@ public class WrenchItem extends Item {
 
                 stack.set(ModComponents.WRENCH_DIRECTION, next);
 
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
-                }
+                player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
                 return TypedActionResult.success(stack);
             }
         }
@@ -82,9 +78,7 @@ public class WrenchItem extends Item {
             return actions.onWrenchUse(stack, state, world, pos, player, hand, hitSide);
         } else if (player.isSneaking() && hand != Hand.OFF_HAND) {
             stack.set(ModComponents.WRENCH_TYPE, nextWrench);
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
-            }
+            player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
             return ActionResult.SUCCESS;
         } else if (type == WrenchType.WIRE_COMPLEX) {
             if (hand == Hand.OFF_HAND) {
@@ -94,9 +88,7 @@ public class WrenchItem extends Item {
 
                 stack.set(ModComponents.WRENCH_DIRECTION, next);
 
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
-                }
+                player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
                 return ActionResult.SUCCESS;
             }
         } else if (type == WrenchType.ROTATE) {

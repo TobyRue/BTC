@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.UUID;
 
 public record MarkPlayerLootedS2CPayload (BlockPos pos, UUID uuid) implements CustomPayload {
-    public static final CustomPayload.Id<MarkPlayerLootedS2CPayload> ID = new CustomPayload.Id<>(ModPackets.MARK_LOOTED);
+    public static final CustomPayload.Id<MarkPlayerLootedS2CPayload> ID = new CustomPayload.Id<>(ModClientPackets.MARK_LOOTED);
 
     public static final PacketCodec<RegistryByteBuf, MarkPlayerLootedS2CPayload> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC, MarkPlayerLootedS2CPayload::pos,
