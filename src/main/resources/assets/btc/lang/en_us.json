@@ -62,8 +62,10 @@
   "item.btc.block_key": "Block Key",
   "item.btc.block_key.of": "'s Key",
   "item.btc.block_key.lock": "Block Locked",
-  "item.btc.eternal_upgrade_template": "Eternal Upgrade Template",
+  "item.btc.unbreakable_upgrade_template": "Unbreakable Upgrade Template",
   "item.btc.pet_totem": "Pet Totem",
+  "item.btc.eldritch_armor_trim_smithing_template": "Eldritch Armor Trim",
+  "item.btc.sun_armor_trim_smithing_template": "Sun Armor Trim",
 
   "item.btc.eldritch_luminary_spawn_egg": "Eldritch Luminary Spawn Egg",
   "item.btc.copper_golem_spawn_egg": "Copper Golem Spawn Egg",
@@ -472,5 +474,8 @@
   "radial.btc.spell.select_slot": "Select Slot",
 
   "commands.btc.block_effect.no_block": "No valid StatusEffectHolder block found at position given",
-  "container.obsidian_chest": "Obsidian Chest"
+  "container.obsidian_chest": "Obsidian Chest",
+
+  "trim_pattern.btc.eldritch": "Eldritch Armor Trim",
+  "trim_pattern.btc.sun": "Sun Armor Trim"
 }

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "btc:eldritch_armor_trim_smithing_template"
+    "btc:eldritch_armor_trim_smithing_template",
+    "btc:sun_armor_trim_smithing_template"
   ]
 }

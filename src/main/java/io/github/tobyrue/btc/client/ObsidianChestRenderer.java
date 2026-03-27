@@ -33,9 +33,8 @@ public class ObsidianChestRenderer implements BlockEntityRenderer<ObsidianChestB
     public static final int MAX_LIGHT = 15728880;
     private static final float MIN_BRIGHTNESS = 0.75f;
     private static final float MAX_BRIGHTNESS = 1.0f;
+    private static final float CORE_BRIGHTNESS_MULTIPLIER = 0.75f;
     private static final float PULSE_SPEED = 0.1f;     // lower = slower pulse
-    private static final int OPENED_TINT = 0xCE3700;
-    private static final int CLOSED_TINT = 0x3DE0E5;
     private final ModelPart lid;
     private final ModelPart base;
     private final ModelPart latch;
@@ -52,6 +51,14 @@ public class ObsidianChestRenderer implements BlockEntityRenderer<ObsidianChestB
         matrices.push();
         BlockState state = entity.getCachedState();
         float rotation = state.get(ChestBlock.FACING).asRotation();
+        float time = (Objects.requireNonNull(entity.getWorld()).getTime() + tickDelta);
+        float wave = (float)((Math.cos(time * PULSE_SPEED) + 1.0) / 2.0);
+        float pulse = MIN_BRIGHTNESS + (MAX_BRIGHTNESS - MIN_BRIGHTNESS) * wave;
+        MinecraftClient client = MinecraftClient.getInstance();
+        assert client.player != null;
+        UUID playerUUID = client.player.getUuid();
+        boolean opened = playerUUID != null && entity.hasPlayerLooted(playerUUID);
+        int baseColor = getColor(pulse * CORE_BRIGHTNESS_MULTIPLIER);
 
         matrices.translate(0.5f, 0.5f, 0.5f);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-rotation));
@@ -64,15 +71,9 @@ public class ObsidianChestRenderer implements BlockEntityRenderer<ObsidianChestB
         lid.pitch = -(openFactor * 1.5707964f);
         latch.pitch = lid.pitch;
         VertexConsumer baseConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
-        this.renderParts(matrices, baseConsumer, light, overlay);
+        this.renderParts(matrices, baseConsumer, light, overlay, baseColor);
 
-        float time = (Objects.requireNonNull(entity.getWorld()).getTime() + tickDelta);
-        float wave = (float)((Math.cos(time * PULSE_SPEED) + 1.0) / 2.0);
-        float pulse = MIN_BRIGHTNESS + (MAX_BRIGHTNESS - MIN_BRIGHTNESS) * wave;
-        MinecraftClient client = MinecraftClient.getInstance();
-        assert client.player != null;
-        UUID playerUUID = client.player.getUuid();
-        boolean opened = playerUUID != null && entity.hasPlayerLooted(playerUUID);
+
 
         int color = getColor(pulse);
         VertexConsumer glowConsumer;

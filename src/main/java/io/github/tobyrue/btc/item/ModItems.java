@@ -1,9 +1,13 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
+import io.github.tobyrue.btc.client.ObsidianChestRenderer;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.regestries.ModSounds;
+import net.minecraft.client.render.entity.DrownedEntityRenderer;
+import net.minecraft.client.render.entity.model.DrownedEntityModel;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
@@ -12,7 +16,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
 public class ModItems {
-//    public static final Map<SpellRegistryEnum, SpellScrollItem> SPELL_ITEMS = new HashMap<>();
 
     public static Item register(Item item, String id) {
         // Create the identifier for the item.
@@ -25,22 +28,17 @@ public class ModItems {
         return registeredItem;
     }
 
-//    static {
-//        for (SpellRegistryEnum spell : SpellRegistryEnum.values()) {
-//            if (!spell.hasNoScroll) {
-//                SpellScrollItem item = new SpellScrollItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).maxCount(1), spell);
-//                SPELL_ITEMS.put(spell, register(item, spell.toString() + "_scroll"));
-//            }
-//        }
-//    }
     public static final Item ELDRITCH_ARMOR_TRIM = register(
             SmithingTemplateItem.of(BTC.identifierOf("eldritch"), FeatureFlags.VANILLA),
             "eldritch_armor_trim_smithing_template"
     );
-
-    public static final Item ETERNAL_UPGRADE_TEMPLATE = register(
+    public static final Item SUN_ARMOR_TRIM = register(
+            SmithingTemplateItem.of(BTC.identifierOf("sun"), FeatureFlags.VANILLA),
+            "sun_armor_trim_smithing_template"
+    );
+    public static final Item UNBREAKABLE_UPGRADE_TEMPLATE = register(
             new Item(new Item.Settings().maxCount(1)),
-            "eternal_upgrade_template"
+            "unbreakable_upgrade_template"
     );
     public static final PetTotemItem PET_TOTEM = (PetTotemItem) register(
             new PetTotemItem(new Item.Settings().maxCount(1)),

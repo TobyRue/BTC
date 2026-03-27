@@ -11,10 +11,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ChanneledSpell extends Spell {
@@ -145,7 +141,7 @@ public abstract class ChanneledSpell extends Spell {
         
         AtomicBoolean ranOnce = new AtomicBoolean(false);
 
-        ((Ticker.TickerTarget) (ctx.user())).add(
+        ((Ticker.TickerTarget) (ctx.user())).bTC$add(
                 Ticker.forTicks(tick -> {
                      if (tick >= waitForFirst) {
                         switch (disturb.distributionLevel) {

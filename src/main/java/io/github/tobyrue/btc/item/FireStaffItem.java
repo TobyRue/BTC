@@ -258,7 +258,7 @@ public class FireStaffItem extends StaffItem {
     }
     private void fireBurst(LivingEntity entity, World world, ItemStack stack, int duration, double maxRadius) {
         Vec3d storedPos = entity.getPos();
-        ((Ticker.TickerTarget) entity).add(Ticker.forSeconds((ticks) -> {
+        ((Ticker.TickerTarget) entity).bTC$add(Ticker.forSeconds((ticks) -> {
             if (world instanceof ServerWorld serverWorld) {
                 double progress = ticks / (double) (duration * 20);
                 double radius = maxRadius * progress;

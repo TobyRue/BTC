@@ -3,7 +3,6 @@ package io.github.tobyrue.btc.item;
 import io.github.tobyrue.btc.Ticker;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -25,7 +24,7 @@ public class SpellActions {
 
     public static void fireBurst(World world, LivingEntity entity, int duration, double maxRadius) {
         Vec3d storedPos = entity.getPos();
-        ((Ticker.TickerTarget) entity).add(Ticker.forSeconds((ticks) -> {
+        ((Ticker.TickerTarget) entity).bTC$add(Ticker.forSeconds((ticks) -> {
             if (world instanceof ServerWorld serverWorld) {
                 double progress = ticks / (double) (duration * 20);
                 double radius = maxRadius * progress;

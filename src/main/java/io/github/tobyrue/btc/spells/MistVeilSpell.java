@@ -36,7 +36,7 @@ public class MistVeilSpell extends Spell {
         Vec3d center = caster.getPos();
 
         // Schedule ticking effect for duration
-        ((Ticker.TickerTarget) caster).add(Ticker.forTicks((tick) -> {
+        ((Ticker.TickerTarget) caster).bTC$add(Ticker.forTicks((tick) -> {
             if (world instanceof ServerWorld serverWorld) {
                 // Spawn mist particles around caster
                 for (int i = 0; i < 64; i++) {

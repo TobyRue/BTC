@@ -8,22 +8,15 @@ import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.EffectCommand;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.Optional;
-
-import static com.ibm.icu.impl.ValidIdentifiers.Datatype.x;
 
 public class PurgeBoltSpell extends Spell {
 
@@ -45,7 +38,7 @@ public class PurgeBoltSpell extends Spell {
         Vec3d start = user.getCameraPosVec(1.0F);
         Vec3d dir = user.getRotationVec(1.0F).normalize();
 
-        ((Ticker.TickerTarget) user).add(
+        ((Ticker.TickerTarget) user).bTC$add(
                 Ticker.forTicks(tick -> {
                     // Each tick, move the invisible bolt forward
                     Vec3d pos = start.add(dir.multiply(speed * tick));

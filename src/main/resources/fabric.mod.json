@@ -3,15 +3,15 @@
   "id": "btc",
   "version": "${version}",
   "name": "BTC",
-  "description": "",
+  "description": "BTC is a Minecraft mod adding custom trial chambers, multiple new mobs, a magic system, and interactive systems like dungeon wires and a multitude of dungeon puzzles.",
   "authors": [
     "TobinOakenshield"
   ],
   "contact": {
     "repo": "https://github.com/TobyRue/BTC"
   },
-  "license": "BTC-GPL-v1",
-  "icon": "assets/btc/icon.png",
+  "license": "BTC-GPLv1.0",
+  "icon": "assets/btc/btc_title.png",
   "environment": "*",
   "entrypoints": {
     "main": [

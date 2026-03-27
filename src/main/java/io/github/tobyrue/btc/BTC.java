@@ -2,6 +2,7 @@ package io.github.tobyrue.btc;
 
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.client.ObsidianChestRenderer;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;

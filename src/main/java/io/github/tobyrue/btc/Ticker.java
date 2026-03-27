@@ -88,19 +88,19 @@ public interface Ticker {
     }
 
     interface TickerTarget {
-        void add(final Ticker ticker);
+        void bTC$add(final Ticker ticker);
 
         default void add(final Runnable runnable) {
-            this.add(of(runnable));
+            this.bTC$add(of(runnable));
         }
         default void add(final Supplier<Boolean> supplier) {
-            this.add(of(supplier));
+            this.bTC$add(of(supplier));
         }
         default void add(final Consumer<Integer> consumer) {
-            this.add(of(consumer));
+            this.bTC$add(of(consumer));
         }
         default void add(final Function<Integer, Boolean> function) {
-            this.add(of(function));
+            this.bTC$add(of(function));
         }
     }
 }

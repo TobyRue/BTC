@@ -5,7 +5,9 @@
       "type": "paletted_permutations",
       "textures": [
         "btc:trims/models/armor/eldritch",
-        "btc:trims/models/armor/eldritch_leggings"
+        "btc:trims/models/armor/eldritch_leggings",
+        "btc:trims/models/armor/sun",
+        "btc:trims/models/armor/sun_leggings"
       ],
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
@@ -22,7 +24,7 @@
         "iron_darker": "trims/color_palettes/iron_darker",
         "gold_darker": "trims/color_palettes/gold_darker",
         "diamond_darker": "trims/color_palettes/diamond_darker",
-        "netherite_darker": "trims/color_palettes/netherite_darker",
+        "netherite_darker": "trims/color_palettes/netherite_darker"
       }
     }
   ]
