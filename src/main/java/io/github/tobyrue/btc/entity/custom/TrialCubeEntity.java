@@ -1,7 +1,10 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -11,11 +14,13 @@ import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -99,8 +104,38 @@ public class TrialCubeEntity extends Entity {
     }
 
     @Override
-    public void onPlayerCollision(PlayerEntity player) {
-        super.onPlayerCollision(player);
+    public boolean damage(DamageSource source, float amount) {
+
+
+        if (source.getAttacker() instanceof LivingEntity attacker) {
+            var enchantmentRegistry = attacker.getWorld().getRegistryManager().getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+            var knockbackEnchant = enchantmentRegistry.getOrThrow(Enchantments.KNOCKBACK);
+            int kbLevel = EnchantmentHelper.getLevel(knockbackEnchant, attacker.getMainHandStack());
+
+            double deltaX = this.getX() - attacker.getX();
+            double deltaZ = this.getZ() - attacker.getZ();
+
+            float damageStrength = (float) Math.log1p(amount) * 0.25F;
+            float totalStrength = damageStrength + (kbLevel * 0.01F);
+
+            this.takeKnockback(totalStrength, deltaX, deltaZ);
+        }
+        return true;
+    }
+
+    private void takeKnockback(double strength, double x, double z) {
+        if (strength <= 0) return;
+
+        this.velocityDirty = true;
+        this.velocityModified = true;
+
+        Vec3d direction = new Vec3d(x, 0.0, z).normalize();
+        Vec3d currentVel = this.getVelocity();
+        this.setVelocity(
+                currentVel.x * 0.5 + direction.x * strength,
+                this.isOnGround() ? Math.min(0.4, currentVel.y * 0.5 + strength * 0.8) : currentVel.y,
+                currentVel.z * 0.5 + direction.z * strength
+        );
     }
 
     @Override
