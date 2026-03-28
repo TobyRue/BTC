@@ -161,27 +161,18 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         if (this.dataTracker.get(DMG) <= 0) {
             this.dataTracker.set(DMG, 4);
         }
-        // 1. Basic Setup
 
-        // 2. MOVE FIRST (Using your custom move method)
-        // This is where the bounce happens
         Vec3d velocityBeforeMove = this.getVelocity();
         this.move(MovementType.SELF, velocityBeforeMove);
 
-        // 3. APPLY ACCELERATION SECOND
-        // Get the velocity again (it might have changed due to a bounce)
         Vec3d velocityAfterMove = this.getVelocity();
 
-        // 4. APPLY DRAG
         this.setVelocity(velocityAfterMove.multiply(this.isTouchingWater() ? 0.8 : 1));
-        // 5. UPDATE ROTATION
-        // Face the direction of current velocity
         Vec3d finalVel = this.getVelocity();
         float yaw = (float)(MathHelper.atan2(finalVel.x, finalVel.z) * (180 / Math.PI));
         float pitch = (float)(MathHelper.atan2(finalVel.y, finalVel.horizontalLength()) * (180 / Math.PI));
         this.setRotation(yaw, pitch);
 
-        // 6. PARTICLES
         if (this.getWorld().isClient) {
             this.getWorld().addParticle(ParticleTypes.END_ROD, this.getX(), this.getY() + (getHeight() / 2f), this.getZ(), 0, 0, 0);
         }
@@ -240,7 +231,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
     @Override
     public void move(MovementType movementType, Vec3d movement) {
-        // 1. Handle NoClip
         if (this.noClip) {
             this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
             return;
@@ -248,8 +238,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
         this.getWorld().getProfiler().push("move");
 
-        // 2. Simple Collision Adjustment
-        // This uses your method to see how far it can go before hitting a wall/ceiling
         Vec3d collidedMovement = this.adjustMovementForCollisions(movement);
 
         if (collidedMovement.lengthSquared() > 1.0E-7) {
@@ -289,7 +277,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     private Vec3d adjustMovementForCollisions(Vec3d movement) {
         Box box = this.getBoundingBox();
         List<VoxelShape> list = this.getWorld().getEntityCollisions(this, box.stretch(movement));
-        // Just return the standard collision adjustment without the 'stepping' logic
         return movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.getWorld(), list);
     }
 

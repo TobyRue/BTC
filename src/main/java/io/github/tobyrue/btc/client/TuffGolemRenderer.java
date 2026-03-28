@@ -43,12 +43,9 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
 
     @Override
     public void render(TuffGolemEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        // Push the pose stack to start transformation
         matrixStack.push();
-        // Check if the entity is holding an item
-        ItemStack heldItem = livingEntity.getHeldItem();  // or getHeldItem() based on your entity's method
+        ItemStack heldItem = livingEntity.getHeldItem();
 
-        // Only render the item if it's not empty
         if (!heldItem.isEmpty()) {
             matrixStack.push();
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((livingEntity.getHeadYaw() * -1) + 180));  // Rotate based on head yaw

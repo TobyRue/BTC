@@ -53,5 +53,8 @@ public class ModEntities {
             Identifier.of(BTC.MOD_ID, "mine"),
             EntityType.Builder.<MineEntity>create(MineEntity::new, SpawnGroup.MISC)
                     .dimensions(1f, 1f).eyeHeight(0.5f).makeFireImmune().build());
-
+    public static final EntityType<TrialCubeEntity> TRIAL_CUBE = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(BTC.MOD_ID, "trial_cube"),
+            EntityType.Builder.<TrialCubeEntity>create(TrialCubeEntity::new, SpawnGroup.MISC)
+                    .dimensions(1f, 1f).eyeHeight(0.5f).makeFireImmune().build());
 }

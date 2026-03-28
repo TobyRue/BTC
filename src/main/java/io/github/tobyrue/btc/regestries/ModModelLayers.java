@@ -25,4 +25,6 @@ public class ModModelLayers {
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "key_golem"), "main");
     public static final EntityModelLayer MINE =
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "mine"), "main");
+    public static final EntityModelLayer TRIAL_CUBE =
+            new EntityModelLayer(Identifier.of(BTC.MOD_ID, "trial_cube"), "main");
 }
