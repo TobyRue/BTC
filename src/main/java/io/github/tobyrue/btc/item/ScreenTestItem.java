@@ -110,35 +110,35 @@ public class ScreenTestItem extends PredefinedSpellsItem {
     }
 
 
-    {
-        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-            var text = message.getContent().getString();
-            sender.sendMessage(Text.literal("Git Gud"), true);
-            if (text.startsWith("!")) {
-                try {
-                    var strings = text.substring(1).split(" ");
-
-                    if (strings.length < 1) {
-                        throw new Exception("Missing commandHover after '!'");
-                    }
-
-                    var command = strings[0].toLowerCase(Locale.ROOT);
-                    var args = Arrays.copyOfRange(strings, 1, strings.length);
-
-                    switch (command) {
-                        case "say":
-                            this.string = text.substring(5);
-                            break;
-                        default:
-                            throw new Exception("Unknown commandHover '" + command + "'");
-                    }
-                } catch (Throwable t) {
-                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
-                    t.printStackTrace();
-                }
-            }
-        });
-    }
+//    {
+//        ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+//            var text = message.getContent().getString();
+//            sender.sendMessage(Text.literal("Git Gud"), true);
+//            if (text.startsWith("!")) {
+//                try {
+//                    var strings = text.substring(1).split(" ");
+//
+//                    if (strings.length < 1) {
+//                        throw new Exception("Missing commandHover after '!'");
+//                    }
+//
+//                    var command = strings[0].toLowerCase(Locale.ROOT);
+//                    var args = Arrays.copyOfRange(strings, 1, strings.length);
+//
+//                    switch (command) {
+//                        case "say":
+//                            this.string = text.substring(5);
+//                            break;
+//                        default:
+//                            throw new Exception("Unknown commandHover '" + command + "'");
+//                    }
+//                } catch (Throwable t) {
+//                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
+//                    t.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 
     private SpellRegistryEnum getElement(ItemStack stack) {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);

@@ -3,7 +3,7 @@ package io.github.tobyrue.btc.block.entities;
 import io.github.tobyrue.btc.block.MobDetectorBlock;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.packets.MobDetectorSyncPayload;
-import io.github.tobyrue.btc.wires.WireBlock;
+import io.github.tobyrue.btc.wires.WireBlockSlow;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
@@ -15,11 +15,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.*;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
@@ -32,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTicker<MobDetectorBlockEntity>, CornerStorage {
     private BlockBox customBox;
@@ -206,10 +200,10 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         }
 
 
-        if (state.get(WireBlock.POWERED) != shouldBePowered) {
+        if (state.get(WireBlockSlow.POWERED) != shouldBePowered) {
             world.setBlockState(
                     pos,
-                    state.with(WireBlock.POWERED, shouldBePowered),
+                    state.with(WireBlockSlow.POWERED, shouldBePowered),
                     Block.NOTIFY_ALL
             );
         }

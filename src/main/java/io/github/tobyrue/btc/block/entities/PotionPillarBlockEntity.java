@@ -5,7 +5,7 @@ import io.github.tobyrue.btc.client.RuneTextLoader;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
-import io.github.tobyrue.btc.wires.WireBlock;
+import io.github.tobyrue.btc.wires.WireBlockSlow;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -98,10 +98,10 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                 for (Direction direction : Direction.values()) {
                     BlockPos neighborPos = blockPos.offset(direction);
                     BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.getBlock() instanceof WireBlock) {
-                        var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
-                        if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
-                            if (!neighborState.get(WireBlock.POWERED)) {
+                    if (neighborState.getBlock() instanceof WireBlockSlow) {
+                        var property = WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
+                        if (state.get(property) == WireBlockSlow.ConnectionType.OUTPUT) {
+                            if (!neighborState.get(WireBlockSlow.POWERED)) {
                                 l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
                             }
                         }
@@ -123,10 +123,10 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                 for (Direction direction : Direction.values()) {
                     BlockPos neighborPos = blockPos.offset(direction);
                     BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.getBlock() instanceof WireBlock) {
-                        var property = WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
-                        if (state.get(property) == WireBlock.ConnectionType.OUTPUT) {
-                            if (!neighborState.get(WireBlock.POWERED)) {
+                    if (neighborState.getBlock() instanceof WireBlockSlow) {
+                        var property = WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
+                        if (state.get(property) == WireBlockSlow.ConnectionType.OUTPUT) {
+                            if (!neighborState.get(WireBlockSlow.POWERED)) {
                                 l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
                             }
                         }

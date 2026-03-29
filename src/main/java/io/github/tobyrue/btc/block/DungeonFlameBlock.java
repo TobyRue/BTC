@@ -102,8 +102,7 @@ public class DungeonFlameBlock extends Block implements IDungeonWireConnect {
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         world.setBlockState(pos, state.with(LIT,
-                world.getBlockState(pos.down()).getBlock() instanceof IDungeonWire wire
-                        && wire.isEmittingDungeonWirePower(world.getBlockState(pos.down()), world, pos.down(), Direction.UP)));
+                IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Direction.DOWN)));
 
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }

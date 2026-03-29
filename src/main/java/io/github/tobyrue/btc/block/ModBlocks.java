@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
+import io.github.tobyrue.btc.wires.WireBlockSlow;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -28,6 +29,16 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+    public static final PowerPillarBlock POWER_PILLAR = (PowerPillarBlock) register(
+            new PowerPillarBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
+            "power_pillar",
+            true
+    );
+    public static final WireBlock TEST_WIRE = (WireBlock) register(
+            new WireBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
+            "test_wire",
+            true
+    );
     public static final ObsidianChestBlock OBSIDIAN_CHEST = (ObsidianChestBlock) register(
             new ObsidianChestBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
             "obsidian_chest",
@@ -115,7 +126,7 @@ public class ModBlocks {
             true
     );
     public static final Block DUNGEON_WIRE = register(
-            new WireBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
+            new WireBlockSlow(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
             "dungeon_wire",
             true
     );

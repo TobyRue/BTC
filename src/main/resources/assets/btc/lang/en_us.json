@@ -272,6 +272,8 @@
   "block.btc.wire.connection.none": "NONE",
   "block.btc.wire.connection.input": "INPUT",
   "block.btc.wire.connection.output": "OUTPUT",
+  "block.btc.wire.connection.redstone_output": "REDSTONE OUTPUT",
+  "block.btc.wire.connection.redstone_input": "REDSTONE INPUT",
   "block.btc.wire.face.up": "TOP",
   "block.btc.wire.face.down": "BOTTOM",
   "block.btc.wire.face.north": "NORTH",

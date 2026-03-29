@@ -1,26 +1,18 @@
 package io.github.tobyrue.btc.wires;
 
-import com.google.common.base.Functions;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Table;
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.ModBlocks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
-import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
-import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -29,7 +21,6 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -157,9 +148,9 @@ public class WireModel implements IBlockStateBakedModel {
 
     protected static final Map<ItemStack, BlockState> ITEM_STATE_CACHE = new HashMap<>();
 
-    protected static final Function<ItemStack, BlockState> ITEM_STATE = t -> ITEM_STATE_CACHE.computeIfAbsent(t, stack -> WireBlock.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
+    protected static final Function<ItemStack, BlockState> ITEM_STATE = t -> ITEM_STATE_CACHE.computeIfAbsent(t, stack -> WireBlockSlow.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
         ((BlockItem) stack.getItem()).getBlock().getDefaultState(),
-        (acc, con) -> acc.with(con, WireBlock.ConnectionType.NONE),
+        (acc, con) -> acc.with(con, WireBlockSlow.ConnectionType.NONE),
         (lhs, rhs) -> {
             throw new RuntimeException("Don't fold in parallel");
         }
@@ -168,11 +159,11 @@ public class WireModel implements IBlockStateBakedModel {
     @Override
     public void emitBlockQuads(@Nullable BlockRenderView blockRenderView, BlockState state, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
         QuadEmitter emitter = renderContext.getEmitter();
-        var powerTint = state.get(WireBlock.POWERED) ? 0xE50000 : 0x990000;
+        var powerTint = state.get(WireBlockSlow.POWERED) ? 0xE50000 : 0x990000;
         for(Direction direction : Direction.values()) {
             addFaceLayer(emitter, direction, getSprite(0), null, BlendMode.SOLID, getBakeFlags(0, true));
             addFaceLayer(emitter, direction, getSprite(1), powerTint, BlendMode.CUTOUT, getBakeFlags(0, true));
-            switch (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction))) {
+            switch (state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(direction))) {
                 case NONE:
                     break;
                 case INPUT:
@@ -185,19 +176,19 @@ public class WireModel implements IBlockStateBakedModel {
 
 
             for (Direction connection : Direction.stream().filter(d -> d.getAxis() != direction.getAxis()).toList()) {
-                if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) != WireBlock.ConnectionType.NONE) {
+                if (state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) != WireBlockSlow.ConnectionType.NONE) {
                     addFaceLayer(emitter, direction, getSprite(3), powerTint, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
-                } else if ((state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) != WireBlock.ConnectionType.NONE || state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(direction)) != WireBlock.ConnectionType.NONE)) {
+                } else if ((state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) != WireBlockSlow.ConnectionType.NONE || state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(direction)) != WireBlockSlow.ConnectionType.NONE)) {
                     addFaceLayer(emitter, direction, getSprite(9), powerTint, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
                 }
-                if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlock.ConnectionType.INPUT) {
+                if (state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlockSlow.ConnectionType.INPUT) {
                     addFaceLayer(emitter, direction, getSprite(4), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
-                } else if (state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlock.ConnectionType.OUTPUT) {
+                } else if (state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(connection)) == WireBlockSlow.ConnectionType.OUTPUT) {
                     addFaceLayer(emitter, direction, getSprite(5), null, BlendMode.CUTOUT, getBakeFlags(getRotation(direction, connection), true));
                 }
             }
-            if (!(Direction.stream().filter(d -> state.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(d)) == WireBlock.ConnectionType.INPUT).count() == 1 && state.get(WireBlock.OPERATOR) == WireBlock.Operator.OR)) {
-                addFaceLayer(emitter, direction, getSprite(8), state.get(WireBlock.OPERATOR).getColor(), BlendMode.CUTOUT, getBakeFlags(0, true));
+            if (!(Direction.stream().filter(d -> state.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(d)) == WireBlockSlow.ConnectionType.INPUT).count() == 1 && state.get(WireBlockSlow.OPERATOR) == WireBlockSlow.Operator.OR)) {
+                addFaceLayer(emitter, direction, getSprite(8), state.get(WireBlockSlow.OPERATOR).getColor(), BlendMode.CUTOUT, getBakeFlags(0, true));
             }
         }
     }

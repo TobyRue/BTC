@@ -18,6 +18,7 @@ import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
+import io.github.tobyrue.rtc.RTC;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -25,7 +26,9 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
@@ -44,6 +47,9 @@ import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -53,8 +59,12 @@ import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
 import io.github.tobyrue.btc.client.screen.RadialValues.*;
 
+import java.io.File;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Environment(EnvType.CLIENT)
 public class BTCClient implements ClientModInitializer {
@@ -72,42 +82,42 @@ public class BTCClient implements ClientModInitializer {
 
 
 
-//    static {
-//        try {
-//            final var parser = new XMLParser<>(Codex.Text.class);
-//            ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
-//                var text = message.getContent().getString();
-//                sender.sendMessage(Text.literal("Git Gud"), true);
-//                if (text.startsWith("!")) {
-//                    try {
-//                        var strings = text.substring(1).split(" ");
-//
-//                        if (strings.length < 1) {
-//                            throw new Exception("Missing commandHover after '!'");
-//                        }
-//
-//                        var commandHover = strings[0].toLowerCase(Locale.ROOT);
-//                        var args = Arrays.copyOfRange(strings, 1, strings.length);
-//
-//                        switch (commandHover) {
-//                            case "say":
-////                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
-//
-////                                sender.sendMessage(XMLParser.parse(new InputStreamReader(Objects.requireNonNull(CodexScreen.class.getResourceAsStream("/text.xml"))), Codex.Text.class).toText());
-//                                sender.sendMessage(parser.parse(text.substring(5)).toText());
-//                                break;
-//                            default:
-//                                throw new Exception("Unknown commandHover '" + commandHover + "'");
-//                        }
-//                    } catch (Throwable t) {
-//                        sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
-//                    }
-//                }
-//            });
-//        } catch (XMLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    static {
+        AtomicReference<File> file = new AtomicReference<>();
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
+                var text = message.getContent().getString();
+                try {
+                    if (text.trim().equals("!scratch")) {
+                        if (file.get() != null) {
+                            file.get().delete();
+                        }
+                        file.set(File.createTempFile("scratch-", ".java"));
+                        file.get().deleteOnExit();
+                        Files.writeString(file.get().toPath(), """
+                        import net.minecraft.server.network.ServerPlayerEntity;
+                        
+                        class Scratch {
+                            public static Object run(ServerPlayerEntity player) {
+                                
+                            }
+                        }
+                        """);
+                        try {
+                            java.awt.Desktop.getDesktop().edit(file.get());
+                        } catch (Throwable ignored) {}
+                        sender.sendMessage(Text.literal("Created scratch file: " + file.get().toPath()));
+                    } else if (text.trim().equals("!run")) {
+                        var value = RTC.run(Files.readString(file.get().toPath()), "Scratch.run", sender);
+                        sender.sendMessage(Text.literal(String.valueOf(value)));
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                    sender.sendMessage(Text.literal("Error: ").setStyle(Style.EMPTY.withColor(0xFF0000)).append(Text.literal(t.toString())));
+                }
+            });
+        }
+    }
 
     @Override
     public void onInitializeClient() {

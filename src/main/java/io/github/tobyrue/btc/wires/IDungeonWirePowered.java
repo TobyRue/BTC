@@ -12,11 +12,11 @@ public interface IDungeonWirePowered {
             BlockPos neighborPos = pos.offset(direction);
             BlockState neighborState = world.getBlockState(neighborPos);
             Direction dirFromNeighborToThis = direction.getOpposite();
-            if (neighborState.getBlock() instanceof WireBlock) {
+            if (neighborState.getBlock() instanceof WireBlockSlow) {
                 if ((direction != Direction.DOWN && direction != Direction.UP && sides) || (direction == Direction.DOWN && bottom) || (direction == Direction.UP && top)) {
-                    var property = neighborState.get(WireBlock.CONNECTION_TO_DIRECTION.get().inverse().get(dirFromNeighborToThis));
-                    if (property == WireBlock.ConnectionType.OUTPUT && neighborState.get(WireBlock.POWERED)) {
-                        boolean isPowered = neighborState.get(WireBlock.POWERED);
+                    var property = neighborState.get(WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(dirFromNeighborToThis));
+                    if (property == WireBlockSlow.ConnectionType.OUTPUT && neighborState.get(WireBlockSlow.POWERED)) {
+                        boolean isPowered = neighborState.get(WireBlockSlow.POWERED);
                         return isPowered;
                     }
                 }

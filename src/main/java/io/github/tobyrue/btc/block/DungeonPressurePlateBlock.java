@@ -1,12 +1,14 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class DungeonPressurePlateBlock extends PressurePlateBlock  {
+public class DungeonPressurePlateBlock extends PressurePlateBlock implements IDungeonWire {
     private static final VoxelShape SHAPE;
 
     private static final VoxelShape DOWN_SHAPE;
@@ -45,5 +47,10 @@ public class DungeonPressurePlateBlock extends PressurePlateBlock  {
         } else {
             return DOWN_SHAPE;
         }
+    }
+
+    @Override
+    public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        return state.getBlock() instanceof DungeonPressurePlateBlock && face == Direction.DOWN && state.get(POWERED);
     }
 }
