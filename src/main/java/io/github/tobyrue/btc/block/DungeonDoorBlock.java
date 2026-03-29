@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.ICopperWireConnect;
 import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import io.github.tobyrue.btc.wires.IDungeonWireAction;
 import io.github.tobyrue.btc.IDungeonWireConnect;
 import net.minecraft.block.*;
@@ -364,16 +365,17 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         // Update the current block's state.
     }
 
-//    @Override
-//    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-//        if(state.get(WIRED)) {
-////            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
-//            for (BlockPos offsetPos : findDoors(world, pos)) {
-//                setOpen(world.getBlockState(offsetPos), world, offsetPos, shouldWirePower(state, world, pos, true, true, true));
-//            }
-//        }
-//        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
-//    }
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if(state.get(TYPE) == DoorType.WIRED && sourceBlock instanceof IDungeonWire) {
+            var doors = findDoors(world, pos);
+            var powered = doors.stream().anyMatch(doorPos -> IDungeonWire.isReceivingDungeonWirePower(world.getBlockState(doorPos), world, doorPos, Direction.values()));
+            for (BlockPos offsetPos : doors) {
+                setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
+            }
+        }
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+    }
 
 
     @Override

@@ -8,6 +8,7 @@ import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -249,29 +250,70 @@ public class ModBlocks {
     //TODO :/ dungeon flambeaux
     public static final DungeonFlameBlock DUNGEON_FLAME = (DungeonFlameBlock) register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
-                    DungeonFlameBlock::getLuminance).emissiveLighting((state,blockView,pos) -> DungeonFlameBlock.getLuminance(state) > 0), null, ParticleTypes.FLAME
-    ),
+                    DungeonFlameBlock::getLuminance).emissiveLighting((state, blockView, pos) -> DungeonFlameBlock.getLuminance(state) > 0), new DungeonFlameBlock.Config() {
+                @Override
+                public float getDamage(boolean powered) {
+                    return powered ? 1.0f : 0.0f;
+                }
+
+                @Override
+                public ParticleEffect getParticle(boolean powered) {
+                    return powered ? ParticleTypes.FLAME : null;
+                }
+
+                @Override
+                public boolean isLit(boolean powered) {
+                    return powered;
+                }
+            }),
             "dungeon_flame",
             true
     );
     //TODO :/ deep flambeaux
     public static final DungeonFlameBlock DEEP_FLAME = (DungeonFlameBlock) register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
-                    DungeonFlameBlock::getLuminance).emissiveLighting((state,blockView,pos) -> DungeonFlameBlock.getLuminance(state) > 0), null, ParticleTypes.SOUL_FIRE_FLAME
-            ),
+                    DungeonFlameBlock::getLuminance).emissiveLighting((state,blockView,pos) -> DungeonFlameBlock.getLuminance(state) > 0), new DungeonFlameBlock.Config() {
+                @Override
+                public float getDamage(boolean powered) {
+                    return powered ? 2.0f : 0.0f;
+                }
+
+                @Override
+                public ParticleEffect getParticle(boolean powered) {
+                    return powered ? ParticleTypes.SOUL_FIRE_FLAME : null;
+                }
+
+                @Override
+                public boolean isLit(boolean powered) {
+                    return powered;
+                }
+            }),
             "deep_flame",
             true
     );
     //TODO :/ fortress flambeaux
     public static final DungeonFlameBlock FORTRESS_FLAME = (DungeonFlameBlock) register(
-            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(state -> 15).emissiveLighting((state,blockView,pos) -> true), ParticleTypes.FLAME, ParticleTypes.SOUL_FIRE_FLAME
-            ),
+            new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(state -> 15).emissiveLighting((state,blockView,pos) -> true), new DungeonFlameBlock.Config() {
+                @Override
+                public float getDamage(boolean powered) {
+                    return powered ? 2.0f : 1.0f;
+                }
+
+                @Override
+                public ParticleEffect getParticle(boolean powered) {
+                    return powered ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME;
+                }
+
+                @Override
+                public boolean isLit(boolean powered) {
+                    return true;
+                }
+            }),
             "fortress_flame",
             true
     );
     public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
             new DungeonDoorBlock(AbstractBlock.Settings.create().requiresTool().strength(6.5F, .0F)),
-
             "dungeon_door",
             true
     );

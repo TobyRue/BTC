@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+@Deprecated
 public interface IDungeonWireConnect {
     boolean shouldConnect(BlockState state, World world, BlockPos pos);
 }

@@ -124,9 +124,10 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         super.scheduledTick(state, world, pos, random);
     }
 
+
     @Override
     protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-        return world.getBlockEntity(pos) instanceof WireBlockEntity wireBlock && wireBlock.isEmittingRedstonePower(state, world, pos, direction) ? 15 : 0;
+        return world.getBlockEntity(pos) instanceof WireBlockEntity wireBlock && wireBlock.isEmittingRedstonePower(state, world, pos, direction.getOpposite()) ? 15 : 0;
     }
 
     @Override
