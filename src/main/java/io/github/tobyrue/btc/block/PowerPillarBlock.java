@@ -1,10 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.wires.IDungeonWire;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FacingBlock;
-import net.minecraft.block.Waterloggable;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -15,6 +12,9 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +34,16 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
                 .with(DELAY, 0)
                 .with(Properties.WATERLOGGED, false));
     }
+
+    private static final VoxelShape COLUMN_UP_DOWN = VoxelShapes.union(
+            VoxelShapes.cuboid(0.25, 0, 0.25, 0.75, 1, 0.75)
+    );
+    private static final VoxelShape COLUMN_NORTH_SOUTH =  VoxelShapes.union(
+            VoxelShapes.cuboid(0.25, 0.25, 0, 0.75, 0.75, 1)
+    );
+    private static final VoxelShape COLUMN_EAST_WEST = VoxelShapes.union(
+            VoxelShapes.cuboid(0, 0.25, 0.25, 1, 0.75, 0.75)
+    );
 
 
     public void updatePower(World world, BlockPos pos, BlockState state) {
@@ -90,5 +100,53 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
         return state.getBlock() instanceof PowerPillarBlock && state.get(POWERED) && state.get(FACING) == face;
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        switch (state.get(FACING).getAxis()) {
+            case X -> {
+                return COLUMN_EAST_WEST;
+            }
+            case Y -> {
+                return COLUMN_UP_DOWN;
+            }
+            case Z -> {
+                return COLUMN_NORTH_SOUTH;
+            }
+        }
+        return super.getOutlineShape(state, world, pos, context);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        switch (state.get(FACING).getAxis()) {
+            case X -> {
+                return COLUMN_EAST_WEST;
+            }
+            case Y -> {
+                return COLUMN_UP_DOWN;
+            }
+            case Z -> {
+                return COLUMN_NORTH_SOUTH;
+            }
+        }
+        return super.getCollisionShape(state, world, pos, context);
+    }
+
+    @Override
+    protected VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
+        switch (state.get(FACING).getAxis()) {
+            case X -> {
+                return COLUMN_EAST_WEST;
+            }
+            case Y -> {
+                return COLUMN_UP_DOWN;
+            }
+            case Z -> {
+                return COLUMN_NORTH_SOUTH;
+            }
+        }
+        return super.getRaycastShape(state, world, pos);
     }
 }

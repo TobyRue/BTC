@@ -30,13 +30,20 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+
+
+    public static final PowerPilasterBlock POWER_PILASTER = (PowerPilasterBlock) register(
+            new PowerPilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
+            "power_pilaster",
+            true
+    );
     public static final PowerPillarBlock POWER_PILLAR = (PowerPillarBlock) register(
-            new PowerPillarBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
+            new PowerPillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
             "power_pillar",
             true
     );
     public static final WireBlock TEST_WIRE = (WireBlock) register(
-            new WireBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
+            new WireBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
             "test_wire",
             true
     );

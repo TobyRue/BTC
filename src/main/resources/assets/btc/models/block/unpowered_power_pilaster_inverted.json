@@ -1,0 +1,11 @@
+{
+	"parent": "btc:block/pilaster_more_detail",
+	"textures": {
+		"bottom_one": "btc:block/unpowered_power_pilaster_base_bottom_output",
+		"side_one": "btc:block/unpowered_power_pilaster_base_side_output",
+		"top_one": "btc:block/unpowered_power_pilaster_base_top",
+		"bottom_two": "btc:block/unpowered_power_pillar_end_output",
+		"side_two": "btc:block/unpowered_power_pillar_inverted",
+		"top_two": "btc:block/unpowered_power_pillar_end_input"
+	}
+}

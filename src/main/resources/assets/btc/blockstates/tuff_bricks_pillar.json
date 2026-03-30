@@ -103,7 +103,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_bricks_pillar_attachment_other",
-        "x": 90,
+        "x": 270,
         "y": 90
       },
       "when": {
@@ -160,7 +160,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_bricks_pillar_attachment_other",
-        "x": 270,
+        "x": 90,
         "y": 180
       },
       "when": {

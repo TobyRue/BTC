@@ -45,7 +45,8 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire {
                             final Direction direction = e.getKey();
                             final BlockPos neighborPos = pos.offset(direction);
                             final BlockState neighborState = world.getBlockState(neighborPos);
-                            return (neighborState.getBlock() instanceof IDungeonWire wire && wire.isEmittingDungeonWirePower(neighborState, world, neighborPos, direction.getOpposite())) || world.getEmittedRedstonePower(neighborPos, direction) > 0;
+                            return (e.getValue() == WireBlock.ConnectionType.INPUT && neighborState.getBlock() instanceof IDungeonWire wire && wire.isEmittingDungeonWirePower(neighborState, world, neighborPos, direction.getOpposite()))
+                                    || (e.getValue() == WireBlock.ConnectionType.REDSTONE_INPUT && world.getEmittedRedstonePower(neighborPos, direction) > 0);
                         }).toArray(Boolean[]::new)
         );
 

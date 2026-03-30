@@ -1,0 +1,8 @@
+{
+	"parent": "btc:block/pillar",
+	"textures": {
+		"bottom": "btc:block/unpowered_power_pillar_end_input",
+		"side": "btc:block/unpowered_power_pillar",
+		"top": "btc:block/unpowered_power_pillar_end_output"
+	}
+}

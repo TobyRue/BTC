@@ -478,13 +478,13 @@ public class PilasterBlock extends HorizontalConnectingBlock {
         } else if (facing == Direction.UP) {
             return VoxelShapes.union(TOP_MAIN, (state.get(NORTH) ? TOP_NORTH : EMPTY), (state.get(EAST) ? TOP_EAST : EMPTY), (state.get(SOUTH) ? TOP_SOUTH : EMPTY), (state.get(WEST) ? TOP_WEST : EMPTY));
         } else if (facing == Direction.NORTH) {
-            return VoxelShapes.union(NORTH_MAIN);
+            return VoxelShapes.union(NORTH_MAIN, (state.get(NORTH) ? NORTH_UP : EMPTY), (state.get(EAST) ? NORTH_RIGHT : EMPTY), (state.get(SOUTH) ? NORTH_DOWN : EMPTY), (state.get(WEST) ? NORTH_LEFT : EMPTY));
         } else if (facing == Direction.EAST) {
-            return VoxelShapes.union(EAST_MAIN);
+            return VoxelShapes.union(EAST_MAIN, (state.get(NORTH) ? EAST_UP : EMPTY), (state.get(EAST) ? EAST_RIGHT : EMPTY), (state.get(SOUTH) ? EAST_DOWN : EMPTY), (state.get(WEST) ? EAST_LEFT : EMPTY));
         } else if (facing == Direction.SOUTH) {
-            return VoxelShapes.union(SOUTH_MAIN);
+            return VoxelShapes.union(SOUTH_MAIN, (state.get(NORTH) ? SOUTH_UP : EMPTY), (state.get(EAST) ? SOUTH_RIGHT : EMPTY), (state.get(SOUTH) ? SOUTH_DOWN : EMPTY), (state.get(WEST) ? SOUTH_LEFT : EMPTY));
         } else {
-            return VoxelShapes.union(WEST_MAIN);
+            return VoxelShapes.union(WEST_MAIN, (state.get(NORTH) ? WEST_UP : EMPTY), (state.get(EAST) ? WEST_RIGHT : EMPTY), (state.get(SOUTH) ? WEST_DOWN : EMPTY), (state.get(WEST) ? WEST_LEFT : EMPTY));
         }
     }
 
