@@ -47,9 +47,7 @@ public class ModInventoryItemRegistry {
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
-            content.addAfter(Blocks.REDSTONE_LAMP, ModBlocks.DUNGEON_WIRE);
-            content.addAfter(ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.DUNGEON_DOOR);
-            content.addAfter(Blocks.STONE_PRESSURE_PLATE, ModBlocks.DUNGEON_PRESSURE_PLATE);
+            content.addAfter(Items.REDSTONE_ORE, ModBlocks.KEY_DISPENSER_BLOCK, ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_WIRE, ModBlocks.TEST_WIRE, ModBlocks.POWER_PILASTER, ModBlocks.POWER_PILLAR, ModBlocks.DUNGEON_BUTTON, ModBlocks.DUNGEON_PRESSURE_PLATE);
             content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
         });
 

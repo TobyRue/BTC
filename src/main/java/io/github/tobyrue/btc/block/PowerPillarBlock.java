@@ -87,7 +87,7 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(POWERED, false)
-                .with(FACING, ctx.getPlayerLookDirection().getOpposite())
+                .with(FACING, ctx.getSide().getOpposite())
                 .with(DELAY, 0)
                 .with(Properties.WATERLOGGED, false);
     }

@@ -73,7 +73,7 @@ public class PowerPilasterBlock extends Block implements IDungeonWire, Waterlogg
         return this.getDefaultState()
                 .with(POWERED, false)
                 .with(INVERTED, false)
-                .with(FACING, ctx.getPlayerLookDirection().getOpposite())
+                .with(FACING, ctx.getSide().getOpposite())
                 .with(DELAY, 0)
                 .with(Properties.WATERLOGGED, false);
     }
