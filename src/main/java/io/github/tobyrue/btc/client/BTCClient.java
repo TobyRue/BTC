@@ -18,6 +18,7 @@ import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
+import io.github.tobyrue.btc.wires.WireBlockEntityRenderer;
 import io.github.tobyrue.rtc.RTC;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -424,6 +425,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.MOB_DETECTOR_BLOCK_ENTITY, MobDetectorBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.WIRE_BLOCK_ENTITY, WireBlockEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(WIND_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
         BuiltinItemRendererRegistry.INSTANCE.register(ModItems.WIND_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
