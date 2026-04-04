@@ -42,9 +42,9 @@ public class ModBlocks {
             "power_pillar",
             true
     );
-    public static final WireBlock TEST_WIRE = (WireBlock) register(
+    public static final WireBlock DUNGEON_WIRE = (WireBlock) register(
             new WireBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
-            "test_wire",
+            "dungeon_wire",
             true
     );
     public static final ObsidianChestBlock OBSIDIAN_CHEST = (ObsidianChestBlock) register(
@@ -133,11 +133,11 @@ public class ModBlocks {
             "chiseled_copper_bricks",
             true
     );
-    public static final Block DUNGEON_WIRE = register(
-            new WireBlockSlow(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
-            "dungeon_wire",
-            true
-    );
+//    public static final Block DUNGEON_WIRE = register(
+//            new WireBlockSlow(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS), true),
+//            "dungeon_wire",
+//            true
+//    );
     public static final BrazierBlock BRAZIER = (BrazierBlock) register(
             new BrazierBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
                 return 15;
@@ -335,6 +335,8 @@ public class ModBlocks {
     public static void initialize() {
         Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
         Registries.ITEM.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("test_wire"), BTC.identifierOf("dungeon_wire"));
+        Registries.ITEM.addAlias(BTC.identifierOf("test_wire"), BTC.identifierOf("dungeon_wire"));
         Registries.BLOCK.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
         Registries.ITEM.addAlias(BTC.identifierOf("presence_node"), BTC.identifierOf("mob_detector"));
         Registries.BLOCK.addAlias(BTC.identifierOf("antier"), BTC.identifierOf("potion_pillar"));

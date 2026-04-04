@@ -380,7 +380,7 @@ public class BTCClient implements ClientModInitializer {
 
 
         DrowningEffectOverlay.register();
-        ModelLoadingPlugin.register(new BTCModelLoadingPlugin());
+//        ModelLoadingPlugin.register(new BTCModelLoadingPlugin());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MELTING_ICE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_BEACON, RenderLayer.getTranslucent());

@@ -31,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+@Deprecated
 //TODO: https://wiki.fabricmc.net/tutorial:custom_model and add @Environment(EnvType.CLIENT) to all things in clients i think just models?
 @Environment(EnvType.CLIENT)
 public class WireModel implements IBlockStateBakedModel {

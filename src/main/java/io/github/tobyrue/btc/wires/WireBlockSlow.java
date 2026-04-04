@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+@Deprecated
 public class WireBlockSlow extends Block implements IWireConnect, IHaveWrenchActions {
 
     public static final Supplier<ImmutableBiMap<EnumProperty<ConnectionType>, Direction>> CONNECTION_TO_DIRECTION = Suppliers.memoize(() ->

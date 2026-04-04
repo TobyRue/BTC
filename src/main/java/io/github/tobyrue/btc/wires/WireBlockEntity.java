@@ -53,31 +53,32 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire {
         if (currentlyPowered != shouldBePowered) {
             world.setBlockState(pos, getCachedState().with(WireBlock.POWERED, shouldBePowered), Block.NOTIFY_ALL);
             for (Direction dir : Direction.values()) {
-                if (connections.get(dir) == WireBlock.ConnectionType.OUTPUT) {
-                    world.updateNeighborsAlways(pos.offset(dir), getCachedState().getBlock());
+                if (connections.get(dir) == WireBlock.ConnectionType.OUTPUT || connections.get(dir) == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
+                    world.updateNeighbor(pos.offset(dir), world.getBlockState(pos.offset(dir)).getBlock(), pos);
                 }
             }
         }
     }
 
     public void rotateConnections(BlockRotation rotation) {
+        if (rotation == BlockRotation.NONE) return;
         Map<Direction, WireBlock.ConnectionType> newMap = new HashMap<>();
         for (Direction dir : Direction.values()) {
             newMap.put(rotation.rotate(dir), connections.get(dir));
         }
-
-        connections.clear();
-        connections.putAll(newMap);
+        this.connections.clear();
+        this.connections.putAll(newMap);
         this.markDirty();
     }
 
     public void mirrorConnections(BlockMirror mirror) {
+        if (mirror == BlockMirror.NONE) return;
         Map<Direction, WireBlock.ConnectionType> newMap = new HashMap<>();
         for (Direction dir : Direction.values()) {
             newMap.put(mirror.apply(dir), connections.get(dir));
         }
-        connections.clear();
-        connections.putAll(newMap);
+        this.connections.clear();
+        this.connections.putAll(newMap);
         this.markDirty();
     }
 

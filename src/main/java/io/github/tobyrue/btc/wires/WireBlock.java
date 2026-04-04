@@ -9,6 +9,7 @@ import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -105,13 +107,32 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        if (!world.isClient) {
-            if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-                if (wire.getDelay() == 0) {
-                    wire.updatePower();
-                } else {
-                    world.scheduleBlockTick(pos, this, wire.getDelay());
+        if (world.isClient) return;
+
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
+            if (wire.getDelay() == 0) {
+                wire.updatePower();
+            } else if (!world.getBlockTickScheduler().isQueued(pos, this)) {
+                world.scheduleBlockTick(pos, this, wire.getDelay());
+            }
+
+            Direction currentFacing = state.get(FACING);
+            BlockMirror currentMirror = state.get(MIRRORED);
+
+            if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
+                if (currentMirror != BlockMirror.NONE) {
+                    wire.mirrorConnections(currentMirror);
                 }
+
+                if (currentFacing != Direction.NORTH) {
+                    BlockRotation rot = getRotationBetween(Direction.NORTH, currentFacing);
+                    wire.rotateConnections(rot);
+                }
+
+                BlockState newState = state.with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE);
+                world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
+
+                wire.updatePower();
             }
         }
     }
@@ -143,27 +164,6 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.with(MIRRORED, mirror);
-    }
-
-    @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.getBlock() != newState.getBlock()) {
-            super.onStateReplaced(state, world, pos, newState, moved);
-            return;
-        }
-
-        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            if (state.get(FACING) != newState.get(FACING)) {
-                BlockRotation rotation = getRotationBetween(state.get(FACING), newState.get(FACING));
-                wire.rotateConnections(rotation);
-            }
-
-            if (newState.get(MIRRORED) != BlockMirror.NONE) {
-                wire.mirrorConnections(newState.get(MIRRORED));
-                world.setBlockState(pos, newState.with(MIRRORED, BlockMirror.NONE), Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
-            }
-        }
-        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     private BlockRotation getRotationBetween(Direction oldDir, Direction newDir) {
@@ -198,7 +198,12 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
             }
             return ActionResult.SUCCESS;
         } else if (type == WrenchType.WIRE_DELAY) {
-            int newDelay = player.isSneaking() ? 0 : (wire.getDelay() + 1) % 8;
+            int newDelay;
+            if (hand == Hand.MAIN_HAND) {
+                newDelay = player.isSneaking() ? wire.getDelay() - 1 % 8 : (wire.getDelay() + 1) % 8;
+            } else {
+                newDelay = 0;
+            }
             wire.setDelay(newDelay);
             if (world.isClient) {
                 player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", newDelay), true);

@@ -47,7 +47,6 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
         World world = entity.getWorld();
         if (world == null) return;
 
-        BlockPos pos = entity.getPos();
 
 
         BlockState state = entity.getCachedState();
@@ -60,21 +59,21 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
 
             applyFaceRotation(matrices, face);
 
-            renderFace(matrices, vertexConsumers, SPRITE_IDS[0], white, light, overlay, getLayer(0), face);
-            renderFace(matrices, vertexConsumers, SPRITE_IDS[1], powerColor, light, overlay, getLayer(1), face);
+            renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[0], white, overlay, getLayer(0), face);
+            renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[1], powerColor, overlay, getLayer(1), face);
 
             WireBlock.ConnectionType conn = entity.getConnection(face);
             if (conn == WireBlock.ConnectionType.INPUT) {
-                renderFace(matrices, vertexConsumers, SPRITE_IDS[6], white, light, overlay, getLayer(0), face.getAxis() == Direction.Axis.Y ? face.getOpposite() : face /*THIS DID NOTHING*/);
+                renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[6], white, overlay, getLayer(1), face);
             }
             else if (conn == WireBlock.ConnectionType.OUTPUT) {
-                renderFace(matrices, vertexConsumers, SPRITE_IDS[7], white, light, overlay, getLayer(1), face.getAxis() == Direction.Axis.Y ? face.getOpposite() : face);
+                renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[7], white, overlay, getLayer(1), face);
             }
             else if (conn == WireBlock.ConnectionType.REDSTONE_INPUT) {
-                renderFace(matrices, vertexConsumers, SPRITE_IDS[10], white, light, overlay, getLayer(1), face.getAxis() == Direction.Axis.Y ? face.getOpposite() : face);
+                renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[10], white, overlay, getLayer(1), face);
             }
             else if (conn == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
-                renderFace(matrices, vertexConsumers, SPRITE_IDS[11], white, light, overlay, getLayer(1), face.getAxis() == Direction.Axis.Y ? face.getOpposite() : face);
+                renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[11], white, overlay, getLayer(1), face);
             }
 
             for (Direction connectionDir : Direction.values()) {
@@ -87,28 +86,28 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
                 matrices.translate(-0.5, -0.5, 0);
 
                 if (adjConn != WireBlock.ConnectionType.NONE) {
-                    renderFace(matrices, vertexConsumers, SPRITE_IDS[3], powerColor, light, overlay, getLayer(1), face);
+                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[3], powerColor, overlay, getLayer(1), face);
                     if (adjConn == WireBlock.ConnectionType.INPUT) {
-                        renderFace(matrices, vertexConsumers, SPRITE_IDS[4], white, light, overlay, getLayer(1), face);
+                        renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[4], white, overlay, getLayer(1), face);
                     }
                     else if (adjConn == WireBlock.ConnectionType.OUTPUT) {
-                        renderFace(matrices, vertexConsumers, SPRITE_IDS[5], white, light, overlay, getLayer(1), face);
+                        renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[5], white, overlay, getLayer(1), face);
                     }
                     else if (adjConn == WireBlock.ConnectionType.REDSTONE_INPUT) {
-                        renderFace(matrices, vertexConsumers, SPRITE_IDS[12], white, light, overlay, getLayer(1), face);
+                        renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[12], white, overlay, getLayer(1), face);
                     }
                     else if (adjConn == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
-                        renderFace(matrices, vertexConsumers, SPRITE_IDS[13], white, light, overlay, getLayer(1), face);
+                        renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[13], white, overlay, getLayer(1), face);
                     }
-                } else {
-                    renderFace(matrices, vertexConsumers, SPRITE_IDS[9], powerColor, light, overlay, getLayer(1), face);
+                } else if (entity.getConnection(face) != WireBlock.ConnectionType.NONE) {
+                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[9], powerColor, overlay, getLayer(1), face);
                 }
                 matrices.pop();
             }
 
             int opColor = entity.getOperator().getColor() | 0xFF000000;
             if (!(Direction.stream().filter(d -> entity.getConnection(d) == WireBlock.ConnectionType.INPUT).count() == 1 && entity.getOperator() == WireBlock.Operator.OR)) {
-                renderFace(matrices, vertexConsumers, SPRITE_IDS[8], opColor, light, overlay, getLayer(1), face);
+                renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[8], opColor, overlay, getLayer(1), face);
             }
 
             matrices.pop();
@@ -116,13 +115,14 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
     }
 
     private float getLayer(int layer) {
-        return layer == 0 ? 0f : -0.0001f * layer;
+        return layer == 0 ? 0f : -0.0005f * layer;
     }
 
-    private void renderFace(MatrixStack matrices, VertexConsumerProvider consumers, SpriteIdentifier spriteId, int color, int light, int overlay, float z, Direction face) {
+    private void renderFace(WireBlockEntity entity, MatrixStack matrices, VertexConsumerProvider consumers, SpriteIdentifier spriteId, int color, int overlay, float z, Direction face) {
         Sprite sprite = spriteId.getSprite();
         VertexConsumer buffer = consumers.getBuffer(RenderLayer.getEntityCutout(spriteId.getAtlasId()));
         Matrix4f matrix = matrices.peek().getPositionMatrix();
+        int light = WorldRenderer.getLightmapCoordinates(entity.getWorld(), entity.getPos().offset(face, 1));
 
         float r = ((color >> 16) & 0xFF) / 255.0f;
         float g = ((color >> 8) & 0xFF) / 255.0f;
@@ -138,8 +138,12 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
     private void applyFaceRotation(MatrixStack matrices, Direction face) {
         matrices.translate(0.5, 0.5, 0.5);
         switch (face) {
-            case DOWN -> matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
-            case UP -> matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90));
+            case DOWN ->  {
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90));
+            }
+            case UP -> {
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+            }
             case NORTH -> {}
             case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
             case WEST -> matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
@@ -152,10 +156,10 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
         if (face.getAxis() == Direction.Axis.Y) {
             boolean isUp = face == Direction.UP;
             return switch (to) {
-                case NORTH -> isUp ? 0 : 180;
-                case SOUTH -> isUp ? 180 : 0;
-                case EAST -> isUp ? 90 : 270;
-                case WEST -> isUp ? 270 : 90;
+                case NORTH -> isUp ? 180 : 0;
+                case SOUTH -> isUp ? 0 : 180;
+                case EAST -> isUp ? 270 : 90;
+                case WEST -> isUp ? 90 : 270;
                 default -> 0;
             };
         }

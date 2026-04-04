@@ -1,3 +1,6 @@
 {
-  "parent": "btc:block/dungeon_wire"
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "btc:block/unpowered_power_pilaster_base_bottom_input"
+  }
 }

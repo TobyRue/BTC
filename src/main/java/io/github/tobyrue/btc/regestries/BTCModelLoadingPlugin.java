@@ -8,10 +8,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 
+@Deprecated
 @Environment(EnvType.CLIENT)
 public class BTCModelLoadingPlugin implements ModelLoadingPlugin {
     public static final Identifier DUNGEON_WIRE = BTC.identifierOf("dungeon_wire");
-    public static final Identifier SPELL_SCROLL = BTC.identifierOf("spell_scroll");
 
 
     @Override
