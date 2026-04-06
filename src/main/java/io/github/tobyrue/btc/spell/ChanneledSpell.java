@@ -608,11 +608,11 @@ public abstract class ChanneledSpell extends Spell {
             if (particleType == null) {
                 if (!world.isClient) {
                     ((ServerWorld) world).spawnParticles(
-                            EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b), // particle type
-                            x, y + 0.1, z, // position
-                            1,                          // count
-                            0, 0, 0,                    // offset (spread)
-                            0                           // speed
+                            EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
+                            x, y + 0.1, z,
+                            1,
+                            0, 0, 0,
+                            0
                     );
                 } else {
                     world.addParticle(EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
@@ -621,11 +621,11 @@ public abstract class ChanneledSpell extends Spell {
             } else {
                 if (!world.isClient) {
                     ((ServerWorld) world).spawnParticles(
-                            particleType, // particle type
-                            x, y + 0.1, z, // position
-                            1,                          // count
-                            0, 0, 0,                    // offset (spread)
-                            0                           // speed
+                            particleType,
+                            x, y + 0.1, z,
+                            1,
+                            0, 0, 0,
+                            0
                     );
                 } else {
                     world.addParticle(particleType,
@@ -642,36 +642,29 @@ public abstract class ChanneledSpell extends Spell {
         double width = entity.getWidth();
         double radius = width * 0.75;
 
-        // config from args
         int pointsPerRotation = args.getInt("pointsPerRotation", 20);
         int rotations = args.getInt("spiralRotations", 3);
-        int visibleRings = args.getInt("maxVisibleRings", 10); // how many rings are visible at once
+        int visibleRings = args.getInt("maxVisibleRings", 10);
 
-        // total spiral points
         int totalSteps = pointsPerRotation * rotations;
 
-        // overall progress (0 → 1)
         double progress = (double) tick / totalDuration;
         double yBase = entity.getY();
         double yTop = yBase + height;
 
-        // fade offset — only show the top section of the spiral
         int startRing = Math.max(0, (int)(progress * totalSteps) - visibleRings);
         int endRing = Math.min(totalSteps, (int)(progress * totalSteps));
 
-        // color from getColor
         int color = getColor(args);
         float r = ((color >> 16) & 0xFF) / 255.0F;
         float g = ((color >> 8) & 0xFF) / 255.0F;
         float b = (color & 0xFF) / 255.0F;
 
-        // height and angle per step
         double heightStep = height / totalSteps;
         double angleStep = (2 * Math.PI * rotations) / totalSteps;
 
-        // fadeout effect: top ring is brightest, bottom fades away
         for (int i = startRing; i < endRing; i++) {
-            double fade = 1.0 - ((double)(endRing - i) / visibleRings); // 0 → 1
+            double fade = 1.0 - ((double)(endRing - i) / visibleRings);
             fade = Math.max(0.0, Math.min(1.0, fade));
 
             double theta = i * angleStep + (tick * 0.25);

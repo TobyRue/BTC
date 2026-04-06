@@ -89,49 +89,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         builder.add(SURVIVAL);
         builder.add(TYPE);
     }
-//    @Override
-//    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-//        super.neighborUpdate(state, world, pos, block, fromPos, notify);
-//
-//        System.out.println("Neighbor update triggered at: " + pos + " due to block at: " + fromPos);
-//
-//        // Update state based on neighbors (if you have any extra logic here)
-//        updateStateBasedOnNeighbors(state, world, pos);
-//
-//        // Get all surrounding wire positions
-//        List<BlockPos> wirePositions = getSurroundingWirePositions(world, pos);
-//        System.out.println("Surrounding wire positions: " + wirePositions);
-//
-//        // Check if the updated position was one of the expected wire positions
-//        boolean listsMatch = wirePositions.contains(fromPos);
-//        System.out.println("Was fromPos one of the expected wire positions? " + listsMatch);
-//
-//        // Get the state of the block that updated
-//        BlockState fromState = world.getBlockState(fromPos);
-//        System.out.println("Block state at fromPos: " + fromState);
-//
-//        // Check if it’s no longer a DungeonWireBlock, and if the door is open, and if it was a relevant position
-//        if (!(fromState.getBlock() instanceof DungeonWireBlock) && !listsMatch && !(fromState.getBlock() instanceof DungeonDoorBlock)) {
-//            System.out.println("Conditions met to close connected doors. Closing doors...");
-//
-//            for (BlockPos offsetPos : findDoors(world, pos)) {
-//                System.out.println("Closing door at: " + offsetPos);
-//                setOpen(world.getBlockState(offsetPos), world, offsetPos, false);
-//            }
-//        } else {
-//            System.out.println("No door state change needed.");
-//        }
-//    }
-//    @Override
-//    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-//        super.neighborUpdate(state, world, pos, block, fromPos, notify);
-//        List<BlockPos> wirePositions = getSurroundingWirePositions(world, pos);
-//        System.out.println("Surrounding wire positions: " + wirePositions);
-//        boolean listsMatch = wirePositions.contains(fromPos);
-//        System.out.println("Was fromPos one of the expected wire positions? " + !listsMatch);
-//        BlockState fromState = world.getBlockState(fromPos);
-//        System.out.println("Block state at fromPos: " + fromState);
-//    }
+
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.get(TYPE) == DoorType.GOLEM && !state.get(OPEN)) {
@@ -168,21 +126,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
             }
             return ItemActionResult.SUCCESS;
         }
-//        if (!state.get(OPEN) && stack.getItem() == ModItems.IRON_WRENCH && state.get(SURVIVAL)) {
-//            var currentState = state.get(TYPE);
-//            BlockState newState = state.with(TYPE, TYPE.);
-//            String message = "Wires Powering Doors has been: " + (!currentState ? "enabled" : "disabled");
-//            player.sendMessage(Text.literal(message), true);
-//            world.setBlockState(pos, newState, Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
-//            return ItemActionResult.SUCCESS;
-//        }
-//            else if(!state.get(WIRED) && !state.get(OPEN) && stack.getItem() != ModItems.GOLD_WRENCH && stack.getItem() != ModItems.IRON_WRENCH && stack.getItem() != ModItems.CREATIVE_WRENCH) {
-//            world.emitGameEvent(player, GameEvent.ENTITY_INTERACT, pos);
-//            for (BlockPos offsetPos : findDoors(world, pos)) {
-//                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
-//            }
-//            return ItemActionResult.SUCCESS;
-//        }
         return ItemActionResult.FAIL;
     }
 
@@ -256,23 +199,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         return found;
     }
 
-//    @Override
-//    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-////        if(!state.get(WIRED)) {
-//            //return open(state, world, pos);
-////        }
-//        if(!state.get(WIRED) && !state.get(OPEN)) {
-//            for (BlockPos offsetPos : findDoors(world, pos)) {
-//                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
-//            }
-//            return ActionResult.SUCCESS;
-//        }
-//
-//        return ActionResult.FAIL;
-//                //super.onUse(state, world, pos, player, hit);
-//    }
-
-
     private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open) {
         return setOpen(state, world, pos, open, null);
     }
@@ -340,7 +266,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
 //                if (neighborState.getBlock() instanceof DungeonWireBlock) {
 //                    if (neighborState.get(POWERED)) {
 //                        open = true;
-//                        break; // No need to check further, as we only need one powered neighbor.
+//                        break;
 //                    } else {
 //                        open = false;
 //                    }
@@ -359,10 +285,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
 //
 //            }
 //        }
-
-        // Propagate the open state to adjacent blocks if it's being opened.
-
-        // Update the current block's state.
     }
 
     @Override

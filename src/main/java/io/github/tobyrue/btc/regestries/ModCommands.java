@@ -137,7 +137,6 @@ public class ModCommands {
                                                     }
                                                 }
 
-                                                // Fallback default
                                                 return CommandSource.suggestMatching(List.of("{}"), builder);
                                             })
 
@@ -228,7 +227,6 @@ public class ModCommands {
                                                                 }
                                                             }
 
-                                                            // Fallback default
                                                             return CommandSource.suggestMatching(List.of("{}"), builder);
                                                         })
 
@@ -256,7 +254,6 @@ public class ModCommands {
             System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
             var data = item.getSpellDataStore(stack);
             if (spell != null) {
-                // Admin override
                 if (nbt instanceof NbtCompound || nbt == null) {
                     var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
                     if (source.hasPermissionLevel(2)) {
@@ -280,11 +277,9 @@ public class ModCommands {
                         System.out.println("[DEBUG] Spell set by admin: " + spell.getPureName());
                         return 1;
                     } else {
-                        // Non-admin path
                         System.out.println("[DEBUG] Non-admin args parsed: " + args);
 
                         if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
-                            // Player path
                             if (entity instanceof PlayerEntity) {
                                 var player = source.getPlayer();
                                 MinecraftServer server = source.getWorld().getServer();
@@ -343,7 +338,6 @@ public class ModCommands {
                                 }
                             }
                         } else if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                            // Player path
                             System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                             boolean found = minimal.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                     .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
@@ -424,7 +418,6 @@ public class ModCommands {
 
                 var data = item.getSpellDataStore(stack);
                 if (spell != null) {
-                    // Admin override
                     if (nbt instanceof NbtCompound || nbt == null) {
                         var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
                         if (source.hasPermissionLevel(2)) {
@@ -436,7 +429,6 @@ public class ModCommands {
                             System.out.println("[DEBUG] Non-admin args parsed: " + args);
 
                             if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
-                                // Player path
                                 if (entity instanceof PlayerEntity) {
                                     var player = source.getPlayer();
                                     MinecraftServer server = source.getWorld().getServer();
@@ -481,7 +473,6 @@ public class ModCommands {
                                     }
                                 }
                             } else if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                                // Player path
                                 System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                                 boolean found = minimal.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                         .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));

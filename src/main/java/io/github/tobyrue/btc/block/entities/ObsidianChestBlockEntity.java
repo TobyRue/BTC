@@ -125,14 +125,12 @@ public class ObsidianChestBlockEntity extends BlockEntity implements LidOpenable
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
 
-        // Save Inventories
         NbtCompound invsNbt = new NbtCompound();
         playerInventories.forEach((uuid, inv) -> {
             invsNbt.put(uuid.toString(), inv.toNbtList(registryLookup));
         });
         nbt.put("PlayerInventories", invsNbt);
 
-        // Save Looted Status
         NbtList lootedList = new NbtList();
         for (UUID uuid : lootedPlayers) {
             lootedList.add(net.minecraft.nbt.NbtString.of(uuid.toString()));
@@ -148,7 +146,6 @@ public class ObsidianChestBlockEntity extends BlockEntity implements LidOpenable
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
 
-        // Load Inventories
         if (nbt.contains("PlayerInventories", NbtElement.COMPOUND_TYPE)) {
             NbtCompound invsNbt = nbt.getCompound("PlayerInventories");
             for (String key : invsNbt.getKeys()) {
@@ -160,7 +157,6 @@ public class ObsidianChestBlockEntity extends BlockEntity implements LidOpenable
             }
         }
 
-        // Load Looted Status
         if (nbt.contains("LootedPlayers", NbtElement.LIST_TYPE)) {
             NbtList lootedList = nbt.getList("LootedPlayers", NbtElement.STRING_TYPE);
             for (int i = 0; i < lootedList.size(); i++) {

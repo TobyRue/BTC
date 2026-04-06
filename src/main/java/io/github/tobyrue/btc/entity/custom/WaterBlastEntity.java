@@ -112,7 +112,7 @@ public class WaterBlastEntity extends ProjectileEntity {
         BlockPos hitPos = blockHitResult.getBlockPos();
         Direction hitSide = blockHitResult.getSide();
 
-        if (hitSide == Direction.UP) {  // Ensure it hits the top of the block
+        if (hitSide == Direction.UP) {
             World world = this.getWorld();
             BlockState state = world.getBlockState(hitPos);
 
@@ -152,7 +152,6 @@ public class WaterBlastEntity extends ProjectileEntity {
         entity.damage(this.getDamageSources().thrown(this, this.getOwner()), 2);
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.addStatusEffect(new StatusEffectInstance(ModStatusEffects.DROWNING, 200, 1));
-            // Extinguish fire if the entity is burning
             if (livingEntity.isOnFire()) {
                 livingEntity.extinguish();
             }

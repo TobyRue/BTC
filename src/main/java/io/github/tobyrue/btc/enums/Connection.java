@@ -5,6 +5,7 @@ import java.util.Optional;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
 
+@Deprecated
 public enum Connection implements StringIdentifiable
 {
     NONE("none"),

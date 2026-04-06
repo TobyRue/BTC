@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.enums;
 
 import net.minecraft.util.StringIdentifiable;
 
+@Deprecated
 public enum EarthStaffAttacks implements StringIdentifiable {
     EARTH_SPIKES ("earth_spike_line", "earth_spike_line"),
     CREEPER_WALL_CIRCLE ("creeper_wall_circle_and_regeneration", "creeper_circle"),

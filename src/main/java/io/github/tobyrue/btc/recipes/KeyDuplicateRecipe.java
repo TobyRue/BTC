@@ -19,7 +19,6 @@ import java.util.Map;
 
 public class KeyDuplicateRecipe extends ShapedRecipe {
     public KeyDuplicateRecipe(CraftingRecipeCategory category) {
-        // Hardcoded pattern: Gold (G), Diamond (D), Key (K)
         // G D G
         // G K G
         // G G G
@@ -37,11 +36,9 @@ public class KeyDuplicateRecipe extends ShapedRecipe {
 
     @Override
     public boolean matches(CraftingRecipeInput input, World world) {
-        // Check if the basic shape matches first
         if (!super.matches(input, world)) {
             return false;
         }
-        // Ensure the key in the middle actually has data to copy
         ItemStack key = findKey(input);
         return !key.isEmpty() && key.contains(ModComponents.KEY_UUID);
     }

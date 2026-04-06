@@ -24,7 +24,6 @@ public class KeyGolemShoulderFeatureRenderer<T extends PlayerEntity> extends Fea
 
     public KeyGolemShoulderFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context, EntityModelLoader loader) {
         super(context);
-        // Replace with your actual Model Layer
         this.model = new KeyGolemModel(loader.getModelPart(ModModelLayers.KEY_GOLEM));
     }
 

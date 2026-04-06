@@ -34,7 +34,6 @@ public class WaterBlastEntityRenderer extends EntityRenderer<WaterBlastEntity> {
     public void render(WaterBlastEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
 
-        // Applying rotations
         float interpolatedYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
         float interpolatedPitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch());
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((interpolatedYaw + 180.0F)));

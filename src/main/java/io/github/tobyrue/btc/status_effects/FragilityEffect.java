@@ -30,13 +30,10 @@ public class FragilityEffect extends StatusEffect {
 
     @Override
     public void onEntityDamage(LivingEntity entity, int amplifier, DamageSource source, float amount) {
-        // Must be server side
         if (entity.getWorld().isClient()) return;
 
-        // Prevent recursive damage callback
         if (IS_PROCESSING.getOrDefault(entity, false)) return;
 
-        // Must have this effect
         if (!entity.hasStatusEffect(ModStatusEffects.FRAGILITY)) return;
 
         float previous = LAST_HEALTH.getOrDefault(entity, entity.getHealth() + entity.getAbsorptionAmount());
@@ -44,15 +41,12 @@ public class FragilityEffect extends StatusEffect {
 
         float damageTaken = previous - current;
 
-        // Update now for next tick
         LAST_HEALTH.put(entity, current);
 
         if (damageTaken <= 0) return;
 
-        // Extra damage = 10% per amplifier level
         float extra = damageTaken * (0.10F * (amplifier + 1));
 
-        // Damage again without recursion
         IS_PROCESSING.put(entity, true);
         entity.damage(source, extra);
         IS_PROCESSING.put(entity, false);

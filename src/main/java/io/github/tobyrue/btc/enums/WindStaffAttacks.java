@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.enums;
 
 import net.minecraft.util.StringIdentifiable;
 
+@Deprecated
 public enum WindStaffAttacks implements StringIdentifiable {
     WIND_CHARGE ("wind_charge", "wind_charge"),
     CLUSTER_WIND_CHARGE ("cluster_wind_charge", "cluster_wind_charge"),

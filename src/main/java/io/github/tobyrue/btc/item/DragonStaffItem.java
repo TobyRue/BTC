@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+@Deprecated
 public class DragonStaffItem extends StaffItem {
 
     public DragonStaffItem(Settings settings) {
@@ -57,13 +58,12 @@ public class DragonStaffItem extends StaffItem {
                 }
                 case DRAGONS_BREATH -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
-                        Vec3d direction = player.getRotationVec(1.0F).normalize(); // Normalized direction vector
+                        Vec3d direction = player.getRotationVec(1.0F).normalize();
 
-                        DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, player, direction); // 1 is the explosion power
+                        DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, player, direction);
 
                         dragonFireballEntity.setPos(player.getX() + direction.x * 1.5, player.getY() + 1.5, player.getZ() + direction.z * 1.5);
 
-                        // Set the fireball velocity (you can adjust the speed multiplier here)
                         dragonFireballEntity.setVelocity(direction.multiply(1.5));
 
                         world.spawnEntity(dragonFireballEntity);
@@ -119,7 +119,6 @@ public class DragonStaffItem extends StaffItem {
                 new Box(player.getBlockPos()).expand(radius),
                 entity -> entity != player && entity.isAlive());
 
-        // Define the percentage of health to take (e.g., 10% = 0.10 or 5% = 0.05)
         float healthPercentage = 0.10f;
 
         for (LivingEntity target : targets) {
@@ -128,7 +127,7 @@ public class DragonStaffItem extends StaffItem {
 
             target.damage(world.getDamageSources().magic(), damage);
 
-            float healAmount = damage * 0.5f; // Heal for 50% of damage dealt
+            float healAmount = damage * 0.5f;
             player.heal(healAmount);
         }
     }
@@ -168,7 +167,6 @@ public class DragonStaffItem extends StaffItem {
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
 
-        // Manage cooldown bar visibility on element swap
         NbtCompound cooldowns = nbt.getCompound("Cooldowns");
         String activeKey = attack.getCooldownKey();
 
@@ -184,7 +182,6 @@ public class DragonStaffItem extends StaffItem {
             cooldowns.put(key, entry);
         }
 
-        // If no active cooldown for new element, hide all bars
         if (!found) {
             for (String key : cooldowns.getKeys()) {
                 NbtCompound entry = cooldowns.getCompound(key);

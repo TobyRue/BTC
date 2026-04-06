@@ -55,9 +55,7 @@ public class WindTornadoEntityModel<T extends WindTornadoEntity> extends SingleP
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		// Rotate inside clockwise
 		this.inside.yaw = -animationProgress * 16.0f * ((float)Math.PI / 180);
 		this.outside.yaw = animationProgress * 16.0f * ((float)Math.PI / 180);
-		// Rotate outside counter-clockwise
 	}
 }

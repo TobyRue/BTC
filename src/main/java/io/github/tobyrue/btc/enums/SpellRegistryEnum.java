@@ -7,6 +7,7 @@ import net.minecraft.util.function.ValueLists;
 
 import java.util.function.IntFunction;
 
+@Deprecated
 public enum SpellRegistryEnum implements StringIdentifiable {
     FIREBALL_WEAK(0, "fireball_weak", 20, "fireball", SpellTypes.FIRE, true),
     FIREBALL_STRONG(1, "fireball_strong", 40, "fireball", SpellTypes.FIRE, false),

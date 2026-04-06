@@ -157,7 +157,6 @@ public class ScreenTestItem extends PredefinedSpellsItem {
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
 
-        // Manage cooldown bar visibility on element swap
         NbtCompound cooldowns = nbt.getCompound("Cooldowns");
         String activeKey = attack.getCooldownKey();
 
@@ -173,7 +172,6 @@ public class ScreenTestItem extends PredefinedSpellsItem {
             cooldowns.put(key, entry);
         }
 
-        // If no active cooldown for new element, hide all bars
         if (!found) {
             for (String key : cooldowns.getKeys()) {
                 NbtCompound entry = cooldowns.getCompound(key);

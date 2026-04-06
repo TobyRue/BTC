@@ -127,13 +127,11 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        // Read custom data from NBT
     }
 
     @Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        // Write custom data to NBT
     }
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {

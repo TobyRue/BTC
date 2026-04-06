@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public class EarthStaffItem extends StaffItem {
     private static final Integer SPIKE_Y_RANGE = 12;
     private static final Integer SPIKE_COUNT = 8;
@@ -55,16 +56,13 @@ public class EarthStaffItem extends StaffItem {
     public BlockPos findSpawnableGround(World world, BlockPos centerPos, int yRange) {
         int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
         int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
-        // Start from top and go downwards
         for (int y = topY; y >= bottomY; y--) {
             BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
-            // Improved block check to ensure solid block and air above or open space above
             if (world.getBlockState(pos).isSolidBlock(world, pos) && !world.getBlockState(pos.up()).isSolidBlock(world, pos.up()) && !world.getBlockState(pos.up()).isOf(Blocks.CHEST)) {
                 return pos;
             }
         }
 
-        // Fallback if no valid ground is found
         return null;
     }
     @Override
@@ -151,7 +149,7 @@ public class EarthStaffItem extends StaffItem {
                 case POISON -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(POISON_RADIUS),
-                                entity -> entity != player && entity instanceof LivingEntity); // Only affect hostile mobs
+                                entity -> entity != player && entity instanceof LivingEntity);
                         for (LivingEntity entity : entities) {
                             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 4));
                             setCooldown(player, stack, cooldownKey, 100, true);
@@ -170,13 +168,10 @@ public class EarthStaffItem extends StaffItem {
         return super.use(world, player, hand);
     }
     public static void spawnCreeperPillarWall(World world, Vec3d centerPos, PlayerEntity player, int count, double offsetTowardsPlayer) {
-        // Direction from player to centerPos
         Vec3d direction = centerPos.subtract(player.getPos()).normalize();
 
-        // Apply offset toward player (if offset != 0)
         Vec3d adjustedCenter = centerPos.add(direction.multiply(offsetTowardsPlayer * -1));
 
-        // Perpendicular vector to that direction (in XZ plane)
         Vec3d perp = getPerpendicular2D(direction);
 
         int halfCount = count / 2;
@@ -221,15 +216,13 @@ public class EarthStaffItem extends StaffItem {
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
 
-        // Create a box from the eye position to the reach vector
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
 
-        // Find the closest entity intersecting that line
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness); // slightly expanded hitbox
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) ) {
+            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness);
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -249,16 +242,13 @@ public class EarthStaffItem extends StaffItem {
         int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
 
 
-        // Start from top and go downwards
         for (int y = topY; y >= bottomY; y--) {
             BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
-            // Improved block check to ensure solid block and air above or open space above
             if (!(world.getBlockState(pos).getBlock() instanceof AirBlock) && world.getBlockState(pos.up()).isSolidBlock(world, pos.up())) {
                 return pos;
             }
         }
 
-        // Fallback if no valid ground is found
         return null;
     }
 
@@ -309,7 +299,6 @@ public class EarthStaffItem extends StaffItem {
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
 
-        // Manage cooldown bar visibility on element swap
         NbtCompound cooldowns = nbt.getCompound("Cooldowns");
         String activeKey = attack.getCooldownKey();
 
@@ -325,7 +314,6 @@ public class EarthStaffItem extends StaffItem {
             cooldowns.put(key, entry);
         }
 
-        // If no active cooldown for new element, hide all bars
         if (!found) {
             for (String key : cooldowns.getKeys()) {
                 NbtCompound entry = cooldowns.getCompound(key);
@@ -345,7 +333,6 @@ public class EarthStaffItem extends StaffItem {
         tooltip.add(Text.translatable("item.btc.spell.context.current", Text.translatable("item.btc.spell.earth." + current.asString())).formatted(Formatting.BLUE));
         tooltip.add(this.attackTypes().formatted(Formatting.GRAY));
     }
-    //TODO
     public MutableText attackTypes() {return Text.literal("Attack Types:");}
 
 }

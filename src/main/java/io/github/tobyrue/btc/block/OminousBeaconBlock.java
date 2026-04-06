@@ -59,11 +59,6 @@ public class OminousBeaconBlock extends BlockWithEntity implements ModBlockEntit
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(new Property[]{FACING});
     }
-//    @Override
-//    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-//        // Make sure to check world.isClient if you only want to tick only on serverside.
-//        return validateTicker(type, ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY, OminousBeaconBlockEntity::tick);
-//    }
     @Override
     public BlockEntityType<OminousBeaconBlockEntity> getBlockEntityType() {
         return ModBlockEntities.OMINOUS_BEACON_BLOCK_ENTITY;

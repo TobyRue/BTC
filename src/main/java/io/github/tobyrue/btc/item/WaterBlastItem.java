@@ -23,12 +23,9 @@ public class WaterBlastItem extends Item {
 
         Vec3d velocity = user.getRotationVec(1.0f).multiply(1.5f);
 
-        // Spawn the entity 1 block higher
         WaterBlastEntity waterBlast = new WaterBlastEntity(user, world, user.getX(), user.getY() + 1.25, user.getZ(), velocity);
         world.spawnEntity(waterBlast);
         user.getItemCooldownManager().set(this, 15);
-//            Vec3d direction = user.getRotationVec(1.0f);
-//            waterBlast.setVelocity(direction.multiply(1.5));
 
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));
@@ -39,14 +36,5 @@ public class WaterBlastItem extends Item {
         return TypedActionResult.success(itemStack);
     }
 }
-//    public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-//        Random random = world.getRandom();
-//        double d = random.nextTriangular((double)direction.getOffsetX(), 0.11485000000000001);
-//        double e = random.nextTriangular((double)direction.getOffsetY(), 0.11485000000000001);
-//        double f = random.nextTriangular((double)direction.getOffsetZ(), 0.11485000000000001);
-//        Vec3d vec3d = new Vec3d(d, e, f);
-//        WaterBlastEntity waterBlast = new WaterBlastEntity(world, pos.getX(), pos.getY(), pos.getZ(), vec3d);
-//        waterBlast.setVelocity(vec3d);
-//        return waterBlast;
-//    }
+
 

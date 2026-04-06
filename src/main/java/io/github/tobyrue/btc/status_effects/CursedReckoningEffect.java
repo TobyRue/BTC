@@ -12,7 +12,6 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.WeakHashMap;
 
 public class CursedReckoningEffect extends StatusEffect {
-    // Store damage accumulated during effect
     private static final WeakHashMap<LivingEntity, Float> STORED_DAMAGE = new WeakHashMap<>();
     private static final WeakHashMap<LivingEntity, Float> STORED_START = new WeakHashMap<>();
 
@@ -35,7 +34,6 @@ public class CursedReckoningEffect extends StatusEffect {
                 STORED_START.put(entity, entity.getHealth());
             }
             STORED_DAMAGE.put(entity, STORED_DAMAGE.getOrDefault(entity, 0f) + amount);
-            // Cancel actual damage
             System.out.println("Damage: " + amount);
             entity.setHealth(Math.min(entity.getMaxHealth(), STORED_START.get(entity)));
         }
@@ -44,7 +42,6 @@ public class CursedReckoningEffect extends StatusEffect {
     @Override
     public void onRemoved(AttributeContainer attributes) {
         super.onRemoved(attributes);
-        // When effect ends, unleash stored damage
         for (LivingEntity entity : STORED_DAMAGE.keySet()) {
             if (entity.hasStatusEffect(ModStatusEffects.CURSED_RECKONING)) continue;
             float dmg = STORED_DAMAGE.remove(entity);

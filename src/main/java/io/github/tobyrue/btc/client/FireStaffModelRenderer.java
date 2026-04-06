@@ -71,9 +71,8 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
-        // Rotate the fire charge continuously
-        long time = System.currentTimeMillis() % 3600L; // Get time to create smooth rotation
-        float angle = (time / 10.0f) % 360; // Adjust rotation speed by changing divisor
+        long time = System.currentTimeMillis() % 3600L;
+        float angle = (time / 10.0f) % 360;
 
         matrices.translate(0.5, 1.4, 0.2);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle)); // Apply rotation on Y-axis

@@ -70,19 +70,16 @@ public class WindTornadoEntity extends Entity {
         World world = this.getWorld();
 
 
-        // Slow falling gravity
         Vec3d velocity = this.getVelocity();
         if (!this.isOnGround()) {
             this.setVelocity(velocity.x, Math.max(velocity.y - 0.02, -0.1), velocity.z);
         }
 
-        // Slight drifting motion
         double driftX = (random.nextDouble() - 0.5) * 0.1;
         double driftZ = (random.nextDouble() - 0.5) * 0.1;
         this.setVelocity(this.getVelocity().add(driftX, 0, driftZ));
         this.move(MovementType.SELF, this.getVelocity());
 
-        // Ambient swirl particles (low amount)
         if (world.getTime() % 2 == 0) {
             for (int i = 0; i < 3; i++) {
                 world.addParticle(ParticleTypes.CLOUD,
@@ -92,7 +89,6 @@ public class WindTornadoEntity extends Entity {
                         0, 0.01, 0);
             }
             if (this.isOnFire()) {
-                // 🔥 Fire tornado effect
                 for (int i = 0; i < 6; i++) {
                     world.addParticle(ParticleTypes.FLAME,
                             getX() + (random.nextDouble() - 0.5) * 1.5,
@@ -109,7 +105,6 @@ public class WindTornadoEntity extends Entity {
                 }
             }
         }
-        // Pull nearby mobs
         if (!world.isClient) {
             Box pullBox = this.getBoundingBox().expand(5.5);
             List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, pullBox, e -> {
@@ -121,12 +116,10 @@ public class WindTornadoEntity extends Entity {
 
                     if (e.isTeammate(this.user)) return false;
 
-                    // Skip tamed pets of user
                     if (e instanceof TameableEntity tameable && tameable.isTamed()) {
                         if (tameable.getOwner() == user) return false;
                     }
 
-                    // Skip creative or spectator players
                     return !(e instanceof PlayerEntity player) || (!player.isCreative() && !player.isSpectator());
                 }
 
@@ -172,7 +165,7 @@ public class WindTornadoEntity extends Entity {
                         dx, dy, dz);
             }
 
-            discard(); // Remove the entity
+            discard();
         }
     }
 

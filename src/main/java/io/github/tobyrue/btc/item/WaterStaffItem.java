@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@Deprecated
 public class WaterStaffItem extends StaffItem {
 
     public WaterStaffItem(Settings settings) {
@@ -68,7 +69,6 @@ public class WaterStaffItem extends StaffItem {
                 case ICE_FREEZE -> {
                     if (!isCooldownActive(stack, cooldownKey)) {
                         if (freezeTargetArea(player, world) != null) {
-                            // Method above does all the logic
                             player.incrementStat(Stats.USED.getOrCreateStat(this));
                             setCooldown(player, stack, cooldownKey, 320, true);
                         }
@@ -116,15 +116,13 @@ public class WaterStaffItem extends StaffItem {
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
 
-        // Create a box from the eye position to the reach vector
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
 
-        // Find the closest entity intersecting that line
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness); // slightly expanded hitbox
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) ) {
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -139,10 +137,8 @@ public class WaterStaffItem extends StaffItem {
     }
 
     public Entity freezeTargetArea(PlayerEntity player, World world) {
-        // Only run server-side
         if (!world.isClient) {
             Entity target = getEntityLookedAt(player, 16, 0.3D);
-            // Iterate in a 3x3x3 cube around the target's block position
             BlockPos.Mutable mutablePos = new BlockPos.Mutable();
             if (target instanceof LivingEntity) {
                 ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 200, 4));
@@ -153,7 +149,6 @@ public class WaterStaffItem extends StaffItem {
                         for (int z = -1; z <= 1; z++) {
                             mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
 
-                            // Only replace air or water blocks
                             BlockState state = world.getBlockState(mutablePos);
                             if (state.isReplaceable() || state.getFluidState().isStill()) {
                                 world.setBlockState(mutablePos, ModBlocks.MELTING_ICE.getDefaultState());
@@ -185,7 +180,6 @@ public class WaterStaffItem extends StaffItem {
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
 
-        // Manage cooldown bar visibility on element swap
         NbtCompound cooldowns = nbt.getCompound("Cooldowns");
         String activeKey = attack.getCooldownKey();
 
@@ -201,7 +195,6 @@ public class WaterStaffItem extends StaffItem {
             cooldowns.put(key, entry);
         }
 
-        // If no active cooldown for new element, hide all bars
         if (!found) {
             for (String key : cooldowns.getKeys()) {
                 NbtCompound entry = cooldowns.getCompound(key);

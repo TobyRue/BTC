@@ -77,7 +77,6 @@ public class CopperGolemWanderGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        // Stop movement immediately if oxidized while already moving
         if (this.mob.cantMove()) {
             return false;
         }

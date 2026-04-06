@@ -20,7 +20,7 @@ public class EldritchLuminaryStrafeGoal extends Goal {
         this.actor = actor;
         this.speed = speed;
         this.range = range;
-        this.squaredRange = range * range; // Precompute squared range
+        this.squaredRange = range * range;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 

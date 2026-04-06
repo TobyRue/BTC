@@ -103,7 +103,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             List<Boolean> values = new ArrayList<>();
             List<String> operators = new ArrayList<>();
 
-            // Collect operators in order
             for (int i = 0; i < reqStr.length(); i++) {
                 char c = reqStr.charAt(i);
                 if (c == '*') {
@@ -115,10 +114,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 }
             }
 
-            // Split string into individual advancement checks using regex
             String[] parts = reqStr.split("[*+]");
 
-            // Parse each advancement requirement
             for (String part : parts) {
                 part = part.trim();
                 if (part.isEmpty()) continue;
@@ -146,7 +143,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     id = Identifier.of(namespace, path);
                 } catch (Exception e) {
                     System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
-                    values.add(false); // fail-safe: treat invalid as false
+                    values.add(false);
                     continue;
                 }
 
@@ -166,7 +163,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             System.out.println("[Codex] Values collected: " + values);
             System.out.println("[Codex] Operators collected: " + operators);
 
-            // Now combine the results according to the operators
             while (values.size() > 1) {
                 String op = operators.remove(0);
                 boolean left = values.remove(0);
@@ -183,7 +179,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     throw new IllegalStateException("[Codex] Unknown operator: " + op);
                 }
 
-                // Put result back at the front of the list
                 values.add(0, result);
                 System.out.println("[Codex] Intermediate values: " + values);
             }
@@ -265,7 +260,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 List<Boolean> values = new ArrayList<>();
                 List<String> operators = new ArrayList<>();
 
-                // Collect operators in order
                 for (int i = 0; i < reqStr.length(); i++) {
                     char c = reqStr.charAt(i);
                     if (c == '*') {
@@ -277,10 +271,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     }
                 }
 
-                // Split string into individual advancement checks using regex
                 String[] parts = reqStr.split("[*+]");
 
-                // Parse each advancement requirement
                 for (String part : parts) {
                     part = part.trim();
                     if (part.isEmpty()) continue;
@@ -308,7 +300,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                         id = Identifier.of(namespace, path);
                     } catch (Exception e) {
                         System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
-                        values.add(false); // fail-safe: treat invalid as false
+                        values.add(false);
                         continue;
                     }
 
@@ -328,7 +320,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 System.out.println("[Codex] Values collected: " + values);
                 System.out.println("[Codex] Operators collected: " + operators);
 
-                // Now combine the results according to the operators
                 while (values.size() > 1) {
                     String op = operators.remove(0);
                     boolean left = values.remove(0);
@@ -345,7 +336,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                         throw new IllegalStateException("[Codex] Unknown operator: " + op);
                     }
 
-                    // Put result back at the front of the list
                     values.add(0, result);
                     System.out.println("[Codex] Intermediate values: " + values);
                 }
@@ -386,7 +376,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             List<Boolean> values = new ArrayList<>();
             List<String> operators = new ArrayList<>();
 
-            // Collect operators in order
             for (int i = 0; i < reqStr.length(); i++) {
                 char c = reqStr.charAt(i);
                 if (c == '*') {
@@ -398,10 +387,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 }
             }
 
-            // Split string into individual advancement checks using regex
             String[] parts = reqStr.split("[*+]");
 
-            // Parse each advancement requirement
             for (String part : parts) {
                 part = part.trim();
                 if (part.isEmpty()) continue;
@@ -429,7 +416,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     id = Identifier.of(namespace, path);
                 } catch (Exception e) {
                     System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
-                    values.add(false); // fail-safe: treat invalid as false
+                    values.add(false);
                     continue;
                 }
 
@@ -449,7 +436,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             System.out.println("[Codex] Values collected: " + values);
             System.out.println("[Codex] Operators collected: " + operators);
 
-            // Now combine the results according to the operators
             while (values.size() > 1) {
                 String op = operators.remove(0);
                 boolean left = values.remove(0);
@@ -466,7 +452,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     throw new IllegalStateException("[Codex] Unknown operator: " + op);
                 }
 
-                // Put result back at the front of the list
                 values.add(0, result);
                 System.out.println("[Codex] Intermediate values: " + values);
             }
@@ -580,7 +565,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     event = null;
                     hoverText = null;
                 }
-                // Apply link-specific style to the whole text chain — preserving child formatting
                 ClickEvent finalEvent = event;
                 linkText = linkText.copy().styled(style -> style
                         .withColor(Formatting.byName(color.toUpperCase()))
@@ -596,7 +580,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         @XML.Name("h")
         public record HoverText(
                 @XML.Children(allow = {XMLTextNode.class, Codex.TextContent.class}) XMLNodeCollection<?> children,
-                // Attributes for hover actions
                 @XML.Attribute(fallBack = "") String text,
                 @XML.Attribute(fallBack = "") String item,
                 @XML.Attribute(fallBack = "") String entityType,

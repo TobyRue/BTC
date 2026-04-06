@@ -139,10 +139,7 @@ public class TuffGolemEntityModel <T extends TuffGolemEntity> extends SinglePart
 	}
 	private void setHeadAngles(float headYaw, float headPitch) {
 		headYaw = MathHelper.clamp(headYaw, -30.0f, 30.0f);
-//		headPitch = MathHelper.clamp(headPitch, -20.0f, 30.0f);
-
 		this.body.yaw = headYaw * 0.017453292F;
-//		this.body.pitch = headPitch * 0.017453292F;
 	}
 
 

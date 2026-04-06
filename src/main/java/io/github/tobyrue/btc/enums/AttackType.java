@@ -4,6 +4,7 @@ import net.minecraft.util.function.ValueLists;
 
 import java.util.function.IntFunction;
 
+@Deprecated
 public enum AttackType {
 
     EARTH_SPIKE_L(8, 0.53, 0.54, 0.18),

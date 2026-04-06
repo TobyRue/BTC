@@ -60,23 +60,18 @@ public class ModClientPackets {
                     if (item instanceof MinimalPredefinedSpellsItem minimal) {
                         var spells = PredefinedSpellsItem.getKnownSpells(playerData);
 
-                        // Convert available spells into PrefixValue objects
                         var spellValues = spells.stream()
                                 .map(inst -> {
 
-                                    // Get raw string (translation{key='...', args=[...]})
                                     String raw = inst.spell().getName(inst.args()).toString();
 
-                                    // Extract just the translation key with regex
                                     String key = raw.replaceAll(".*'([^']+)'.*", "$1");
 
-                                    // Build the base command prefix
                                     System.out.println("Spell: " + inst.spell() + " Args as NBT: " + GrabBag.toNBT(inst.args()));
                                     String spellId = Spell.getId(inst.spell()).toString();
                                     NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
                                     String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
 
-                                    // Generate suffix values 1..maxKnown
                                     List<RadialNoHoverValues.SuffixValueNoHover> suffixValues =
                                             java.util.stream.IntStream.rangeClosed(0, 5)
                                                     .mapToObj(i -> new RadialNoHoverValues.SuffixValueNoHover(
@@ -86,9 +81,9 @@ public class ModClientPackets {
                                                     .toList();
 
                                     return new RadialNoHoverValues.PrefixValueNoHover(
-                                            Text.translatable(key, inst.args()).formatted(Formatting.BLACK), // display
-                                            commandPrefix,  // click command (before suffix)
-                                            suffixValues    // suffix menu options
+                                            Text.translatable(key, inst.args()).formatted(Formatting.BLACK),
+                                            commandPrefix,
+                                            suffixValues
                                     );
                                 })
                                 .toList();

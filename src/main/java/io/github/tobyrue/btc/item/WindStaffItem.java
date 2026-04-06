@@ -22,6 +22,7 @@ import net.minecraft.entity.LivingEntity;
 
 import java.util.List;
 
+@Deprecated
 public class WindStaffItem extends StaffItem {
     // Configurable pull range (in blocks)
     private static final double PULL_RADIUS = 25.0;

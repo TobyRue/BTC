@@ -136,7 +136,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             --this.idleAnimationTimeout;
         }
 
-        // --- Attack / casting animation ---
         if (getCastTime() > 0 && getCastTime() <= castTime && getGlobalCastDelay() <= 0) {
             this.attackAnimationTimeout = 20;
             this.attackAnimationState.startIfNotRunning(this.age);
@@ -204,7 +203,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         super.tick();
 
 
-        // --- Client illusion update ---
         if (this.getWorld().isClient()) {
             if (getIllusionTime() > 0 && getIllusionTime() <= illusionTime) {
                 setIllusionTime(getIllusionTime() + 1);
@@ -213,7 +211,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             }
         }
 
-        // --- Global cast delay countdown ---
 
         SpellDataStore data = getSpellDataStore(this);
         Spell.InstancedSpell current = this.getCurrentSpellInstance();
@@ -229,7 +226,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
 
-        // --- Global cast delay countdown ---
         if (getGlobalCastDelay() > 0) {
             setGlobalCastDelay(getGlobalCastDelay() - 1);
         }
@@ -237,26 +233,18 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (this.target != null) {
             if (getGlobalCastDelay() <= 0) {
 
-                // Step 1: Start casting
                 if (activeCastingSpell == null && getCastTime() <= 0) {
                     activeCastingSpell = chooseRandomCurrentSpell();
                     setCastTime(1);
-//                    System.out.println("Step 1 Cast spell: Active: " + activeCastingSpell);
                 }
 
-                // Step 2: Continue charging
                 else if (activeCastingSpell != null && getCastTime() < castTime) {
                     setCastTime(getCastTime() + 1);
-//                    System.out.println("Step 2 In charging: Active: " + activeCastingSpell);
                 }
 
-                // Step 3: Cast spell
                 else if (activeCastingSpell != null && getCastTime() >= castTime) {
                     this.lookAtEntity(target, 90, 90);
                     castCurrentSpellAt(this.target);
-
-                    // Now set delay for next cast
-//                    System.out.println("Step 3 Cast spell: Spell: " + activeCastingSpell.spell());
                     setGlobalCastDelay(GLOBAL_DELAY);
 
                     activeCastingSpell = null;
@@ -276,11 +264,9 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 setCurrentSpellInstance(activeCastingSpell.spell(), activeCastingSpell.args());
                 castCurrentSpellAt(this.target);
 
-                // Apply cooldown
 //                var cd = activeCastingSpell.spell().getCooldown(activeCastingSpell.args(), this);
 //                getSpellDataStore(this).setCooldown(cd);
 
-                // Reset
                 activeCastingSpell = null;
                 setCastTime(0);
                 setSpellEmpty();
@@ -288,7 +274,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
 
-        // --- Particle effects (client) ---
         if (this.getWorld().isClient() && current.spell() != ModSpells.EMPTY && current.spell() != null && !this.isInvisible() && getIllusionTime() <= 0 && getCastTime() > 0 && getCastTime() <= castTime && getGlobalCastDelay() <= 0) {
             int colorInt = current.spell().getColor(current.args());
             float r = ((colorInt >> 16) & 0xFF) / 255.0F;
@@ -430,7 +415,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             this.setSpellEmpty();
         }
 
-        // --- Animation setup (client) ---
         if (this.getWorld().isClient()) {
             setupAnimationStates();
         }
@@ -474,9 +458,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
     public void setCurrentSpellInstance(Spell spell, @Nullable GrabBag args) {
         Identifier id = ModRegistries.SPELL.getId(spell);
-        if (id == null) return; // invalid spell, do nothing
+        if (id == null) return;
 
-        // Check if this spell exists in the stored list
         boolean exists = this.getAllSpellInstances().stream()
                 .anyMatch(inst -> ModRegistries.SPELL.getId(inst.spell()).equals(id));
 
@@ -504,7 +487,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         boolean targetOnFire = (this.target != null && this.target.isOnFire());
 
-        // --- Fire/water edge cases ---
         if (targetOnFire && (spellInstance.spell() == ModSpells.WATER_WAVE || spellInstance.spell() == ModSpells.WATER_BLAST))
             return false;
         if (this.target != null && this.target.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)
@@ -543,7 +525,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
         List<Spell.InstancedSpell> spells = getAllSpellInstances();
-//        System.out.println("Spell Instances: " + getAllSpellInstances());
         if (spells.isEmpty()) {
             setCurrentSpellInstance(ModSpells.EMPTY, GrabBag.empty());
             return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
@@ -833,13 +814,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         NbtCompound cooldowns = dataTracker.get(SPELL_COOLDOWN).copy();
         boolean updated = false;
 
-        for (String key : new HashSet<>(cooldowns.getKeys())) { // iterate over a copy
+        for (String key : new HashSet<>(cooldowns.getKeys())) {
             int ticks = cooldowns.getInt(key);
             if (ticks > 0) {
                 cooldowns.putInt(key, ticks - 1);
                 updated = true;
             } else {
-                cooldowns.remove(key); // safe now
+                cooldowns.remove(key);
                 updated = true;
             }
         }

@@ -24,7 +24,6 @@ public class DragonScalesEffect extends StatusEffect {
     @Override
     public void onEntityDamage(LivingEntity entity, int amplifier, DamageSource source, float amount) {
         super.onEntityDamage(entity, amplifier, source, amount);
-        // Check if the attacked entity has this status effect
         if (entity.hasStatusEffect(ModStatusEffects.DRAGON_SCALES)) {
             if (!STORED_AFTER.containsKey(entity)) {
                 STORED_AFTER.put(entity, entity.getHealth());
@@ -32,17 +31,13 @@ public class DragonScalesEffect extends StatusEffect {
             var lastHealth = STORED_AFTER.get(entity);
             var currentHealth = entity.getHealth();
             var dmg = lastHealth - currentHealth;
-            // Get the level of the effect (higher level = more damage reflection & protection)
             int level = amplifier + 1;
-            // Reflect damage to the attacker
             if (source.getAttacker() instanceof LivingEntity attacker) {
-                float reflectionDamage = dmg * (0.2f * level); // Reflect 20% of damage per level
+                float reflectionDamage = dmg * (0.2f * level);
                 attacker.damage(source, reflectionDamage);
             }
 
-            // Apply damage reduction to the entity with the effect
             float reducedDamage = dmg * (0.2f * level) + currentHealth;
-            // Ensure that damage doesn't go negative
             if(reducedDamage < 0) {
                 reducedDamage = 0;
             }

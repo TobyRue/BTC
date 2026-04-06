@@ -25,7 +25,6 @@ public class AdvancementUtils {
             AdvancementEntry advancement = world.getServer().getAdvancementLoader().get(Identifier.of(namespace, path));
 
             if (advancement == null) {
-                // Advancement doesn't exist
                 return false;
             }
 

@@ -50,7 +50,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     public PotionPillarBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, pos, state);
     }
-    private int tickCounter = 0; // Counter to track ticks
+    private int tickCounter = 0;
 
     public RegistryEntry<StatusEffect> getStoredEffect() {
         return storedEffect;

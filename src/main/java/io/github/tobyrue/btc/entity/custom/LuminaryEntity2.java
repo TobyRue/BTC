@@ -106,7 +106,6 @@ public class LuminaryEntity2 extends HostileEntity implements Angerable, SpellHo
             this.attackAnimationTimeout = 40;
             this.attackAnimationState.startIfNotRunning(this.age);
         } else {
-            // Fade or stop animation when not in casting phase
             if (this.attackAnimationTimeout > 0) {
                 --this.attackAnimationTimeout;
             } else {
@@ -124,7 +123,7 @@ public class LuminaryEntity2 extends HostileEntity implements Angerable, SpellHo
         this.attackAnimationState.start(this.age);
     }
 
-    public int attackTick = 100; // Default to no action scheduled.
+    public int attackTick = 100;
 
 
     @Override
@@ -154,7 +153,6 @@ public class LuminaryEntity2 extends HostileEntity implements Angerable, SpellHo
             setupAnimationStates();
         }
 
-        // Server-side spell cooldown tick
         if (!this.getWorld().isClient()) {
             ((SpellHost<LivingEntity>) this).tickCooldowns(this);
         }
@@ -176,7 +174,6 @@ public class LuminaryEntity2 extends HostileEntity implements Angerable, SpellHo
 
         }
 
-        // Example: auto-cast spell if cooldown is 0 and a target exists
         if (!this.getWorld().isClient() && getTarget() != null && getSpellDataStore(this).getCooldown(null) <= 0) {
             castCurrentSpellAt(getTarget());
         }

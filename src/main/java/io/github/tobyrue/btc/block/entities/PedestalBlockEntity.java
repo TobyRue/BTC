@@ -47,8 +47,7 @@ public class PedestalBlockEntity extends BlockEntity {
 
                 HASH_MAP.put(uuid, c+1);
                 player.playSound(SoundEvents.BLOCK_VAULT_ACTIVATE);
-                // Add redstone particle effects
-                DustParticleEffect dust = new DustParticleEffect(new Vector3f(1.0F, 0.0F, 0.0F), 2.0F); // Red color
+                DustParticleEffect dust = new DustParticleEffect(new Vector3f(1.0F, 0.0F, 0.0F), 2.0F);
                 world.addParticle(dust, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 0, 0.5, 0);
                 if(!player.isCreative()) {
                     stack.decrement(1);
@@ -83,7 +82,6 @@ public class PedestalBlockEntity extends BlockEntity {
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
 
-        // Serialize HashMap<String, Integer> to NbtList
         NbtList nbtList = new NbtList();
         for (var entry : HASH_MAP.entrySet()) {
             NbtCompound entryNbt = new NbtCompound();
@@ -98,7 +96,6 @@ public class PedestalBlockEntity extends BlockEntity {
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
 
-        // Deserialize NbtList to HashMap<String, Integer>
         HASH_MAP.clear();
         NbtList nbtList = nbt.getList("CustomData", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < nbtList.size(); i++) {

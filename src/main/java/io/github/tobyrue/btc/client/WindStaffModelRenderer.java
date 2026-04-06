@@ -18,8 +18,8 @@ import net.minecraft.util.math.RotationAxis;
 @Environment(EnvType.CLIENT)
 public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
     public static final ItemStack HANDLE_WIND = new ItemStack(ModItems.STAFF, 1);
-    private static final DummyWindCharge dummy = new DummyWindCharge(); // Static variable
-    private static int renderCounter = 0; // Counter to slow down age update
+    private static final DummyWindCharge dummy = new DummyWindCharge();
+    private static int renderCounter = 0;
     public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/breeze_rods.png");
 
     private static final String ELEMENT1 = "element1";
@@ -70,7 +70,6 @@ public static TexturedModelData getTexturedModelData() {
     }
 
     private void updateDummy() {
-        // Increment the age of the dummy entity every 10 render calls
         if (renderCounter % 10 == 0) {
             dummy.age++;
         }

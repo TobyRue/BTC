@@ -79,12 +79,10 @@ public class BTC implements ModInitializer {
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers_maps"));
 
 
-    // Register our custom particle type in the mod initializer.
     @Override
     public void onInitialize() {
 
 
-        //Adds a trade in another class, BetterTrialChambersMapTrade
         TradeOfferHelper.registerWanderingTraderOffers( 1, factories -> {
             factories.add(new BetterTrialChambersMapTrade());
         });

@@ -126,28 +126,6 @@ public class MeltingIceBlock extends TranslucentBlock {
     }
 
 
-//    @Override
-//    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-//        VoxelShape shape = VoxelShapes.empty();
-//
-//        boolean connectNorth = isSameBlock(world, pos.north());
-//        boolean connectSouth = isSameBlock(world, pos.south());
-//        boolean connectEast  = isSameBlock(world, pos.east());
-//        boolean connectWest  = isSameBlock(world, pos.west());
-//        boolean connectUp    = isSameBlock(world, pos.up());
-//        boolean connectDown  = isSameBlock(world, pos.down());
-//
-//        // Add faces where no adjacent block exists
-//        if (!connectNorth) shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0, 0, 0, 1, 1, 0.0625)); // North
-//        if (!connectSouth) shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0, 0, 0.9375, 1, 1, 1)); // South
-//        if (!connectWest)  shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0, 0, 0, 0.0625, 1, 1)); // West
-//        if (!connectEast)  shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0.9375, 0, 0, 1, 1, 1)); // East
-//        if (!connectUp)    shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0, 0.9375, 0, 1, 1, 1)); // Top
-//        if (!connectDown)  shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0, 0, 0, 1, 0.0625, 1)); // Bottom
-//
-//        return shape;
-//    }
-
     private boolean isSameBlock(World world, BlockPos pos) {
         return world.getBlockState(pos).isOf(this);
     }
@@ -201,7 +179,6 @@ public class MeltingIceBlock extends TranslucentBlock {
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 
-        // Update connections for neighbors around this block being replaced
         for (Direction dir : Direction.values()) {
             BlockPos neighborPos = pos.offset(dir);
             BlockState neighborState = world.getBlockState(neighborPos);

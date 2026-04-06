@@ -17,8 +17,7 @@ public class DrowningEffect extends StatusEffect {
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
-        // Determine the interval for applying the effect based on the amplifier
-        int interval = Math.max(40 - (amplifier * 5), 5); // Minimum interval of 5 ticks
+        int interval = Math.max(40 - (amplifier * 5), 5);
         return duration % interval == 0;
     }
     private static final Random RANDOM = new Random();

@@ -18,7 +18,4 @@ public final class PlayerInstancedSpellHelper {
             BTC.identifierOf("favorite_spells"),
             ComponentType.<Spell.InstancedSpell>builder().codec(Spell.InstancedSpell.CODEC).build()
     );
-//    public static boolean has(final ServerPlayerEntity player, final Spell.InstancedSpell spell) {
-//
-//    }
 }

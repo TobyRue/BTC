@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.enums;
 
 import net.minecraft.util.StringIdentifiable;
 
+@Deprecated
 public enum SpellBookAttacks implements StringIdentifiable {
     WATER_BLAST ("water_blast", "water_blast"),
     FIREBALL ("fireball", "fire_ball"),

@@ -45,7 +45,7 @@ public class SelectorItem extends Item {
     }
 
     private void spawnHighlightParticles(World world, BlockPos pos, ParticleEffect effect) {
-        double dob = 0.03; // distance outside block
+        double dob = 0.03;
         int countPerFace = 8;
 
         if (pos.getY() > world.getBottomY() - 1) {

@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.util;
 import org.joml.Vector3f;
 
+@Deprecated
 public class AABB {
     public final Vector3f min, max;
 
@@ -48,7 +49,6 @@ public class AABB {
                 (1.0f - 2.0f * lessThan.z) * overlap.z
         );
 
-        // Find minimum axis, prefer y
         if (overlap.y <= overlap.x && overlap.y <= overlap.z) {
             return new Vector3f(0.0f, translation.y, 0.0f);
         } else if (overlap.x <= overlap.z) {

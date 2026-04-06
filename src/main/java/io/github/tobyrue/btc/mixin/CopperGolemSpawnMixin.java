@@ -26,21 +26,17 @@ public abstract class CopperGolemSpawnMixin  {
         BlockPos pumpkinPos = pos.down();
         BlockPos copperPos = pumpkinPos.down();
 
-        // Check if the structure is correct
         if (state.get(LightningRodBlock.FACING) == Direction.UP) {
             if (world.getBlockState(pumpkinPos).isOf(Blocks.CARVED_PUMPKIN) &&
                 world.getBlockState(copperPos).isOf(Blocks.COPPER_BLOCK)) {
 
-                // Mimic breakPatternBlocks() to properly remove structure
                 destroyBlockWithEffect(world, pos);
                 destroyBlockWithEffect(world, pumpkinPos);
                 destroyBlockWithEffect(world, copperPos);
 
-                // Spawn the Copper Golem
                 CopperGolemEntity golem = new CopperGolemEntity(ModEntities.COPPER_GOLEM, world);
                 golem.refreshPositionAndAngles(copperPos.getX() + 0.5, copperPos.getY(), copperPos.getZ() + 0.5, 0, 0);
 
-                // Prevent the golem from catching fire due to lightning
                 world.spawnEntity(golem);
             }
         }
@@ -48,16 +44,13 @@ public abstract class CopperGolemSpawnMixin  {
             if (world.getBlockState(pumpkinPos).isOf(Blocks.CARVED_PUMPKIN) &&
                 world.getBlockState(copperPos).isOf(Blocks.WAXED_COPPER_BLOCK)) {
 
-                // Mimic breakPatternBlocks() to properly remove structure
                 destroyBlockWithEffect(world, pos);
                 destroyBlockWithEffect(world, pumpkinPos);
                 destroyBlockWithEffect(world, copperPos);
 
-                // Spawn the Copper Golem
                 CopperGolemEntity golem = new CopperGolemEntity(ModEntities.COPPER_GOLEM, world);
                 golem.refreshPositionAndAngles(copperPos.getX() + 0.5, copperPos.getY(), copperPos.getZ() + 0.5, 0, 0);
 
-                // Prevent the golem from catching fire due to lightning
                 world.spawnEntity(golem);
                 golem.setWaxed(true);
             }
@@ -65,7 +58,7 @@ public abstract class CopperGolemSpawnMixin  {
     }
     private void destroyBlockWithEffect(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // Properly remove block
-        world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state)); // Show break particles & sound
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+        world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
     }
 }

@@ -33,12 +33,10 @@ public final class UnlockScrollCache {
         if (spellType == null) return null;
 
         inst = new Spell.InstancedSpell(spellType, GrabBag.fromNBT(args));
-        // cache it
         CACHE.put(stack, inst);
         return inst;
     }
 
-    // call this when the stack's unlock component or args change
     public static void invalidate(ItemStack stack) {
         CACHE.remove(stack);
     }

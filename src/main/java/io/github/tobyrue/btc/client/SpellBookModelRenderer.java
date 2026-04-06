@@ -116,7 +116,6 @@ public class SpellBookModelRenderer implements BuiltinItemRendererRegistry.Dynam
             matrices.translate(0, -0.627, 1.3);
             matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(50));
         }
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
         renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
         matrices.pop();
     }

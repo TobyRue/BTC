@@ -25,7 +25,7 @@ public class EarthSpikeEntity extends Entity implements Ownable {
 
     public EarthSpikeEntity(EntityType<? extends EarthSpikeEntity> type, World world) {
         super(type, world);
-        this.setPosition(this.getX(), this.getY(), this.getZ()); // Spawn lower
+        this.setPosition(this.getX(), this.getY(), this.getZ());
     }
 
     public EarthSpikeEntity(World world, double x, double y, double z, float yaw, LivingEntity owner) {
@@ -34,7 +34,6 @@ public class EarthSpikeEntity extends Entity implements Ownable {
         this.setYaw(yaw * 57.295776F);
         this.attackAnimationState.start(age);
         this.setPosition(x, y, z);
-        //CALL this for the spawning and spawn the entity at top block pos
     }
 
     public void setOwner(@Nullable LivingEntity owner) {
@@ -58,13 +57,10 @@ public class EarthSpikeEntity extends Entity implements Ownable {
             double yOffset = 0;
 
             if (lifeTime <= 5) {
-                // Rising: 0 → 1 over 10 ticks
                 yOffset = 1 * (lifeTime / 5.0);
             } else if (lifeTime <= 15) {
-                // Pause at top
                 yOffset = 1;
             } else {
-                // Falling: 1 → 0 over 10 ticks
                 yOffset = 1 * (1.0 - ((double) (lifeTime - 15) / 15));
             }
             if (!this.getWorld().isClient) {

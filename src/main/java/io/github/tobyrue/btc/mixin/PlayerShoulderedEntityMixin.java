@@ -16,7 +16,6 @@ public abstract class PlayerShoulderedEntityMixin {
 
     @Inject(
             method = "tickMovement",
-            // We use 'at' to find the specific logic block rather than the method call
             at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;dropShoulderEntities()V"),
             cancellable = true
     )

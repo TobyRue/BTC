@@ -5,6 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+@Deprecated
 public interface IDungeonWirePowered {
     //TODO Make static and add to wire
     default boolean shouldWirePower(BlockState state, World world, BlockPos pos, boolean top, boolean bottom, boolean sides) {

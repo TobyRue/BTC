@@ -43,12 +43,10 @@ public class KeyAcceptorBlockRenderer implements BlockEntityRenderer<KeyAcceptor
 
     public void renderItem(KeyAcceptorBlockEntity blockEntity, ItemStack stack, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, double x, double z, float dTheta) {
         matrices.push();
-        // Rotate the item
         matrices.translate(0.5, 1.1 + ((double) blockEntity.delay /60), 0.5);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((blockEntity.getWorld().getTime() + tickDelta) * 4 + (dTheta * 360)));
         int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
         MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, blockEntity.getWorld(), 0);
-        // Mandatory call after GL calls
         matrices.pop();
     }
 }

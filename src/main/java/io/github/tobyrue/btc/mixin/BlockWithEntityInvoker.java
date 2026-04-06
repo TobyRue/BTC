@@ -15,6 +15,6 @@ public interface BlockWithEntityInvoker  {
             BlockEntityType<E> expectedType,
             BlockEntityTicker<? super E> ticker
     ) {
-        throw new AssertionError(); // Will be overwritten by Mixin at runtime
+        throw new AssertionError();
     }
 }

@@ -103,8 +103,5 @@ public abstract class Spell {
                 Spell.CODEC.fieldOf("spell").forGetter(InstancedSpell::spell),
                 NbtCompound.CODEC.fieldOf("args").forGetter(s -> GrabBag.toNBT(s.args()))
         ).apply(instance, (spell, args) -> new InstancedSpell(spell, GrabBag.fromNBT(args)))));
-
-
-//                Codec.INT_STREAM.comapFlatMap(stream -> Util.decodeFixedLengthArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])), pos -> IntStream.of(pos.getX(), pos.getY(), pos.getZ())).stable();
     }
 }

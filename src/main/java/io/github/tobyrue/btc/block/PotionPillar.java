@@ -36,7 +36,6 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionPillar extends Block implements ModBlockEntityProvider<PotionPillarBlockEntity>, ModTickBlockEntityProvider<PotionPillarBlockEntity>, IDungeonWireConnect, CornerStorage, Waterloggable {
-//    public static final EnumProperty<AntierType> ANTIER_TYPE = EnumProperty.of("antier_type", AntierType.class);
     public static final BooleanProperty DISABLE = BooleanProperty.of("disable");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;

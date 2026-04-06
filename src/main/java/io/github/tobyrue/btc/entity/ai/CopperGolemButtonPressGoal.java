@@ -83,9 +83,7 @@ public class CopperGolemButtonPressGoal extends Goal {
 
     @Override
     public void tick() {
-//        if (soundCooldown > 0) {
-//            soundCooldown--;
-//        }
+
         if (targetButtonPos != null) {
             lookAtPosition(targetButtonPos);
             Vec3d currentPos = golem.getPos();
@@ -94,13 +92,10 @@ public class CopperGolemButtonPressGoal extends Goal {
                 interest--;
             } else {
                 if (interest >= 0) {
-                    interest = Math.min(100, interest + 2); // Slightly regain interest when moving
+                    interest = Math.min(100, interest + 2);
                 }
             }
 
-//            if (interest <= 0) {
-//                targetCooldown--;
-//            }
             lastPosition = currentPos;
             if (interest > 0) {
                 if (golem.squaredDistanceTo(Vec3d.ofCenter(targetButtonPos)) <= 2.5) {

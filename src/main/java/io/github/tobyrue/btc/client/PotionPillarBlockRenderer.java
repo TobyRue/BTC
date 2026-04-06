@@ -39,8 +39,7 @@ import java.util.Locale;
 public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPillarBlockEntity> {
     private final TextRenderer textRenderer;
     private static final int TICKS_PER_GLYPH = 20;
-//    private static final String TEXT = "Insert Bee Movie Script Here";
-
+\
     public PotionPillarBlockRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
     }
@@ -104,8 +103,7 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         if (axis == Direction.Axis.Z) {
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         }
-//        Text text = Text.literal("Insert Bee Movie Script Here")
-//                .styled(style -> style.withFont(Identifier.of("minecraft", "illageralt")));
+
         String rune = RuneTextLoader.get(blockEntity.getRuneIndex());
         long time = blockEntity.getWorld().getTime();
         float t = (time + tickDelta) / TICKS_PER_GLYPH;
@@ -141,7 +139,7 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
                     false,
                     matrix,
                     vertexConsumers,
-                    TextRenderer.TextLayerType.POLYGON_OFFSET, // depth-respecting
+                    TextRenderer.TextLayerType.POLYGON_OFFSET,
                     0,
                     15728864
             );

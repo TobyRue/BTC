@@ -325,7 +325,7 @@ public class CopperGolemEntity extends GolemEntity {
     @Override
     public void travel(Vec3d movementInput) {
         if (this.isLeashed()) {
-            movementInput = movementInput.multiply(0.4); // Adjust the multiplier to tweak speed
+            movementInput = movementInput.multiply(0.4);
         }
         super.travel(movementInput);
     }

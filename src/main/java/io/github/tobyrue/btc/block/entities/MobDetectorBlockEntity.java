@@ -364,7 +364,6 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
                     customBox.getMaxZ() + 1
             );
         } else {
-            // fallback to default range
             box = new Box(
                     pos.getX(),
                     pos.getY(),

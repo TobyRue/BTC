@@ -32,7 +32,6 @@ public class TuffGolemSpawnMixin {
             TuffGolemEntity golem = new TuffGolemEntity(ModEntities.TUFF_GOLEM, world);
             golem.refreshPositionAndAngles(tuffPos.getX() + 0.5, tuffPos.getY(), tuffPos.getZ() + 0.5, 0, 0);
 
-            // Prevent the golem from catching fire due to lightning
             world.spawnEntity(golem);
             golem.setColor(DyeColor.RED.getEntityColor());
         }

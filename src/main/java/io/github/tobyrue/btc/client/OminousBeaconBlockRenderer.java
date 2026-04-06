@@ -28,25 +28,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 
 
 
-//    @Override
-//    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-//        matrices.push();
-//        var minecraft = MinecraftClient.getInstance();
-//        var texture = minecraft.getTextureManager().getTexture(OMINOUS_BEAM_TEXTURE);
-//        double offset = Math.sin((entity.getWorld().getTime() + tickDelta) / 8.0) / 8.0;
-//        // Move the item
-//        matrices.translate(0.5, 1.25, 0.5);
-//
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((entity.getWorld().getTime() + tickDelta)));
-//        int lightAbove = WorldRenderer.getLightmapCoordinates(entity.getWorld(), entity.getPos().up());
-//        vertexConsumers.getBuffer(RenderLayer.getBeaconBeam(OMINOUS_BEAM_TEXTURE, true)).light(lightAbove);
-//
-//
-//        //MinecraftClient.getInstance().getItemRenderer().renderItem(OMINOUS_BEAM_TEXTURE, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 0);
-//        // Mandatory call after GL calls
-//        matrices.pop();
-//    }
-
     @Override
     public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         long l = entity.getWorld().getTime();
@@ -93,50 +74,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
             }
         }
     }
-
-
-
-//    @Override
-//    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-//        long l = entity.getWorld().getTime();
-//        List<BeaconBlockEntity.BeamSegment> list = entity.getBeamSegments();
-//        int k = 0;
-//        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
-//        matrices.translate(0, 1, 0);
-//        for(int m = 0; m < list.size(); ++m) {
-//            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
-//            renderBeam(matrices, vertexConsumers, tickDelta, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
-//            k += beamSegment.getHeight();
-//        }
-//    }
-
-
-//    @Override
-//    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-//        long l = entity.getWorld().getTime();
-//        List<BeaconBlockEntity.BeamSegment> list = entity.getBeamSegments();
-//        int k = 0;
-//        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
-//        for(int m = 0; m < list.size(); ++m) {
-//            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
-//            renderBeam(matrices, vertexConsumers, tickDelta, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
-//            k += beamSegment.getHeight();
-//        }
-//    }
-
-
-//    @Override
-//    public void render(OminousBeaconBlockEntity ominousBeaconBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-//        long l = ominousBeaconBlockEntity.getWorld().getTime();
-//        List<BeaconBlockEntity.BeamSegment> list = ominousBeaconBlockEntity.getBeamSegments();
-//        int k = 0;
-//
-//        for(int m = 0; m < list.size(); ++m) {
-//            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
-//            renderBeam(matrixStack, vertexConsumerProvider, f, l, k, m == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
-//            k += beamSegment.getHeight();
-//        }
-//    }
 
 
     private static void renderBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, long worldTime, int yOffset, int maxY, int color) {
@@ -216,23 +153,6 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
     public boolean isInRenderDistance(OminousBeaconBlockEntity ominousBeaconBlockEntity, Vec3d vec3d) {
         return Vec3d.ofCenter(ominousBeaconBlockEntity.getPos()).multiply(1.0, 0.0, 1.0).isInRange(vec3d.multiply(1.0, 0.0, 1.0), (double)this.getRenderDistance());
     }
-
-    /*@Override
-    public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        matrices.push();
-        double offset = Math.sin((entity.getWorld().getTime() + tickDelta) / 8.0) / 8.0;
-        // Move the item
-        matrices.translate(0.5, 1.25, 0.5);
-
-        // Rotate the item
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((entity.getWorld().getTime() + tickDelta)));
-        int lightAbove = WorldRenderer.getLightmapCoordinates(entity.getWorld(), entity.getPos().up());
-        MinecraftClient.getInstance().getTextureManager().getTexture(OMINOUS_BEAM_TEXTURE);
-
-        //MinecraftClient.getInstance().getItemRenderer().renderItem(OMINOUS_BEAM_TEXTURE, ModelTransformationMode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getWorld(), 0);
-        // Mandatory call after GL calls
-        matrices.pop();
-    }*/
 
 
 }

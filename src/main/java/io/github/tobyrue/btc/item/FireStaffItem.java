@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@Deprecated
 public class FireStaffItem extends StaffItem {
 
     public FireStaffItem(Settings settings) {
@@ -72,10 +73,10 @@ public class FireStaffItem extends StaffItem {
                     float maxHealth = nbt.getFloat("TargetEternalFireMaxHealth");
                     return Math.round(13 * (health / maxHealth));
                 } else {
-                    return 0; // No health stored yet
+                    return 0;
                 }
             }
-            return 0; // No target
+            return 0;
         }
         return 0;
     }
@@ -91,10 +92,8 @@ public class FireStaffItem extends StaffItem {
         super.inventoryTick(stack, world, entity, slot, selected);
 
         if (!world.isClient) {
-            // Always tick cooldowns no matter where the item is (player or item entity)
             this.tickCooldowns(stack);
 
-            // Eternal Fire tracking logic
             NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
             NbtCompound nbt = component.copyNbt();
 
@@ -112,13 +111,11 @@ public class FireStaffItem extends StaffItem {
                             living.damage(world.getDamageSources().onFire(), 2);
                         }
                     } else {
-                        // Remove if dead
                         nbt.remove("TargetEternalFire");
                         nbt.remove("TargetEternalFireHealth");
                         nbt.remove("TargetEternalFireMaxHealth");
                     }
                 } else {
-                    // Remove if not found
                     nbt.remove("TargetEternalFire");
                     nbt.remove("TargetEternalFireHealth");
                     nbt.remove("TargetEternalFireMaxHealth");
@@ -216,14 +213,12 @@ public class FireStaffItem extends StaffItem {
         NbtComponent component = stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
         NbtCompound nbt = component.copyNbt();
 
-        if (nbt.containsUuid("TargetEternalFire")) return false; // already tracking a target
+        if (nbt.containsUuid("TargetEternalFire")) return false;
 
-        // Store target's UUID and current health info
         nbt.putUuid("TargetEternalFire", livingEntity.getUuid());
         nbt.putFloat("TargetEternalFireHealth", livingEntity.getHealth());
         nbt.putFloat("TargetEternalFireMaxHealth", livingEntity.getMaxHealth());
 
-        // Immediately set them on fire so it starts right away
         livingEntity.setOnFireFor(5);
 
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
@@ -235,15 +230,13 @@ public class FireStaffItem extends StaffItem {
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
 
-        // Create a box from the eye position to the reach vector
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
 
-        // Find the closest entity intersecting that line
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness); // slightly expanded hitbox
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
+            Box entityBox = entity.getBoundingBox().expand(aimmingForgivness);
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -323,7 +316,6 @@ public class FireStaffItem extends StaffItem {
         NbtCompound nbt = component.copyNbt();
         nbt.putString("Element", attack.asString());
 
-        // Manage cooldown bar visibility on element swap
         NbtCompound cooldowns = nbt.getCompound("Cooldowns");
         String activeKey = attack.getCooldownKey();
 
@@ -339,7 +331,6 @@ public class FireStaffItem extends StaffItem {
             cooldowns.put(key, entry);
         }
 
-        // If no active cooldown for new element, hide all bars
         if (!found) {
             for (String key : cooldowns.getKeys()) {
                 NbtCompound entry = cooldowns.getCompound(key);

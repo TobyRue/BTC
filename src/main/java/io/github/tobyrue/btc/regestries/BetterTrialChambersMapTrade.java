@@ -26,7 +26,6 @@ import java.util.Optional;
 public class BetterTrialChambersMapTrade implements TradeOffers.Factory {
     @Override
     public TradeOffer create(Entity entity, Random random) {
-        // Log to confirm method entry
 
         if (!(entity.getWorld() instanceof ServerWorld serverWorld)) {
             return null;
@@ -42,7 +41,6 @@ public class BetterTrialChambersMapTrade implements TradeOffers.Factory {
         MapState mapState = FilledMapItem.getMapState(mapStack, serverWorld);
         mapStack.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Eldritch Trial Chamber Map"));
 
-        // Get the decoration type for "trial_chamber"
         RegistryEntry<MapDecorationType> markerType;
         try {
             markerType = Registries.MAP_DECORATION_TYPE.getEntry(ModMapDecorationTypes.BETTER_TRIAL_CHAMBERS);
@@ -50,7 +48,6 @@ public class BetterTrialChambersMapTrade implements TradeOffers.Factory {
             markerType = Registries.MAP_DECORATION_TYPE.getEntry(MapDecorationTypes.TARGET_X.value());
         }
 
-        // Add the decoration at the structure's location
         mapState.addDecorationsNbt(
                 mapStack, 
                 pos,
@@ -58,17 +55,12 @@ public class BetterTrialChambersMapTrade implements TradeOffers.Factory {
                 markerType
         );
 
-        // Log map creation
 
         String mapId = String.valueOf(serverWorld.increaseAndGetMapId());
         serverWorld.getPersistentStateManager().set(mapId, mapState);
 
-        // Log decoration placement
-
         TradedItem emeralds = new TradedItem(Items.EMERALD, 32);
         TradedItem compass = new TradedItem(Items.COMPASS, 1);
-
-        // Log trade details
 
         return new TradeOffer(emeralds, Optional.of(compass), mapStack, 2, 5, 0.05F);
     }

@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.enums;
 
 import net.minecraft.util.StringIdentifiable;
 
+@Deprecated
 public enum FireStaffAttacks implements StringIdentifiable {
     WEAK_FIREBALL ("weak_fireball", "fireball"),
     STRONG_FIREBALL ("strong_fireball", "fireball"),

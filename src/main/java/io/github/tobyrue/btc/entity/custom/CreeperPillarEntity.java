@@ -114,7 +114,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
         if (pickaxeHitTimer > 0) {
             pickaxeHitTimer--;
             if (pickaxeHitTimer == 0) {
-                pickaxeHitCount = 0; // Reset hit counter if timer runs out
+                pickaxeHitCount = 0;
             }
         }
         if (!setBaseY) {
@@ -126,10 +126,8 @@ public class CreeperPillarEntity extends Entity implements Ownable {
             double yOffset = 0;
 
             if (lifeTime <= 20) {
-                // Rising: 0 → 2 over 5 ticks
                 yOffset = 2 * (lifeTime / 20.0);
             } else if (lifeTime <= 120) {
-                // Pause at top for 100 ticks or 5 seconds
                 yOffset = 2;
                 if (getCreeperPillarType() == CreeperPillarType.EXPLOSIVE && !hasExploded && lifeTime == 60 && !this.getWorld().isClient()) {
                     this.getWorld().createExplosion(this, Explosion.createDamageSource(this.getWorld(), this), null, this.getX(), this.getBodyY(0.0625), this.getZ(), 1.5F, true, World.ExplosionSourceType.BLOCK);
@@ -137,14 +135,13 @@ public class CreeperPillarEntity extends Entity implements Ownable {
                     this.discard();
                 }
             } else {
-                // Falling: 2 → 0 over 10 ticks
                 yOffset = 2*(2.0 - (double) (lifeTime - 100) / 20);
             }
             if (!this.getWorld().isClient) {
                 if (!deltDamage) {
                     for (Entity entity : this.getWorld().getOtherEntities(this, this.getBoundingBox())) {
                         if (entity instanceof LivingEntity && entity != this.getOwner()) {
-                            entity.damage(this.getDamageSources().mobAttack(getOwner()), 6.0F); // Damage value: 6 hearts
+                            entity.damage(this.getDamageSources().mobAttack(getOwner()), 6.0F);
                             deltDamage = true;
                         }
                     }
@@ -177,7 +174,7 @@ public class CreeperPillarEntity extends Entity implements Ownable {
                             return true;
                         }
 
-                        return true; // cancel regular damage processing
+                        return true;
                     }
                 }
             }

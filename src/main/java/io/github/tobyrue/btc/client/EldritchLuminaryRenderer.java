@@ -45,16 +45,14 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
             Vec3d[] vec3ds = livingEntity.getMirrorCopyOffsets(g);
             float h = this.getAnimationProgress(livingEntity, g);
 
-            // How far away each illusion should appear
-            double baseSpread = 2.5; // increase for wider spread
+            double baseSpread = 2.5;
             Random random = Random.create(livingEntity.getId());
 
-            // Precompute static offsets the first time the illusions are used
             if (livingEntity.getIllusionOffsets() == null) {
                 Vec3d[] randomOffsets = new Vec3d[vec3ds.length];
                 for (int j = 0; j < vec3ds.length; ++j) {
                     double x = (random.nextDouble() - 0.5) * baseSpread * 2;
-                    double y = (random.nextDouble() - 0.5) * 0.5; // small vertical variance
+                    double y = (random.nextDouble() - 0.5) * 0.5;
                     double z = (random.nextDouble() - 0.5) * baseSpread * 2;
                     randomOffsets[j] = new Vec3d(x, y, z);
                 }
@@ -63,12 +61,10 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
 
             Vec3d[] illusionOffsets = livingEntity.getIllusionOffsets();
 
-            // Render each illusion clone at its static random offset
             for (int j = 0; j < illusionOffsets.length; ++j) {
                 Vec3d off = illusionOffsets[j];
 
                 matrices.push();
-                // small bobbing animation only (no spinning)
                 double bobX = MathHelper.cos((float) j + h * 0.5f) * 0.025;
                 double bobY = MathHelper.cos((float) j + h * 0.75f) * 0.0125;
                 double bobZ = MathHelper.cos((float) j + h * 0.7f) * 0.025;
@@ -78,7 +74,6 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
                 matrices.pop();
             }
         } else {
-            // Normal render path
             super.render(livingEntity, f, g, matrices, vertexConsumerProvider, i);
         }
     }

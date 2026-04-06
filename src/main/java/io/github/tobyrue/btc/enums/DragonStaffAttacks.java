@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.enums;
 
 import net.minecraft.util.StringIdentifiable;
 
+@Deprecated
 public enum DragonStaffAttacks implements StringIdentifiable {
     ENDER_PEARL ("ender_pearl", "ender_pearl"),
     DRAGONS_BREATH ("dragons_breath", "dragons_breath"),

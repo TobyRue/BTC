@@ -64,9 +64,7 @@ public class TuffGolemRenderer extends MobEntityRenderer<TuffGolemEntity, TuffGo
             matrixStack.pop();
         }
 
-        // Render the entity model
         super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
 
-        // Pop the pose stack after rendering
         matrixStack.pop();
     }}

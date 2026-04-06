@@ -26,7 +26,6 @@ public class DrowningEffectOverlay {
 
         LivingEntity player = client.player;
 
-        // Check if the player has the DrowningEffect
         StatusEffectInstance drowningEffect = player.getStatusEffect(ModStatusEffects.DROWNING);
         if (drowningEffect != null) {
             renderBlueScreen(drawContext);
@@ -56,7 +55,6 @@ public class DrowningEffectOverlay {
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        // Fill the screen with a transparent blue color (ARGB format: 0xAARRGGBB)
-        context.fill(0, 0, screenWidth, screenHeight, color); 
+        context.fill(0, 0, screenWidth, screenHeight, color);
     }
 }

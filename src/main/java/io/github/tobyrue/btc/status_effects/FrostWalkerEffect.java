@@ -14,8 +14,6 @@ import net.minecraft.util.math.BlockPos;
 
 public class FrostWalkerEffect extends StatusEffect {
     public FrostWalkerEffect() {
-        // category: StatusEffectCategory - describes if the effect is helpful (BENEFICIAL), harmful (HARMFUL) or useless (NEUTRAL)
-        // color: int - Color is the color assigned to the effect (in RGB)
         super(StatusEffectCategory.BENEFICIAL, 0x8CB3FE);
     }
 
@@ -34,7 +32,6 @@ public class FrostWalkerEffect extends StatusEffect {
         BlockState headBlock = world.getBlockState(centerPos);
         BlockState aboveHeadBlock = world.getBlockState(centerPos.up());
 
-        // Only works if standing on solid block AND not underwater
         if (!(!standingBlock.isSolid()
                 || headBlock.getFluidState().isStill()
                 || aboveHeadBlock.getFluidState().isStill())) {

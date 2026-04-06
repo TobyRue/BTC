@@ -74,12 +74,11 @@ public class DragonStaffModelRenderer implements BuiltinItemRendererRegistry.Dyn
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
-        // Rotate the fire charge continuously
-        long time = System.currentTimeMillis() % 3600L; // Get time to create smooth rotation
-        float angle = (time / 10.0f) % 360; // Adjust rotation speed by changing divisor
+        long time = System.currentTimeMillis() % 3600L;
+        float angle = (time / 10.0f) % 360;
 
         matrices.translate(0.5, 1.4, 0.2);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle)); // Apply rotation on Y-axis
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
 
         minecraft.getItemRenderer().renderItem(ENDER_PEARL, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         matrices.pop();
@@ -97,10 +96,8 @@ public class DragonStaffModelRenderer implements BuiltinItemRendererRegistry.Dyn
 
         minecraft.getItemRenderer().renderItem(HANDLE_DRAGON, ModelTransformationMode.FIRST_PERSON_RIGHT_HAND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
 
-//Start
         VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, RenderLayer.getEntityCutout(TEXTURE), false, true);
         this.root.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
-//End
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
         VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
         renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);

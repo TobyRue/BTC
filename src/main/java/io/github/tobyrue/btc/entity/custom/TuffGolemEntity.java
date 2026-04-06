@@ -224,7 +224,6 @@ public class TuffGolemEntity extends GolemEntity {
         int green2 = (color2 >> 8) & 0xFF;
         int blue2 = color2 & 0xFF;
 
-        // Combine by averaging the RGB channels, and keeping the alpha as is (fully opaque)
         int combinedRed = (red1 + red2) / 2;
         int combinedGreen = (green1 + green2) / 2;
         int combinedBlue = (blue1 + blue2) / 2;
@@ -251,11 +250,9 @@ public class TuffGolemEntity extends GolemEntity {
         if (player.isSneaking() && handStack.getItem() instanceof DyeItem dyeItem) {
             int newColor = dyeItem.getColor().getEntityColor();
             if (!this.getDyed()) {
-                // First time clicking, just set the color
                 this.dataTracker.set(COLOR, newColor);
                 this.setDyed(true);
             } else {
-                // Subsequent clicks, combine the color
                 int currentColor = this.getColor();
                 int combinedColor = combineColors(currentColor, newColor);
                 this.dataTracker.set(COLOR, combinedColor);
@@ -281,7 +278,6 @@ public class TuffGolemEntity extends GolemEntity {
         }
         if (!player.isSneaking()) {
             if (this.getHeldItem().isEmpty() && !handStack.isEmpty()) {
-                // Store the item
                 setSleeping(false);
                 ticksStill = 0;
                 this.setHeldItem(handStack.copyWithCount(1));
@@ -290,7 +286,6 @@ public class TuffGolemEntity extends GolemEntity {
                 }
                 return ActionResult.SUCCESS;
             } else if (!this.getHeldItem().isEmpty()) {
-                // Give item back to player
                 ticksStill = 0;
                 setSleeping(false);
                 if (!player.getInventory().insertStack(this.getHeldItem())) {
@@ -306,7 +301,7 @@ public class TuffGolemEntity extends GolemEntity {
     @Override
     public void travel(Vec3d movementInput) {
         if (this.isLeashed()) {
-            movementInput = movementInput.multiply(0.4); // Adjust the multiplier to tweak speed
+            movementInput = movementInput.multiply(0.4);
         }
         super.travel(movementInput);
     }
