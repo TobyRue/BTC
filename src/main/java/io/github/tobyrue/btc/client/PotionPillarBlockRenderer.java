@@ -39,7 +39,7 @@ import java.util.Locale;
 public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPillarBlockEntity> {
     private final TextRenderer textRenderer;
     private static final int TICKS_PER_GLYPH = 20;
-\
+
     public PotionPillarBlockRenderer(BlockEntityRendererFactory.Context ctx) {
         this.textRenderer = ctx.getTextRenderer();
     }

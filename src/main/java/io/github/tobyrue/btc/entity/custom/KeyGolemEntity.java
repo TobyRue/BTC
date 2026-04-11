@@ -1,7 +1,10 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.entity.ai.ReturnHomeGoal;
 import net.minecraft.entity.AnimationState;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,7 +19,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +45,20 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     private boolean movedLastTick = false;
     private int idleTimer = 0;
     private int animationTimer = 0;
-     private static final int IDLE_PLAYS = 2;
+    private static final int IDLE_PLAYS = 2;
+
+    private int offsetX, offsetY, offsetZ;
+
+    public BlockPos getWorldHomePos() {
+        return worldHomePos;
+    }
+
+    public void setWorldHomePos(BlockPos worldHomePos) {
+        this.worldHomePos = worldHomePos;
+    }
+
+    private BlockPos worldHomePos;
+    private boolean homeInitialized = false;
 
     public static final AnimationState DUMMY_STATE = new AnimationState();
 
@@ -65,6 +84,10 @@ public class KeyGolemEntity extends TameableShoulderEntity {
                 .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1);
     }
 
+    @Override
+    protected void initGoals() {
+        this.goalSelector.add(1, new ReturnHomeGoal(this, 1.2));
+    }
 
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
@@ -73,6 +96,8 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         builder.add(IS_DISAPPOINTED, 0);
         builder.add(PLAYER, Optional.empty());
     }
+
+
 
     public boolean isPanicked() {
         return this.dataTracker.get(IS_PANICKED);
@@ -106,68 +131,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     }
 
 
-//    private void playAction(ActionAnim anim) {
-//
-//
-//        stopActionsNotCurrent(anim);
-//
-//        currentAnim = anim;
-//        switch (anim) {
-//            case IDLE -> idleAnimationState.startIfNotRunning(this.age);
-//            case FALL_ASLEEP -> fallAsleepAnimationState.startIfNotRunning(this.age);
-//            case SLEEP -> sleepAnimationState.startIfNotRunning(this.age);
-//            case WAKE_UP -> wakeUpAnimationState.startIfNotRunning(this.age);
-//            case PLAYER_DEATH_1 -> playerDie1AnimationState.startIfNotRunning(this.age);
-//        }
-//    }
-//
-//    private void stopActionsNotCurrent(ActionAnim anim) {
-//        switch (anim) {
-//            case IDLE -> {
-//                playerDie1AnimationState.stop();
-//                playerDie2AnimationState.stop();
-//                fallAsleepAnimationState.stop();
-//                sleepAnimationState.stop();
-//                wakeUpAnimationState.stop();
-//            }
-//            case FALL_ASLEEP -> {
-//                idleAnimationState.stop();
-//                playerDie1AnimationState.stop();
-//                playerDie2AnimationState.stop();
-//                sleepAnimationState.stop();
-//                wakeUpAnimationState.stop();
-//            }
-//            case SLEEP -> {
-//                idleAnimationState.stop();
-//                playerDie1AnimationState.stop();
-//                playerDie2AnimationState.stop();
-//                fallAsleepAnimationState.stop();
-//                wakeUpAnimationState.stop();
-//            }
-//            case WAKE_UP -> {
-//                idleAnimationState.stop();
-//                playerDie1AnimationState.stop();
-//                playerDie2AnimationState.stop();
-//                fallAsleepAnimationState.stop();
-//                sleepAnimationState.stop();
-//            }
-//            case PLAYER_DEATH_1 -> {
-//                idleAnimationState.stop();
-//                playerDie2AnimationState.stop();
-//                fallAsleepAnimationState.stop();
-//                sleepAnimationState.stop();
-//                wakeUpAnimationState.stop();
-//            }
-//            case PLAYER_DEATH_2 -> {
-//                idleAnimationState.stop();
-//                playerDie1AnimationState.stop();
-//                fallAsleepAnimationState.stop();
-//                sleepAnimationState.stop();
-//                wakeUpAnimationState.stop();
-//            }
-//        }
-//    }
-//
+
 
     private void stopActions() {
         idleAnimationState.stop();
@@ -237,6 +201,14 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     @Override
     public void tick() {
         super.tick();
+
+        if (!this.getWorld().isClient) {
+            if (!homeInitialized) {
+                this.worldHomePos = this.getBlockPos().add(-offsetX, -offsetY, -offsetZ);
+                homeInitialized = true;
+            }
+        }
+
         baseAnimationState.startIfNotRunning(this.age);
 
         this.lastPos = currentPos;
@@ -246,6 +218,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         if (this.isPanicked() != (this.getMaxHealth() == this.getHealth())) {
             this.setIsPanicked(!this.isPanicked());
         }
+
 
         if (animationTimer > 0) {
             animationTimer--;
@@ -307,6 +280,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     }
 
 
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
@@ -314,6 +288,10 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         nbt.putBoolean("WasPickedUp", this.wasPickedUp());
         nbt.putInt("Disappointed", this.getIsDisappointed());
         this.getPlayerUUID().ifPresent(uuid -> nbt.putUuid("PlayerUUID", uuid));
+        nbt.putInt("RelX", this.offsetX);
+        nbt.putInt("RelY", this.offsetY);
+        nbt.putInt("RelZ", this.offsetZ);
+        nbt.putBoolean("HasHome", this.homeInitialized);
     }
 
     @Override
@@ -332,6 +310,12 @@ public class KeyGolemEntity extends TameableShoulderEntity {
             this.setPlayerUUID(Optional.of(nbt.getUuid("PlayerUUID")));
         } else {
             this.setPlayerUUID(Optional.empty());
+        }
+        if (nbt.contains("HasHome")) {
+            this.offsetX = nbt.getInt("RelX");
+            this.offsetY = nbt.getInt("RelY");
+            this.offsetZ = nbt.getInt("RelZ");
+            this.homeInitialized = false;
         }
     }
     public enum ActionAnim {
