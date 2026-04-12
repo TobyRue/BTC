@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ai.ReturnHomeGoal;
+import net.minecraft.block.BedBlock;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -209,7 +211,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
             this.offsetY = this.getBlockPos().getY() - worldHomePos.getY();
             this.offsetZ = this.getBlockPos().getZ() - worldHomePos.getZ();
         }
-        
+
         if (!homeInitialized && !mountDel) {
             this.worldHomePos = this.getBlockPos().add(-offsetX, -offsetY, -offsetZ);
             homeInitialized = true;
@@ -270,6 +272,12 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         if (IS_DISAPPOINTED.equals(data)) {
             setAnimation(getIsDisappointed() == 0 ? ActionAnim.NONE : getIsDisappointed() == 1 ? ActionAnim.PLAYER_DEATH_1 : ActionAnim.PLAYER_DEATH_2);
         }
+    }
+
+    @Override
+    public boolean canUsePortals(boolean allowVehicles) {
+        //TODO
+        return false;
     }
 
     @Override

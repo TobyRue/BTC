@@ -12,15 +12,18 @@
     "CrossbowMixin",
     "DispenserBlockEntityMixin",
     "EnchantmentScreenHandlerMixin",
+    "EntityAccessor",
     "FireballEntityAccessor",
     "LivingEntityMixin",
     "NaturalRegenerationMixin",
     "PaperMixin",
     "PistonBlockEntityMixin",
     "PistonBlockMixin",
+    "PlayerEntityMixin",
     "PlayerShoulderedEntityMixin",
     "PlayerSpyglassMixin",
     "RangedWeaponMixin",
+    "ServerPlayerEntityMixin",
     "TuffGolemSpawnMixin"
   ],
   "client": [

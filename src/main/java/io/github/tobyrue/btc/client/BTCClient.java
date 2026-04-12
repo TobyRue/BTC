@@ -426,6 +426,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.WIRE_BLOCK_ENTITY, WireBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.BONFIRE_BLOCK_ENTITY, BonfireBlockEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(WIND_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
         BuiltinItemRendererRegistry.INSTANCE.register(ModItems.WIND_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

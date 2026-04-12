@@ -31,7 +31,11 @@ public class ModBlocks {
         return Registry.register(Registries.BLOCK, id, block);
     }
 
-
+    public static final BonfireBlock BONFIRE = (BonfireBlock) register(
+            new BonfireBlock(AbstractBlock.Settings.copy(Blocks.OAK_PLANKS).strength(1000000.0F, 3600000.0F)),
+            "bonfire",
+            true
+    );
     public static final PowerPilasterBlock POWER_PILASTER = (PowerPilasterBlock) register(
             new PowerPilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
             "power_pilaster",
