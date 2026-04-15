@@ -1,7 +1,9 @@
 package io.github.tobyrue.btc.mixin;
 
 import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
+import io.github.tobyrue.btc.packets.BonfireSyncPayload;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -50,5 +52,8 @@ public abstract class ServerPlayerEntityMixin {
         NbtCompound oldData = ((BonfirePlayerData) player).bTC$getBonfireData();
 
         ((BonfirePlayerData) this).bTC$setBonfireData(oldData);
+        BonfireSyncPayload payload = new BonfireSyncPayload(oldData);
+
+        ServerPlayNetworking.send(player, payload);
     }
 }
