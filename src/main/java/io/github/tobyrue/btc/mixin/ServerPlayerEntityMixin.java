@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
+import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
@@ -27,17 +28,18 @@ public abstract class ServerPlayerEntityMixin {
         if (bonfire != null && bonfire.contains("pos")) {
             BlockPos bonfirePos = BlockPos.fromLong(bonfire.getLong("pos"));
             String dimId = bonfire.getString("dim");
+            if (player.getWorld().getBlockEntity(bonfirePos) instanceof BonfireBlockEntity block) {
+                double distSq = player.getPos().squaredDistanceTo(bonfirePos.toCenterPos());
+                double configRadius = block.getRadius();
 
-            double distSq = player.getPos().squaredDistanceTo(bonfirePos.toCenterPos());
-            double configRadius = 64.0;
+                if (distSq <= (configRadius * configRadius)) {
+                    ServerWorld targetWorld = player.getServer().getWorld(
+                            RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimId))
+                    );
 
-            if (distSq <= (configRadius * configRadius)) {
-                ServerWorld targetWorld = player.getServer().getWorld(
-                        RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimId))
-                );
-
-                if (targetWorld != null) {
-                    cir.setReturnValue(new TeleportTarget(targetWorld, bonfirePos.toCenterPos().add(0, 1, 0), Vec3d.ZERO, 0.0f, 0.0f, postDimensionTransition));
+                    if (targetWorld != null) {
+                        cir.setReturnValue(new TeleportTarget(targetWorld, bonfirePos.toCenterPos().add(0, 1, 0), Vec3d.ZERO, 0.0f, 0.0f, postDimensionTransition));
+                    }
                 }
             }
         }

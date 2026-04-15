@@ -14,6 +14,7 @@ import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.AdvancementUtils;
+import io.github.tobyrue.btc.util.BonfirePlayerData;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.nbt.NbtCompound;
@@ -31,13 +32,26 @@ public class ModClientPackets {
     public static final Identifier MOB_DETECTOR_SYNC_ID = BTC.identifierOf("mob_detector_sync");
     public static final Identifier STATUS_EFFECT_SYNC = BTC.identifierOf("status_effect_sync");
     public static final Identifier MARK_LOOTED = BTC.identifierOf("mark_looted_sync");
+    public static final Identifier BONFIRE_SYNC_S2C = BTC.identifierOf("bonfire_sync");
 
     public static void initialize() {
+        PayloadTypeRegistry.playS2C().register(BonfireSyncPayload.ID, BonfireSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
+
+        ClientPlayNetworking.registerGlobalReceiver(
+                BonfireSyncPayload.ID, (payload, context) -> {
+            NbtCompound nbt = payload.bonfireData();
+            var client = context.client();
+            client.execute(() -> {
+                if (client.player instanceof BonfirePlayerData data) {
+                    data.bTC$setBonfireData(nbt);
+                }
+            });
+        });
         ClientPlayNetworking.registerGlobalReceiver(
                 ServerAdvancementResponsePayload.ID, (payload, context) -> {
                     Identifier adv = payload.advancement();

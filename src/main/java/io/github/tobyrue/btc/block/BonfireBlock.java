@@ -2,7 +2,12 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
 import io.github.tobyrue.btc.mixin.EntityAccessor;
+import io.github.tobyrue.btc.packets.BonfireSyncPayload;
+import io.github.tobyrue.btc.packets.ModClientPackets;
+import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -10,6 +15,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -136,35 +142,16 @@ public class BonfireBlock extends Block implements BlockEntityProvider {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient && player instanceof ServerPlayerEntity serverPlayer) {
             BonfirePlayerData data = (BonfirePlayerData) serverPlayer;
-            NbtCompound oldData = data.bTC$getBonfireData();
-
-            if (oldData != null && oldData.contains("pos")) {
-                BlockPos oldPos = BlockPos.fromLong(oldData.getLong("pos"));
-                String oldDim = oldData.getString("dim");
-
-                ServerWorld oldWorld = serverPlayer.getServer().getWorld(
-                        RegistryKey.of(RegistryKeys.WORLD, Identifier.of(oldDim))
-                );
-
-                if (oldWorld != null && oldWorld.isChunkLoaded(oldPos)) {
-                    if (oldWorld.getBlockEntity(oldPos) instanceof BonfireBlockEntity oldBe) {
-                        oldBe.removeActivatedBy(player.getUuid());
-                        oldWorld.updateListeners(oldPos, oldWorld.getBlockState(oldPos), oldWorld.getBlockState(oldPos), Block.NOTIFY_LISTENERS);
-                    }
-                }
-            }
 
             NbtCompound newData = new NbtCompound();
             newData.putLong("pos", pos.asLong());
             newData.putString("dim", world.getRegistryKey().getValue().toString());
             data.bTC$setBonfireData(newData);
+            BonfireSyncPayload payload = new BonfireSyncPayload(newData);
 
-            if (world.getBlockEntity(pos) instanceof BonfireBlockEntity be) {
-                be.addActivatedBy(player.getUuid());
-                world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-            }
+            ServerPlayNetworking.send(serverPlayer, payload);
 
-            player.sendMessage(Text.literal("Bonfire spawn set!"), true);
+            player.sendMessage(Text.translatable("block.btc.bonfire.set_spawn"), true);
         }
         return ActionResult.SUCCESS;
     }

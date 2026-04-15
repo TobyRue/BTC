@@ -42,6 +42,8 @@
   "block.btc.power_pillar": "Power Pillar",
   "block.btc.power_pilaster": "Power Pilaster",
   "block.btc.dungeon_button": "Dungeon Button",
+  "block.btc.bonfire": "Bonfire",
+  "block.btc.bonfire.set_spawn": "Bonfire Spawn Set",
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",

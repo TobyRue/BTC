@@ -19,53 +19,34 @@ import java.util.List;
 import java.util.UUID;
 
 public class BonfireBlockEntity extends BlockEntity {
-    private List<UUID> activatedBy = new ArrayList<>();
+    private int radius = 64;
 
     public BonfireBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BONFIRE_BLOCK_ENTITY, pos, state);
     }
 
-    public void addActivatedBy(UUID uuid) {
-        this.activatedBy.add(uuid);
+    public void setRadius(int radius) {
+        this.radius = radius;
         markDirty();
     }
 
-    public void removeActivatedBy(UUID uuid) {
-        if (this.activatedBy.remove(uuid)) {
-            markDirty();
-        }
+    public int getRadius() {
+        return radius;
     }
 
-    public void setActivatedByListAndRemoveAll(List<UUID> uuid) {
-        this.activatedBy.clear();
-        this.activatedBy.addAll(uuid);
-        markDirty();
-    }
-
-    public List<UUID> getActivatedBy() { return activatedBy; }
 
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.activatedBy.clear();
-        if (nbt.contains("activator", NbtElement.LIST_TYPE)) {
-            NbtList list = nbt.getList("activator", NbtElement.STRING_TYPE);
-            for (int i = 0; i < list.size(); i++) {
-                try {
-                    this.activatedBy.add(UUID.fromString(list.getString(i)));
-                } catch (IllegalArgumentException ignored) {}
-            }
+        if (nbt.contains("radius")) {
+            this.radius = nbt.getInt("radius");
         }
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        NbtList list = new NbtList();
-        for (UUID uuid : activatedBy) {
-            list.add(NbtString.of(uuid.toString()));
-        }
-        nbt.put("activator", list);
+        nbt.putInt("radius", radius);
     }
 
     @Nullable

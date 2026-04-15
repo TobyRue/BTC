@@ -26,49 +26,42 @@ public class BonfireBlockEntityRenderer implements BlockEntityRenderer<BonfireBl
         var localPlayer = MinecraftClient.getInstance().player;
         if (localPlayer == null) return;
 
-        if (entity.getActivatedBy().contains(localPlayer.getUuid())) {
-            long worldTime = entity.getWorld().getTime();
-            float totalTime = worldTime + tickDelta;
+        NbtCompound bonfireData = ((BonfirePlayerData) localPlayer).bTC$getBonfireData();
 
-//            matrices.push();
-//            double bob = Math.sin(totalTime * 0.1) * 0.05;
-//            matrices.translate(0.5, 0.7 + bob, 0.5);
-//            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(totalTime * 2.0f));
-//            matrices.scale(1.2f, 1.2f, 1.2f);
-//
-//            MinecraftClient.getInstance().getItemRenderer().renderItem(
-//                    stack, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, entity.getWorld(), 0
-//            );
-//            matrices.pop();
+        if (bonfireData != null && bonfireData.contains("pos")) {
+            BlockPos savedPos = BlockPos.fromLong(bonfireData.getLong("pos"));
 
-            matrices.push();
+            if (savedPos.equals(entity.getPos())) {
 
-            matrices.translate(0.5, 0.1, 0.5);
+                matrices.push();
 
-            matrices.scale(0.5f, 0.5f, 0.5f);
+                matrices.translate(0.5, 0.1, 0.5);
 
-            matrices.translate(-0.5, 0, -0.5);
+                matrices.scale(0.5f, 0.5f, 0.5f);
 
-            int fireLight = 16711935;
+                matrices.translate(-0.5, 0, -0.5);
 
-            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(
-                    Blocks.FIRE.getDefaultState(),
-                    matrices,
-                    vertexConsumers,
-                    fireLight,
-                    OverlayTexture.DEFAULT_UV
-            );
+                int fireLight = 16711935;
 
-            matrices.pop();
-
-            if (entity.getWorld().random.nextFloat() < 0.15f) {
-                entity.getWorld().addParticle(
-                        net.minecraft.particle.ParticleTypes.FLAME,
-                        entity.getPos().getX() + 0.5 + (entity.getWorld().random.nextGaussian() * 0.1),
-                        entity.getPos().getY() + 0.3,
-                        entity.getPos().getZ() + 0.5 + (entity.getWorld().random.nextGaussian() * 0.1),
-                        0, 0.03, 0
+                MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(
+                        Blocks.FIRE.getDefaultState(),
+                        matrices,
+                        vertexConsumers,
+                        fireLight,
+                        OverlayTexture.DEFAULT_UV
                 );
+
+                matrices.pop();
+
+                if (entity.getWorld().random.nextFloat() < 0.15f) {
+                    entity.getWorld().addParticle(
+                            net.minecraft.particle.ParticleTypes.FLAME,
+                            entity.getPos().getX() + 0.5 + (entity.getWorld().random.nextGaussian() * 0.1),
+                            entity.getPos().getY() + 0.3,
+                            entity.getPos().getZ() + 0.5 + (entity.getWorld().random.nextGaussian() * 0.1),
+                            0, 0.03, 0
+                    );
+                }
             }
         }
 
