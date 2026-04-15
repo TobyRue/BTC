@@ -123,7 +123,6 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
 
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 
-            // Scale
             float scale = 0.03F;
             matrices.scale(scale, -scale, scale);
 
