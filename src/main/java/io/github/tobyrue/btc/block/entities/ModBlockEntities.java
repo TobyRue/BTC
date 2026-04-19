@@ -19,6 +19,7 @@ public class ModBlockEntities {
     public static BlockEntityType<ObsidianChestBlockEntity> OBSIDIAN_CHEST_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("obsidian_chest"), BlockEntityType.Builder.create(ObsidianChestBlockEntity::new, ModBlocks.OBSIDIAN_CHEST).build());
     public static BlockEntityType<WireBlockEntity> WIRE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("dungeoun_wire_block"), BlockEntityType.Builder.create(WireBlockEntity::new, ModBlocks.DUNGEON_WIRE).build());
     public static BlockEntityType<BonfireBlockEntity> BONFIRE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("bonfire"), BlockEntityType.Builder.create(BonfireBlockEntity::new, ModBlocks.BONFIRE).build());
+    public static BlockEntityType<TrialCoreBlockEntity> TRIAL_CORE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("trial_core"), BlockEntityType.Builder.create(TrialCoreBlockEntity::new, ModBlocks.TRIAL_CORE).build());
     public static void initialize() {
     }
 }

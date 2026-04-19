@@ -30,7 +30,11 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
-
+    public static final TrialCoreBlock TRIAL_CORE = (TrialCoreBlock) register(
+            new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+            "trial_core",
+            true
+    );
     public static final BonfireBlock BONFIRE = (BonfireBlock) register(
             new BonfireBlock(AbstractBlock.Settings.copy(Blocks.OAK_PLANKS).strength(1000000.0F, 3600000.0F)),
             "bonfire",
