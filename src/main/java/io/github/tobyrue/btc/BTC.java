@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.particle.FlameParticle;
@@ -172,8 +173,9 @@ public class BTC implements ModInitializer {
             return ActionResult.PASS;
         });
         //TODO GET RID OF WHEN BUILDING MOD FOR ANY RELEASE
-        UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
-
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
+        }
 //        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
 //            if (!world.isClient && hand == Hand.MAIN_HAND) {
 //                if (player.getStackInHand(hand).getItem() == ModItems.COPPER_WRENCH) {

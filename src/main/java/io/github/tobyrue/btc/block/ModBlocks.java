@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
-import io.github.tobyrue.btc.wires.WireBlockSlow;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -30,6 +29,11 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+    public static final FanBlock FAN = (FanBlock) register(
+            new FanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+            "fan",
+            true
+    );
     public static final TrialCoreBlock TRIAL_CORE = (TrialCoreBlock) register(
             new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
             "trial_core",

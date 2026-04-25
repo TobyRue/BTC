@@ -6,7 +6,6 @@ import io.github.tobyrue.btc.wires.WireBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
 public class ModBlockEntities {
 
@@ -20,6 +19,7 @@ public class ModBlockEntities {
     public static BlockEntityType<WireBlockEntity> WIRE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("dungeoun_wire_block"), BlockEntityType.Builder.create(WireBlockEntity::new, ModBlocks.DUNGEON_WIRE).build());
     public static BlockEntityType<BonfireBlockEntity> BONFIRE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("bonfire"), BlockEntityType.Builder.create(BonfireBlockEntity::new, ModBlocks.BONFIRE).build());
     public static BlockEntityType<TrialCoreBlockEntity> TRIAL_CORE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("trial_core"), BlockEntityType.Builder.create(TrialCoreBlockEntity::new, ModBlocks.TRIAL_CORE).build());
+    public static BlockEntityType<FanBlockEntity> FAN_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fan"), BlockEntityType.Builder.create(FanBlockEntity::new, ModBlocks.FAN).build());
     public static void initialize() {
     }
 }

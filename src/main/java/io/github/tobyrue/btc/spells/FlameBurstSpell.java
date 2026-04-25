@@ -42,7 +42,6 @@ public class FlameBurstSpell extends ChanneledSpell {
 
         Vec3d look = user.getRotationVec(1).normalize();
 
-        // spawn flame particles in a cone
         for (int i = 0; i < 12; i++) {
             Vec3d offset = look.add(
                     (world.getRandom().nextDouble() - 0.5) * 0.3,
@@ -52,16 +51,14 @@ public class FlameBurstSpell extends ChanneledSpell {
 
             Vec3d particlePos = user.getPos().add(0, user.getStandingEyeHeight(), 0).add(offset);
             if (!world.isClient) {
-                // send particle to all players nearby
                 ((ServerWorld) world).spawnParticles(
                         ParticleTypes.FLAME,
                         particlePos.x, particlePos.y, particlePos.z,
-                        1,    // count
-                        0, 0, 0, // delta for random offset
-                        0     // speed
+                        1,
+                        0, 0, 0,
+                        0
                 );
             } else {
-                // already client-side, can just spawn directly
                 world.addParticle(
                         ParticleTypes.FLAME,
                         particlePos.x, particlePos.y, particlePos.z,
@@ -70,7 +67,6 @@ public class FlameBurstSpell extends ChanneledSpell {
             }
         }
 
-        // every few ticks, actually deal damage + ignite
         if (tick % ticksPerShot == 0) {
             Vec3d eyePos = user.getPos().add(0, user.getStandingEyeHeight(), 0);
             Box area = new Box(eyePos, eyePos.add(look.multiply(range))).expand(1.5);
@@ -83,13 +79,12 @@ public class FlameBurstSpell extends ChanneledSpell {
                 double dot = look.dotProduct(toTarget);
                 double cos = Math.cos(Math.toRadians(angle));
 
-                if (dot > cos) { // inside cone
+                if (dot > cos) {
                     target.setOnFireFor(3);
                     target.damage(world.getDamageSources().inFire(), (float) damage);
                 }
             }
 
-            // small chance to ignite ground blocks under cone
             if (world.getRandom().nextFloat() < 0.3F && world instanceof ServerWorld) {
                 Vec3d firePos = eyePos.add(look.multiply(world.getRandom().nextDouble() * range));
                 var blockPos = world.getBlockState(BlockPos.ofFloored(firePos));
