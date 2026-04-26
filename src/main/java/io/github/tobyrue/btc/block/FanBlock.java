@@ -12,11 +12,16 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -25,88 +30,97 @@ import java.util.List;
 public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEntity>, ModTickBlockEntityProvider<FanBlockEntity> {
     public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty POWERED = Properties.POWERED;
+    public static final EnumProperty<FanMode> MODE = EnumProperty.of("mode", FanMode.class);
 
-    private static final double RADIUS = 1;
-    private static final double DEPTH = 3;
-    private static final double BASE_RADIUS = 0.5;
+    public enum FanMode implements StringIdentifiable {
+        BLOW("blow"),
+        PULL("pull");
+
+        private final String name;
+        FanMode(String name) { this.name = name; }
+        @Override public String asString() { return this.name; }
+    }
 
     public FanBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false));
+        this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false).with(MODE, FanMode.BLOW));
     }
 
-    public static List<Entity> getEntitiesInCone(BlockState state, World world, BlockPos pos) {
-        var box = new Box(pos.toCenterPos(), pos.toCenterPos());
-        var direction = Vec3d.of(state.get(FACING).getVector());
-        var start = pos.toCenterPos();
-        var entities = world.getEntitiesByClass(Entity.class, box = switch (state.get(FACING)) {
-            case DOWN -> box.expand(RADIUS, DEPTH / 2d, RADIUS).offset(0, -(1 + DEPTH / 4d) - 0.5, 0);
-            case UP -> box.expand(RADIUS, DEPTH / 2d, RADIUS).offset(0, (1 + DEPTH / 4d) + 0.5, 0);
-            case NORTH -> box.expand(RADIUS, RADIUS, DEPTH / 2d).offset(0, 0, -(1 + DEPTH / 4d) - 0.5);
-            case SOUTH -> box.expand(RADIUS, RADIUS, DEPTH / 2d).offset(0, 0, (1 + DEPTH / 4d) + 0.5);
-            case WEST -> box.expand(DEPTH / 2d, RADIUS, RADIUS).offset(-(1 + DEPTH / 4d) - 0.5, 0, 0);
-            case EAST -> box.expand(DEPTH / 2d, RADIUS, RADIUS).offset((1 + DEPTH / 4d) + 0.5, 0, 0);
-        }, entity -> {
+
+    public static List<Entity> getEntitiesInCone(BlockState state, World world, BlockPos pos, double base_radius, double far_radius, double depth) {
+        Direction facing = state.get(FACING);
+        Vec3d direction = Vec3d.of(facing.getVector());
+        Vec3d start = pos.toCenterPos().add(direction.multiply(0.5));
+
+        double maxR = Math.max(base_radius, far_radius);
+        Box searchBox = new Box(start, start.add(direction.multiply(depth))).expand(maxR);
+
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            drawDebugCone(world, start, direction, depth, base_radius, far_radius);
+        }
+
+        return world.getEntitiesByClass(Entity.class, searchBox, entity -> {
             Box entityBox = entity.getBoundingBox();
+            Vec3d entityCenter = entityBox.getCenter();
 
-            Vec3d relativeCenter = entityBox.getCenter().subtract(start);
+            BlockHitResult hit = world.raycast(new RaycastContext(
+                    start,
+                    entityCenter,
+                    RaycastContext.ShapeType.COLLIDER,
+                    RaycastContext.FluidHandling.NONE,
+                    entity
+            ));
+
+            if (hit.getType() != HitResult.Type.MISS) {
+                return false;
+            }
+
+            Vec3d relativeCenter = entityCenter.subtract(start);
             double projectedDepth = relativeCenter.dotProduct(direction);
+            if (projectedDepth < 0 || projectedDepth > depth) return false;
 
-            double clampedDepth = Math.max(0, Math.min(DEPTH, projectedDepth));
+            double t = projectedDepth / depth;
+            double radiusAtDist = base_radius + t * (far_radius - base_radius);
 
-            Vec3d coneAxisPoint = start.add(direction.multiply(clampedDepth));
+            Vec3d axisPoint = start.add(direction.multiply(projectedDepth));
 
-            double closestX = Math.max(entityBox.minX, Math.min(coneAxisPoint.x, entityBox.maxX));
-            double closestY = Math.max(entityBox.minY, Math.min(coneAxisPoint.y, entityBox.maxY));
-            double closestZ = Math.max(entityBox.minZ, Math.min(coneAxisPoint.z, entityBox.maxZ));
-            Vec3d closestPointOnHitbox = new Vec3d(closestX, closestY, closestZ);
+            double closestX = Math.max(entityBox.minX, Math.min(axisPoint.x, entityBox.maxX));
+            double closestY = Math.max(entityBox.minY, Math.min(axisPoint.y, entityBox.maxY));
+            double closestZ = Math.max(entityBox.minZ, Math.min(axisPoint.z, entityBox.maxZ));
+            Vec3d closestPoint = new Vec3d(closestX, closestY, closestZ);
 
-            Vec3d relativeClosest = closestPointOnHitbox.subtract(start);
-            double finalDepth = relativeClosest.dotProduct(direction);
+            Vec3d relClosest = closestPoint.subtract(start);
+            double finalDepth = relClosest.dotProduct(direction);
+            Vec3d vecToAxis = relClosest.subtract(direction.multiply(finalDepth));
 
-            if (finalDepth < 0 || finalDepth > DEPTH) return false;
-
-            double t = finalDepth / DEPTH;
-            double radiusAtDist = BASE_RADIUS + t * (RADIUS - BASE_RADIUS);
-
-            Vec3d vec = relativeClosest.subtract(direction.multiply(finalDepth));
-            return vec.lengthSquared() < (radiusAtDist * radiusAtDist);
+            return vecToAxis.lengthSquared() < (radiusAtDist * radiusAtDist);
         });
+    }
 
-//        var levels = 10;
-//        var steps = 16;
-//
-//        var right = direction.crossProduct(new Vec3d(0, 1, 0));
-//        if (right.lengthSquared() < 1e-6) {
-//            right = direction.crossProduct(new Vec3d(1, 0, 0));
-//        }
-//        right = right.normalize();
-//        var up = right.crossProduct(direction).normalize();
+    private static void drawDebugCone(World world, Vec3d start, Vec3d direction, double depth, double base_radius, double far_radius) {
+        int levels = 12;
+        int steps = 12;
 
-//        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-//            for (int j = 0; j <= levels; j++) {
-//                double t = (double) j / levels;
-//                double currentDepth = t * DEPTH;
-//                double currentRadius = BASE_RADIUS + t * (RADIUS - BASE_RADIUS);
-//                var center = start.add(direction.multiply(currentDepth));
-//                for (int i = 0; i < steps; i++) {
-//                    double angle = (2 * Math.PI * i) / steps;
-//                    var offset = right.multiply(Math.cos(angle) * currentRadius)
-//                            .add(up.multiply(Math.sin(angle) * currentRadius));
-//                    var point = center.add(offset);
-//                    world.addParticle(ParticleTypes.END_ROD, point.x, point.y, point.z, 0, 0, 0);
-//                }
-//            }
-//        }
-//        world.addParticle(ParticleTypes.END_ROD, box.minX, box.minY, box.minZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.minX, box.minY, box.maxZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.minX, box.maxY, box.minZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.minX, box.maxY, box.maxZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.maxX, box.minY, box.minZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.maxX, box.minY, box.maxZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.maxX, box.maxY, box.minZ, 0, 0, 0);
-//        world.addParticle(ParticleTypes.END_ROD, box.maxX, box.maxY, box.maxZ, 0, 0, 0);
-        return entities;
+        Vec3d right = direction.crossProduct(new Vec3d(0, 1, 0));
+        if (right.lengthSquared() < 1e-6) right = direction.crossProduct(new Vec3d(1, 0, 0));
+        right = right.normalize();
+        Vec3d up = right.crossProduct(direction).normalize();
+
+        for (int j = 0; j <= levels; j++) {
+            double t = (double) j / levels;
+            double currentDepth = t * depth;
+            double currentRadius = base_radius + t * (far_radius - base_radius);
+            Vec3d center = start.add(direction.multiply(currentDepth));
+
+            for (int i = 0; i < steps; i++) {
+                double angle = (2 * Math.PI * i) / steps;
+                Vec3d offset = right.multiply(Math.cos(angle) * currentRadius)
+                        .add(up.multiply(Math.sin(angle) * currentRadius));
+                Vec3d point = center.add(offset);
+
+                world.addParticle(ParticleTypes.END_ROD, point.x, point.y, point.z, 0, 0, 0);
+            }
+        }
     }
 
     @Override
@@ -123,12 +137,13 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
 
         return this.getDefaultState()
                 .with(FACING, facing)
-                .with(POWERED, false);
+                .with(POWERED, false)
+                .with(MODE, FanMode.BLOW);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, POWERED);
+        builder.add(FACING, POWERED, MODE);
     }
 
     @Override

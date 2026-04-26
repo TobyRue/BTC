@@ -33,15 +33,7 @@ public interface IDungeonWire {
      * @return True if there is a found source of a type of wire power coming from any of the given <code>faces</code>.
      */
     static boolean isReceivingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction... faces) {
-        return Arrays.stream(faces).anyMatch(face ->
-                world.getBlockState(pos.offset(face)).getBlock() instanceof IDungeonWire wire
-                && wire.isEmittingDungeonWirePower(
-                        world.getBlockState(pos.offset(face)),
-                        world,
-                        pos.offset(face),
-                        face.getOpposite()
-                )
-        );
+        return isReceivingDungeonWirePower(state, world, pos, Arrays.stream(faces));
     }
     /**
      * The parameters represent the block's own values.
