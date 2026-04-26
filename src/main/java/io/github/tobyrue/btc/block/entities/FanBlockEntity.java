@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -47,22 +48,24 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             Vec3d fanFaceCenter = pos.toCenterPos().add(direction.multiply(0.5));
 
             for (Entity entity : FanBlock.getEntitiesInCone(state, world, pos, BASE_RADIUS, FAR_RADIUS, DEPTH)) {
-                Vec3d currentVel = entity.getVelocity();
-                double speedInDirection = currentVel.dotProduct(direction);
-                boolean canApply = isPulling ? speedInDirection > -maxSpeed : speedInDirection < maxSpeed;
+                if ((entity instanceof PlayerEntity player && !(player.isCreative() || player.isSpectator())) || (entity instanceof Entity && !(entity instanceof PlayerEntity))) {
+                    Vec3d currentVel = entity.getVelocity();
+                    double speedInDirection = currentVel.dotProduct(direction);
+                    boolean canApply = isPulling ? speedInDirection > -maxSpeed : speedInDirection < maxSpeed;
 
-                if (canApply) {
-                    entity.setVelocity(currentVel.add(forceVec));
-                    entity.velocityModified = true;
-                }
+                    if (canApply) {
+                        entity.setVelocity(currentVel.add(forceVec));
+                        entity.velocityModified = true;
+                    }
 
-                Vec3d entityCenter = entity.getBoundingBox().getCenter();
+                    Vec3d entityCenter = entity.getBoundingBox().getCenter();
 
-                if (isPulling) {
-                    Vec3d coneEnd = fanFaceCenter.add(direction.multiply(DEPTH));
-                    scanForEffects(world, entity, entityCenter, coneEnd);
-                } else {
-                    scanForEffects(world, entity, fanFaceCenter, entityCenter);
+                    if (isPulling) {
+                        Vec3d coneEnd = fanFaceCenter.add(direction.multiply(DEPTH));
+                        scanForEffects(world, entity, entityCenter, coneEnd);
+                    } else {
+                        scanForEffects(world, entity, fanFaceCenter, entityCenter);
+                    }
                 }
             }
 
