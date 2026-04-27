@@ -55,9 +55,9 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
         double maxR = Math.max(base_radius, far_radius);
         Box searchBox = new Box(start, start.add(direction.multiply(depth))).expand(maxR);
 
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            drawDebugCone(world, start, direction, depth, base_radius, far_radius);
-        }
+//        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+//            drawDebugCone(world, start, direction, depth, base_radius, far_radius);
+//        }
 
         return world.getEntitiesByClass(Entity.class, searchBox, entity -> {
             Box entityBox = entity.getBoundingBox();

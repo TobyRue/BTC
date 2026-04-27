@@ -30,6 +30,20 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
     private double FAR_RADIUS = 1;
     private double DEPTH = 3;
     private double BASE_RADIUS = 0.5;
+    private float fanSpeed = 0f;
+    public float visualRotation = 0f;
+
+    public double getFAR_RADIUS() {
+        return FAR_RADIUS;
+    }
+
+    private static final float MAX_SPEED = 0.5f;
+
+    public double getDEPTH() {
+        return DEPTH;
+    }
+
+    private static final float ACCELERATION = 0.02f;
 
     public FanBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FAN_BLOCK_ENTITY, pos, state);
@@ -38,6 +52,11 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
     @Override
     public void tick(World world, BlockPos pos, BlockState state, FanBlockEntity blockEntity) {
         if (state.get(FanBlock.POWERED)) {
+            fanSpeed = Math.min(MAX_SPEED, fanSpeed + ACCELERATION);
+        } else {
+            fanSpeed = Math.max(0f, fanSpeed - (ACCELERATION * 0.5f));
+        }
+        if (state.get(FanBlock.POWERED) || fanSpeed > 0.1f) {
             Direction facing = state.get(FanBlock.FACING);
             Vec3d direction = Vec3d.of(facing.getVector());
             boolean isPulling = state.get(FanBlock.MODE) == FanBlock.FanMode.PULL;
@@ -72,6 +91,9 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             if (world.isClient) {
                 spawnGustParticles(world, pos, direction, state.get(FanBlock.MODE));
             }
+        }
+        if (world.isClient) {
+            visualRotation += fanSpeed;
         }
     }
 
@@ -221,5 +243,13 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         return createNbt(registryLookup);
+    }
+
+    public float getFanSpeed() {
+        return fanSpeed;
+    }
+
+    public void setFanSpeed(float fanSpeed) {
+        this.fanSpeed = fanSpeed;
     }
 }

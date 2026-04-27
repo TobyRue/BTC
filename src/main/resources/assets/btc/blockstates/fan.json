@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "btc:block/fan" },
+    "facing=south": { "model": "btc:block/fan", "y": 180 },
+    "facing=west":  { "model": "btc:block/fan", "y": 270 },
+    "facing=east":  { "model": "btc:block/fan", "y": 90 },
+    "facing=up":    { "model": "btc:block/fan", "x": 270 },
+    "facing=down":  { "model": "btc:block/fan", "x": 90 }
+  }
+}
