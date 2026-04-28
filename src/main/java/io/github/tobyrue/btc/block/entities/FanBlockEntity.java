@@ -51,6 +51,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
 
     @Override
     public void tick(World world, BlockPos pos, BlockState state, FanBlockEntity blockEntity) {
+        var percentSpeed = fanSpeed / MAX_SPEED;
         if (state.get(FanBlock.POWERED)) {
             fanSpeed = Math.min(MAX_SPEED, fanSpeed + ACCELERATION);
         } else {
@@ -60,13 +61,13 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             Direction facing = state.get(FanBlock.FACING);
             Vec3d direction = Vec3d.of(facing.getVector());
             boolean isPulling = state.get(FanBlock.MODE) == FanBlock.FanMode.PULL;
-            double forceStrength = 0.5;
+            double forceStrength = 0.5 * percentSpeed;
             Vec3d forceVec = isPulling ? direction.multiply(-forceStrength) : direction.multiply(forceStrength);
             double maxSpeed = 0.6;
 
             Vec3d fanFaceCenter = pos.toCenterPos().add(direction.multiply(0.5));
 
-            for (Entity entity : FanBlock.getEntitiesInCone(state, world, pos, BASE_RADIUS, FAR_RADIUS, DEPTH)) {
+            for (Entity entity : FanBlock.getEntitiesInCone(state, world, pos, BASE_RADIUS, FAR_RADIUS, DEPTH * percentSpeed)) {
                 if ((entity instanceof PlayerEntity player && !(player.isCreative() || player.isSpectator())) || (entity instanceof Entity && !(entity instanceof PlayerEntity))) {
                     Vec3d currentVel = entity.getVelocity();
                     double speedInDirection = currentVel.dotProduct(direction);
@@ -80,18 +81,16 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
                     Vec3d entityCenter = entity.getBoundingBox().getCenter();
 
                     if (isPulling) {
-                        Vec3d coneEnd = fanFaceCenter.add(direction.multiply(DEPTH));
+                        Vec3d coneEnd = fanFaceCenter.add(direction.multiply(DEPTH * percentSpeed));
                         scanForEffects(world, entity, entityCenter, coneEnd);
                     } else {
                         scanForEffects(world, entity, fanFaceCenter, entityCenter);
                     }
                 }
             }
-
-            if (world.isClient) {
-                spawnGustParticles(world, pos, direction, state.get(FanBlock.MODE));
-            }
+            spawnGustParticles(world, pos, direction, state.get(FanBlock.MODE));
         }
+
         if (world.isClient) {
             visualRotation += fanSpeed;
         }
@@ -130,6 +129,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
     }
 
     private void spawnGustParticles(World world, BlockPos pos, Vec3d direction, FanBlock.FanMode mode) {
+        var percentSpeed = fanSpeed / MAX_SPEED;
         Vec3d start = pos.toCenterPos().add(direction.multiply(0.5));
         Vec3d ortho = getOrthogonalVector(direction);
         Vec3d secondaryOrtho = direction.crossProduct(ortho);
@@ -172,7 +172,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
 
         int maxAge = 25;
         double dragCompensation = 2.25;
-        double finalMultiplier = (1.0 / (double) maxAge) * dragCompensation;
+        double finalMultiplier = ((1.0 / (double) maxAge) * dragCompensation) * percentSpeed;
 
         Vec3d windSpawn, windTravel;
         if (mode == FanBlock.FanMode.PULL) {
