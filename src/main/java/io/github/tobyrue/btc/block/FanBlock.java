@@ -31,6 +31,7 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
     public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final EnumProperty<FanMode> MODE = EnumProperty.of("mode", FanMode.class);
+    public static final BooleanProperty TOGGLE_MODE = BooleanProperty.of("toggle_mode");
 
     public enum FanMode implements StringIdentifiable {
         BLOW("blow"),
@@ -43,7 +44,7 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
 
     public FanBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false).with(MODE, FanMode.BLOW));
+        this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false).with(MODE, FanMode.BLOW).with(TOGGLE_MODE, false));
     }
 
 
@@ -125,9 +126,15 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        world.setBlockState(pos, state.with(POWERED,
-                IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Arrays.stream(Direction.values().clone()).filter(dir -> dir != state.get(FACING))) || world.isReceivingRedstonePower(pos)));
-
+        var hasPower = IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Arrays.stream(Direction.values().clone()).filter(dir -> dir != state.get(FACING))) || world.isReceivingRedstonePower(pos);
+        BlockState newState = state;
+        if (state.get(TOGGLE_MODE)) {
+            newState = state.with(MODE, hasPower ? FanMode.PULL : FanMode.BLOW);
+            newState = newState.with(POWERED, true);
+        } else {
+            newState = newState.with(POWERED, hasPower);
+        }
+        world.setBlockState(pos, newState);
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
 
@@ -138,12 +145,13 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
         return this.getDefaultState()
                 .with(FACING, facing)
                 .with(POWERED, false)
-                .with(MODE, FanMode.BLOW);
+                .with(MODE, FanMode.BLOW)
+                .with(TOGGLE_MODE, false);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, POWERED, MODE);
+        builder.add(FACING, POWERED, MODE, TOGGLE_MODE);
     }
 
     @Override

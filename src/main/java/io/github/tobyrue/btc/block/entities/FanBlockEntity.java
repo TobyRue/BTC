@@ -171,7 +171,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         }
 
         int maxAge = 25;
-        double dragCompensation = 2.25;
+        double dragCompensation = 1.1;
         double finalMultiplier = ((1.0 / (double) maxAge) * dragCompensation) * percentSpeed;
 
         Vec3d windSpawn, windTravel;
