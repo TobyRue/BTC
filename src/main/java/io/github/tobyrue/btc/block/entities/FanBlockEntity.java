@@ -1,20 +1,18 @@
 package io.github.tobyrue.btc.block.entities;
 
-import io.github.tobyrue.btc.block.FanBlock;
+import io.github.tobyrue.btc.block.WaxedCopperFanBlock;
+import io.github.tobyrue.btc.block.ModBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -50,28 +48,38 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
     private static final float ACCELERATION = 0.02f;
 
     public FanBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.FAN_BLOCK_ENTITY, pos, state);
+        super(switch (state.getBlock()) {
+            case Block block when state.isOf(ModBlocks.COPPER_TRIAL_FAN) -> ModBlockEntities.COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.EXPOSED_COPPER_TRIAL_FAN) -> ModBlockEntities.EXPOSED_COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.WEATHERED_COPPER_TRIAL_FAN) -> ModBlockEntities.WEATHERED_COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.OXIDIZED_COPPER_TRIAL_FAN) -> ModBlockEntities.OXIDIZED_COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.WAXED_COPPER_TRIAL_FAN) -> ModBlockEntities.WAXED_COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN) -> ModBlockEntities.WAXED_EXPOSED_COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN) -> ModBlockEntities.WAXED_WEATHERED_COPPER_FAN_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN) -> ModBlockEntities.WAXED_OXIDIZED_COPPER_FAN_BLOCK_ENTITY;
+            default -> throw new IllegalStateException("Unexpected value: " + state.getBlock());
+        }, pos, state);
     }
 
     @Override
     public void tick(World world, BlockPos pos, BlockState state, FanBlockEntity blockEntity) {
         var percentSpeed = fanSpeed / MAX_SPEED;
-        if (state.get(FanBlock.POWERED)) {
+        if (state.get(WaxedCopperFanBlock.POWERED)) {
             fanSpeed = Math.min(MAX_SPEED, fanSpeed + ACCELERATION);
         } else {
             fanSpeed = Math.max(0f, fanSpeed - (ACCELERATION * 0.5f));
         }
-        if (state.get(FanBlock.POWERED) || fanSpeed > 0.1f) {
-            Direction facing = state.get(FanBlock.FACING);
+        if (state.get(WaxedCopperFanBlock.POWERED) || fanSpeed > 0.1f) {
+            Direction facing = state.get(WaxedCopperFanBlock.FACING);
             Vec3d direction = Vec3d.of(facing.getVector());
-            boolean isPulling = state.get(FanBlock.MODE) == FanBlock.FanMode.PULL;
+            boolean isPulling = state.get(WaxedCopperFanBlock.MODE) == WaxedCopperFanBlock.FanMode.PULL;
             double forceStrength = 0.5 * percentSpeed;
             Vec3d forceVec = isPulling ? direction.multiply(-forceStrength) : direction.multiply(forceStrength);
             double maxSpeed = 0.6;
 
             Vec3d fanFaceCenter = pos.toCenterPos().add(direction.multiply(0.5));
 
-            for (Entity entity : FanBlock.getEntitiesInCone(state, world, pos, BASE_RADIUS, FAR_RADIUS, DEPTH * percentSpeed)) {
+            for (Entity entity : WaxedCopperFanBlock.getEntitiesInCone(state, world, pos, BASE_RADIUS, FAR_RADIUS, DEPTH * percentSpeed)) {
                 if ((entity instanceof PlayerEntity player && !(player.isCreative() || player.isSpectator())) || (entity instanceof Entity && !(entity instanceof PlayerEntity))) {
                     Vec3d currentVel = entity.getVelocity();
                     double speedInDirection = currentVel.dotProduct(direction);
@@ -93,7 +101,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
                 }
             }
             for (int x = 0; x < ((this.BASE_RADIUS * this.getFAR_RADIUS()) * 2); x++) {
-                spawnGustParticles(world, pos, direction, state.get(FanBlock.MODE));
+                spawnGustParticles(world, pos, direction, state.get(WaxedCopperFanBlock.MODE));
             }
         }
 
@@ -134,7 +142,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         return false;
     }
 
-    private void spawnGustParticles(World world, BlockPos pos, Vec3d direction, FanBlock.FanMode mode) {
+    private void spawnGustParticles(World world, BlockPos pos, Vec3d direction, WaxedCopperFanBlock.FanMode mode) {
         var percentSpeed = fanSpeed / MAX_SPEED;
         Vec3d start = pos.toCenterPos().add(direction.multiply(0.5));
         Vec3d ortho = getOrthogonalVector(direction);
@@ -181,7 +189,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         double finalMultiplier = ((1.0 / (double) maxAge) * dragCompensation) * percentSpeed;
 
         Vec3d windSpawn, windTravel;
-        if (mode == FanBlock.FanMode.PULL) {
+        if (mode == WaxedCopperFanBlock.FanMode.PULL) {
             windSpawn = actualStart.add(pathDir.multiply(maxTravel));
             windTravel = actualStart.subtract(windSpawn);
         } else {
@@ -193,7 +201,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
 
         if (elementalParticle != null) {
             Vec3d elemSpawn, elemTravel;
-            if (mode == FanBlock.FanMode.PULL) {
+            if (mode == WaxedCopperFanBlock.FanMode.PULL) {
                 elemSpawn = actualStart.add(pathDir.multiply(elementDist));
                 elemTravel = actualStart.subtract(elemSpawn);
             } else {

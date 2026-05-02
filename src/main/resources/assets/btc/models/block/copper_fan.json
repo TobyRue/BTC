@@ -3,9 +3,9 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "btc:block/wire_base",
-		"1": "btc:block/fan_cover",
-		"3": "btc:block/fan_side",
-		"4": "btc:block/fan_back",
+		"1": "btc:block/copper_fan_cover",
+		"3": "btc:block/copper_fan_side",
+		"4": "btc:block/copper_fan_back",
 		"particle": "btc:block/wire_base"
 	},
 	"elements": [

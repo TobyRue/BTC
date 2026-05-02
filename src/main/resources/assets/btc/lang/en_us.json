@@ -44,7 +44,15 @@
   "block.btc.dungeon_button": "Dungeon Button",
   "block.btc.bonfire": "Bonfire",
   "block.btc.bonfire.set_spawn": "Bonfire Spawn Set",
-  "block.btc.fan": "Trail Fan",
+
+  "block.btc.copper_fan": "Copper Trial Fan",
+  "block.btc.exposed_copper_fan": "Exposed Copper Trial Fan",
+  "block.btc.weathered_copper_fan": "Weathered Copper Trial Fan",
+  "block.btc.oxidized_copper_fan": "Oxidized Copper Trial Fan",
+  "block.btc.waxed_copper_fan": "Waxed Copper Trial Fan",
+  "block.btc.waxed_exposed_copper_fan": "Waxed Exposed Copper Trial Fan",
+  "block.btc.waxed_weathered_copper_fan": "Waxed Weathered Copper Trial Fan",
+  "block.btc.waxed_oxidized_copper_fan": "Waxed Oxidized Copper Trial Fan",
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",

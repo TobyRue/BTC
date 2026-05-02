@@ -2,12 +2,10 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.block.entities.*;
 import io.github.tobyrue.btc.wires.IDungeonWire;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -27,7 +25,7 @@ import net.minecraft.world.World;
 import java.util.Arrays;
 import java.util.List;
 
-public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEntity>, ModTickBlockEntityProvider<FanBlockEntity> {
+public class WaxedCopperFanBlock extends Block implements ModBlockEntityProvider<FanBlockEntity>, ModTickBlockEntityProvider<FanBlockEntity> {
     public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final EnumProperty<FanMode> MODE = EnumProperty.of("mode", FanMode.class);
@@ -42,7 +40,7 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
         @Override public String asString() { return this.name; }
     }
 
-    public FanBlock(Settings settings) {
+    public WaxedCopperFanBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false).with(MODE, FanMode.BLOW).with(TOGGLE_MODE, false));
     }
@@ -156,6 +154,6 @@ public class FanBlock extends Block implements ModBlockEntityProvider<FanBlockEn
 
     @Override
     public BlockEntityType<FanBlockEntity> getBlockEntityType() {
-        return ModBlockEntities.FAN_BLOCK_ENTITY;
+        return ModBlockEntities.WAXED_COPPER_FAN_BLOCK_ENTITY;
     }
 }

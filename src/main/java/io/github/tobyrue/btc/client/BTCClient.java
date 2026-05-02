@@ -10,7 +10,6 @@ import io.github.tobyrue.btc.item.*;
 import io.github.tobyrue.btc.packets.ModClientPackets;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
-import io.github.tobyrue.btc.regestries.BTCModelLoadingPlugin;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.spell.GrabBag;
@@ -24,7 +23,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
@@ -48,8 +46,6 @@ import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -61,7 +57,6 @@ import org.lwjgl.glfw.GLFW;
 import io.github.tobyrue.btc.client.screen.RadialValues.*;
 
 import java.io.File;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -392,7 +387,15 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DUNGEON_DOOR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.KEY_DISPENSER_BLOCK, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MOB_DETECTOR, RenderLayer.getCutoutMipped());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FAN, RenderLayer.getCutout());
+
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.EXPOSED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WEATHERED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OXIDIZED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TUFF_BRICK_PILASTER, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TUFF_PILASTER, RenderLayer.getCutoutMipped());
@@ -428,7 +431,16 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.WIRE_BLOCK_ENTITY, WireBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.BONFIRE_BLOCK_ENTITY, BonfireBlockEntityRenderer::new);
-        BlockEntityRendererFactories.register(ModBlockEntities.FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+
+
+        BlockEntityRendererFactories.register(ModBlockEntities.COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.EXPOSED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.WEATHERED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.OXIDIZED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.WAXED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.WAXED_EXPOSED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.WAXED_WEATHERED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.WAXED_OXIDIZED_COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(WIND_STAFF_LAYER, WindStaffModelRenderer::getTexturedModelData);
         BuiltinItemRendererRegistry.INSTANCE.register(ModItems.WIND_STAFF, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

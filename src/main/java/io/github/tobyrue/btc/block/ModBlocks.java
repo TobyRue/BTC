@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.wires.WireBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
@@ -29,11 +30,52 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
-    public static final FanBlock FAN = (FanBlock) register(
-            new FanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
-            "fan",
+
+
+    public static final CopperFanBlock COPPER_TRIAL_FAN = (CopperFanBlock) register(
+            new CopperFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.UNAFFECTED),
+            "copper_fan",
             true
     );
+
+    public static final ExposedFanBlock EXPOSED_COPPER_TRIAL_FAN = (ExposedFanBlock) register(
+            new ExposedFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.EXPOSED),
+            "exposed_copper_fan",
+            true
+    );
+    public static final WeatheredFanBlock WEATHERED_COPPER_TRIAL_FAN = (WeatheredFanBlock) register(
+            new WeatheredFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.WEATHERED),
+            "weathered_copper_fan",
+            true
+    );
+    public static final OxidizedFanBlock OXIDIZED_COPPER_TRIAL_FAN = (OxidizedFanBlock) register(
+            new OxidizedFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.OXIDIZED),
+            "oxidized_copper_fan",
+            true
+    );
+    public static final WaxedCopperFanBlock WAXED_COPPER_TRIAL_FAN = (WaxedCopperFanBlock) register(
+            new WaxedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.COPPER_TRIAL_FAN)),
+            "waxed_copper_fan",
+            true
+    );
+    public static final WaxedExposedCopperFanBlock WAXED_EXPOSED_COPPER_TRIAL_FAN = (WaxedExposedCopperFanBlock) register(
+            new WaxedExposedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.EXPOSED_COPPER_TRIAL_FAN)),
+            "waxed_exposed_copper_fan",
+            true
+    );
+    public static final WaxedWeatheredCopperFanBlock WAXED_WEATHERED_COPPER_TRIAL_FAN = (WaxedWeatheredCopperFanBlock) register(
+            new WaxedWeatheredCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.WEATHERED_COPPER_TRIAL_FAN)),
+            "waxed_weathered_copper_fan",
+            true
+    );
+    public static final WaxedOxidizedCopperFanBlock WAXED_OXIDIZED_COPPER_TRIAL_FAN = (WaxedOxidizedCopperFanBlock) register(
+            new WaxedOxidizedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.OXIDIZED_COPPER_TRIAL_FAN)),
+            "waxed_oxidized_copper_fan",
+            true
+    );
+
+
+
     public static final TrialCoreBlock TRIAL_CORE = (TrialCoreBlock) register(
             new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
             "trial_core",
@@ -365,5 +407,7 @@ public class ModBlocks {
         Registries.ITEM.addAlias(BTC.identifierOf("fire_dispenser"), BTC.identifierOf("dungeon_flame"));
         Registries.BLOCK.addAlias(BTC.identifierOf("cracked_stone_pillar"), BTC.identifierOf("cracked_stone_bricks_pillar"));
         Registries.ITEM.addAlias(BTC.identifierOf("cracked_stone_pillar"), BTC.identifierOf("cracked_stone_bricks_pillar"));
+        Registries.BLOCK.addAlias(BTC.identifierOf("fan"), BTC.identifierOf("waxed_copper_fan"));
+        Registries.ITEM.addAlias(BTC.identifierOf("fan"), BTC.identifierOf("waxed_copper_fan"));
     }
 }
