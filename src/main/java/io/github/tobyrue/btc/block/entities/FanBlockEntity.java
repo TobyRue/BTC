@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.FanBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -14,6 +15,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper;
@@ -88,7 +92,9 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
                     }
                 }
             }
-            spawnGustParticles(world, pos, direction, state.get(FanBlock.MODE));
+            for (int x = 0; x < ((this.BASE_RADIUS * this.getFAR_RADIUS()) * 2); x++) {
+                spawnGustParticles(world, pos, direction, state.get(FanBlock.MODE));
+            }
         }
 
         if (world.isClient) {
@@ -112,15 +118,15 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
     }
 
     private boolean applyElementalEffect(Entity entity, BlockState state) {
-        if (state.isOf(net.minecraft.block.Blocks.FIRE) ||
-                state.isOf(net.minecraft.block.Blocks.SOUL_FIRE) ||
+        if (state.isOf(Blocks.FIRE) ||
+                state.isOf(Blocks.SOUL_FIRE) ||
                 state.getFluidState().isIn(FluidTags.LAVA)) {
             entity.setOnFireFor(5);
             return true;
         }
         else if (state.getFluidState().isIn(FluidTags.WATER)) {
             entity.extinguish();
-            if (entity instanceof net.minecraft.entity.LivingEntity living && living.hurtByWater()) {
+            if (entity instanceof LivingEntity living && living.hurtByWater()) {
                 living.damage(entity.getDamageSources().magic(), 1.0f);
             }
             return true;
@@ -204,8 +210,8 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             if (state.getFluidState().isIn(FluidTags.LAVA)) return ParticleTypes.FLAME;
             if (state.getFluidState().isIn(FluidTags.WATER)) return ParticleTypes.FISHING;
         }
-        if (state.isOf(net.minecraft.block.Blocks.FIRE)) return ParticleTypes.FLAME;
-        if (state.isOf(net.minecraft.block.Blocks.SOUL_FIRE)) return ParticleTypes.SOUL_FIRE_FLAME;
+        if (state.isOf(Blocks.FIRE)) return ParticleTypes.FLAME;
+        if (state.isOf(Blocks.SOUL_FIRE)) return ParticleTypes.SOUL_FIRE_FLAME;
         return null;
     }
 
@@ -236,8 +242,8 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         }
     }
     @Override
-    public net.minecraft.network.packet.Packet<net.minecraft.network.listener.ClientPlayPacketListener> toUpdatePacket() {
-        return net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
