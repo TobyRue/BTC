@@ -122,7 +122,7 @@ public class ObsidianChestBlockEntity extends BlockEntity implements LidOpenable
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
 
         NbtCompound invsNbt = new NbtCompound();

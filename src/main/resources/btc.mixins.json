@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AnvilScreenHandlerMixin",
+    "AxeItemMixin",
     "BlockEntityProviderMixin",
     "BlockWithEntityInvoker",
     "ContainerLockMixin",
@@ -14,6 +15,7 @@
     "EnchantmentScreenHandlerMixin",
     "EntityAccessor",
     "FireballEntityAccessor",
+    "HoneycombItemMixin",
     "LivingEntityMixin",
     "NaturalRegenerationMixin",
     "PaperMixin",

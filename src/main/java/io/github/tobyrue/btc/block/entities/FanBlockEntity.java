@@ -234,6 +234,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         nbt.putDouble("FarRadius", FAR_RADIUS);
         nbt.putDouble("BaseRadius", BASE_RADIUS);
         nbt.putDouble("Depth", DEPTH);
+        nbt.putFloat("FanSpeed", fanSpeed);
     }
 
     @Override
@@ -243,6 +244,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             FAR_RADIUS = nbt.getDouble("FarRadius");
             BASE_RADIUS = nbt.getDouble("BaseRadius");
             DEPTH = nbt.getDouble("Depth");
+            fanSpeed = nbt.getFloat("FanSpeed");
 
             if (this.world != null && !this.world.isClient) {
                 this.world.updateListeners(pos, getCachedState(), getCachedState(), 3);

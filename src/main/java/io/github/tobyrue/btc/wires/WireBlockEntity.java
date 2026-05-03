@@ -83,7 +83,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         nbt.putString("operator", operator.asString());
         nbt.putInt("delay", delay);

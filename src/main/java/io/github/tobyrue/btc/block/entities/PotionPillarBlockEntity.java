@@ -435,7 +435,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
 
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         if (distanceArray != null) {
             nbt.putIntArray("CustomBox", distanceArray);

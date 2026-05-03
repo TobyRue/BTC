@@ -9,9 +9,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.Oxidizable;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -45,7 +48,27 @@ public class WeatheredFanBlock extends WaxedCopperFanBlock implements Oxidizable
         this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false).with(MODE, FanMode.BLOW).with(TOGGLE_MODE, false));
         this.oxidationLevel = oxidationLevel;
     }
+    @Override
+    public void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (random.nextFloat() < 0.05688889F) {
+            this.tryDegrade(state, world, pos, random).ifPresent((degraded) -> {
+                BlockEntity oldBe = world.getBlockEntity(pos);
 
+                if (oldBe instanceof FanBlockEntity) {
+                    var registryLookup = world.getRegistryManager();
+                    NbtCompound nbt = oldBe.createNbt(registryLookup);
+                    world.setBlockState(pos, degraded);
+                    BlockEntity newBe = world.getBlockEntity(pos);
+
+                    if (newBe instanceof FanBlockEntity) {
+                        newBe.readNbt(nbt, registryLookup);
+                        newBe.markDirty();
+                        world.updateListeners(pos, state, degraded, 3);
+                    }
+                }
+            });
+        }
+    }
     @Override
     public OxidationLevel getDegradationLevel() {
         return this.oxidationLevel;

@@ -9,9 +9,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.Oxidizable;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -19,6 +22,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -32,6 +36,7 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class CopperFanBlock extends WaxedCopperFanBlock implements Oxidizable, ModBlockEntityProvider<FanBlockEntity>, ModTickBlockEntityProvider<FanBlockEntity> {
     public static final DirectionProperty FACING = WaxedCopperFanBlock.FACING;
@@ -44,6 +49,30 @@ public class CopperFanBlock extends WaxedCopperFanBlock implements Oxidizable, M
         super(settings);
         this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, false).with(MODE, FanMode.BLOW).with(TOGGLE_MODE, false));
         this.oxidationLevel = oxidationLevel;
+    }
+
+    @Override
+    public void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (random.nextFloat() < 0.05688889F) {
+            this.tryDegrade(state, world, pos, random).ifPresent((degraded) -> {
+                BlockEntity oldBe = world.getBlockEntity(pos);
+
+                if (oldBe instanceof FanBlockEntity) {
+                    var registryLookup = world.getRegistryManager();
+                    NbtCompound nbt = oldBe.createNbt(registryLookup);
+                    System.out.println("Saving Depth: " + nbt.getDouble("Depth") + " from " + state.getBlock());
+                    world.setBlockState(pos, degraded);
+                    BlockEntity newBe = world.getBlockEntity(pos);
+
+                    if (newBe instanceof FanBlockEntity) {
+                        newBe.readNbt(nbt, registryLookup);
+                        newBe.markDirty();
+                        world.updateListeners(pos, state, degraded, 3);
+                        System.out.println("Loaded Depth into: " + world.getBlockState(pos).getBlock());
+                    }
+                }
+            });
+        }
     }
 
     @Override

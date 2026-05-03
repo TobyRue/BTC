@@ -173,9 +173,9 @@ public class BTC implements ModInitializer {
             return ActionResult.PASS;
         });
         //TODO GET RID OF WHEN BUILDING MOD FOR ANY RELEASE
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
-        }
+//        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+//            UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);
+//        }
 //        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
 //            if (!world.isClient && hand == Hand.MAIN_HAND) {
 //                if (player.getStackInHand(hand).getItem() == ModItems.COPPER_WRENCH) {

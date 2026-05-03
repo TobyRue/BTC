@@ -13,6 +13,14 @@
     "minecraft:chiseled_bookshelf",
     "#minecraft:signs",
     "btc:dungeon_wire",
-    "btc:ominous_beacon"
+    "btc:ominous_beacon",
+    "btc:copper_fan",
+    "btc:exposed_copper_fan",
+    "btc:weathered_copper_fan",
+    "btc:oxidized_copper_fan",
+    "btc:waxed_copper_fan",
+    "btc:waxed_exposed_copper_fan",
+    "btc:waxed_weathered_copper_fan",
+    "btc:waxed_oxidized_copper_fan"
   ]
 }

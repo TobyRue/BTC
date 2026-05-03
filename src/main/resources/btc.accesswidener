@@ -5,3 +5,4 @@ accessible method net/minecraft/entity/player/PlayerEntity setShoulderEntityRigh
 accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntity (Lnet/minecraft/nbt/NbtCompound;)V
 accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntities ()V
 accessible method net/minecraft/block/entity/BlockEntity readNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
+accessible method net/minecraft/block/entity/BlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
