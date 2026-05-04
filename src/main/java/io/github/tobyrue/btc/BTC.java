@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.enums.WireConnection;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.entity.Saddleable;
@@ -47,6 +48,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
+import org.apache.http.impl.conn.Wire;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -172,6 +174,7 @@ public class BTC implements ModInitializer {
             }
             return ActionResult.PASS;
         });
+
         //TODO GET RID OF WHEN BUILDING MOD FOR ANY RELEASE
 //        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
 //            UseBlockCallback.EVENT.register(OxidizeOnClick::onUseBlock);

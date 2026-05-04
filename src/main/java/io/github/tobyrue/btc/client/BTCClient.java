@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.GunpowderDustBlock;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
@@ -336,6 +337,15 @@ public class BTCClient implements ClientModInitializer {
             return 0xFFFFFFFF;
         }, ModItems.BLOCK_KEY);
 
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+            if (state.getBlock() instanceof GunpowderDustBlock gunpowder) {
+                return gunpowder.getColor(state);
+            }
+            return -1;
+        }, ModBlocks.GUNPOWDER_DUST);
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> 0x777777, ModBlocks.GUNPOWDER_DUST);
+
 //        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 //            if (stack.getItem() instanceof SpellstoneItem spellstoneItem) {
 //                var data = spellstoneItem.getSpellDataStore(stack);
@@ -396,6 +406,7 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GUNPOWDER_DUST, RenderLayer.getCutout());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TUFF_BRICK_PILASTER, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TUFF_PILASTER, RenderLayer.getCutoutMipped());

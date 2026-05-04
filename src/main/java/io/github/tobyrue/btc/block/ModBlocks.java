@@ -30,7 +30,11 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
-
+    public static final GunpowderDustBlock GUNPOWDER_DUST = (GunpowderDustBlock) register(
+            new GunpowderDustBlock(AbstractBlock.Settings.copy(Blocks.REDSTONE_WIRE)),
+            "gunpowder_dust",
+            true
+    );
 
     public static final CopperFanBlock COPPER_TRIAL_FAN = (CopperFanBlock) register(
             new CopperFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.UNAFFECTED),
