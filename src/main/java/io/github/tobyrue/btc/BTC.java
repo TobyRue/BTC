@@ -3,6 +3,7 @@ package io.github.tobyrue.btc;
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.client.ObsidianChestRenderer;
+import io.github.tobyrue.btc.config.BTCConfig;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
@@ -42,6 +43,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
@@ -102,6 +105,7 @@ public class BTC implements ModInitializer {
         ModPackets.initialize();
         ModSpells.initialize();
         ModEvents.init();
+        BTCConfig.load();
 
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());
@@ -169,6 +173,34 @@ public class BTC implements ModInitializer {
                         stack.set(ModComponents.STORED_ENTITY_TYPE, mob.getType());
                         player.sendMessage(Text.literal("Pet bound to totem"), true);
                         return ActionResult.SUCCESS;
+                    }
+                }
+            }
+            return ActionResult.PASS;
+        });
+
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            ItemStack stack = player.getStackInHand(hand);
+
+            if (stack.isOf(Items.GUNPOWDER) && BTCConfig.placableGunpowder) {
+                BlockPos pos = hitResult.getBlockPos().offset(hitResult.getSide());
+
+                if (world.getBlockState(pos).isAir()) {
+                    BlockState state = ModBlocks.GUNPOWDER_DUST.getDefaultState();
+
+                    if (state.canPlaceAt(world, pos)) {
+                        if (!world.isClient) {
+                            BlockState connectedState = ((GunpowderDustBlock)state.getBlock())
+                                    .getConnectionState(world, state, pos);
+
+                            world.setBlockState(pos, connectedState, Block.NOTIFY_ALL);
+
+                            world.playSound(null, pos, SoundEvents.BLOCK_SAND_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                            if (!player.getAbilities().creativeMode) {
+                                stack.decrement(1);
+                            }
+                        }
+                        return ActionResult.success(world.isClient);
                     }
                 }
             }

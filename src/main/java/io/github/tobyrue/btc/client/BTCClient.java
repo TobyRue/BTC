@@ -66,6 +66,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Environment(EnvType.CLIENT)
 public class BTCClient implements ClientModInitializer {
     public static KeyBinding radialMenuKeyBinding;
+    private static KeyBinding spellKeyBind1;
+    private static KeyBinding spellKeyBind2;
+    private static KeyBinding spellKeyBind3;
 
     public static final EntityModelLayer WIND_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "wind_staff"), "main");
     public static final EntityModelLayer FIRE_STAFF_LAYER = new EntityModelLayer(Identifier.of("btc", "fire_staff"), "main");
@@ -124,11 +127,97 @@ public class BTCClient implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(WATER_DROP, FlameParticle.Factory::new);
 
         ModClientPackets.initialize();
+        spellKeyBind1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.spell1",
+                InputUtil.UNKNOWN_KEY.getCode(),
+                "category.btc.spell"
+        ));
+
+
+        spellKeyBind2 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.spell2",
+                InputUtil.UNKNOWN_KEY.getCode(),
+                "category.btc.spell"
+        ));
+        spellKeyBind3 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.btc.spell3",
+                InputUtil.UNKNOWN_KEY.getCode(),
+                "category.btc.spell"
+        ));
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            assert client.player != null;
+            while (spellKeyBind1.wasPressed()) {
+                for (var h : Hand.values()) {
+                    var item = client.player.getStackInHand(h).getItem();
+                    var stack = client.player.getStackInHand(h);
+                    var world = client.world;
+                    var user = client.player;
+                    if (!user.isSpectator()) {
+                        if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
+                            var spells = minimal.getAvailableSpells(stack, world, user);
+                            var spell1 = spells.get(0);
+                            client.player.networkHandler.sendCommand("cast " + Spell.getId(spell1.spell()) + " " + GrabBag.toNBT(spell1.args()));
+                        } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                            MinecraftServer server = client.getServer().getOverworld().getServer();
+                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                            PlayerSpellData playerData = spellState.getPlayerData(client.player);
+                            var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
+                            var spell1 = spells.get(0);
+                            client.player.networkHandler.sendCommand("cast " + Spell.getId(spell1.spell()) + " " + GrabBag.toNBT(spell1.args()));
+                        }
+                    }
+                }
+            }
+            while (spellKeyBind2.wasPressed()) {
+                for (var h : Hand.values()) {
+                    var item = client.player.getStackInHand(h).getItem();
+                    var stack = client.player.getStackInHand(h);
+                    var world = client.world;
+                    var user = client.player;
+                    if (!user.isSpectator()) {
+                        if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
+                            var spells = minimal.getAvailableSpells(stack, world, user);
+                            var spell2 = spells.get(1);
+                            client.player.networkHandler.sendCommand("cast " + Spell.getId(spell2.spell()) + " " + GrabBag.toNBT(spell2.args()));
+                        } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                            MinecraftServer server = client.getServer().getOverworld().getServer();
+                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                            PlayerSpellData playerData = spellState.getPlayerData(client.player);
+                            var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
+                            var spell2 = spells.get(1);
+                            client.player.networkHandler.sendCommand("cast " + Spell.getId(spell2.spell()) + " " + GrabBag.toNBT(spell2.args()));
+                        }
+                    }
+                }
+            }
+            while (spellKeyBind3.wasPressed()) {
+                for (var h : Hand.values()) {
+                    var item = client.player.getStackInHand(h).getItem();
+                    var stack = client.player.getStackInHand(h);
+                    var world = client.world;
+                    var user = client.player;
+                    if (!user.isSpectator()) {
+                        if (item instanceof MinimalPredefinedSpellsItem minimal && !(item instanceof PredefinedSpellsItem)) {
+                            var spells = minimal.getAvailableSpells(stack, world, user);
+                            var spell3 = spells.get(2);
+                            client.player.networkHandler.sendCommand("cast " + Spell.getId(spell3.spell()) + " " + GrabBag.toNBT(spell3.args()));
+                        } else if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
+                            MinecraftServer server = client.getServer().getOverworld().getServer();
+                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                            PlayerSpellData playerData = spellState.getPlayerData(client.player);
+                            var spells = PredefinedSpellsItem.getFavoriteSpells(playerData);
+                            var spell3 = spells.get(2);
+                            client.player.networkHandler.sendCommand("cast " + Spell.getId(spell3.spell()) + " " + GrabBag.toNBT(spell3.args()));
+                        }
+                    }
+                }
+            }
+        });
 
         radialMenuKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.btc.open_spellbook", // The translation key of the keybinding's name
-                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
-                GLFW.GLFW_KEY_Z, // The keycode of the key
+                GLFW.GLFW_KEY_LEFT_ALT, // The keycode of the key
                 "category.btc.spell" // The translation key of the keybinding's category.
         ));
 

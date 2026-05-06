@@ -81,16 +81,18 @@ public class WaterBlastEntity extends ProjectileEntity {
                 world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), MathHelper.nextBetween(random, -1.0F, 1.0F) * 0.083333336F, 0.05000000074505806, (double) (MathHelper.nextBetween(random, -1.0F, 1.0F) * 0.083333336F));
             }
             this.discard();
-        }
-        if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
-            if (this.getWorld() instanceof ServerWorld serverWorld) {
-                serverWorld.spawnParticles(BTCClient.WATER_BLAST, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
-            }
-            this.discard();
+            return;
         }
 
-        if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getBottomY() - 30) {
+        if (!this.getWorld().isClient && this.getBlockY() > this.getWorld().getTopY() + 30) {
             this.discard();
+            return;
+        }
+
+
+        if (!this.getWorld().isClient && this.getBlockY() < this.getWorld().getBottomY() - 30) {
+            this.discard();
+            return;
         }
 
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);

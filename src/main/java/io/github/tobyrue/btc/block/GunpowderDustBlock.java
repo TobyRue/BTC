@@ -2,15 +2,22 @@ package io.github.tobyrue.btc.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.WireConnection;
+import net.minecraft.client.gui.screen.option.ControlsListWidget;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.Items;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -18,6 +25,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -28,6 +36,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -74,6 +83,19 @@ public class GunpowderDustBlock extends Block {
         }
     }
 
+    @Override
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        return Items.GUNPOWDER.getDefaultStack();
+    }
+
+    private void updateTargettedNeighbor(World world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+
+            BlockState newState = this.getConnectionState(world, state, pos);
+            world.setBlockState(pos, newState, Block.NOTIFY_ALL);
+        }
+    }
     private VoxelShape getShapeForState(BlockState state) {
         VoxelShape voxelShape = DOT_SHAPE;
         for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -97,24 +119,34 @@ public class GunpowderDustBlock extends Block {
         return this.getConnectionState(ctx.getWorld(), this.getDefaultState(), ctx.getBlockPos());
     }
 
-    private BlockState getConnectionState(BlockView world, BlockState state, BlockPos pos) {
-        boolean northNotConnected = isNotConnected(state);
+    public BlockState getConnectionState(BlockView world, BlockState state, BlockPos pos) {
         state = this.getUpdatedState(world, state, pos);
-        if (northNotConnected && isNotConnected(state)) {
-            return state;
-        } else {
-            boolean n = state.get(NORTH).isConnected();
-            boolean s = state.get(SOUTH).isConnected();
-            boolean e = state.get(EAST).isConnected();
-            boolean w = state.get(WEST).isConnected();
-            boolean ns = !n && !s;
-            boolean ew = !e && !w;
-            if (!w && ns) state = state.with(WEST, WireConnection.SIDE);
-            if (!e && ns) state = state.with(EAST, WireConnection.SIDE);
-            if (!n && ew) state = state.with(NORTH, WireConnection.SIDE);
-            if (!s && ew) state = state.with(SOUTH, WireConnection.SIDE);
+
+        if (isNotConnected(state)) {
             return state;
         }
+
+        boolean n = state.get(NORTH).isConnected();
+        boolean s = state.get(SOUTH).isConnected();
+        boolean e = state.get(EAST).isConnected();
+        boolean w = state.get(WEST).isConnected();
+
+        boolean ns = !n && !s;
+        boolean ew = !e && !w;
+        if (!w && ns) state = state.with(WEST, WireConnection.SIDE);
+        if (!e && ns) state = state.with(EAST, WireConnection.SIDE);
+        if (!n && ew) state = state.with(NORTH, WireConnection.SIDE);
+        if (!s && ew) state = state.with(SOUTH, WireConnection.SIDE);
+
+        return state;
+    }
+
+    private static boolean isNotConnected(BlockState state) {
+        if (!(state.getBlock() instanceof GunpowderDustBlock)) return true;
+        return !state.get(NORTH).isConnected() &&
+                !state.get(EAST).isConnected() &&
+                !state.get(SOUTH).isConnected() &&
+                !state.get(WEST).isConnected();
     }
 
     private BlockState getUpdatedState(BlockView world, BlockState state, BlockPos pos) {
@@ -153,72 +185,32 @@ public class GunpowderDustBlock extends Block {
         return WireConnection.NONE;
     }
 
-    protected static boolean connectsTo(BlockState state) {
-        return connectsTo(state, null);
-    }
 
-    protected static boolean connectsTo(BlockState state, @Nullable Direction dir) {
-        if (state.isOf(ModBlocks.GUNPOWDER_DUST)) {
-            return true;
-        }
-        if (state.isOf(Blocks.TNT)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean isNotConnected(BlockState state) {
-        return !state.get(NORTH).isConnected() && !state.get(EAST).isConnected() && !state.get(SOUTH).isConnected() && !state.get(WEST).isConnected();
-    }
 
     private boolean canRunOnTop(BlockView world, BlockPos pos, BlockState floor) {
         return floor.isSideSolidFullSquare(world, pos, Direction.UP) || floor.isOf(Blocks.HOPPER);
     }
-
     @Override
     protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
-            return !this.canRunOnTop(world, neighborPos, neighborState) ? Blocks.AIR.getDefaultState() : state;
+            if (!this.canPlaceAt(state, world, pos)) {
+                return Blocks.AIR.getDefaultState();
+            }
         }
 
         return this.getConnectionState(world, state, pos);
     }
 
-    public void ignite(World world, BlockPos pos, BlockState state) {
-        if (!state.get(BURNING)) {
-            world.setBlockState(pos, state.with(BURNING, true), Block.NOTIFY_ALL);
-            world.playSound(null, pos, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.5f);
-            world.scheduleBlockTick(pos, this, 10);
-        }
-    }
-
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
 
         if (!state.get(BURNING)) {
             if (world.isReceivingRedstonePower(pos)) {
                 ignite(world, pos, state);
             }
         }
-    }
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
 
-    private boolean isNeighborBurningExtended(World world, BlockPos pos) {
-        for (Direction dir : Direction.values()) {
-            BlockPos neighborPos = pos.offset(dir);
-            if (isBurning(world, neighborPos)) return true;
-
-            if (dir.getAxis().isHorizontal()) {
-                if (isBurning(world, neighborPos.up())) return true;
-                if (isBurning(world, neighborPos.down())) return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isBurning(World world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        return state.isOf(this) && state.get(BURNING);
     }
 
     @Override
@@ -232,32 +224,10 @@ public class GunpowderDustBlock extends Block {
             world.setBlockState(pos, state.with(FUSE, fuse - 1), Block.NOTIFY_ALL);
             world.scheduleBlockTick(pos, this, 10);
         } else {
-            this.onBurnOut(world, pos);
+            this.inspectConnections(world, pos, state);
             world.removeBlock(pos, false);
+            this.onBurnOut(world, pos);
         }
-    }
-
-    private void spreadFire(World world, BlockPos pos) {
-        for (Direction dir : Direction.Type.HORIZONTAL) {
-            BlockPos neighborPos = pos.offset(dir);
-
-            checkAndIgnite(world, neighborPos);
-            checkAndIgnite(world, neighborPos.up());
-            checkAndIgnite(world, neighborPos.down());
-        }
-
-        checkAndIgnite(world, pos.up());
-        checkAndIgnite(world, pos.down());
-    }
-    private void checkAndIgnite(World world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        if (state.isOf(this)) {
-            ignite(world, pos, state);
-        }
-    }
-
-    protected void onBurnOut(World world, BlockPos pos) {
-        world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 0.5f, 2.0f);
     }
 
     @Override
@@ -300,13 +270,17 @@ public class GunpowderDustBlock extends Block {
     }
 
     private void updateAllNeighbors(World world, BlockPos pos) {
-        world.updateNeighborsAlways(pos, this);
+        BlockState state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+            world.setBlockState(pos, this.getConnectionState(world, state, pos), Block.NOTIFY_ALL);
+        }
+
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos neighborPos = pos.offset(direction);
 
-            world.updateNeighborsAlways(neighborPos, this);
-            world.updateNeighborsAlways(neighborPos.up(), this);
-            world.updateNeighborsAlways(neighborPos.down(), this);
+            updateTargettedNeighbor(world, neighborPos);
+            updateTargettedNeighbor(world, neighborPos.up());
+            updateTargettedNeighbor(world, neighborPos.down());
         }
     }
     public int getColor(BlockState state) {
@@ -328,4 +302,150 @@ public class GunpowderDustBlock extends Block {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, SOUTH, WEST, BURNING, FUSE);
     }
+
+    /**
+     * Scans all current connections and identifies the blocks they lead to.
+     */
+    public void inspectConnections(World world, BlockPos pos, BlockState state) {
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            WireConnection connection = state.get(DIRECTION_PROPERTIES.get(direction));
+            if (connection == WireConnection.NONE) continue;
+
+            BlockPos targetPos = pos.offset(direction);
+            if (connection == WireConnection.UP) {
+                targetPos = targetPos.up();
+            }
+
+            BlockState targetState = world.getBlockState(targetPos);
+
+            handleInteraction(world, targetPos, targetState);
+        }
+        handleInteraction(world, pos.down(), world.getBlockState(pos.down()));
+    }
+
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE)) {
+            return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        } else {
+            ignite(world, pos, state);
+            Item item = stack.getItem();
+            if (stack.isOf(Items.FLINT_AND_STEEL)) {
+                stack.damage(1, player, LivingEntity.getSlotForHand(hand));
+            } else {
+                stack.decrementUnlessCreative(1, player);
+            }
+
+            player.incrementStat(Stats.USED.getOrCreateStat(item));
+            return ItemActionResult.success(world.isClient);
+        }
+    }
+
+    protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+        if (!world.isClient) {
+            BlockPos blockPos = hit.getBlockPos();
+            if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
+                ignite(world, blockPos, state);
+            }
+        }
+    }
+
+    private void handleInteraction(World world, BlockPos targetPos, BlockState targetState) {
+        if (targetState.isOf(Blocks.TNT)) {
+            TntBlock.primeTnt(world, targetPos);
+            world.removeBlock(targetPos, false);
+        }
+    }
+
+    @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        BlockPos blockPos = pos.down();
+        BlockState floorState = world.getBlockState(blockPos);
+        return this.canRunOnTop(world, blockPos, floorState);
+    }
+
+    private boolean isBurning(World world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        return state.isOf(this) && state.get(BURNING);
+    }
+
+    protected static boolean connectsTo(BlockState state) {
+        return connectsTo(state, null);
+    }
+
+    protected static boolean connectsTo(BlockState state, @Nullable Direction dir) {
+        if (state.isOf(ModBlocks.GUNPOWDER_DUST)) {
+            return true;
+        }
+        if (state.isOf(Blocks.TNT)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void ignite(World world, BlockPos pos, BlockState state) {
+        if (!state.get(BURNING)) {
+            world.setBlockState(pos, state.with(BURNING, true), Block.NOTIFY_ALL);
+            world.playSound(null, pos, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.5f);
+            world.scheduleBlockTick(pos, this, 10);
+        }
+    }
+
+    @Override
+    public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
+        BlockState initialState = ModBlocks.GUNPOWDER_DUST.getDefaultState();
+
+        if (canPlaceAt(initialState, world, pos)) {
+
+            world.setBlockState(pos, initialState, Block.NOTIFY_ALL);
+
+            if (!world.isClient) {
+                this.updateAllNeighbors(world, pos);
+            }
+            BlockState finalState = world.getBlockState(pos);
+            ignite(world, pos, finalState);
+        }
+
+        super.onDestroyedByExplosion(world, pos, explosion);
+    }
+
+
+    private void spreadFire(World world, BlockPos pos) {
+        for (Direction dir : Direction.Type.HORIZONTAL) {
+            BlockPos neighborPos = pos.offset(dir);
+
+            checkAndIgnite(world, neighborPos);
+            checkAndIgnite(world, neighborPos.up());
+            checkAndIgnite(world, neighborPos.down());
+        }
+
+        checkAndIgnite(world, pos.up());
+        checkAndIgnite(world, pos.down());
+    }
+    private void checkAndIgnite(World world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+            ignite(world, pos, state);
+        }
+    }
+
+    protected void onBurnOut(World world, BlockPos pos) {
+        world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 0.5f, 2.0f);
+
+        BlockPos floorPos = pos.down();
+        BlockState floorState = world.getBlockState(floorPos);
+
+        if (floorState.isOf(Blocks.NETHERRACK) ||
+                floorState.isOf(Blocks.SOUL_SAND) || floorState.isOf(Blocks.SOUL_SOIL)) {
+
+            BlockState fireState = floorState.isOf(Blocks.SOUL_SAND) || floorState.isOf(Blocks.SOUL_SOIL)
+                    ? Blocks.SOUL_FIRE.getDefaultState()
+                    : Blocks.FIRE.getDefaultState();
+
+            if (world.isAir(pos)) {
+                world.setBlockState(pos, fireState);
+            }
+        }
+    }
+
 }

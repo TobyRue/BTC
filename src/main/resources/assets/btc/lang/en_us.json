@@ -44,6 +44,7 @@
   "block.btc.dungeon_button": "Dungeon Button",
   "block.btc.bonfire": "Bonfire",
   "block.btc.bonfire.set_spawn": "Bonfire Spawn Set",
+  "block.btc.gunpowder_dust": "Gunpowder Dust",
 
   "block.btc.copper_fan": "Copper Trial Fan",
   "block.btc.exposed_copper_fan": "Exposed Copper Trial Fan",
@@ -425,7 +426,10 @@
   "command.btc.common.failed": "Unable to cast spell",
 
   "category.btc.spell": "Spells",
-  "key.btc.open_radial": "Open Radial Menu",
+  "key.btc.open_spellbook": "Open Radial Menu",
+  "key.btc.spell1": "Cast Primary",
+  "key.btc.spell2": "Cast Secondary",
+  "key.btc.spell3": "Cast Tertiary",
 
   "tag.item.btc.wrenches": "Wrenches",
 

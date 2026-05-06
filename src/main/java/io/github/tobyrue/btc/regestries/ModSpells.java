@@ -88,6 +88,7 @@ public class ModSpells {
     public static final Spell GEYSER_STEP = register("geyser_step", new GeyserStepSpell());
     public static final Spell MIST_VEIL = register("mist_veil", new MistVeilSpell());
     public static final Spell RIPTIDE = register("riptide", new RiptideSpell());
+    public static final Spell FROST_REFLEX = register("frost_reflex", new FrostReflexSpell());
 
 
 
