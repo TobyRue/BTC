@@ -39,7 +39,7 @@ public abstract class TriggeredSpell extends Spell {
                         triggered.set(true);
 
                         if (user.getWorld() instanceof ServerWorld serverWorld) {
-                            onTrigger(ctx, serverWorld, tick);
+                            onTrigger(ctx, serverWorld, tick, user);
                         }
 
                         onEnd(ctx, tick, user);
@@ -68,7 +68,7 @@ public abstract class TriggeredSpell extends Spell {
     protected abstract boolean shouldTrigger(SpellContext ctx, int tick, LivingEntity current);
 
 
-    protected abstract void onTrigger(SpellContext ctx, ServerWorld world, int tick);
+    protected abstract void onTrigger(SpellContext ctx, ServerWorld world, int tick, LivingEntity current);
 
 
     protected void onStart(SpellContext ctx) {}

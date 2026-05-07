@@ -51,31 +51,32 @@ public class IceBlockSpell extends ChanneledSpell {
         var target = STORED_TARGET.get(user);
         var targetPos = STORED_BLOCK.get(user);
 
-        double entityWidth = target.getWidth();
-        double entityHeight = target.getHeight();
-        double entityLength = target.getWidth();
+        if (target != null) {
+            double entityWidth = target.getWidth();
+            double entityHeight = target.getHeight();
+            double entityLength = target.getWidth();
 
 
-        int rangeX = (int) Math.ceil(entityWidth / 2.0);
-        int rangeY = (int) Math.ceil(entityHeight / 2.0);
-        int rangeZ = (int) Math.ceil(entityLength / 2.0);
+            int rangeX = (int) Math.ceil(entityWidth / 2.0);
+            int rangeY = (int) Math.ceil(entityHeight / 2.0);
+            int rangeZ = (int) Math.ceil(entityLength / 2.0);
 
-        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+            BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
-        for (int x = -rangeX; x <= rangeX; x++) {
-            for (int y = -rangeY; y <= rangeY; y++) {
-                for (int z = -rangeZ; z <= rangeZ; z++) {
-                    mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
+            for (int x = -rangeX; x <= rangeX; x++) {
+                for (int y = -rangeY; y <= rangeY; y++) {
+                    for (int z = -rangeZ; z <= rangeZ; z++) {
+                        mutablePos.set(targetPos.getX() + x, targetPos.getY() + y + 1, targetPos.getZ() + z);
 
-                    // Only replace air or water blocks
-                    BlockState state = world.getBlockState(mutablePos);
-                    if (state.getBlock() instanceof MeltingIceBlock) {
-                        world.setBlockState(mutablePos, Blocks.AIR.getDefaultState());
+                        // Only replace air or water blocks
+                        BlockState state = world.getBlockState(mutablePos);
+                        if (state.getBlock() instanceof MeltingIceBlock) {
+                            world.setBlockState(mutablePos, Blocks.AIR.getDefaultState());
+                        }
                     }
                 }
             }
         }
-
         super.runEnd(ctx, args, tick);
     }
 

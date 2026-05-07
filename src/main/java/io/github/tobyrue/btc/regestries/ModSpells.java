@@ -56,6 +56,8 @@ public class ModSpells {
 
     public static final Spell POTION = register("potion", new PotionSpell());
     public static final Spell POTION_AREA_EFFECT = register("potion_area_effect", new PotionAreaEffectSpell());
+    public static final Spell DISSPELL = register("disspell", new DisspellSpell());
+    public static final Spell TRIGGERED_POTION = register("triggered_potion", new TriggeredPotionSpell());
 
     //TODO ETERNAL FIRE
 

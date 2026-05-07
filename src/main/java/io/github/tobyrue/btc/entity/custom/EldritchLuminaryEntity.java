@@ -10,10 +10,7 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellDataStore;
 import io.github.tobyrue.btc.spell.SpellHost;
-import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -30,6 +27,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -123,6 +122,30 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (source.isOf(DamageTypes.INDIRECT_MAGIC)) {
             return false;
         }
+        Entity attacker = source.getAttacker();
+        if (attacker != null) {
+            Vec3d bossLook = this.getRotationVec(1.0F).multiply(1, 0, 1).normalize();
+            Vec3d toAttacker = attacker.getPos().subtract(this.getPos()).multiply(1, 0, 1).normalize();
+            double dot = bossLook.dotProduct(toAttacker);
+
+            if (dot < -0.5) {
+                this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.HOSTILE, 1.5f, 0.5f);
+                return super.damage(source, amount * 2.0f);
+            }
+        }
+        if (activeCastingSpell != null) {
+            var spell = activeCastingSpell.spell().getSpellType();
+
+            // Exploit: If casting FIRE and hit by WATER/ICE, or vice versa
+            if ((spell == SpellTypes.FIRE && source.isOf(DamageTypes.FREEZE)) ||
+                    (spell == SpellTypes.WATER && source.isOf(DamageTypes.ON_FIRE))) {
+
+                this.setGlobalCastDelay(100);
+                this.activeCastingSpell = null;
+                return super.damage(source, amount * 2.0f);
+            }
+        }
+
         return super.damage(source, amount);
     }
 
@@ -245,7 +268,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 else if (activeCastingSpell != null && getCastTime() >= castTime) {
                     this.lookAtEntity(target, 90, 90);
                     castCurrentSpellAt(this.target);
-                    setGlobalCastDelay(GLOBAL_DELAY);
 
                     activeCastingSpell = null;
                     setCastTime(0);
@@ -297,121 +319,144 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(1));
                 put("level", 2);
-            }})), 4, 24, -1, -1, -1, -1, 0.6f);
+                put("globalCooldown", 50);
+            }})), 6, 32, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
                 put("noGravity", true);
                 put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 24, -1, -1, -1, -1, 0.7f);
+                put("globalCooldown", 50);
+            }})), 6, 24, -1, -1, -1, -1, 0.8f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 12, -1, 15, -1, -1, 0.8f);
+                put("cooldown", getSpellWaitAmount(2));
+                put("globalCooldown", 60);
+            }})), 4, 16, -1, -1, -1, -1, 0.9f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(3));
-            }})), 6, 24, -1, -1, -1, -1, 0.6f);
+                put("cooldown", getSpellWaitAmount(4));
+                put("globalCooldown", 70);
+            }})), 8, 24, -1, -1, -1, -1, 0.7f);
 
-            // Area or multi-attack spells
+            // === AREA & MULTI-ATTACK ===
+            // High impact, high recovery time.
             this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 8, -1, -1, -1, -1, 0.7f);
+                put("cooldown", getSpellWaitAmount(5));
+                put("globalCooldown", 60);
+            }})), 0, 10, -1, -1, -1, -1, 1.0f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(2));
-            }})), 5, 24, -1, -1, -1, -1, 0.8f);
+                put("cooldown", getSpellWaitAmount(6));
+                put("globalCooldown", 120);
+            }})), 4, 12, -1, -1, -1, -1, 0.9f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
                 put("shootStrength", 2d);
                 put("verticalMultiplier", 1.2d);
-                put("cooldown", getSpellWaitAmount(0));
-            }})), 0, 24, -1, -1, -1, -1, 0.8f);
-
-            // Summon / illusionary magic
-            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 24, -1, -1, -1, -1, 0.5f);
+                put("globalCooldown", 40);
+            }})), 4, 8, -1, -1, -1, -1, 1.2f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
+                put("shootStrength", 2d);
+                put("verticalMultiplier", 1.2d);
+                put("cooldown", getSpellWaitAmount(1));
+                put("globalCooldown", 40);
+            }})), 0, 4, -1, -1, -1, -1, 2f);
+            // === SUMMONS & ILLUSIONS ===
+            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(3));
+                put("globalCooldown", 40);
+            }})), 10, 32, -1, -1, -1, -1, 0.6f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(3));
-            }})), 0, 24, -1, -1, -1, -1, 0.9f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 16, -1, -1, -1, -1, 0.75f);
+                put("cooldown", getSpellWaitAmount(8));
+                put("globalCooldown", 80);
+            }})), 0, 32, -1, -1, -1, -1, 1.0f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-            }})), 0, 32, -1, -1, -1, -1, 0.85f);
+                put("cooldown", getSpellWaitAmount(10));
+                put("globalCooldown", 80);
+            }})), 0, 32, 80, -1, -1, -1, 1.2f); // Use when below 60% health
 
-            // Buffs and debuffs
+            // === BUFFS & DEBUFFS ===
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:invisibility");
                 put("duration", 400);
-                put("cooldown", getSpellWaitAmount(2));
-            }})), 0, 48, -1, -1, -1, -1, 0.85f);
+                put("cooldown", getSpellWaitAmount(10));
+                put("globalCooldown", 80);
+            }})), 0, 48, 40, -1, -1, -1, 0.9f); // Panic invisibility at 40% health
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:regeneration");
                 put("duration", 150);
                 put("amplifier", 3);
-                put("cooldown", getSpellWaitAmount(0));
-            }})), 0, 48, 80, -1, -1, -1, 1.3f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(16));
+                put("globalCooldown", 80);
+            }})), 0, 48, 60, -1, -1, -1, 2f); // Solid heal at 50%
+            this.addSpell(new Spell.InstancedSpell(ModSpells.TRIGGERED_POTION, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:regeneration");
-                put("duration", 150);
-                put("amplifier", 4);
-                put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 48, 40, -1, -1, -1, 2f);
-
+                put("percentHealth", 0.6);
+                put("activeTicks", 1200);
+                put("duration", 100);
+                put("amplifier", 2);
+                put("cooldown", getSpellWaitAmount(32));
+                put("globalCooldown", 80);
+            }})), 0, 48, 80, -1, -1, -1, 2f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.TRIGGERED_POTION, GrabBag.fromMap(new HashMap<>() {{
+                put("effect", "minecraft:resistance");
+                put("percentHealth", 0.4);
+                put("activeTicks", 1200);
+                put("duration", 400);
+                put("amplifier", 1);
+                put("cooldown", getSpellWaitAmount(32));
+                put("globalCooldown", 80);
+            }})), 0, 48, 80, -1, -1, -1, 2f);
             this.addSpell(new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
                 put("effect", "minecraft:darkness");
                 put("duration", 200);
-                put("amplifier", 3);
-                put("cooldown", getSpellWaitAmount(2));
-            }})), 0, 24, -1, -1, -1, -1, 0.9f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:mining_fatigue");
-                put("duration", 300);
-                put("amplifier", 5);
+                put("amplifier", 1);
                 put("cooldown", getSpellWaitAmount(8));
-            }})), 0, 24, 80, -1, -1, -1, 0.9f);
+                put("globalCooldown", 80);
+            }})), 0, 15, -1, -1, -1, -1, 0.8f);
 
-            // Movement / trick spells
+            // === MOVEMENT & TRICKS ===
             this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(2));
-            }})), 0, 24, -1, -1, -1, -1, 0.8f);
+                put("cooldown", getSpellWaitAmount(4));
+                put("globalCooldown", 50);
+            }})), 0, 10, -1, -1, -1, -1, 1.0f); // Use to escape when player is close
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(3));
-            }})), 0, 20, -1, -1, -1, -1, 0.75f);
+                put("cooldown", getSpellWaitAmount(5));
+                put("globalCooldown", 70);
+            }})), 0, 8, -1, -1, -1, -1, 1.1f);
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(2));
-            }})), 0, 20, -1, -1, -1, -1, 0.5f);
+                put("cooldown", getSpellWaitAmount(5));
+                put("globalCooldown", 60);
+            }})), 0, 12, -1, -1, -1, -1, 0.7f);
 
-            // Utility / advanced magic
+            // === ADVANCED MAGIC ===
             this.addSpell(new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 24, 40, -1, -1, -1, 1f);
+                put("cooldown", getSpellWaitAmount(5));
+                put("globalCooldown", 80);
+            }})), 0, 15, 70, -1, -1, -1, 1.3f); // Prioritize when boss is < 70% health
 
-            this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGON_FIREBALL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(1));
-            }})), 0, 24, -1, -1, -1, -1, 0.8f);
             this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-            }})), 0, 8, -1, -1, -1, -1, 0.7f);
+                put("cooldown", getSpellWaitAmount(12));
+                put("globalCooldown", 90);
+            }})), 0, 6, -1, -1, -1, -1, 1f); // Brutal close-range punish
             this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-            }})), 0, 10, -1, -1, -1, -1, 0.7f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-            }})), 0, 24, -1, -1, -1, -1, 0f);
+                put("cooldown", getSpellWaitAmount(9));
+                put("globalCooldown", 90);
+            }})), 0, 6, -1, -1, -1, -1, 1.4f); // Brutal close-range punish
+            this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(9));
+                put("globalCooldown", 90);
+            }})), 0, 6, -1, -1, -1, -1, 1.4f); // Brutal close-range punish
             this.addSpell(new Spell.InstancedSpell(ModSpells.LIGHTNING_STRIKE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(3));
-            }})), 4, 24, -1, -1, -1, -1, 0.8f);
+                put("cooldown", getSpellWaitAmount(6));
+                put("globalCooldown", 30);
+            }})), 4, 32, -1, -1, -1, -1, 1.1f);
             this.setSpellEmpty();
         }
 
@@ -433,6 +478,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         GrabBag args = data.getArgs();
 
         if (spell == null) return;
+
+        setGlobalCastDelay(args.getInt("globalCooldown"));
 
         Vec3d origin = this.getPos().add(0, this.getStandingEyeHeight(), 0);
         Vec3d direction = target.getPos().add(0, target.getStandingEyeHeight() / 2, 0).subtract(origin).normalize();
@@ -641,8 +688,16 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         return this.dataTracker.get(GLOBAL_CAST_DELAY);
     }
 
-    public void setGlobalCastDelay(int delay) {
-        this.dataTracker.set(GLOBAL_CAST_DELAY, delay);
+
+    public void setGlobalCastDelay(int ticks) {
+        float healthPercent = this.getHealth() / this.getMaxHealth();
+        int finalTicks = ticks;
+
+        if (healthPercent < 0.3f) {
+            finalTicks = Math.round(ticks * 0.8f);
+        }
+
+        this.dataTracker.set(GLOBAL_CAST_DELAY, finalTicks);
     }
 
     public int getCastTime() {

@@ -37,7 +37,7 @@ public class FrostReflexSpell extends TriggeredSpell {
     }
 
     @Override
-    protected void onTrigger(SpellContext ctx, ServerWorld world, int tick) {
+    protected void onTrigger(SpellContext ctx, ServerWorld world, int tick, LivingEntity current) {
         var attacker = ctx.user().getAttacker();
 
         if (attacker != null) {
@@ -48,7 +48,7 @@ public class FrostReflexSpell extends TriggeredSpell {
                     attacker.getX(), attacker.getY() + 1, attacker.getZ(),
                     25, 0.5, 0.5, 0.5, 0.05);
 
-            world.playSound(null, attacker.getBlockPos(),  
+            world.playSound(null, attacker.getBlockPos(),
                     SoundEvents.ENTITY_PLAYER_HURT_FREEZE, SoundCategory.PLAYERS, 1.0f, 1.0f);
         }
     }
