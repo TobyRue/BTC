@@ -2,9 +2,14 @@ package io.github.tobyrue.btc.spell;
 
 import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.regestries.ModComponents;
+import io.github.tobyrue.btc.regestries.ModRegistries;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,16 +23,19 @@ public abstract class TriggeredSpell extends Spell {
         super(id);
     }
 
+
+
     @Override
     protected final void use(SpellContext ctx, GrabBag args) {
         var user = ctx.user();
         var startHealth = user.getHealth();
         var startPos = user.getPos();
-
+        int silenceDuration = args.getInt("silenceDuration", 160);
         int duration = args.getInt("activeTicks", this.activeTicks);
 
         AtomicBoolean triggered = new AtomicBoolean(false);
 
+        onStart(ctx);
         ((Ticker.TickerTarget) (user)).bTC$add(
                 Ticker.forTicks(tick -> {
 
@@ -59,7 +67,6 @@ public abstract class TriggeredSpell extends Spell {
                 }, duration + 1)
         );
 
-        onStart(ctx);
     }
 
     /**

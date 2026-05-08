@@ -37,20 +37,19 @@ public class PurgeBoltSpell extends Spell {
 
         Vec3d start = user.getCameraPosVec(1.0F);
         Vec3d dir = user.getRotationVec(1.0F).normalize();
+        Vec3d lookVec = user.getRotationVec(1.0F).normalize();
 
         ((Ticker.TickerTarget) user).bTC$add(
                 Ticker.forTicks(tick -> {
-                    // Each tick, move the invisible bolt forward
                     Vec3d pos = start.add(dir.multiply(speed * tick));
 
-                    // Client visual trail
                     if (!world.isClient) {
                         ((ServerWorld) world).spawnParticles(
-                                ParticleTypes.LARGE_SMOKE, // particle type
-                                pos.x, pos.y + 0.1, pos.z, // position
-                                1,                          // count
-                                0, 0, 0,                    // offset (spread)
-                                0                           // speed
+                                ParticleTypes.LARGE_SMOKE,
+                                pos.x, pos.y + 0.1, pos.z,
+                                1,
+                                0, 0, 0,
+                                0
                         );
                     } else {
                         world.addParticle(ParticleTypes.LARGE_SMOKE,
@@ -58,54 +57,22 @@ public class PurgeBoltSpell extends Spell {
                     }
 
                     if (!world.isClient) {
-                        // Check if the bolt hits any entity along the look vector
-                        var entity = getEntityLookedAt(user, range, forgiveness);
+                        var entity = getEntityLookedAt(lookVec, user, range, forgiveness);
                         if (entity instanceof LivingEntity target) {
-                            // Remove all positive effects
                             for (StatusEffectInstance effect : target.getStatusEffects().toArray(new StatusEffectInstance[0])) {
                                 var type = effect.getEffectType();
                                 if (type.value().getCategory() == StatusEffectCategory.BENEFICIAL) {
                                     target.removeStatusEffect(type);
                                 }
                             }
-                            return true; // Stop ticking after hit
+                            return true;
                         }
                     }
 
-                    return tick >= lifetime; // End after lifetime
+                    return tick >= lifetime;
                 }, lifetime)
         );
     }
-    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
-        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
-        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
-
-        // Create a box from the eye position to the reach vector
-        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
-
-        Entity hitEntity = null;
-        double closestDistanceSq = range * range;
-
-        int candidates = 0;
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
-            candidates++;
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
-            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
-
-            // Debug: check intersection
-            if (optionalHit.isPresent()) {
-                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
-                if (distanceSq < closestDistanceSq) {
-                    closestDistanceSq = distanceSq;
-                    hitEntity = entity;
-                }
-            }
-        }
-        return hitEntity;
-    }
-
-
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 100), BTC.identifierOf("purge_bolt"));

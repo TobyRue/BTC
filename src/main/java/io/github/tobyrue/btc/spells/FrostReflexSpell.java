@@ -41,8 +41,9 @@ public class FrostReflexSpell extends TriggeredSpell {
         var attacker = ctx.user().getAttacker();
 
         if (attacker != null) {
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 4));
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 100, 1));
+            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 300, 4));
+            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300, 1));
+            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 300, 3));
 
             world.spawnParticles(ParticleTypes.SNOWFLAKE,
                     attacker.getX(), attacker.getY() + 1, attacker.getZ(),

@@ -27,6 +27,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -34,6 +35,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -136,7 +138,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (activeCastingSpell != null) {
             var spell = activeCastingSpell.spell().getSpellType();
 
-            // Exploit: If casting FIRE and hit by WATER/ICE, or vice versa
             if ((spell == SpellTypes.FIRE && source.isOf(DamageTypes.FREEZE)) ||
                     (spell == SpellTypes.WATER && source.isOf(DamageTypes.ON_FIRE))) {
 
@@ -220,12 +221,36 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
         return super.isInvisibleTo(player);
     }
+    public void chorusTeleport() {
+        double x = this.getX() + (this.random.nextDouble() - 0.5) * 16.0;
+        double y = this.getY() + (double)(this.random.nextInt(16) - 8);
+        double z = this.getZ() + (this.random.nextDouble() - 0.5) * 16.0;
 
+        if (this.teleport(x, y, z, true)) {
+            this.getWorld().emitGameEvent(GameEvent.TELEPORT, this.getPos(), GameEvent.Emitter.of(this));
+            if (!this.isSilent()) {
+                this.getWorld().playSound(null, this.prevX, this.prevY, this.prevZ,
+                        SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
+                this.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
+            }
+        }
+    }
     @Override
     public void tick() {
         super.tick();
 
+        if (!this.getWorld().isClient) {
+            if (this.isInsideWall()) {
 
+                this.chorusTeleport();
+
+                ((ServerWorld)this.getWorld()).spawnParticles(
+                        ParticleTypes.PORTAL,
+                        this.getX(), this.getY() + 1, this.getZ(),
+                        20, 0.5, 0.5, 0.5, 0.1
+                );
+            }
+        }
         if (this.getWorld().isClient()) {
             if (getIllusionTime() > 0 && getIllusionTime() <= illusionTime) {
                 setIllusionTime(getIllusionTime() + 1);
@@ -259,13 +284,9 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 if (activeCastingSpell == null && getCastTime() <= 0) {
                     activeCastingSpell = chooseRandomCurrentSpell();
                     setCastTime(1);
-                }
-
-                else if (activeCastingSpell != null && getCastTime() < castTime) {
+                } else if (activeCastingSpell != null && getCastTime() < castTime) {
                     setCastTime(getCastTime() + 1);
-                }
-
-                else if (activeCastingSpell != null && getCastTime() >= castTime) {
+                } else if (activeCastingSpell != null && getCastTime() >= castTime) {
                     this.lookAtEntity(target, 90, 90);
                     castCurrentSpellAt(this.target);
 
@@ -276,7 +297,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             }
         } else {
             if (activeCastingSpell != null && getCastTime() >= castTime && (this.getHealth() / this.getMaxHealth()) * 100 <= 70) {
-                this.lookAtEntity(target, 90, 90);
                 activeCastingSpell = new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
                     put("effect", "minecraft:regeneration");
                     put("duration", 150);
@@ -284,7 +304,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                     put("amplifier", 4);
                 }}));
                 setCurrentSpellInstance(activeCastingSpell.spell(), activeCastingSpell.args());
-                castCurrentSpellAt(this.target);
+                castCurrentSpellAt();
 
 //                var cd = activeCastingSpell.spell().getCooldown(activeCastingSpell.args(), this);
 //                getSpellDataStore(this).setCooldown(cd);
@@ -423,7 +443,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(4));
                 put("globalCooldown", 50);
-            }})), 0, 10, -1, -1, -1, -1, 1.0f); // Use to escape when player is close
+            }})), 8, 32, -1, -1, -1, -1, 1.0f); // Use to escape when player is close
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(5));
@@ -443,21 +463,30 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(12));
-                put("globalCooldown", 90);
-            }})), 0, 6, -1, -1, -1, -1, 1f); // Brutal close-range punish
+                put("globalCooldown", 60);
+            }})), 0, 8, -1, -1, -1, -1, 1.7f); // Brutal close-range punish
             this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(9));
-                put("globalCooldown", 90);
-            }})), 0, 6, -1, -1, -1, -1, 1.4f); // Brutal close-range punish
-            this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(9));
-                put("globalCooldown", 90);
-            }})), 0, 6, -1, -1, -1, -1, 1.4f); // Brutal close-range punish
+                put("globalCooldown", 60);
+            }})), 0, 8, -1, -1, -1, -1, 1.7f); // Brutal close-range punish
+
             this.addSpell(new Spell.InstancedSpell(ModSpells.LIGHTNING_STRIKE, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(6));
                 put("globalCooldown", 30);
             }})), 4, 32, -1, -1, -1, -1, 1.1f);
-            this.setSpellEmpty();
+            this.addSpell(new Spell.InstancedSpell(ModSpells.FROST_REFLEX, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(32));
+                put("activeTicks", getSpellWaitAmount(24));
+                put("globalCooldown", 30);
+            }})), 0, 32, -1, -1, 80, -1, 1.3f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.TELEPORT_FREEZE, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(32));
+                put("activeTicks", getSpellWaitAmount(24));
+                put("globalCooldown", 30);
+            }})), 0, 32, -1, 70, 80, -1, 1.3f);
+            this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
+                put("cooldown", getSpellWaitAmount(5));
+            }})), 0, 64, -1, -1, -1, -1, 0f);
         }
 
         if (this.getWorld().isClient()) {
@@ -487,6 +516,20 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, direction, data, this);
         spell.tryUse(ctx, args);
     }
+    private void castCurrentSpellAt() {
+        SpellDataStore data = getSpellDataStore(this);
+        Spell spell = data.getSpell();
+        GrabBag args = data.getArgs();
+
+        if (spell == null) return;
+
+        setGlobalCastDelay(args.getInt("globalCooldown"));
+
+        Vec3d origin = this.getPos().add(0, this.getStandingEyeHeight(), 0);
+
+        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, null, data, this);
+        spell.tryUse(ctx, args);
+    }
 
     public Spell.InstancedSpell getCurrentSpellInstance() {
         String spellIdString = this.dataTracker.get(CURRENT_SPELL);
@@ -509,7 +552,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         boolean exists = this.getAllSpellInstances().stream()
                 .anyMatch(inst -> ModRegistries.SPELL.getId(inst.spell()).equals(id));
-
+        this.getSpellDataStore(this).setSpell(spell, args);
         if (exists) {
             this.dataTracker.set(CURRENT_SPELL, id.toString());
             this.dataTracker.set(SPELL_ARGS, args != null ? GrabBag.toNBT(args) : new NbtCompound());
@@ -546,13 +589,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         double max = spellData.getDouble("maxDistance");
         double belowLife = spellData.contains("belowLife") ? spellData.getDouble("belowLife") : -1;
         double aboveLife = spellData.contains("aboveLife") ? spellData.getDouble("aboveLife") : -1;
-        double targetBelowLife = spellData.contains("targetBelowLife") ? spellData.getDouble("targetBelowLife") : -1;
-        double targetAboveLife = spellData.contains("targetAboveLife") ? spellData.getDouble("targetAboveLife") : -1;
+        double targetBelowLife = spellData.getDouble("targetBelowLife");
+        double targetAboveLife = spellData.getDouble("targetAboveLife");
 
         if (belowLife == -1) belowLife = 100.0;
         if (aboveLife == -1) aboveLife = 0.0;
-        if (targetBelowLife == -1) targetBelowLife = 100.0;
-        if (targetAboveLife == -1) targetAboveLife = 0.0;
+        if (targetBelowLife <= 0) targetBelowLife = 100.0;
+        if (targetAboveLife <= 0) targetAboveLife = 0.0;
 
         boolean withinDistance = (max <= 0 || (distance >= min && distance <= max));
         boolean withinSelfHealth = (selfHealthPercent <= belowLife && selfHealthPercent >= aboveLife);
@@ -577,14 +620,13 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
         }
 
-        double distance = this.target != null ? this.distanceTo(this.target) : 0.0;
+        double distance = this.getPos().distanceTo(target.getPos());
         double selfHealthPercent = (this.getHealth() / this.getMaxHealth()) * 100.0;
         double targetHealthPercent = (this.target != null && this.target.getMaxHealth() > 0)
                 ? (this.target.getHealth() / this.target.getMaxHealth()) * 100.0
                 : 100.0;
 
         NbtCompound nbt = this.dataTracker.get(SPELLS);
-
         List<Spell.InstancedSpell> validSpells = new ArrayList<>();
         List<Float> weights = new ArrayList<>();
 
@@ -610,12 +652,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 return pb;
             }
         }
-
         for (Spell.InstancedSpell spellInstance : spells) {
             Identifier id = ModRegistries.SPELL.getId(spellInstance.spell());
-            if (id == null || nbt == null || !nbt.contains(id.toString())) {
-                continue;
-            }
+
+            if (id == null || nbt == null || !nbt.contains(id.toString())) continue;
 
             if (targetOnFire && (spellInstance.spell() == ModSpells.WATER_WAVE && spellInstance.spell() == ModSpells.WATER_BLAST)) continue;
             if (target.hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && spellInstance.spell().getSpellType() == SpellTypes.FIRE) {
@@ -626,30 +666,29 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                     continue;
                 }
             }
-
             NbtCompound spellData = nbt.getCompound(id.toString());
-
+            double belowLife = spellData.contains("belowLife") ? spellData.getDouble("belowLife") : 100.0;
+            double aboveLife = spellData.contains("aboveLife") ? spellData.getDouble("aboveLife") : 0.0;
+            double targetBelowLife = spellData.contains("targetBelowLife") ? spellData.getDouble("targetBelowLife") : 100.0;
+            double targetAboveLife = spellData.contains("targetAboveLife") ? spellData.getDouble("targetAboveLife") : 0.0;
+            float weight = spellData.contains("weight") ? spellData.getFloat("weight") : 1.0f;
             double min = spellData.getDouble("minDistance");
             double max = spellData.getDouble("maxDistance");
-            double belowLife = spellData.contains("belowLife") ? spellData.getDouble("belowLife") : -1;
-            double aboveLife = spellData.contains("aboveLife") ? spellData.getDouble("aboveLife") : -1;
-            double targetBelowLife = spellData.contains("targetBelowLife") ? spellData.getDouble("targetBelowLife") : -1;
-            double targetAboveLife = spellData.contains("targetAboveLife") ? spellData.getDouble("targetAboveLife") : -1;
-            float weight = spellData.contains("weight") ? spellData.getFloat("weight") : 1.0f;
-            var cd = spellInstance.spell().getCooldown(spellInstance.args(), this);
 
-            if (belowLife == -1) belowLife = 100.0;
-            if (aboveLife == -1) aboveLife = 0.0;
-            if (targetBelowLife == -1) targetBelowLife = 100.0;
-            if (targetAboveLife == -1) targetAboveLife = 0.0;
+            var cd = spellInstance.spell().getCooldown(spellInstance.args(), this);
+            int currentCD = data.getCooldown(cd);
 
             boolean withinDistance = (max <= 0 || (distance >= min && distance <= max));
-            boolean withinSelfHealth = (selfHealthPercent <= belowLife && selfHealthPercent >= aboveLife);
-            boolean withinTargetHealth = (targetHealthPercent <= targetBelowLife && targetHealthPercent >= targetAboveLife);
+            boolean withinSelfHealth = (selfHealthPercent <= (belowLife <= 0 ? 100 : belowLife) && selfHealthPercent >= aboveLife);
+            boolean withinTargetHealth = (targetHealthPercent <= (targetBelowLife <= 0 ? 100 : targetBelowLife) && targetHealthPercent >= targetAboveLife);
+            boolean cdReady = currentCD <= 0;
 
-            if (withinDistance && withinSelfHealth && withinTargetHealth && data.getCooldown(cd) <= 0) {
+            if (withinDistance && withinSelfHealth && withinTargetHealth && cdReady) {
+                float finalWeight = weight;
+                if (distance < 4.0f && max <= 8.0f) finalWeight *= 2.0f;
+
                 validSpells.add(spellInstance);
-                weights.add(weight);
+                weights.add(finalWeight);
             }
         }
 
@@ -662,6 +701,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         for (float w : weights) totalWeight += w;
 
         float randomPoint = this.random.nextFloat() * totalWeight;
+
         for (int i = 0; i < validSpells.size(); i++) {
             randomPoint -= weights.get(i);
             if (randomPoint <= 0) {
@@ -671,11 +711,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             }
         }
 
-        Spell.InstancedSpell fallback = validSpells.getFirst();
-        setCurrentSpellInstance(fallback.spell(), fallback.args());
-        return fallback;
+        return validSpells.getFirst();
     }
-
     public void setSpellEmpty() {
         Identifier id = ModRegistries.SPELL.getId(ModSpells.EMPTY);
         if (id != null) {
@@ -693,8 +730,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         float healthPercent = this.getHealth() / this.getMaxHealth();
         int finalTicks = ticks;
 
-        if (healthPercent < 0.3f) {
-            finalTicks = Math.round(ticks * 0.8f);
+        if (healthPercent < 0.6f) {
+            finalTicks = Math.round(ticks * 0.65f);
         }
 
         this.dataTracker.set(GLOBAL_CAST_DELAY, finalTicks);
@@ -756,6 +793,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         this.dataTracker.set(SPELLS, nbt);
     }
+
+
 
     @Nullable
     public Spell.InstancedSpell getSpellInstance(int index) {

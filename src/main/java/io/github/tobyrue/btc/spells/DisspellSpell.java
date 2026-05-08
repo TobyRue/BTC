@@ -41,6 +41,7 @@ public class DisspellSpell extends Spell {
 
         Vec3d start = user.getCameraPosVec(1.0F);
         Vec3d dir = user.getRotationVec(1.0F).normalize();
+        Vec3d lookVec = user.getRotationVec(1.0F).normalize();
 
         ((Ticker.TickerTarget) user).bTC$add(
                 Ticker.forTicks(tick -> {
@@ -49,12 +50,12 @@ public class DisspellSpell extends Spell {
                     if (!world.isClient) {
                         ((ServerWorld) world).spawnParticles(ParticleTypes.ELECTRIC_SPARK, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
                     }
+                    var entity = getEntityLookedAt(lookVec, user, range, forgiveness);
 
                     if (!world.isClient) {
-                        var entity = getEntityLookedAt(user, range, forgiveness);
                         if (entity instanceof LivingEntity target) {
 
-                            if (target instanceof SpellHost host) {
+                            if (target instanceof SpellHost<?> host) {
                                 silenceAnyHost(host, target, silenceDuration);
                             }
 
@@ -71,74 +72,6 @@ public class DisspellSpell extends Spell {
         );
     }
 
-    private void checkHand(LivingEntity target, ItemStack stack, int duration) {
-        if (!stack.isEmpty() && stack.getItem() instanceof SpellHost host) {
-            silenceAnyHost(host, stack, duration);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> void silenceAnyHost(SpellHost<T> host, Object context, int duration) {
-        try {
-            T castedContext = (T) context;
-
-            if (context instanceof io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity luminary) {
-                luminary.setGlobalCastDelay(duration);
-            }
-
-            SpellDataStore data = host.getSpellDataStore(castedContext);
-            if (data != null) {
-
-                if (context instanceof ItemStack stack && stack.getItem() instanceof SpellItem) {
-                    forceSilenceItem(stack, duration);
-                } else {
-                    data.setCooldown(new Spell.SpellCooldown(duration, ModRegistries.SPELL.getId(data.getSpell())));
-                }
-            }
-        } catch (ClassCastException ignored) {}
-    }
-
-    /**
-     * Specifically iterates through the NBT of a SpellItem to lock all existing spell cooldowns
-     */
-    private void forceSilenceItem(ItemStack stack, int duration) {
-        NbtCompound nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
-        NbtCompound cooldowns = nbt.getCompound("cooldowns");
-
-
-        for (String key : cooldowns.getKeys()) {
-            NbtCompound c = cooldowns.getCompound(key);
-            c.putInt("value", duration);
-            c.putInt("max", duration);
-        }
-
-        NbtComponent component = NbtComponent.of(nbt);
-        stack.set(ModComponents.SPELL_COMPONENT, component);
-    }
-
-    public static @Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
-        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
-        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
-        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
-
-        Entity hitEntity = null;
-        double closestDistanceSq = range * range;
-
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
-            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
-
-            if (optionalHit.isPresent()) {
-                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
-                if (distanceSq < closestDistanceSq) {
-                    closestDistanceSq = distanceSq;
-                    hitEntity = entity;
-                }
-            }
-        }
-        return hitEntity;
-    }
 
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {

@@ -2,8 +2,13 @@ package io.github.tobyrue.btc.spell;
 
 import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.regestries.ModComponents;
+import io.github.tobyrue.btc.regestries.ModRegistries;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -128,6 +133,7 @@ public abstract class ChanneledSpell extends Spell {
     @Override
     public abstract int getColor(GrabBag args);
 
+
     @Override
     protected final void use(SpellContext ctx, GrabBag args) {
         var startHealth = ctx.user().getHealth();
@@ -137,8 +143,9 @@ public abstract class ChanneledSpell extends Spell {
         int intervalTicks = args.getInt("intervalTicks", this.intervalTicks);
         int disturbableTill = args.getInt("disturbableTill", this.disturb.disturbableTill == -1 ? castTime : disturb.disturbableTill);
         double moveableDistance = args.getDouble("moveableDistance", disturb.moveableDistance < 0 ? 0 : disturb.moveableDistance);
-        
-        
+        int silenceDuration = args.getInt("silenceDuration", 160);
+
+
         AtomicBoolean ranOnce = new AtomicBoolean(false);
 
         ((Ticker.TickerTarget) (ctx.user())).bTC$add(

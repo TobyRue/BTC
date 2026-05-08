@@ -5,10 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -20,9 +23,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public abstract class Spell {
@@ -32,6 +37,123 @@ public abstract class Spell {
             ModRegistries.SPELL::getId
     );
 
+    @SuppressWarnings("unchecked")
+    public <T> void silenceAnyHost(SpellHost<T> host, Object context, int duration) {
+        try {
+            T castedContext = (T) context;
+
+            if (context instanceof io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity luminary) {
+                luminary.setGlobalCastDelay(duration);
+            }
+
+            SpellDataStore data = host.getSpellDataStore(castedContext);
+            if (data != null) {
+
+                if (context instanceof ItemStack stack && stack.getItem() instanceof SpellItem) {
+                    forceSilenceItem(stack, duration);
+                } else {
+                    data.setCooldown(new Spell.SpellCooldown(duration, ModRegistries.SPELL.getId(data.getSpell())));
+                }
+            }
+        } catch (ClassCastException ignored) {}
+    }
+    @SuppressWarnings("unchecked")
+    public <T> boolean silenceAnyHostWithResult(SpellHost<T> host, Object context, int duration) {
+        try {
+            T castedContext = (T) context;
+
+            if (context instanceof io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity luminary) {
+                luminary.setGlobalCastDelay(duration);
+                return true;
+            }
+
+            SpellDataStore data = host.getSpellDataStore(castedContext);
+            if (data != null) {
+
+                if (context instanceof ItemStack stack && stack.getItem() instanceof SpellItem) {
+                    forceSilenceItem(stack, duration);
+                } else {
+                    data.setCooldown(new Spell.SpellCooldown(duration, ModRegistries.SPELL.getId(data.getSpell())));
+                }
+                return true;
+            }
+        } catch (ClassCastException ignored) {}
+        return false;
+    }
+
+    /**
+     * Specifically iterates through the NBT of a SpellItem to lock all existing spell cooldowns
+     */
+    public void forceSilenceItem(ItemStack stack, int duration) {
+        NbtCompound nbt = stack.getOrDefault(ModComponents.SPELL_COMPONENT, NbtComponent.DEFAULT).copyNbt();
+        NbtCompound cooldowns = nbt.getCompound("cooldowns");
+
+
+        for (String key : cooldowns.getKeys()) {
+            NbtCompound c = cooldowns.getCompound(key);
+            c.putInt("value", duration);
+            c.putInt("max", duration);
+        }
+
+        NbtComponent component = NbtComponent.of(nbt);
+        stack.set(ModComponents.SPELL_COMPONENT, component);
+    }
+    public void checkHand(LivingEntity target, ItemStack stack, int duration) {
+        if (!stack.isEmpty() && stack.getItem() instanceof SpellHost<?> host) {
+            silenceAnyHost(host, stack, duration);
+        }
+    }
+    public boolean checkHandWithResult(LivingEntity target, ItemStack stack, int duration) {
+        if (!stack.isEmpty() && stack.getItem() instanceof SpellHost<?> host) {
+            return silenceAnyHostWithResult(host, stack, duration);
+        }
+        return false;
+    }
+    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(Vec3d lookVec, LivingEntity player, double range, double aimingForgiveness) {
+        Vec3d eyePos = player.getCameraPosVec(1.0F);
+        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
+        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
+
+        Entity hitEntity = null;
+        double closestDistanceSq = range * range;
+
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
+            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
+
+            if (optionalHit.isPresent()) {
+                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    hitEntity = entity;
+                }
+            }
+        }
+        return hitEntity;
+    }
+    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
+        Vec3d eyePos = player.getCameraPosVec(1.0F);
+        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
+        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
+        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
+
+        Entity hitEntity = null;
+        double closestDistanceSq = range * range;
+
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
+            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
+
+            if (optionalHit.isPresent()) {
+                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    hitEntity = entity;
+                }
+            }
+        }
+        return hitEntity;
+    }
     public Spell(final SpellTypes type) {
         this.type = type;
     }
