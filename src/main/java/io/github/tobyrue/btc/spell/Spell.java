@@ -4,6 +4,8 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
@@ -17,7 +19,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -32,52 +36,64 @@ import java.util.stream.IntStream;
 
 public abstract class Spell {
     protected final SpellTypes type;
+    public static final Identifier SILENCE_ID = BTC.identifierOf("silence");
     public static final Codec<Spell> CODEC = Identifier.CODEC.xmap(
             ModRegistries.SPELL::get,
             ModRegistries.SPELL::getId
     );
 
     @SuppressWarnings("unchecked")
-    public <T> void silenceAnyHost(SpellHost<T> host, Object context, int duration) {
+    public <T> void silenceAnyHost(SpellHost<T> host, Object context, int duration, int globalDuration) {
         try {
             T castedContext = (T) context;
-
-            if (context instanceof io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity luminary) {
-                luminary.setGlobalCastDelay(duration);
+            if (context instanceof EldritchLuminaryEntity luminary) {
+                luminary.setGlobalCastDelay(globalDuration);
             }
 
             SpellDataStore data = host.getSpellDataStore(castedContext);
             if (data != null) {
-
                 if (context instanceof ItemStack stack && stack.getItem() instanceof SpellItem) {
                     forceSilenceItem(stack, duration);
                 } else {
                     data.setCooldown(new Spell.SpellCooldown(duration, ModRegistries.SPELL.getId(data.getSpell())));
+
+                    data.setCooldown(new Spell.SpellCooldown(duration, SILENCE_ID));
                 }
             }
         } catch (ClassCastException ignored) {}
     }
-    @SuppressWarnings("unchecked")
-    public <T> boolean silenceAnyHostWithResult(SpellHost<T> host, Object context, int duration) {
-        try {
-            T castedContext = (T) context;
 
-            if (context instanceof io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity luminary) {
-                luminary.setGlobalCastDelay(duration);
-                return true;
-            }
-
-            SpellDataStore data = host.getSpellDataStore(castedContext);
-            if (data != null) {
-
-                if (context instanceof ItemStack stack && stack.getItem() instanceof SpellItem) {
-                    forceSilenceItem(stack, duration);
-                } else {
-                    data.setCooldown(new Spell.SpellCooldown(duration, ModRegistries.SPELL.getId(data.getSpell())));
+    protected void onDisspelled(SpellContext ctx, int tick, LivingEntity user) {
+        if (user.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.spawnParticles(ParticleTypes.SMOKE, user.getX(), user.getY() + 1, user.getZ(), 10, 0.2, 0.2, 0.2, 0.05);
+        }
+    }
+    protected boolean isDisspelled(SpellContext ctx, int tick, LivingEntity user) {
+        if (user.getMainHandStack().getItem() instanceof SpellItem spellItem) {
+            if (spellItem instanceof SpellHost<ItemStack> host) {
+                SpellDataStore data = host.getSpellDataStore(user.getMainHandStack());
+                if (data.getCooldown(new Spell.SpellCooldown(0, Spell.SILENCE_ID)) > 0) {
+                    onDisspelled(ctx, tick, user);
+                    return true;
                 }
-                return true;
             }
-        } catch (ClassCastException ignored) {}
+        } else if (user.getOffHandStack().getItem() instanceof SpellItem spellItem) {
+            if (spellItem instanceof SpellHost<ItemStack> host) {
+                SpellDataStore data = host.getSpellDataStore(user.getOffHandStack());
+                if (data.getCooldown(new Spell.SpellCooldown(0, Spell.SILENCE_ID)) > 0) {
+                    onDisspelled(ctx, tick, user);
+                    return true;
+                }
+            }
+        } else if (user instanceof EldritchLuminaryEntity entity) {
+            if (entity instanceof SpellHost<LivingEntity> host) {
+                SpellDataStore data = host.getSpellDataStore(entity);
+                if (data.getCooldown(new Spell.SpellCooldown(0, Spell.SILENCE_ID)) > 0) {
+                    onDisspelled(ctx, tick, user);
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -98,17 +114,12 @@ public abstract class Spell {
         NbtComponent component = NbtComponent.of(nbt);
         stack.set(ModComponents.SPELL_COMPONENT, component);
     }
-    public void checkHand(LivingEntity target, ItemStack stack, int duration) {
+    public void checkHand(LivingEntity target, ItemStack stack, int duration, int globalDuration) {
         if (!stack.isEmpty() && stack.getItem() instanceof SpellHost<?> host) {
-            silenceAnyHost(host, stack, duration);
+            silenceAnyHost(host, stack, duration, globalDuration);
         }
     }
-    public boolean checkHandWithResult(LivingEntity target, ItemStack stack, int duration) {
-        if (!stack.isEmpty() && stack.getItem() instanceof SpellHost<?> host) {
-            return silenceAnyHostWithResult(host, stack, duration);
-        }
-        return false;
-    }
+
     public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(Vec3d lookVec, LivingEntity player, double range, double aimingForgiveness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));

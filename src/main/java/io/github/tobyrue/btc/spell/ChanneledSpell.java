@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.spell;
 
 import io.github.tobyrue.btc.Ticker;
+import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
@@ -578,7 +579,7 @@ public abstract class ChanneledSpell extends Spell {
                     if (tick % castTime == 0 && tick != 0) {
                         runEnd(ctx, args, tick);
                     }
-                    return false;
+                    return isDisspelled(ctx, tick, user);
                 }, castTime + 1)
         );
     }

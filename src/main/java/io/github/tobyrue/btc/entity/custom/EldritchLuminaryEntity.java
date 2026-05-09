@@ -463,11 +463,11 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
                 put("cooldown", getSpellWaitAmount(12));
-                put("globalCooldown", 60);
+                put("globalCooldown", 90);
             }})), 0, 8, -1, -1, -1, -1, 1.7f); // Brutal close-range punish
             this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(9));
-                put("globalCooldown", 60);
+                put("cooldown", getSpellWaitAmount(12));
+                put("globalCooldown", 90);
             }})), 0, 8, -1, -1, -1, -1, 1.7f); // Brutal close-range punish
 
             this.addSpell(new Spell.InstancedSpell(ModSpells.LIGHTNING_STRIKE, GrabBag.fromMap(new HashMap<>() {{
@@ -495,6 +495,169 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (!this.getWorld().isClient()) {
             ((SpellHost<LivingEntity>) this).tickCooldowns(this);
         }
+    }
+
+    private void applyPyromancer() {
+        addUniversalSpells();
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(1));
+            put("level", 2);
+            put("globalCooldown", 40);
+        }})), 6, 32, -1, -1, -1, -1, 1.0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(12));
+            put("globalCooldown", 80);
+        }})), 0, 10, -1, -1, -1, -1, 1.2f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(15));
+            put("globalCooldown", 90);
+        }})), 0, 12, -1, -1, -1, -1, 1.1f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(25));
+            put("globalCooldown", 120);
+        }})), 0, 15, -1, -1, -1, -1, 1.5f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(12));
+            put("globalCooldown", 60);
+        }})), 0, 8, -1, -1, -1, -1, 2.0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGON_FIREBALL, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(10));
+            put("globalCooldown", 80);
+        }})), 10, 32, -1, -1, -1, -1, 1.3f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 40);
+        }})), 0, 5, -1, -1, -1, -1, 1.4f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.GEYSER_STEP, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(6));
+            put("globalCooldown", 50);
+        }})), 0, 12, -1, -1, -1, -1, 1.0f);
+    }
+
+    private void applyStormWarden() {
+        addUniversalSpells();
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(6));
+            put("globalCooldown", 70);
+        }})), 8, 24, -1, -1, -1, -1, 1.1f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(4));
+            put("globalCooldown", 60);
+        }})), 4, 16, -1, -1, -1, -1, 1.0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(8));
+            put("globalCooldown", 80);
+        }})), 0, 12, -1, -1, -1, -1, 1.2f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
+            put("shootStrength", 2.5d);
+            put("cooldown", getSpellWaitAmount(3));
+            put("globalCooldown", 40);
+        }})), 0, 10, -1, -1, -1, -1, 1.5f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.LIGHTNING_STRIKE, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(10));
+            put("globalCooldown", 50);
+        }})), 0, 32, -1, -1, -1, -1, 1.3f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
+            put("noGravity", true);
+            put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 50);
+        }})), 6, 24, -1, -1, -1, -1, 1.0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.TEMPESTS_CALL, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(30));
+            put("globalCooldown", 130);
+        }})), 0, 32, -1, -1, -1, -1, 1.6f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.FROST_REFLEX, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(32));
+            put("activeTicks", getSpellWaitAmount(24));
+            put("globalCooldown", 30);
+        }})), 0, 32, -1, -1, 85, -1, 2.0f);
+    }
+
+    private void applyShadowSummoner() {
+        addUniversalSpells();
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(20));
+            put("globalCooldown", 100);
+        }})), 0, 32, -1, -1, -1, -1, 1.5f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 40);
+        }})), 10, 32, -1, -1, -1, -1, 1.0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(12));
+            put("globalCooldown", 80);
+        }})), 0, 15, 75, -1, -1, -1, 1.4f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(8));
+            put("globalCooldown", 50);
+        }})), 0, 12, -1, -1, -1, -1, 1.8f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(15));
+            put("globalCooldown", 90);
+        }})), 0, 15, -1, -1, -1, -1, 1.1f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(10));
+            put("globalCooldown", 60);
+        }})), 12, 32, -1, -1, -1, -1, 0.9f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(15));
+            put("globalCooldown", 120);
+        }})), 0, 12, -1, -1, -1, -1, 1.3f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.DISSOLUTION, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(40));
+            put("globalCooldown", 160);
+        }})), 0, 32, -1, -1, -1, -1, 1.7f);
+    }
+
+    private void addUniversalSpells() {
+        this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(20));
+            put("globalCooldown", 100);
+        }})), 0, 32, -1, -1, -1, -1, 0.8f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(5));
+        }})), 0, 64, -1, -1, -1, -1, 0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.TRIGGERED_POTION, GrabBag.fromMap(new HashMap<>() {{
+            put("effect", "minecraft:regeneration");
+            put("percentHealth", 0.5);
+            put("duration", 200);
+            put("amplifier", 1);
+            put("cooldown", getSpellWaitAmount(40));
+            put("globalCooldown", 80);
+        }})), 0, 48, 50, -1, -1, -1, 2.0f);
+
+        this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
+            put("effect", "minecraft:invisibility");
+            put("duration", 200);
+            put("cooldown", getSpellWaitAmount(30));
+            put("globalCooldown", 80);
+        }})), 0, 15, 35, -1, -1, -1, 1.5f);
     }
 
     private int getSpellWaitAmount(int amount) {

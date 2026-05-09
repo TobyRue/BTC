@@ -23,7 +23,11 @@ public abstract class TriggeredSpell extends Spell {
         super(id);
     }
 
-
+    @Override
+    protected void onDisspelled(SpellContext ctx, int tick, LivingEntity user) {
+        super.onDisspelled(ctx, tick, user);
+        onEnd(ctx, tick, user);
+    }
 
     @Override
     protected final void use(SpellContext ctx, GrabBag args) {
@@ -63,7 +67,7 @@ public abstract class TriggeredSpell extends Spell {
                         return true;
                     }
                     tick(ctx, user);
-                    return false;
+                    return isDisspelled(ctx, tick, user);
                 }, duration + 1)
         );
 

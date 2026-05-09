@@ -38,6 +38,7 @@ public class DisspellSpell extends Spell {
         double range = args.getDouble("range", 20.0d);
         double forgiveness = args.getDouble("forgiveness", 0.6d);
         int silenceDuration = args.getInt("silenceDuration", 160);
+        int globalDuration = args.getInt("globalSilenceDuration", 60);
 
         Vec3d start = user.getCameraPosVec(1.0F);
         Vec3d dir = user.getRotationVec(1.0F).normalize();
@@ -45,6 +46,7 @@ public class DisspellSpell extends Spell {
 
         ((Ticker.TickerTarget) user).bTC$add(
                 Ticker.forTicks(tick -> {
+
                     Vec3d pos = start.add(dir.multiply(speed * tick));
 
                     if (!world.isClient) {
@@ -56,11 +58,11 @@ public class DisspellSpell extends Spell {
                         if (entity instanceof LivingEntity target) {
 
                             if (target instanceof SpellHost<?> host) {
-                                silenceAnyHost(host, target, silenceDuration);
+                                silenceAnyHost(host, target, silenceDuration, globalDuration);
                             }
 
-                            checkHand(target, target.getMainHandStack(), silenceDuration);
-                            checkHand(target, target.getOffHandStack(), silenceDuration);
+                            checkHand(target, target.getMainHandStack(), silenceDuration, globalDuration);
+                            checkHand(target, target.getOffHandStack(), silenceDuration, globalDuration);
 
                             ((ServerWorld) world).spawnParticles(ParticleTypes.FLASH, target.getX(), target.getEyeY(), target.getZ(), 1, 0, 0, 0, 0);
                             return true;
