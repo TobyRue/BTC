@@ -22,7 +22,7 @@ public class TeleportFreezeSpell extends TriggeredSpell {
 
     @Override
     protected void onStart(SpellContext ctx) {
-        Entity target = getEntityLookedAt(ctx.user(), ctx.data().getArgs().getDouble("scan_range", 30.0), 0.5);
+        Entity target = isTargetInRange(ctx.user(), ctx.target(), ctx.data().getArgs().getDouble("range", 32d));
         if (target instanceof LivingEntity living) {
             this.lockedTarget = living;
         }

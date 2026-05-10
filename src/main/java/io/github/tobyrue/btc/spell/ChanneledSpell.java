@@ -144,7 +144,6 @@ public abstract class ChanneledSpell extends Spell {
         int intervalTicks = args.getInt("intervalTicks", this.intervalTicks);
         int disturbableTill = args.getInt("disturbableTill", this.disturb.disturbableTill == -1 ? castTime : disturb.disturbableTill);
         double moveableDistance = args.getDouble("moveableDistance", disturb.moveableDistance < 0 ? 0 : disturb.moveableDistance);
-        int silenceDuration = args.getInt("silenceDuration", 160);
 
 
         AtomicBoolean ranOnce = new AtomicBoolean(false);

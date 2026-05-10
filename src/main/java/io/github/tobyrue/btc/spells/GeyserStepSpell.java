@@ -35,8 +35,8 @@ public class GeyserStepSpell extends Spell {
         var range = args.getDouble("range", 24.0d);
         var canTarget = args.getBoolean("canTarget", true);
 
-        var target = getEntityLookedAt(user, range, aimingForgiveness);
-        var launchVelocity = (target != null && canTarget) ? 1.7 : 2.2; // less for enemies, more for player
+        var target = isTargetInRange(ctx.user(), ctx.target(), args.getDouble("range", 24d));
+        var launchVelocity = (target != null && canTarget) ? 1.7 : 2.2;
 
         var launchedEntity = (target != null && canTarget) ? target : user;
 

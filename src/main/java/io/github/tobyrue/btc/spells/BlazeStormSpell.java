@@ -26,14 +26,12 @@ public class BlazeStormSpell extends ChanneledSpell {
         int amount = args.getInt("amount", 20);
 
         World world = ctx.world();
-        LivingEntity user = ctx.user(); // can be null
+        LivingEntity user = ctx.user();
 
-        // Break the burst over duration using your Ticker
         int ticksPerShot = Math.max(1, castTime / amount);
         Vec3d dir = ctx.user().getRotationVec(1).normalize();
 
         if (tick % ticksPerShot == 0) {
-            // Spawn a small fireball with random deviation
             Vec3d dev = new Vec3d(
                     world.getRandom().nextTriangular(dir.x, deviation),
                     world.getRandom().nextTriangular(dir.y, deviation),
@@ -41,7 +39,6 @@ public class BlazeStormSpell extends ChanneledSpell {
             ).normalize();
 
             SmallFireballEntity fireball;
-            // Fired by a living entity
             fireball = new SmallFireballEntity(world, user, dev);
             fireball.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
 

@@ -43,7 +43,7 @@ public class CreeperWallExplosiveTrapSpell extends Spell {
         int count = args.getInt("count", Math.max(8, (3 * 3) + 8));
 
 
-        Entity entityLookedAt = getEntityLookedAt(user, range, aimingForgiveness);
+        Entity entityLookedAt = isTargetInRange(ctx.user(), ctx.target(), args.getDouble("range", 16d));
         if (entityLookedAt != null) {
             for (int i = 0; i < count; i++) {
                 double angle = 2 * Math.PI * i / count;

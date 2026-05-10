@@ -31,6 +31,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -165,6 +166,66 @@ public abstract class Spell {
         }
         return hitEntity;
     }
+    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(World world, Vec3d startPos, Vec3d lookVec, double range, double aimingForgiveness) {
+        Vec3d reachVec = startPos.add(lookVec.multiply(range));
+
+        Box searchBox = new Box(startPos, reachVec).expand(1.0D);
+
+        Entity hitEntity = null;
+        double closestDistanceSq = range * range;
+
+
+        for (Entity entity : world.getOtherEntities(null, searchBox, e -> e.isAttackable() && e.canHit())) {
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
+            Optional<Vec3d> optionalHit = entityBox.raycast(startPos, reachVec);
+
+            if (optionalHit.isPresent()) {
+                double distanceSq = startPos.squaredDistanceTo(optionalHit.get());
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    hitEntity = entity;
+                }
+            }
+        }
+        return hitEntity;
+    }
+
+    public static @Nullable LivingEntity getTargetEntity(World world, Vec3d startPos, Vec3d lookVec, GrabBag args, LivingEntity target, double range, double aimingForgiveness, double searchRadius) {
+        double range2 = args.getDouble("range", range);
+        double forgiveness = args.getDouble("aimingForgiveness", aimingForgiveness);
+        double searchRadius2 = args.getDouble("searchRadius", searchRadius);
+
+        Entity lookedAt = getEntityLookedAt(world, startPos, lookVec, range2, forgiveness);
+
+        if (lookedAt instanceof LivingEntity living) {
+            return living;
+        }
+
+        Vec3d reachVec = startPos.add(lookVec.multiply(range2));
+        Box searchBox = new Box(reachVec.subtract(searchRadius2, searchRadius2, searchRadius2),
+                reachVec.add(searchRadius2, searchRadius2, searchRadius2));
+
+        List<LivingEntity> nearby = world.getEntitiesByClass(LivingEntity.class, searchBox,
+                e -> e.isAlive() && e.isAttackable() && e == target);
+
+        LivingEntity closest = null;
+        double dist = Double.MAX_VALUE;
+        for (LivingEntity potential : nearby) {
+            double d = potential.squaredDistanceTo(reachVec);
+            if (d < dist) {
+                dist = d;
+                closest = potential;
+            }
+        }
+
+        return closest;
+    }
+
+    public static @Nullable LivingEntity isTargetInRange(LivingEntity user, LivingEntity target, double range) {
+        if (user == null || target == null) return null;
+        return target.squaredDistanceTo(user) <= range ? target : null;
+    }
+
     public Spell(final SpellTypes type) {
         this.type = type;
     }
@@ -228,7 +289,7 @@ public abstract class Spell {
         return ModRegistries.SPELL.getId(type);
     }
 
-    public record SpellContext(World world, Vec3d pos, Vec3d direction, SpellDataStore data, @Nullable LivingEntity user) {}
+    public record SpellContext(World world, Vec3d pos, Vec3d direction, SpellDataStore data, @Nullable LivingEntity user, @Nullable LivingEntity target) {}
     public record SpellCooldown(int ticks, Identifier key) {}
 
     public record InstancedSpell(Spell spell, GrabBag args) {

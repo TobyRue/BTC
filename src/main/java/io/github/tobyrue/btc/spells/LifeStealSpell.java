@@ -27,7 +27,6 @@ public class LifeStealSpell extends Spell {
                 new Box(ctx.user().getBlockPos()).expand(args.getDouble("radius", 10d)),
                 entity -> entity != ctx.user() && entity.isAlive());
 
-        // Define the percentage of health to take (e.g., 10% = 0.10 or 5% = 0.05)
         float healthPercentage = 0.10f;
 
         for (LivingEntity target : targets) {

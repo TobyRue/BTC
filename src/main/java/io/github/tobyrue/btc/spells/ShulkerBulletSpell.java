@@ -53,11 +53,10 @@ public class ShulkerBulletSpell extends Spell {
             ShulkerBulletEntity bullet = new ShulkerBulletEntity(
                     ctx.world(),
                     ctx.user(),
-                    getEntityLookedAt(ctx.user(), range, aimingForgiveness),
+                    isTargetInRange(ctx.user(), ctx.target(), range),
                     axis
             );
 
-            // Spawn one block higher
             bullet.refreshPositionAndAngles(
                     ctx.user().getX(),
                     ctx.user().getY() + 1.0,
@@ -68,7 +67,7 @@ public class ShulkerBulletSpell extends Spell {
 
             ctx.world().spawnEntity(bullet);
         } else {
-// Dispenser or other non-living source
+
             List<LivingEntity> entities = ctx.world().getEntitiesByClass(
                     LivingEntity.class,
                     new Box(BlockPos.ofFloored(ctx.pos())).expand(radius),

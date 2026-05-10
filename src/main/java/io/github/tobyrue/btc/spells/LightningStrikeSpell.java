@@ -33,8 +33,7 @@ public class LightningStrikeSpell extends Spell {
         double range = args.getDouble("range", 24.0d);
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3d);
 
-        // Find target entity or block
-        Entity targetEntity = getEntityLookedAt(user, range, aimingForgiveness);
+        Entity targetEntity = isTargetInRange(ctx.user(), ctx.target(), range);
         Vec3d strikePos;
 
         if (targetEntity != null) {
@@ -45,8 +44,7 @@ public class LightningStrikeSpell extends Spell {
             strikePos = blockPos.add(0.5, 0, 0.5);
         }
 
-        // Spawn proper lightning entity
-        if (!world.isClient && world instanceof ServerWorld serverWorld) {
+        if (world instanceof ServerWorld serverWorld) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(serverWorld);
             if (lightning != null) {
                 lightning.refreshPositionAfterTeleport(strikePos);
@@ -66,28 +64,6 @@ public class LightningStrikeSpell extends Spell {
         return null;
     }
 
-    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
-        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
-        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
-
-        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D);
-        Entity hitEntity = null;
-        double closestDistanceSq = range * range;
-
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
-            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
-            if (optionalHit.isPresent()) {
-                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
-                if (distanceSq < closestDistanceSq) {
-                    closestDistanceSq = distanceSq;
-                    hitEntity = entity;
-                }
-            }
-        }
-        return hitEntity;
-    }
 
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {

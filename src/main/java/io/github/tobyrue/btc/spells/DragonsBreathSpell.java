@@ -37,7 +37,7 @@ public class DragonsBreathSpell extends ChanneledSpell {
         int ticksPerShot = args.getInt("rate", 4);       // how often to “pulse” flame
         double range = args.getDouble("range", 8.0d);     // cone length
         double angle = args.getDouble("angle", 20.0d);    // cone half-angle (degrees)
-        double damage = args.getDouble("damage", 4.0d);   // damage per tick
+        double damage = args.getDouble("damage", 1.0d);   // damage per tick
 
         Vec3d look = user.getRotationVec(1).normalize();
 
@@ -51,7 +51,6 @@ public class DragonsBreathSpell extends ChanneledSpell {
 
             Vec3d particlePos = user.getPos().add(0, user.getStandingEyeHeight(), 0).add(offset);
             if (!world.isClient) {
-                // send particle to all players nearby
                 ((ServerWorld) world).spawnParticles(
                         ParticleTypes.DRAGON_BREATH,
                         particlePos.x, particlePos.y, particlePos.z,
@@ -60,7 +59,6 @@ public class DragonsBreathSpell extends ChanneledSpell {
                         0     // speed
                 );
             } else {
-                // already client-side, can just spawn directly
                 world.addParticle(
                         ParticleTypes.DRAGON_BREATH,
                         particlePos.x, particlePos.y, particlePos.z,
@@ -69,7 +67,6 @@ public class DragonsBreathSpell extends ChanneledSpell {
             }
         }
 
-        // every few ticks, actually deal damage + ignite
         if (tick % ticksPerShot == 0) {
             Vec3d eyePos = user.getPos().add(0, user.getStandingEyeHeight(), 0);
             Box area = new Box(eyePos, eyePos.add(look.multiply(range))).expand(1.5);

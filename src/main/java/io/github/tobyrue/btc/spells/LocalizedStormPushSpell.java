@@ -33,14 +33,12 @@ public class LocalizedStormPushSpell extends Spell {
         double verticalMultiplier = args.getDouble("verticalMultiplier", 2.2d);
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
         double range = args.getDouble("range", 24d);
-        // Shoot mob away from the player
-        var entity = getEntityLookedAt(ctx.user(), range, aimingForgiveness);
+        var entity = isTargetInRange(ctx.user(), ctx.target(), range);
         double dx = entity.getX() - ctx.user().getX();
         double dy = entity.getY() - ctx.user().getY();
         double dz = entity.getZ() - ctx.user().getZ();
         double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-        // Apply velocity away from the player
         if (distance != 0) {
             entity.setVelocity(dx / distance * shootStrength, (dy / distance * shootStrength), dz / distance * shootStrength);
             entity.setVelocity(entity.getVelocity().add(0, verticalMultiplier, 0));
@@ -50,36 +48,10 @@ public class LocalizedStormPushSpell extends Spell {
         entity.damage(ctx.world().getDamageSources().flyIntoWall(), 5);
     }
 
-    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
-        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
-        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
-
-        // Create a box from the eye position to the reach vector
-        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
-
-        // Find the closest entity intersecting that line
-        Entity hitEntity = null;
-        double closestDistanceSq = range * range;
-
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness); // slightly expanded hitbox
-            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
-
-            if (optionalHit.isPresent()) {
-                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
-                if (distanceSq < closestDistanceSq) {
-                    closestDistanceSq = distanceSq;
-                    hitEntity = entity;
-                }
-            }
-        }
-        return hitEntity;
-    }
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
         assert ctx.user() != null;
-        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24d), args.getDouble("aimingForgiveness", 0.3D));
+        Entity target = isTargetInRange(ctx.user(), ctx.target(), args.getDouble("range", 24d));
         return target != null && super.canUse(ctx, args);
     }
 

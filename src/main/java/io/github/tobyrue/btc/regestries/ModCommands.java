@@ -400,7 +400,7 @@ public class ModCommands {
                     @Override
                     public void setCooldown(Spell.SpellCooldown cooldown) {}
                 };
-                return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
             } else {
                 throw FAILED_ARGS_EXCEPTION.create();
             }
@@ -424,7 +424,7 @@ public class ModCommands {
                             System.out.println("[DEBUG] Source has permission level 2");
                             data.setSpell(spell, args);
                             System.out.println("[DEBUG] Spell casted by admin: " + spell.getPureName());
-                            return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                            return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                         } else {
                             System.out.println("[DEBUG] Non-admin args parsed: " + args);
 
@@ -444,7 +444,7 @@ public class ModCommands {
                                     if (found) {
                                         System.out.println("[DEBUG] Spell casted directly on item: " + spell.getPureName());
                                         data.setSpell(spell, args);
-                                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                                     } else {
                                         System.out.println("[DEBUG] Spell not found in known spells (no slot)");
                                         System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
@@ -466,7 +466,7 @@ public class ModCommands {
                                     if (found) {
                                         data.setSpell(spell, args);
                                         System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
-                                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                        return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                                     } else {
                                         System.out.println("[DEBUG] Spell not found in available spells for entity");
                                         throw FAILED_EXCEPTION.create();
@@ -480,7 +480,7 @@ public class ModCommands {
                                 if (found) {
                                     data.setSpell(spell, args);
                                     System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
-                                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                                 } else {
                                     System.out.println("[DEBUG] Spell not found in available spells for entity");
                                     throw FAILED_EXCEPTION.create();
@@ -527,7 +527,7 @@ public class ModCommands {
                         @Override
                         public void setCooldown(Spell.SpellCooldown cooldown) {}
                     };
-                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null), args) ? 1 : 0;
+                    return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                 } else {
                     throw FAILED_ARGS_EXCEPTION.create();
                 }

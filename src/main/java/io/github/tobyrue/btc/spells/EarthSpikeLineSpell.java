@@ -69,10 +69,8 @@ public class EarthSpikeLineSpell extends Spell {
     public BlockPos findSpawnableGround(World world, BlockPos centerPos, int yRange) {
         int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
         int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
-        // Start from top and go downwards
         for (int y = topY; y >= bottomY; y--) {
             BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
-            // Improved block check to ensure solid block and air above or open space above
             if (world.getBlockState(pos).isSolidBlock(world, pos) && !world.getBlockState(pos.up()).isSolidBlock(world, pos.up()) && !world.getBlockState(pos.up()).isOf(Blocks.CHEST)) {
                 return pos;
             }

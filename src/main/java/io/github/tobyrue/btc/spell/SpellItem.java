@@ -24,7 +24,7 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
         DispenserBlock.registerBehavior(this, ((pointer, stack) -> {
             final var direction = new Vec3d(pointer.state().get(DispenserBlock.FACING).getUnitVector());
             final var data = SpellItem.this.getSpellDataStore(stack);
-            data.getSpell().tryUse(new Spell.SpellContext(pointer.world(), pointer.pos().toCenterPos(), direction, data, null), data.getArgs());
+            data.getSpell().tryUse(new Spell.SpellContext(pointer.world(), pointer.pos().toCenterPos(), direction, data, null, Spell.getEntityLookedAt(pointer.world(), Vec3d.of(pointer.pos()), direction, data.getArgs().getDouble("range", 32), data.getArgs().getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l ? l : null), data.getArgs());
             return stack;
         }));
     }

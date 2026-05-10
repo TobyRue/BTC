@@ -14,6 +14,7 @@
     "DispenserBlockEntityMixin",
     "EnchantmentScreenHandlerMixin",
     "EntityAccessor",
+    "ExplosionMixin",
     "FireballEntityAccessor",
     "HoneycombItemMixin",
     "LivingEntityMixin",

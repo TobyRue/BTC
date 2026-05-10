@@ -32,7 +32,7 @@ public class ShadowStepSpell extends Spell {
         double teleportDistance = args.getDouble("teleportDistance", 2.5D); // distance behind target
         int invisDuration = args.getInt("invisDuration", 140); // ticks (5s default)
 
-        Entity target = getEntityLookedAt(ctx.user(), range, aimingForgiveness);
+        Entity target = isTargetInRange(ctx.user(), ctx.target(), range);
         if (target == null) return;
 
         // Calculate position behind target
@@ -49,29 +49,6 @@ public class ShadowStepSpell extends Spell {
         ));
     }
 
-    public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
-        Vec3d lookVec = player.getRotationVec(1.0F).normalize();
-        Vec3d reachVec = eyePos.add(lookVec.multiply(range));
-        Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
-
-        Entity hitEntity = null;
-        double closestDistanceSq = range * range;
-
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox,
-                e -> e.isAttackable() && e.canHit())) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
-            Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
-            if (optionalHit.isPresent()) {
-                double distanceSq = eyePos.squaredDistanceTo(optionalHit.get());
-                if (distanceSq < closestDistanceSq) {
-                    closestDistanceSq = distanceSq;
-                    hitEntity = entity;
-                }
-            }
-        }
-        return hitEntity;
-    }
 
     @Override
     protected boolean canUse(SpellContext ctx, GrabBag args) {

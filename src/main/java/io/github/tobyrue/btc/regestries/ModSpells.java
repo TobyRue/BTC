@@ -78,6 +78,8 @@ public class ModSpells {
     public static final Spell SHULKER_BULLET = register("shulker_bullet", new ShulkerBulletSpell());
     public static final Spell SHADOW_STEP = register("shadow_step", new ShadowStepSpell());
     public static final Spell DRAGONS_BREATH = register("dragons_breath", new DragonsBreathSpell());
+    public static final Spell ELDRITCH_TETHER = register("eldritch_tether", new EldritchTetherSpell());
+    public static final Spell ABYSSAL_SHARDS = register("abyssal_shards", new AbyssalShardsSpell());
 
     public static final Spell EARTH_SPIKE_LINE = register("earth_spike_line", new EarthSpikeLineSpell());
     public static final Spell CREEPER_WALL_CIRCLE = register("creeper_wall_circle", new CreeperWallCircleSpell());

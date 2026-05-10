@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.regestries.ModSpells;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellDataStore;
@@ -31,11 +32,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -52,6 +56,54 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     private static final TrackedData<Integer> ILLUSION_TIME = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> GLOBAL_CAST_DELAY =
             DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> ARCHETYPE_ID = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    public enum LuminaryArchetype implements StringIdentifiable {
+        EMPTY(0, "empty"),
+        ALL(1, "all"),
+        PYROMANCER(2, "pyromancer"),
+        STORM_WARDEN(3, "storm_warden"),
+        SHADOW_SUMMONER(4, "shadow_summoner");
+
+        private final int id;
+        private final String name;
+
+        LuminaryArchetype(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+        public String getName() {
+            return name;
+        }
+        public static LuminaryArchetype fromId(int id) {
+            for (LuminaryArchetype type : values()) {
+                if (type.id == id) return type;
+            }
+            return EMPTY;
+        }
+        public static LuminaryArchetype fromName(String name) {
+            for (LuminaryArchetype type : values()) {
+                if (Objects.equals(type.name, name)) return type;
+            }
+            return EMPTY;
+        }
+        @Override
+        public String asString() {
+            return name;
+        }
+    }
+
+    public void setArchetype(LuminaryArchetype archetype) {
+        this.dataTracker.set(ARCHETYPE_ID, archetype.getId());
+    }
+
+    public LuminaryArchetype getArchetype() {
+        return LuminaryArchetype.fromId(this.dataTracker.get(ARCHETYPE_ID));
+    }
 
     private static final int GLOBAL_DELAY = 40;
 
@@ -94,6 +146,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         builder.add(SPELL_CAST_TIME, 0);
         builder.add(ILLUSION_TIME, 0);
         builder.add(GLOBAL_CAST_DELAY, 0);
+        builder.add(ARCHETYPE_ID, 0);
     }
 
     public static DefaultAttributeContainer.Builder createEldritchLuminaryAttributes() {
@@ -274,7 +327,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
 
-        if (getGlobalCastDelay() > 0) {
+        if (getGlobalCastDelay() > 0  && this.age % getCooldownMultiplier() == 0) {
             setGlobalCastDelay(getGlobalCastDelay() - 1);
         }
 
@@ -335,171 +388,34 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
         if (getAllSpellInstances().isEmpty()) {
-            // Base elemental attacks
-            this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(1));
-                put("level", 2);
-                put("globalCooldown", 50);
-            }})), 6, 32, -1, -1, -1, -1, 0.8f);
+            if (this.getArchetype() == LuminaryArchetype.EMPTY) {
+                int randomId = 2 + this.random.nextInt(3);
+                this.setArchetype(LuminaryArchetype.fromId(randomId));
+            }
 
-            this.addSpell(new Spell.InstancedSpell(ModSpells.WATER_BLAST, GrabBag.fromMap(new HashMap<>() {{
-                put("noGravity", true);
-                put("cooldown", getSpellWaitAmount(1));
-                put("globalCooldown", 50);
-            }})), 6, 24, -1, -1, -1, -1, 0.8f);
+            this.addUniversalSpells();
 
-            this.addSpell(new Spell.InstancedSpell(ModSpells.EARTH_SPIKE_LINE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(2));
-                put("globalCooldown", 60);
-            }})), 4, 16, -1, -1, -1, -1, 0.9f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(4));
-                put("globalCooldown", 70);
-            }})), 8, 24, -1, -1, -1, -1, 0.7f);
-
-            // === AREA & MULTI-ATTACK ===
-            // High impact, high recovery time.
-            this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-                put("globalCooldown", 60);
-            }})), 0, 10, -1, -1, -1, -1, 1.0f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(6));
-                put("globalCooldown", 120);
-            }})), 4, 12, -1, -1, -1, -1, 0.9f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
-                put("shootStrength", 2d);
-                put("verticalMultiplier", 1.2d);
-                put("cooldown", getSpellWaitAmount(1));
-                put("globalCooldown", 40);
-            }})), 4, 8, -1, -1, -1, -1, 1.2f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
-                put("shootStrength", 2d);
-                put("verticalMultiplier", 1.2d);
-                put("cooldown", getSpellWaitAmount(1));
-                put("globalCooldown", 40);
-            }})), 0, 4, -1, -1, -1, -1, 2f);
-            // === SUMMONS & ILLUSIONS ===
-            this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(3));
-                put("globalCooldown", 40);
-            }})), 10, 32, -1, -1, -1, -1, 0.6f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(8));
-                put("globalCooldown", 80);
-            }})), 0, 32, -1, -1, -1, -1, 1.0f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(10));
-                put("globalCooldown", 80);
-            }})), 0, 32, 80, -1, -1, -1, 1.2f); // Use when below 60% health
-
-            // === BUFFS & DEBUFFS ===
-            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:invisibility");
-                put("duration", 400);
-                put("cooldown", getSpellWaitAmount(10));
-                put("globalCooldown", 80);
-            }})), 0, 48, 40, -1, -1, -1, 0.9f); // Panic invisibility at 40% health
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:regeneration");
-                put("duration", 150);
-                put("amplifier", 3);
-                put("cooldown", getSpellWaitAmount(16));
-                put("globalCooldown", 80);
-            }})), 0, 48, 60, -1, -1, -1, 2f); // Solid heal at 50%
-            this.addSpell(new Spell.InstancedSpell(ModSpells.TRIGGERED_POTION, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:regeneration");
-                put("percentHealth", 0.6);
-                put("activeTicks", 1200);
-                put("duration", 100);
-                put("amplifier", 2);
-                put("cooldown", getSpellWaitAmount(32));
-                put("globalCooldown", 80);
-            }})), 0, 48, 80, -1, -1, -1, 2f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.TRIGGERED_POTION, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:resistance");
-                put("percentHealth", 0.4);
-                put("activeTicks", 1200);
-                put("duration", 400);
-                put("amplifier", 1);
-                put("cooldown", getSpellWaitAmount(32));
-                put("globalCooldown", 80);
-            }})), 0, 48, 80, -1, -1, -1, 2f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.POTION_AREA_EFFECT, GrabBag.fromMap(new HashMap<>() {{
-                put("effect", "minecraft:darkness");
-                put("duration", 200);
-                put("amplifier", 1);
-                put("cooldown", getSpellWaitAmount(8));
-                put("globalCooldown", 80);
-            }})), 0, 15, -1, -1, -1, -1, 0.8f);
-
-            // === MOVEMENT & TRICKS ===
-            this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(4));
-                put("globalCooldown", 50);
-            }})), 8, 32, -1, -1, -1, -1, 1.0f); // Use to escape when player is close
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.WIND_TORNADO, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-                put("globalCooldown", 70);
-            }})), 0, 8, -1, -1, -1, -1, 1.1f);
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-                put("globalCooldown", 60);
-            }})), 0, 12, -1, -1, -1, -1, 0.7f);
-
-            // === ADVANCED MAGIC ===
-            this.addSpell(new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-                put("globalCooldown", 80);
-            }})), 0, 15, 70, -1, -1, -1, 1.3f); // Prioritize when boss is < 70% health
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(12));
-                put("globalCooldown", 90);
-            }})), 0, 8, -1, -1, -1, -1, 1.7f); // Brutal close-range punish
-            this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(12));
-                put("globalCooldown", 90);
-            }})), 0, 8, -1, -1, -1, -1, 1.7f); // Brutal close-range punish
-
-            this.addSpell(new Spell.InstancedSpell(ModSpells.LIGHTNING_STRIKE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(6));
-                put("globalCooldown", 30);
-            }})), 4, 32, -1, -1, -1, -1, 1.1f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.FROST_REFLEX, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(32));
-                put("activeTicks", getSpellWaitAmount(24));
-                put("globalCooldown", 30);
-            }})), 0, 32, -1, -1, 80, -1, 1.3f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.TELEPORT_FREEZE, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(32));
-                put("activeTicks", getSpellWaitAmount(24));
-                put("globalCooldown", 30);
-            }})), 0, 32, -1, 70, 80, -1, 1.3f);
-            this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
-                put("cooldown", getSpellWaitAmount(5));
-            }})), 0, 64, -1, -1, -1, -1, 0f);
+            switch (this.getArchetype()) {
+                case PYROMANCER -> applyPyromancer();
+                case STORM_WARDEN -> applyStormWarden();
+                case SHADOW_SUMMONER -> applyShadowSummoner();
+                default -> {
+                    applyPyromancer();
+                    applyStormWarden();
+                    applyShadowSummoner();
+                }
+            }
         }
 
         if (this.getWorld().isClient()) {
             setupAnimationStates();
         }
-        if (!this.getWorld().isClient()) {
+        if (!this.getWorld().isClient() && this.age % getCooldownMultiplier() == 0) {
             ((SpellHost<LivingEntity>) this).tickCooldowns(this);
         }
     }
 
     private void applyPyromancer() {
-        addUniversalSpells();
-
         this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(1));
             put("level", 2);
@@ -508,28 +424,22 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.FLAME_BURST, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(12));
-            put("globalCooldown", 80);
+            put("globalCooldown", 160);
         }})), 0, 10, -1, -1, -1, -1, 1.2f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.BLAZE_STORM, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(15));
-            put("globalCooldown", 90);
         }})), 0, 12, -1, -1, -1, -1, 1.1f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.FIRE_STORM, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(25));
-            put("globalCooldown", 120);
+            put("globalCooldown", 80);
         }})), 0, 15, -1, -1, -1, -1, 1.5f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGONS_BREATH, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(12));
-            put("globalCooldown", 60);
+            put("globalCooldown", 160);
         }})), 0, 8, -1, -1, -1, -1, 2.0f);
-
-        this.addSpell(new Spell.InstancedSpell(ModSpells.DRAGON_FIREBALL, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(10));
-            put("globalCooldown", 80);
-        }})), 10, 32, -1, -1, -1, -1, 1.3f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(5));
@@ -543,8 +453,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     private void applyStormWarden() {
-        addUniversalSpells();
-
         this.addSpell(new Spell.InstancedSpell(ModSpells.ICE_BLOCK, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(6));
             put("globalCooldown", 70);
@@ -561,7 +469,8 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }})), 0, 12, -1, -1, -1, -1, 1.2f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
-            put("shootStrength", 2.5d);
+            put("shootStrength", 2.0d);
+            put("verticalMultiplier", 1.5d);
             put("cooldown", getSpellWaitAmount(3));
             put("globalCooldown", 40);
         }})), 0, 10, -1, -1, -1, -1, 1.5f);
@@ -590,78 +499,97 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     private void applyShadowSummoner() {
-        addUniversalSpells();
+        this.addUniversalSpells();
+        this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_TETHER, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(15));
+            put("tetherRadius", 5.0d);
+            put("globalCooldown", 30);
+        }})), 4, 32, -1, -1, -1, -1, 1.8f);
 
+        this.addSpell(new Spell.InstancedSpell(ModSpells.ABYSSAL_SHARDS, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(10));
+            put("damage", 1.0d);
+            put("globalCooldown", 50);
+        }})), 0, 32, -1, -1, -1, -1, 2.0f);
         this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(20));
-            put("globalCooldown", 100);
-        }})), 0, 32, -1, -1, -1, -1, 1.5f);
+            put("cooldown", getSpellWaitAmount(15));
+            put("globalCooldown", 60);
+        }})), 0, 32, -1, -1, -1, -1, 1.8f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.SHULKER_BULLET, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(5));
-            put("globalCooldown", 40);
-        }})), 10, 32, -1, -1, -1, -1, 1.0f);
+            put("cooldown", getSpellWaitAmount(3));
+            put("globalCooldown", 20);
+        }})), 8, 48, -1, -1, -1, -1, 1.2f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.LIFE_STEAL, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(12));
-            put("globalCooldown", 80);
-        }})), 0, 15, 75, -1, -1, -1, 1.4f);
+            put("cooldown", getSpellWaitAmount(8));
+            put("globalCooldown", 40);
+        }})), 0, 20, 80, -1, -1, -1, 1.6f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(8));
-            put("globalCooldown", 50);
-        }})), 0, 12, -1, -1, -1, -1, 1.8f);
+            put("cooldown", getSpellWaitAmount(5)); // FAST cooldown
+            put("globalCooldown", 30);
+        }})), 0, 16, -1, -1, -1, -1, 1.5f);
 
-        this.addSpell(new Spell.InstancedSpell(ModSpells.MIST_VEIL, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(15));
-            put("globalCooldown", 90);
-        }})), 0, 15, -1, -1, -1, -1, 1.1f);
 
-        this.addSpell(new Spell.InstancedSpell(ModSpells.ENDER_PEARL, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(10));
-            put("globalCooldown", 60);
-        }})), 12, 32, -1, -1, -1, -1, 0.9f);
+        this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(4));
+            put("globalCooldown", 30);
+        }})), 4, 32, -1, -1, -1, -1, 1.1f);
 
-        this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_CIRCLE, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(15));
-            put("globalCooldown", 120);
-        }})), 0, 12, -1, -1, -1, -1, 1.3f);
+        this.addSpell(new Spell.InstancedSpell(ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(12));
+            put("globalCooldown", 80);
+        }})), 0, 15, -1, -1, -1, -1, 1.5f);
 
-        this.addSpell(new Spell.InstancedSpell(ModSpells.DISSOLUTION, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(40));
-            put("globalCooldown", 160);
-        }})), 0, 32, -1, -1, -1, -1, 1.7f);
+
     }
-
     private void addUniversalSpells() {
         this.addSpell(new Spell.InstancedSpell(ModSpells.ELDRITCH_ILLUSION, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(20));
-            put("globalCooldown", 100);
+            put("globalCooldown", 60);
         }})), 0, 32, -1, -1, -1, -1, 0.8f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 20);
         }})), 0, 64, -1, -1, -1, -1, 0f);
-
+        this.addSpell(new Spell.InstancedSpell(ModSpells.DISSOLUTION, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 20);
+        }})), 0, 64, -1, -1, -1, -1, 0.0f);
         this.addSpell(new Spell.InstancedSpell(ModSpells.TRIGGERED_POTION, GrabBag.fromMap(new HashMap<>() {{
             put("effect", "minecraft:regeneration");
             put("percentHealth", 0.5);
             put("duration", 200);
             put("amplifier", 1);
             put("cooldown", getSpellWaitAmount(40));
-            put("globalCooldown", 80);
+            put("globalCooldown", 40);
         }})), 0, 48, 50, -1, -1, -1, 2.0f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.POTION, GrabBag.fromMap(new HashMap<>() {{
             put("effect", "minecraft:invisibility");
             put("duration", 200);
             put("cooldown", getSpellWaitAmount(30));
-            put("globalCooldown", 80);
+            put("globalCooldown", 40);
         }})), 0, 15, 35, -1, -1, -1, 1.5f);
+        this.addSpell(new Spell.InstancedSpell(ModSpells.TELEPORT_FREEZE, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(24));
+            put("globalCooldown", 40);
+        }})), 0, 64, -1, 60, -1, -1, 1.5f);
     }
 
     private int getSpellWaitAmount(int amount) {
-        return ((amount) * (GLOBAL_DELAY + castTime)) + 1;
+        return (((amount) * (GLOBAL_DELAY + castTime)) + 1);
+    }
+
+    private int getCooldownMultiplier() {
+        return switch (this.getWorld().getDifficulty()) {
+            case PEACEFUL -> 20;
+            case EASY -> 3;
+            case NORMAL -> 2;
+            case HARD -> 1;
+        };
     }
 
     private void castCurrentSpellAt(LivingEntity target) {
@@ -676,7 +604,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         Vec3d origin = this.getPos().add(0, this.getStandingEyeHeight(), 0);
         Vec3d direction = target.getPos().add(0, target.getStandingEyeHeight() / 2, 0).subtract(origin).normalize();
 
-        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, direction, data, this);
+        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, direction, data, this, target);
         spell.tryUse(ctx, args);
     }
     private void castCurrentSpellAt() {
@@ -690,7 +618,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         Vec3d origin = this.getPos().add(0, this.getStandingEyeHeight(), 0);
 
-        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, null, data, this);
+        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, this.getCameraPosVec(1.0f), data, this, Spell.getTargetEntity(this.getWorld(), this.getPos(), this.getCameraPosVec(1.0f), data.getArgs(), this.getTarget(), 32.0, 0.5, 24.0));
         spell.tryUse(ctx, args);
     }
 
@@ -804,15 +732,24 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
 
         boolean targetOnFire = (this.target != null && this.target.isOnFire());
-
         var pb = new Spell.InstancedSpell(ModSpells.PURGE_BOLT, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 20);
         }}));
-
+        var ds = new Spell.InstancedSpell(ModSpells.DISSOLUTION, GrabBag.fromMap(new HashMap<>() {{
+            put("cooldown", getSpellWaitAmount(5));
+            put("globalCooldown", 20);
+        }}));
         if (target.hasStatusEffect(StatusEffects.REGENERATION) || target.hasStatusEffect(StatusEffects.RESISTANCE) || target.hasStatusEffect(StatusEffects.ABSORPTION)) {
             if (canUseSpell(pb)) {
                 setCurrentSpellInstance(pb.spell(), pb.args());
                 return pb;
+            }
+        }
+        if (this.hasStatusEffect(StatusEffects.WEAKNESS) || target.hasStatusEffect(ModStatusEffects.FRAGILITY) || target.hasStatusEffect(StatusEffects.SLOWNESS)) {
+            if (canUseSpell(ds)) {
+                setCurrentSpellInstance(ds.spell(), ds.args());
+                return ds;
             }
         }
         for (Spell.InstancedSpell spellInstance : spells) {
@@ -1120,4 +1057,45 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     public void chooseRandomAngerTime() {
     }
 
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Archetype", this.getArchetype().getId());
+        nbt.put("SpellCooldowns", this.dataTracker.get(SPELL_COOLDOWN));
+        nbt.putString("CurrentSpell", this.dataTracker.get(CURRENT_SPELL));
+        nbt.put("SpellArgs", this.dataTracker.get(SPELL_ARGS));
+        nbt.put("Spells", this.dataTracker.get(SPELLS));
+        nbt.putInt("SpellCastTime", this.dataTracker.get(SPELL_CAST_TIME));
+        nbt.putInt("IllusionTime", this.dataTracker.get(ILLUSION_TIME));
+        nbt.putInt("GlobalCastDelay", this.dataTracker.get(GLOBAL_CAST_DELAY));
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("Archetype")) {
+            this.setArchetype(LuminaryArchetype.fromId(nbt.getInt("Archetype")));
+        }
+        if (nbt.contains("SpellCooldowns")) {
+            this.dataTracker.set(SPELL_COOLDOWN, nbt.getCompound("SpellCooldowns"));
+        }
+        if (nbt.contains("CurrentSpell")) {
+            this.dataTracker.set(CURRENT_SPELL, nbt.getString("CurrentSpell"));
+        }
+        if (nbt.contains("SpellArgs")) {
+            this.dataTracker.set(SPELL_ARGS, nbt.getCompound("SpellArgs"));
+        }
+        if (nbt.contains("Spells")) {
+            this.dataTracker.set(SPELLS, nbt.getCompound("Spells"));
+        }
+        if (nbt.contains("SpellCastTime")) {
+            this.dataTracker.set(SPELL_CAST_TIME, nbt.getInt("SpellCastTime"));
+        }
+        if (nbt.contains("IllusionTime")) {
+            this.dataTracker.set(ILLUSION_TIME, nbt.getInt("IllusionTime"));
+        }
+        if (nbt.contains("GlobalCastDelay")) {
+            this.dataTracker.set(GLOBAL_CAST_DELAY, nbt.getInt("GlobalCastDelay"));
+        }
+    }
 }
