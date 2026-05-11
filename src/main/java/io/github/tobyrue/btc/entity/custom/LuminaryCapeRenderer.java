@@ -27,12 +27,24 @@ import net.minecraft.util.math.RotationAxis;
 public class
 LuminaryCapeRenderer extends FeatureRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
     private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary.png");
-
+    private static final Identifier TEXTURE_PYRO = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_pyromancer.png");
+    private static final Identifier TEXTURE_STORM = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_storm.png");
+    private static final Identifier TEXTURE_SHADOW = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_shadow.png");
 
     private float prevCapeAngle = 5.0F;
 
     public LuminaryCapeRenderer(FeatureRendererContext<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> context) {
         super(context);
+    }
+
+    @Override
+    public Identifier getTexture(EldritchLuminaryEntity luminary) {
+        return switch (luminary.getArchetype()) {
+            case EMPTY, ALL -> TEXTURE;
+            case PYROMANCER -> TEXTURE_PYRO;
+            case STORM_WARDEN -> TEXTURE_STORM;
+            case SHADOW_SUMMONER -> TEXTURE_SHADOW;
+        };
     }
 
     @Override
@@ -71,7 +83,7 @@ LuminaryCapeRenderer extends FeatureRenderer<EldritchLuminaryEntity, EldritchLum
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(baseAngle + idleWave));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntitySolid(TEXTURE));
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntitySolid(getTexture(entity )));
         EldritchLuminaryModel<EldritchLuminaryEntity> model = this.getContextModel();
         model.renderCape(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 

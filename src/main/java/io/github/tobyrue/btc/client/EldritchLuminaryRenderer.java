@@ -28,6 +28,9 @@ import net.minecraft.util.math.random.Random;
 public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminaryEntity, EldritchLuminaryModel<EldritchLuminaryEntity>> {
 
     private static final Identifier TEXTURE = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary.png");
+    private static final Identifier TEXTURE_PYRO = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_pyromancer.png");
+    private static final Identifier TEXTURE_STORM = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_storm.png");
+    private static final Identifier TEXTURE_SHADOW = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_shadow.png");
 
     public EldritchLuminaryRenderer(EntityRendererFactory.Context context) {
         super(context, new EldritchLuminaryModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARY)), 0.5f);
@@ -36,7 +39,12 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
 
     @Override
     public Identifier getTexture(EldritchLuminaryEntity luminary) {
-        return TEXTURE;
+        return switch (luminary.getArchetype()) {
+            case EMPTY, ALL -> TEXTURE;
+            case PYROMANCER -> TEXTURE_PYRO;
+            case STORM_WARDEN -> TEXTURE_STORM;
+            case SHADOW_SUMMONER -> TEXTURE_SHADOW;
+        };
     }
 
     @Override
