@@ -441,10 +441,12 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             put("globalCooldown", 160);
         }})), 0, 8, -1, -1, -1, -1, 2.0f);
 
-        this.addSpell(new Spell.InstancedSpell(ModSpells.STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(5));
+        this.addSpell(new Spell.InstancedSpell(ModSpells.LOCALIZED_STORM_PUSH, GrabBag.fromMap(new HashMap<>() {{
+            put("shootStrength", 2.0d);
+            put("verticalMultiplier", 1.5d);
+            put("cooldown", getSpellWaitAmount(3));
             put("globalCooldown", 40);
-        }})), 0, 5, -1, -1, -1, -1, 1.4f);
+        }})), 0, 10, -1, -1, -1, -1, 1.4f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.GEYSER_STEP, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(6));

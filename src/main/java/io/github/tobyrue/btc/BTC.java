@@ -16,6 +16,7 @@ import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.recipes.KeyDuplicateRecipe;
 import io.github.tobyrue.btc.recipes.UnbreakableSmithingRecipe;
 import io.github.tobyrue.btc.regestries.*;
+import io.github.tobyrue.btc.util.BookshelfProcessor;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -45,6 +46,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
@@ -68,6 +70,9 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> PANE = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pane"));
     public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
     public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
+
+    public static final StructureProcessorType<BookshelfProcessor> BOOKSHELF_PROCESSOR =
+            Registry.register(Registries.STRUCTURE_PROCESSOR, Identifier.of("btc", "bookshelf_processor"), () -> BookshelfProcessor.CODEC);
 
     public static final RecipeSerializer<KeyDuplicateRecipe> KEY_DUPLICATE_SERIALIZER =
             Registry.register(
