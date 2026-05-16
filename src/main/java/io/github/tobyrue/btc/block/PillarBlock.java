@@ -365,5 +365,30 @@ public class PillarBlock extends HorizontalConnectingBlock {
             };
         });
     }
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.util.BlockMirror mirror) {
+        Direction.Axis axis = state.get(AXIS);
 
+        if (mirror == net.minecraft.util.BlockMirror.LEFT_RIGHT) {
+            if (axis == Direction.Axis.Y) {
+                return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
+            } else if (axis == Direction.Axis.X) {
+                return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
+            } else if (axis == Direction.Axis.Z) {
+                return state;
+            }
+        }
+        else if (mirror == net.minecraft.util.BlockMirror.FRONT_BACK) {
+            if (axis == Direction.Axis.Y) {
+
+                return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
+            } else if (axis == Direction.Axis.X) {
+                return state;
+            } else if (axis == Direction.Axis.Z) {
+                return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
+            }
+        }
+
+        return super.mirror(state, mirror);
+    }
 }

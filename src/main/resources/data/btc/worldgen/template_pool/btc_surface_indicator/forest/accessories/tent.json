@@ -5,7 +5,7 @@
     {
       "weight": 1,
       "element": {
-        "location": "btc:btc_surface_indicator/accessories/tent/forest_white_tent",
+        "location": "btc:btc_surface_indicator/forest/accessories/tent/forest_white_tent",
         "processors": [
           {
             "processor_type": "btc:bookshelf_processor"
@@ -58,6 +58,32 @@
       "weight": 1,
       "element": {
         "location": "btc:btc_surface_indicator/forest/accessories/tent/forest_light_blue_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/forest/accessories/tent/forest_big_blue_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/forest/accessories/tent/forest_big_red_tent",
         "processors": [
           {
             "processor_type": "btc:bookshelf_processor"

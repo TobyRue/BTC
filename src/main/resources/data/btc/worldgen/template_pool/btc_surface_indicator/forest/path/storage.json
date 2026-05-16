@@ -1,12 +1,12 @@
 {
-  "name": "btc:fire",
+  "name": "btc:storage_path",
   "fallback": "minecraft:empty",
   "elements": [
     {
       "weight": 1,
       "element": {
-        "location": "btc:btc_surface_indicator/forest/accessories/fire/forest_fire_1",
-        "projection": "rigid",
+        "location": "btc:btc_surface_indicator/forest/path/storage/forest_storage_path_1",
+        "projection": "terrain_matching",
         "processors": "minecraft:empty",
         "element_type": "minecraft:single_pool_element"
       }
@@ -14,8 +14,8 @@
     {
       "weight": 1,
       "element": {
-        "location": "btc:btc_surface_indicator/forest/accessories/fire/forest_fire_2",
-        "projection": "rigid",
+        "location": "btc:btc_surface_indicator/forest/path/storage/forest_storage_path_2",
+        "projection": "terrain_matching",
         "processors": "minecraft:empty",
         "element_type": "minecraft:single_pool_element"
       }
@@ -23,8 +23,8 @@
     {
       "weight": 1,
       "element": {
-        "location": "btc:btc_surface_indicator/forest/accessories/fire/forest_fire_3",
-        "projection": "rigid",
+        "location": "btc:btc_surface_indicator/forest/path/storage/forest_storage_path_3",
+        "projection": "terrain_matching",
         "processors": "minecraft:empty",
         "element_type": "minecraft:single_pool_element"
       }
@@ -32,8 +32,8 @@
     {
       "weight": 1,
       "element": {
-        "location": "btc:btc_surface_indicator/forest/accessories/fire/forest_fire_4",
-        "projection": "rigid",
+        "location": "btc:btc_surface_indicator/forest/path/storage/forest_storage_path_4",
+        "projection": "terrain_matching",
         "processors": "minecraft:empty",
         "element_type": "minecraft:single_pool_element"
       }

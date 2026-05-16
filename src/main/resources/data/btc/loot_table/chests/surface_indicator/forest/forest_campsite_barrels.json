@@ -1,0 +1,127 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 3, "max": 6 },
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:cooked_chicken", "weight": 15, "functions": [{ "function": "minecraft:set_count", "count": { "min": 1, "max": 3 } }] },
+        { "type": "minecraft:item", "name": "minecraft:honey_bottle", "weight": 10 },
+        { "type": "minecraft:item", "name": "minecraft:sweet_berries", "weight": 15, "functions": [{ "function": "minecraft:set_count", "count": { "min": 4, "max": 12 } }] },
+        { "type": "minecraft:item", "name": "minecraft:lantern", "weight": 8 },
+        { "type": "minecraft:item", "name": "minecraft:charcoal", "weight": 12, "functions": [{ "function": "minecraft:set_count", "count": { "min": 1, "max": 4 } }] },
+        { "type": "minecraft:item", "name": "minecraft:bowl", "weight": 10 },
+        { "type": "minecraft:item", "name": "minecraft:string", "weight": 12 },
+        { "type": "minecraft:item", "name": "minecraft:leather", "weight": 8 }
+      ]
+    },
+    {
+      "rolls": { "min": 1, "max": 2 },
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:arrow", "weight": 20, "functions": [{ "function": "minecraft:set_count", "count": { "min": 5, "max": 12 } }] },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:shield",
+          "weight": 10,
+          "functions": [
+            { "function": "minecraft:set_damage", "damage": { "min": 0.4, "max": 0.8 } },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:base_color": "orange",
+                "minecraft:banner_patterns": [
+                  { "pattern": "minecraft:mojang", "color": "orange" },
+                  { "pattern": "minecraft:gradient", "color": "black" },
+                  { "pattern": "minecraft:gradient_up", "color": "red" },
+                  { "pattern": "minecraft:triangles_bottom", "color": "black" },
+                  { "pattern": "minecraft:circle", "color": "yellow" },
+                  { "pattern": "minecraft:square_bottom_left", "color": "black" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:shield",
+          "weight": 10,
+          "functions": [
+            { "function": "minecraft:set_damage", "damage": { "min": 0.4, "max": 0.8 } },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:base_color": "blue",
+                "minecraft:banner_patterns": [
+                  { "pattern": "minecraft:mojang", "color": "light_gray" },
+                  { "pattern": "minecraft:gradient_up", "color": "light_blue" },
+                  { "pattern": "minecraft:gradient", "color": "black" },
+                  { "pattern": "minecraft:triangles_bottom", "color": "black" },
+                  { "pattern": "minecraft:circle", "color": "white" },
+                  { "pattern": "minecraft:square_bottom_left", "color": "black" }
+                ]
+              }
+            }
+          ]
+        },
+        { "type": "minecraft:item", "name": "minecraft:iron_sword", "weight": 10, "functions": [{ "function": "minecraft:set_damage", "damage": { "min": 0.1, "max": 0.4 } }] },
+        { "type": "minecraft:item", "name": "minecraft:iron_axe", "weight": 10, "functions": [{ "function": "minecraft:set_damage", "damage": { "min": 0.1, "max": 0.4 } }] },
+        { "type": "minecraft:item", "name": "minecraft:diamond_sword", "weight": 1, "functions": [{ "function": "minecraft:set_damage", "damage": { "min": 0.2, "max": 0.5 } }] },
+        { "type": "minecraft:item", "name": "btc:scoped_crossbow", "weight": 3 },
+        { "type": "minecraft:item", "name": "minecraft:spyglass", "weight": 5 },
+        { "type": "minecraft:item", "name": "minecraft:flint_and_steel", "weight": 8 }
+      ]
+    },
+    {
+      "rolls": { "min": 1, "max": 2 },
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:oak_log", "weight": 10 },
+        { "type": "minecraft:item", "name": "minecraft:birch_log", "weight": 10 },
+        { "type": "minecraft:item", "name": "minecraft:spruce_log", "weight": 10 }
+      ],
+      "functions": [
+        { "function": "minecraft:set_count", "count": { "min": 4, "max": 8 } }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:empty", "weight": 1200 },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:axolotl_bucket",
+          "weight": 250,
+          "functions": [{ "function": "minecraft:set_components", "components": { "minecraft:bucket_entity_data": { "Variant": 0 } } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:axolotl_bucket",
+          "weight": 250,
+          "functions": [{ "function": "minecraft:set_components", "components": { "minecraft:bucket_entity_data": { "Variant": 1 } } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:axolotl_bucket",
+          "weight": 250,
+          "functions": [{ "function": "minecraft:set_components", "components": { "minecraft:bucket_entity_data": { "Variant": 2 } } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:axolotl_bucket",
+          "weight": 250,
+          "functions": [{ "function": "minecraft:set_components", "components": { "minecraft:bucket_entity_data": { "Variant": 3 } } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:axolotl_bucket",
+          "weight": 1,
+          "functions": [{ "function": "minecraft:set_components", "components": { "minecraft:bucket_entity_data": { "Variant": 4 } } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:goat_horn",
+          "weight": 700,
+          "functions": [{ "function": "minecraft:set_instrument", "options": "#minecraft:regular_goat_horns" }]
+        }
+      ]
+    }
+  ]
+}
