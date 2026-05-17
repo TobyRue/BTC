@@ -14,6 +14,7 @@
     "DispenserBlockEntityMixin",
     "EnchantmentScreenHandlerMixin",
     "EntityAccessor",
+    "EntityTeamColorMixin",
     "ExplosionMixin",
     "FireballEntityAccessor",
     "HoneycombItemMixin",
@@ -33,6 +34,7 @@
     "FovMixin",
     "ItemRendererMixin",
     "KeyBindingAccessor",
+    "MinecraftClientMixin",
     "ModelLoaderMixin",
     "PlayerArmPoseMixin",
     "PlayerRendererMixin"

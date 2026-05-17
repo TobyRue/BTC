@@ -17,6 +17,7 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.util.ClientOreRadar;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
 import io.github.tobyrue.btc.wires.WireBlockEntityRenderer;
 import io.github.tobyrue.rtc.RTC;
@@ -121,6 +122,13 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
+        WorldRenderEvents.AFTER_SETUP.register(context -> {
+            ClientLensHandler.setActiveFrustum(context.frustum());
+        });
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            ClientOreRadar.clientTick();
+        });
         Registry.register(Registries.PARTICLE_TYPE, Identifier.of(BTC.MOD_ID, "water_blast"), WATER_BLAST);
         ParticleFactoryRegistry.getInstance().register(WATER_BLAST, GustParticle.Factory::new);
         Registry.register(Registries.PARTICLE_TYPE, Identifier.of(BTC.MOD_ID, "water_drop"), WATER_DROP);

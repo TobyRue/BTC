@@ -28,6 +28,11 @@ public class ModItems {
         return registeredItem;
     }
 
+    public static final AmethystLensItem AMETHYST_LENS = (AmethystLensItem) register(
+            new AmethystLensItem(new Item.Settings().maxCount(1)),
+            "amethyst_lens"
+    );
+
     public static final Item ELDRITCH_ARMOR_TRIM = register(
             SmithingTemplateItem.of(BTC.identifierOf("eldritch"), FeatureFlags.VANILLA),
             "eldritch_armor_trim_smithing_template"

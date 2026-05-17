@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.block.PotionPillar;
 import io.github.tobyrue.btc.block.entities.PotionPillarBlockEntity;
+import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.CarvedPumpkinBlock;
@@ -23,6 +24,7 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.joml.Matrix4f;
@@ -114,6 +116,8 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
         Text glyph = isHoliday() ? Text.literal(String.valueOf(getHoliday().charAt(index))) : Text.literal(String.valueOf(rune.charAt(index)))
                 .styled(s -> s.withFont(Identifier.of("minecraft", "illageralt")));
 
+        Text text = isHoliday() ? Text.literal(String.valueOf(getHoliday().charAt(index))) : Text.literal(String.valueOf(rune.charAt(index)));
+
         for (int i = 0; i < 4; i++) {
             matrices.push();
 
@@ -129,10 +133,12 @@ public class PotionPillarBlockRenderer implements BlockEntityRenderer<PotionPill
             Matrix4f matrix = matrices.peek().getPositionMatrix();
 
             int color = (alpha << 24) | blockEntity.getColor();
-
+            var player = MinecraftClient.getInstance().player;
+            boolean holdingLens = player != null && (player.getStackInHand(Hand.MAIN_HAND).isOf(ModItems.AMETHYST_LENS)
+                    || player.getStackInHand(Hand.OFF_HAND).isOf(ModItems.AMETHYST_LENS));
             textRenderer.draw(
-                    glyph,
-                    -textRenderer.getWidth(glyph) / 2.0F,
+                    holdingLens ? text : glyph,
+                    -textRenderer.getWidth(holdingLens ? text : glyph) / 2.0F,
                     -4.0F,
                     color,
                     false,
