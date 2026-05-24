@@ -1,0 +1,15 @@
+{
+  "name": "btc:log",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/log/desert_log",
+        "projection": "rigid",
+        "processors": "minecraft:empty",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

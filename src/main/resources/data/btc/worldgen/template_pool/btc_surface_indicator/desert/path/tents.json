@@ -1,0 +1,42 @@
+{
+  "name": "btc:tent_path",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/path/tents/desert_tent_path_1",
+        "projection": "terrain_matching",
+        "processors": "minecraft:empty",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/path/tents/desert_tent_path_2",
+        "projection": "terrain_matching",
+        "processors": "minecraft:empty",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/path/tents/desert_tent_path_3",
+        "projection": "terrain_matching",
+        "processors": "minecraft:empty",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/path/tents/desert_tent_path_4",
+        "projection": "terrain_matching",
+        "processors": "minecraft:empty",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+
+  ]
+}

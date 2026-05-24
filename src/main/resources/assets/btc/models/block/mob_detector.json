@@ -1,7 +1,7 @@
 {
   "parent": "btc:block/multi_faced",
   "textures": {
-    "side": "btc:block/mob_detector_top",
+    "side": "btc:block/mob_detector_side ",
     "top": "btc:block/mob_detector_top",
     "bottom": "btc:block/mob_detector_top"
   }

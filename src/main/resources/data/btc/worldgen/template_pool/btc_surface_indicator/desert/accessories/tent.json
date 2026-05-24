@@ -1,0 +1,123 @@
+{
+  "name": "btc:tent",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_white_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_red_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_purple_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_magenta_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_cyan_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_green_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_big_white_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_big_cyan_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/tent/desert_big_magenta_tent",
+        "processors": [
+          {
+            "processor_type": "btc:bookshelf_processor"
+          }
+        ],
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

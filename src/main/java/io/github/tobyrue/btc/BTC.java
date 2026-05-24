@@ -89,6 +89,8 @@ public class BTC implements ModInitializer {
     //To add another map for a structure make a new tag like below and also add a new json file with the path in the tag below under the path: data/btc/tags/worldgen/structure. Look at better_trial_chambers_maps for the format change the structure in it to the name of the structure.
     public static final TagKey<Structure> BETTER_TRIAL_CHAMBERS_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "better_trial_chambers"));
 
+    public static final TagKey<Structure> SURFACE_INDICATOR_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "surface_indicator"));
+
 
     @Override
     public void onInitialize() {

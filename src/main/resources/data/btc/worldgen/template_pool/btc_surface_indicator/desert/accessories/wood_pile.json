@@ -1,0 +1,15 @@
+{
+  "name": "btc:wood_pile",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/wood_pile/desert_wood_pile",
+        "projection": "rigid",
+        "processors": "minecraft:empty",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

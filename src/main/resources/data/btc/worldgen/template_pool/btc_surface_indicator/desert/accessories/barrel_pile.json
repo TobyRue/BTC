@@ -1,0 +1,15 @@
+{
+  "name": "btc:barrel_pile",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/desert/accessories/loot/desert_barrel_pile",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
