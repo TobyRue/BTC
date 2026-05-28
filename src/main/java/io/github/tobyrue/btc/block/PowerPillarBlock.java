@@ -1,12 +1,12 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -169,7 +169,7 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
             return ActionResult.PASS;
         }
 
-        WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
+        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
 
         if (type == WrenchType.WIRE_DELAY) {
             int newDelay;

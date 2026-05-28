@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.wires;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableBiMap;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.regestries.ModComponents;
@@ -191,7 +192,7 @@ public class WireBlockSlow extends Block implements IWireConnect, IHaveWrenchAct
     @Override
     public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
         ItemStack heldItem = player.getStackInHand(hand);
-        WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
+        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
         if (heldItem.isIn(BTC.WRENCHES) && (player.isCreative() || !this.IMMUTABLE)) {
             if (hand == Hand.OFF_HAND && type == WrenchType.WIRE) {
                 var newState = state.cycle(OPERATOR);

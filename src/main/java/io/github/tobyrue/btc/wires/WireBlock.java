@@ -2,14 +2,13 @@ package io.github.tobyrue.btc.wires;
 
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
+import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -19,12 +18,10 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -179,22 +176,21 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
             return ActionResult.PASS;
         }
 
-        WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
+        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
 
         if (type == WrenchType.WIRE) {
-            if (hand == Hand.OFF_HAND) {
-                wire.cycleOperator();
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("block.btc.wire.change_operator",
-                            Text.translatable("block.btc.wire.operator." + wire.getOperator().asString())), true);
-                }
-            } else {
-                wire.cycleConnection(hitSide);
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("block.btc.wire.change_connection",
-                            Text.translatable("block.btc.wire.face." + hitSide.asString()),
-                            Text.translatable("block.btc.wire.connection." + wire.getConnection(hitSide).asString())), true);
-                }
+            wire.cycleConnection(hitSide);
+            if (world.isClient) {
+                player.sendMessage(Text.translatable("block.btc.wire.change_connection",
+                        Text.translatable("block.btc.wire.face." + hitSide.asString()),
+                        Text.translatable("block.btc.wire.connection." + wire.getConnection(hitSide).asString())), true);
+            }
+            return ActionResult.SUCCESS;
+        } else if (type == WrenchType.WIRE_OPERATOR) {
+            wire.cycleOperator();
+            if (world.isClient) {
+                player.sendMessage(Text.translatable("block.btc.wire.change_operator",
+                        Text.translatable("block.btc.wire.operator." + wire.getOperator().asString())), true);
             }
             return ActionResult.SUCCESS;
         } else if (type == WrenchType.WIRE_DELAY) {

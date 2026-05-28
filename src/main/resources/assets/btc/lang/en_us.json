@@ -290,12 +290,7 @@
   "block.btc.wire.connection.output": "OUTPUT",
   "block.btc.wire.connection.redstone_output": "REDSTONE OUTPUT",
   "block.btc.wire.connection.redstone_input": "REDSTONE INPUT",
-  "block.btc.wire.face.up": "TOP",
-  "block.btc.wire.face.down": "BOTTOM",
-  "block.btc.wire.face.north": "NORTH",
-  "block.btc.wire.face.east": "EAST",
-  "block.btc.wire.face.south": "SOUTH",
-  "block.btc.wire.face.west": "WEST",
+
   "block.btc.wire.delay.change_delay": "Wire delay: %s",
 
   "item.btc.selector.corner_1_set": "Corner 1 set to '%s'",
@@ -306,21 +301,49 @@
   "item.btc.selector.set_box": "Set box from '%s' to '%s', on block at '%s'",
   "item.btc.selector.clear": "Hold and click in your off-hand to clear data",
 
-  "item.btc.wrench.wire.face_label": "Wrench Face: %s",
   "item.btc.wrench.description": "Modifies BTC Blocks",
   "item.btc.wrench.action.click": " - Normal Click: Reserved for Wrench Type actions",
   "item.btc.wrench.action.shift_click": " - Shift Click: Changes wrench type",
-  "item.btc.wrench.types.rotate": " - Rotate: Rotates Blocks in possible directions",
-  "item.btc.wrench.types.warn": "The following only work for BTC Wire Blocks",
-  "item.btc.wrench.types.wire": " - Wire: Changes the clicked side's connection (Order of change: Input, Output, None)",
-  "item.btc.wrench.types.wire_offhand": "   -   Offhand: Changes the operator of the clicked Wire Block (ex: Or, And)",
-  "item.btc.wrench.types.wire_complex": " - Wire Complex: Changes the connection of the face that is stored",
-  "item.btc.wrench.types.wire_complex_offhand": "   -   Offhand: Changes the face that will be changed",
+  "item.btc.wrench.type.wire": "Wire",
+  "item.btc.wrench.type.wire_complex": "Complex Wire",
+  "item.btc.wrench.type.wire_delay": "Wire Delay",
+  "item.btc.wrench.type.wire_operator": "Wire Operator",
   "item.btc.wrench.type.switch": "Wrench Type: %s",
-  "item.btc.wrench.type.rotate": "ROTATE",
-  "item.btc.wrench.type.wire": "WIRE",
-  "item.btc.wrench.type.wire_delay": "WIRE DELAY",
-  "item.btc.wrench.type.wire_complex": "WIRE COMPLEX",
+
+  "item.btc.wrench.type.rotate": "Rotate",
+  "item.btc.wrench.type.mirror": "Mirror",
+  "item.btc.wrench.type.copy": "Copy",
+  "item.btc.wrench.type.paste": "Paste",
+  "item.btc.wrench.type.rotate.tooltip": " - Click to rotate block, shift to go backwards",
+  "item.btc.wrench.type.mirror.tooltip": " - Click to mirror the blocks facing state",
+  "item.btc.wrench.type.copy.tooltip": " - Click to copy block state and NBT",
+  "item.btc.wrench.type.paste.tooltip": " - Click to paste saved block state and nbt",
+
+
+
+  "item.btc.wrench.wire.face_label": "Target Face: %s",
+  "block.btc.wrench.wire.complex_direction": "Complex Wire: %s",
+  "block.btc.wire.face.up": "Top",
+  "block.btc.wire.face.down": "Bottom",
+  "block.btc.wire.face.north": "North",
+  "block.btc.wire.face.south": "South",
+  "block.btc.wire.face.east": "East",
+  "block.btc.wire.face.west": "West",
+
+  "item.btc.wrench.types.rotate": "Rotate: Cycles block facing or axis.",
+  "item.btc.wrench.types.warn": "Note: Cannot rotate certain blocks",
+  "item.btc.wrench.types.wire": "Wire: Basic connection tool.",
+  "item.btc.wrench.types.wire_offhand": "Use in off-hand to cycle basic wiring.",
+  "item.btc.wrench.types.wire_complex": "Complex Wire: Advanced face-specific wiring.",
+  "item.btc.wrench.types.wire_complex_offhand": "Use in off-hand to cycle target face.",
+  "item.btc.wrench.set.wire_complex": "Wrench set to Complex Wire facing: %s",
+  "item.btc.wrench.set.type": "Wrench type set to: %s",
+
+  "command.btc.wrench.success.type": "Wrench type set to: %s",
+  "command.btc.wrench.success.complex": "Wrench set to Complex Wire facing: %s",
+  "command.btc.wrench.success.delay": "Wrench set to Wire Delay: %s",
+  "command.btc.wrench.error.no_item": "You must be holding a wrench!",
+
 
   "item.btc.spell.type.generic": "Type: Generic",
   "item.btc.spell.type.fire": "Type: Fire",
@@ -493,6 +516,8 @@
 
   "radial.btc.spell.select_spell": "Select Spell",
   "radial.btc.spell.select_slot": "Select Slot",
+  "radial.btc.spell.select_mode": "Select Mode",
+  "radial.btc.spell.select_complex": "Select Wire Direction",
 
   "commands.btc.block_effect.no_block": "No valid StatusEffectHolder block found at position given",
   "container.obsidian_chest": "Obsidian Chest",

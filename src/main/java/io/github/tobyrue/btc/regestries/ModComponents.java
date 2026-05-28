@@ -3,12 +3,12 @@ package io.github.tobyrue.btc.regestries;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
+import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -16,7 +16,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Direction;
 
 import java.util.UUID;
@@ -36,6 +35,22 @@ public class ModComponents {
                     .codec(WrenchType.CODEC)
                     .build()
     );
+    public static final ComponentType<WrenchType.WireSubtype> WRENCH_SUBTYPE = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_subtype"),
+            ComponentType.<WrenchType.WireSubtype>builder()
+                    .codec(WrenchType.WireSubtype.CODEC)
+                    .build()
+    );
+
+    public static final ComponentType<WrenchType.WrenchClipboardComponent> WRENCH_CLIPBOARD = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_clipboard"),
+            ComponentType.<WrenchType.WrenchClipboardComponent>builder()
+                    .codec(WrenchType.WrenchClipboardComponent.CODEC)
+                    .build()
+    );
+
     public static final ComponentType<NbtComponent> SPELL_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("spell"),

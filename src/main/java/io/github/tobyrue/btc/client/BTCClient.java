@@ -332,6 +332,8 @@ public class BTCClient implements ClientModInitializer {
                                     Math.min(maxSlots, 6),
                                     radialMenuKeyBinding
                             ));
+                        } else if (item instanceof WrenchItem wrenchItem) {
+
                         }
 
 //                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
