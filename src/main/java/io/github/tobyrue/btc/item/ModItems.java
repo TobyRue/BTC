@@ -3,6 +3,8 @@ package io.github.tobyrue.btc.item;
 import io.github.tobyrue.btc.*;
 import io.github.tobyrue.btc.client.ObsidianChestRenderer;
 import io.github.tobyrue.btc.entity.ModEntities;
+import io.github.tobyrue.btc.enums.WrenchType;
+import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.client.render.entity.DrownedEntityRenderer;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
@@ -84,7 +86,7 @@ public class ModItems {
             new Item(new Item.Settings()),
             "ruby_trial_key"
     );
-    public static final Item COPPER_WRENCH = register(new WrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),
+    public static final Item COPPER_WRENCH = register(new WrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON).component(ModComponents.WRENCH_TYPE, WrenchType.ROTATE).component(ModComponents.WRENCH_SUBTYPE, WrenchType.WireSubtype.CONNECTION).component(ModComponents.WRENCH_CONNECTION, "null").component(ModComponents.WRENCH_OPERATOR, "null").component(ModComponents.WRENCH_DELAY, -1)),
             "copper_wrench"
     );
 //    public static final Item IRON_WRENCH = register(new IronWrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON)),

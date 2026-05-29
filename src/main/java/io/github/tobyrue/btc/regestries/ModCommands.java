@@ -252,16 +252,16 @@ public class ModCommands {
     }
 
     private static int selectSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt, @Nullable final Integer slot) throws CommandSyntaxException {
-        System.out.println("[DEBUG] selectSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt + ", slot=" + slot);
+//        System.out.println("[DEBUG] selectSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt + ", slot=" + slot);
 
         if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack && stack.getItem() instanceof SpellItem item) {
-            System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
+//            System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
             var data = item.getSpellDataStore(stack);
             if (spell != null) {
                 if (nbt instanceof NbtCompound || nbt == null) {
                     var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
                     if (source.hasPermissionLevel(2)) {
-                        System.out.println("[DEBUG] Source has permission level 2");
+//                        System.out.println("[DEBUG] Source has permission level 2");
                         if (source.getPlayer() != null) {
                             try {
                                 var player = source.getPlayer();
@@ -278,10 +278,10 @@ public class ModCommands {
                             }
                         }
                         data.setSpell(spell, args);
-                        System.out.println("[DEBUG] Spell set by admin: " + spell.getPureName());
+//                        System.out.println("[DEBUG] Spell set by admin: " + spell.getPureName());
                         return 1;
                     } else {
-                        System.out.println("[DEBUG] Non-admin args parsed: " + args);
+//                        System.out.println("[DEBUG] Non-admin args parsed: " + args);
 
                         if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
                             if (entity instanceof PlayerEntity) {
@@ -290,19 +290,19 @@ public class ModCommands {
                                 SpellPersistentState spellState = SpellPersistentState.get(server);
                                 PlayerSpellData playerData = spellState.getPlayerData(player);
 
-                                System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
+//                                System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
 
                                 if (slot != null) {
-                                    System.out.println("[DEBUG] Adding to favorites at slot " + slot);
+//                                    System.out.println("[DEBUG] Adding to favorites at slot " + slot);
                                     boolean found = PredefinedSpellsItem.getKnownSpells(playerData).stream()
                                             .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                     if (found) {
                                         PredefinedSpellsItem.addFavoriteSpellWithIndex(player, spellState, new Spell.InstancedSpell(spell, args), slot);
-                                        System.out.println("[DEBUG] Added spell " + spell.getPureName() + " to favorites");
+//                                        System.out.println("[DEBUG] Added spell " + spell.getPureName() + " to favorites");
                                         return 1;
                                     } else {
-                                        System.out.println("[DEBUG] Spell not found in known spells");
+//                                        System.out.println("[DEBUG] Spell not found in known spells");
                                         throw FAILED_EXCEPTION.create();
                                     }
                                 } else {
@@ -311,51 +311,51 @@ public class ModCommands {
 
                                     if (found) {
                                         data.setSpell(spell, args);
-                                        System.out.println("[DEBUG] Spell set directly on item: " + spell.getPureName());
+//                                        System.out.println("[DEBUG] Spell set directly on item: " + spell.getPureName());
                                         return 1;
                                     } else {
-                                        System.out.println("[DEBUG] Spell not found in known spells (no slot)");
-                                        System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
-                                        System.out.println("[DEBUG] Provided args: " + args);
+//                                        System.out.println("[DEBUG] Spell not found in known spells (no slot)");
+//                                        System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
+//                                        System.out.println("[DEBUG] Provided args: " + args);
 
-                                        System.out.println("[DEBUG] Known spells list:");
-                                        for (Spell.InstancedSpell inst : PredefinedSpellsItem.getKnownSpells(playerData)) {
-                                            System.out.println(" - " + inst.spell().getPureName() + " with args " + inst.args());
-                                            System.out.println("   equalsOther? " + inst.args().equalsOther(args));
-                                            System.out.println("   same spell? " + (inst.spell() == spell));
-                                        }
+//                                        System.out.println("[DEBUG] Known spells list:");
+//                                        for (Spell.InstancedSpell inst : PredefinedSpellsItem.getKnownSpells(playerData)) {
+//                                            System.out.println(" - " + inst.spell().getPureName() + " with args " + inst.args());
+//                                            System.out.println("   equalsOther? " + inst.args().equalsOther(args));
+//                                            System.out.println("   same spell? " + (inst.spell() == spell));
+//                                        }
                                         throw FAILED_EXCEPTION.create();
                                     }
                                 }
                             } else {
-                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+//                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                                 boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                         .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                 if (found) {
                                     data.setSpell(spell, args);
-                                    System.out.println("[DEBUG] Spell set from available spells: " + spell.getPureName());
+//                                    System.out.println("[DEBUG] Spell set from available spells: " + spell.getPureName());
                                     return 1;
                                 } else {
-                                    System.out.println("[DEBUG] Spell not found in available spells for entity");
+//                                    System.out.println("[DEBUG] Spell not found in available spells for entity");
                                     throw FAILED_EXCEPTION.create();
                                 }
                             }
                         } else if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                            System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+//                            System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                             boolean found = minimal.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                     .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                             if (found) {
                                 data.setSpell(spell, args);
-                                System.out.println("[DEBUG] Spell set from available spells: " + spell.getPureName());
+//                                System.out.println("[DEBUG] Spell set from available spells: " + spell.getPureName());
                                 return 1;
                             } else {
-                                System.out.println("[DEBUG] Spell not found in available spells for entity");
+//                                System.out.println("[DEBUG] Spell not found in available spells for entity");
                                 throw FAILED_EXCEPTION.create();
                             }
                         } else {
-                            System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
+//                            System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
                             throw FAILED_EXCEPTION.create();
                         }
                     }
@@ -363,11 +363,11 @@ public class ModCommands {
                     throw FAILED_EXCEPTION.create();
                 }
             } else {
-                System.out.println("[DEBUG] Spell was null");
+//                System.out.println("[DEBUG] Spell was null");
                 throw FAILED_SPELL_EXCEPTION.create();
             }
         } else {
-            System.out.println("[DEBUG] Entity not holding a valid SpellItem");
+//            System.out.println("[DEBUG] Entity not holding a valid SpellItem");
             throw FAILED_EXCEPTION.create();
         }
     }
@@ -414,23 +414,23 @@ public class ModCommands {
     }
 
     private static int castSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt) throws CommandSyntaxException {
-        System.out.println("[DEBUG] castSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt);
+//        System.out.println("[DEBUG] castSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt);
 
         if (source.getEntity() instanceof LivingEntity entity && entity.getStackInHand(Hand.MAIN_HAND) instanceof ItemStack stack) {
             if (stack.getItem() instanceof SpellItem item) {
-                System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
+//                System.out.println("[DEBUG] Entity is living + holding a SpellItem: " + stack);
 
                 var data = item.getSpellDataStore(stack);
                 if (spell != null) {
                     if (nbt instanceof NbtCompound || nbt == null) {
                         var args = nbt instanceof NbtCompound compound ? GrabBag.fromNBT(compound) : GrabBag.empty();
                         if (source.hasPermissionLevel(2)) {
-                            System.out.println("[DEBUG] Source has permission level 2");
+//                            System.out.println("[DEBUG] Source has permission level 2");
                             data.setSpell(spell, args);
-                            System.out.println("[DEBUG] Spell casted by admin: " + spell.getPureName());
+//                            System.out.println("[DEBUG] Spell casted by admin: " + spell.getPureName());
                             return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                         } else {
-                            System.out.println("[DEBUG] Non-admin args parsed: " + args);
+//                            System.out.println("[DEBUG] Non-admin args parsed: " + args);
 
                             if (item instanceof PredefinedSpellsItem predefinedSpellsItem) {
                                 if (entity instanceof PlayerEntity) {
@@ -439,58 +439,58 @@ public class ModCommands {
                                     SpellPersistentState spellState = SpellPersistentState.get(server);
                                     PlayerSpellData playerData = spellState.getPlayerData(player);
 
-                                    System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
+//                                    System.out.println("[DEBUG] Player path, known spells size: " + PredefinedSpellsItem.getKnownSpells(playerData).size());
 
 
                                     boolean found = PredefinedSpellsItem.getKnownSpells(playerData).stream()
                                             .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                     if (found) {
-                                        System.out.println("[DEBUG] Spell casted directly on item: " + spell.getPureName());
+//                                        System.out.println("[DEBUG] Spell casted directly on item: " + spell.getPureName());
                                         data.setSpell(spell, args);
                                         return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                                     } else {
-                                        System.out.println("[DEBUG] Spell not found in known spells (no slot)");
-                                        System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
-                                        System.out.println("[DEBUG] Provided args: " + args);
+//                                        System.out.println("[DEBUG] Spell not found in known spells (no slot)");
+//                                        System.out.println("[DEBUG] Provided spell: " + spell.getPureName());
+//                                        System.out.println("[DEBUG] Provided args: " + args);
 
-                                        System.out.println("[DEBUG] Known spells list:");
+//                                        System.out.println("[DEBUG] Known spells list:");
                                         for (Spell.InstancedSpell inst : PredefinedSpellsItem.getKnownSpells(playerData)) {
-                                            System.out.println(" - " + inst.spell().getPureName() + " with args " + inst.args());
-                                            System.out.println("   equalsOther? " + inst.args().equalsOther(args));
-                                            System.out.println("   same spell? " + (inst.spell() == spell));
+//                                            System.out.println(" - " + inst.spell().getPureName() + " with args " + inst.args());
+//                                            System.out.println("   equalsOther? " + inst.args().equalsOther(args));
+//                                            System.out.println("   same spell? " + (inst.spell() == spell));
                                         }
                                         throw FAILED_EXCEPTION.create();
                                     }
                                 } else {
-                                    System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+//                                    System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                                     boolean found = predefinedSpellsItem.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                             .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                     if (found) {
                                         data.setSpell(spell, args);
-                                        System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
+//                                        System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
                                         return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                                     } else {
-                                        System.out.println("[DEBUG] Spell not found in available spells for entity");
+//                                        System.out.println("[DEBUG] Spell not found in available spells for entity");
                                         throw FAILED_EXCEPTION.create();
                                     }
                                 }
                             } else if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
+//                                System.out.println("[DEBUG] Non-player entity path (e.g. mob/commandHover block)");
                                 boolean found = minimal.getAvailableSpells(stack, source.getWorld(), entity).stream()
                                         .anyMatch(inst -> inst.spell() == spell && inst.args().equalsOther(args));
 
                                 if (found) {
                                     data.setSpell(spell, args);
-                                    System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
+//                                    System.out.println("[DEBUG] Spell casted from available spells: " + spell.getPureName());
                                     return spell.tryUse(new Spell.SpellContext(source.getWorld(), source.getPosition(), Vec3d.fromPolar(source.getRotation()), data, source.getEntity() instanceof LivingEntity l ? l : null, source.getEntity() instanceof LivingEntity l ? (Spell.getEntityLookedAt(l, args.getDouble("range", 32), args.getDouble("aimingForgiveness", 0.5)) instanceof LivingEntity l2 ? l2 : null) : null), args) ? 1 : 0;
                                 } else {
-                                    System.out.println("[DEBUG] Spell not found in available spells for entity");
+//                                    System.out.println("[DEBUG] Spell not found in available spells for entity");
                                     throw FAILED_EXCEPTION.create();
                                 }
                             } else {
-                                System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
+//                                System.out.println("[DEBUG] Item is not a PredefinedSpellsItem");
                                 throw FAILED_EXCEPTION.create();
                             }
                         }
@@ -498,7 +498,7 @@ public class ModCommands {
                         throw FAILED_EXCEPTION.create();
                     }
                 } else {
-                    System.out.println("[DEBUG] Spell was null");
+//                    System.out.println("[DEBUG] Spell was null");
                     throw FAILED_SPELL_EXCEPTION.create();
                 }
             } else {
@@ -537,7 +537,7 @@ public class ModCommands {
                 }
             }
         } else {
-            System.out.println("[DEBUG] Entity not holding a valid SpellItem");
+//            System.out.println("[DEBUG] Entity not holding a valid SpellItem");
             throw FAILED_EXCEPTION.create();
         }
     }

@@ -45,6 +45,7 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
     @Override
     public void render(WireBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         World world = entity.getWorld();
+        var pos = entity.getPos();
         if (world == null) return;
 
 
@@ -62,7 +63,7 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
             renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[0], white, overlay, getLayer(0), face);
             renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[1], powerColor, overlay, getLayer(1), face);
 
-            WireBlock.ConnectionType conn = entity.getConnection(face);
+            WireBlock.ConnectionType conn = entity.getConnection(face, world, state, pos);
             if (conn == WireBlock.ConnectionType.INPUT) {
                 renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[6], white, overlay, getLayer(1), face);
             }
@@ -78,7 +79,7 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
 
             for (Direction connectionDir : Direction.values()) {
                 if (connectionDir.getAxis() == face.getAxis()) continue;
-                WireBlock.ConnectionType adjConn = entity.getConnection(connectionDir);
+                WireBlock.ConnectionType adjConn = entity.getConnection(connectionDir, world, state, pos);
 
                 matrices.push();
                 matrices.translate(0.5, 0.5, 0);
@@ -99,14 +100,14 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
                     else if (adjConn == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
                         renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[13], white, overlay, getLayer(1), face);
                     }
-                } else if (entity.getConnection(face) != WireBlock.ConnectionType.NONE) {
+                } else if (entity.getConnection(face, world, state, pos) != WireBlock.ConnectionType.NONE) {
                     renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[9], powerColor, overlay, getLayer(1), face);
                 }
                 matrices.pop();
             }
 
-            int opColor = entity.getOperator().getColor() | 0xFF000000;
-            if (!(Direction.stream().filter(d -> entity.getConnection(d) == WireBlock.ConnectionType.INPUT).count() == 1 && entity.getOperator() == WireBlock.Operator.OR)) {
+            int opColor = entity.getOperator(world, state, pos).getColor() | 0xFF000000;
+            if (!(Direction.stream().filter(d -> entity.getConnection(d, world, state, pos) == WireBlock.ConnectionType.INPUT).count() == 1 && entity.getOperator(world, state, pos) == WireBlock.Operator.OR)) {
                 renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[8], opColor, overlay, getLayer(1), face);
             }
 

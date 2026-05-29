@@ -110,7 +110,6 @@ public class RadialMenuNoHover extends Screen {
         int sector = getHoveredHex((int) mouseX, (int) mouseY);
         if (sector >= 0 && sector + start < spells.size()) {
             ValueNoHover value = spells.get(sector + start);
-            System.out.println("Clicked: " + value.commandClick());
             client.player.networkHandler.sendCommand(value.commandClick());
             this.close();
             return true;
@@ -187,21 +186,30 @@ public class RadialMenuNoHover extends Screen {
             String[] words = displayText.getString().split(" ");
             List<Text> lines = new ArrayList<>();
             StringBuilder currentLine = new StringBuilder();
-
+            boolean shrink1 = false;
             for (String word : words) {
                 String testLine = (currentLine.length() == 0 ? "" : currentLine + " ") + word;
                 if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
                     currentLine = new StringBuilder(testLine);
+                    shrink1 = false;
                 } else {
                     lines.add(Text.literal(currentLine.toString()));
+                    shrink1 = true;
                     currentLine = new StringBuilder(word);
                 }
             }
             if (currentLine.length() > 0) lines.add(Text.literal(currentLine.toString()));
-
-            boolean shrink = lines.size() > 3;
-
             context.getMatrices().push();
+
+            if (shrink1) {
+                context.getMatrices().translate(hexCenterX, hexCenterY, 0);
+                context.getMatrices().scale(0.9f, 0.9f, 1f);
+                hexCenterX = 0;
+                hexCenterY = 0;
+            }
+
+            boolean shrink = shrink1 ? lines.size() > 4 : lines.size() > 3;
+
             if (shrink) {
                 context.getMatrices().translate(hexCenterX, hexCenterY, 0);
                 context.getMatrices().scale(0.75f, 0.75f, 1f);

@@ -2,6 +2,9 @@ package io.github.tobyrue.btc.wires;
 
 import io.github.tobyrue.btc.block.PowerPillarBlock;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -20,7 +23,7 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WireBlockEntity extends BlockEntity implements IDungeonWire {
+public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper {
     private WireBlock.Operator operator = WireBlock.Operator.OR;
     private int delay = 0;
     private final Map<Direction, WireBlock.ConnectionType> connections = new HashMap<>();
@@ -104,47 +107,56 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire {
         }
     }
 
-    public void setOperator(WireBlock.Operator op) {
+    @Override
+    public void setOperator(WireBlock.Operator op, World world, BlockState state, BlockPos pos) {
         this.operator = op;
         markDirty();
         updatePower();
     }
 
-    public WireBlock.Operator getOperator() {
+    @Override
+    public WireBlock.Operator getOperator(World world, BlockState state, BlockPos pos) {
         return this.operator;
     }
 
-    public void setDelay(int delay) {
+    @Override
+    public void setDelay(int delay,World world, BlockState state, BlockPos pos) {
         this.delay = delay;
         markDirty();
         updatePower();
     }
 
-    public int getDelay() {
+    @Override
+    public int getDelay(World world, BlockState state, BlockPos pos) {
         return this.delay;
     }
 
-
-    public WireBlock.Operator cycleOperator() {
+    @Override
+    public WireBlock.Operator cycleOperator(World world, BlockState state, BlockPos pos) {
         WireBlock.Operator next = WireBlock.Operator.values()[(this.operator.ordinal() + 1) % WireBlock.Operator.values().length];
-        this.setOperator(next);
+        this.setOperator(next, world, state, pos);
         return next;
     }
 
-    public WireBlock.ConnectionType cycleConnection(Direction face) {
+    @Override
+    public WireBlock.ConnectionType cycleConnection(Direction face, World world, BlockState state, BlockPos pos) {
         WireBlock.ConnectionType next = WireBlock.ConnectionType.values()[(connections.get(face).ordinal() + 1) % WireBlock.ConnectionType.values().length];
-        this.setConnection(face, next);
+        this.setConnection(face, next, world, state, pos);
         return next;
     }
 
-    public void setConnection(Direction face, WireBlock.ConnectionType connectionType) {
+    @Override
+    public void setConnection(Direction face, WireBlock.ConnectionType connectionType, World world, BlockState state, BlockPos pos) {
         connections.put(face, connectionType);
         markDirty();
         updatePower();
     }
 
-    public WireBlock.ConnectionType getConnection(Direction face) { return this.connections.get(face); }
-    public Map<Direction, WireBlock.ConnectionType> getConnections() { return this.connections; }
+    @Override
+    public WireBlock.ConnectionType getConnection(Direction face, World world, BlockState state, BlockPos pos) { return this.connections.get(face); }
+
+    @Override
+    public Map<Direction, WireBlock.ConnectionType> getConnections(World world, BlockState state, BlockPos pos) { return this.connections; }
 
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() { return BlockEntityUpdateS2CPacket.create(this); }
@@ -153,10 +165,10 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire {
 
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
-        return state.get(WireBlock.POWERED) && this.getConnection(face) == WireBlock.ConnectionType.OUTPUT;
+        return state.get(WireBlock.POWERED) && this.getConnection(face, world, state, pos) == WireBlock.ConnectionType.OUTPUT;
     }
 
     public boolean isEmittingRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction face) {
-        return state.get(WireBlock.POWERED) && this.getConnection(face) == WireBlock.ConnectionType.REDSTONE_OUTPUT;
+        return state.get(WireBlock.POWERED) && this.getConnection(face, (World) world, state, pos) == WireBlock.ConnectionType.REDSTONE_OUTPUT;
     }
 }

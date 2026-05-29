@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.IDungeonWire;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -31,7 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class PowerPilasterBlock extends Block implements IDungeonWire, Waterloggable, IHaveWrenchActions {
+public class PowerPilasterBlock extends Block implements IDungeonWire, Waterloggable, IWireDelayHelper {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     /**
      * If this state, <code>INVERTED</code> is true, the {@link Direction} of the <code>FACING</code> property is in reference to the direction of the input rather than the output of the block, if the output is <code>UP</code> and input <code>DOWN</code>, and the state <code>INVERTED</code> is true, the {@link Direction} of the block will be <code>DOWN</code>
@@ -218,34 +219,6 @@ public class PowerPilasterBlock extends Block implements IDungeonWire, Waterlogg
     }
 
     @Override
-    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
-        if (!stack.isOf(ModItems.COPPER_WRENCH)) {
-            return ActionResult.PASS;
-        }
-
-        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
-
-        if (type == WrenchType.WIRE_DELAY) {
-            int newDelay;
-            if (hand == Hand.MAIN_HAND) {
-                newDelay = player.isSneaking() ? state.get(DELAY) - 1 % 8 : (state.get(DELAY) + 1) % 8;
-            } else {
-                newDelay = 0;
-            }
-            world.setBlockState(pos, state.with(DELAY, newDelay));
-            updatePower(world, pos, state);
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", newDelay), true);
-            }
-            return ActionResult.SUCCESS;
-        } else if (type == WrenchType.WIRE) {
-            world.setBlockState(pos, state.with(INVERTED, !state.get(INVERTED)));
-            updatePower(world, pos, state);
-            return ActionResult.SUCCESS;
-        }
-        return ActionResult.FAIL;
-    }
-    @Override
     protected BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
@@ -261,5 +234,20 @@ public class PowerPilasterBlock extends Block implements IDungeonWire, Waterlogg
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);
+    }
+
+    @Override
+    public void setDelay(int delay, World world, BlockState state, BlockPos pos) {
+        if (state.getBlock() instanceof PowerPilasterBlock) {
+            world.setBlockState(pos, state.with(DELAY, delay));
+        }
+    }
+
+    @Override
+    public int getDelay(World world, BlockState state, BlockPos pos) {
+        if (state.getBlock() instanceof PowerPilasterBlock) {
+            return state.get(DELAY);
+        }
+        return 0;
     }
 }

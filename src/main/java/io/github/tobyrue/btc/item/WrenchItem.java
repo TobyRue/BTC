@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.client.screen.RadialNoHoverValues;
 import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.regestries.ModComponents;
+import io.github.tobyrue.btc.wires.WireBlock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class WrenchItem extends Item {
     public WrenchItem(Settings settings) {
@@ -46,72 +48,96 @@ public class WrenchItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
 
-//        if (!player.isSneaking()) {
-//            if (type == WrenchType.WIRE_COMPLEX) {
-//                if (hand == Hand.OFF_HAND) {
-//                    Direction current = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
-//
-//                    Direction next = next(current);
-//                    player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
-//                    stack.set(ModComponents.WRENCH_DIRECTION, next);
-//                }
-//            }
-//        }
         if (world.isClient()) {
-            openRadialMenu(hand, player);
-            return TypedActionResult.success(stack);
-        }
+            WrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
 
-        return super.use(world, player, hand);
+            if (type == WrenchType.WIRE) {
+                WrenchType.WireSubtype subtype = stack.get(ModComponents.WRENCH_SUBTYPE);
+
+                if (subtype == WrenchType.WireSubtype.NULL) {
+                    openRadialMenu(getValuesWire(), Text.translatable("item.btc.wrench.title.categories"));
+                } else {
+                    switch (subtype) {
+                        case DELAY -> openRadialMenu(getValuesDelay(), Text.translatable("item.btc.wrench.title.delay"));
+                        case OPERATOR -> openRadialMenu(getValuesOperator(), Text.translatable("item.btc.wrench.title.operator"));
+                        case CONNECTION -> openRadialMenu(getValuesConnection(), Text.translatable("item.btc.wrench.title.connection"));
+                        case NULL -> {
+                        }
+                    }
+                }
+            } else {
+                if (!player.isSneaking()) {
+                    openRadialMenu(getValuesType(), Text.translatable("item.btc.wrench.title.modes"));
+                } else {
+                    stack.set(ModComponents.WRENCH_TYPE, WrenchType.NULL);
+                    stack.set(ModComponents.WRENCH_SUBTYPE, WrenchType.WireSubtype.NULL);
+                }
+            }
+        }
+        return TypedActionResult.success(stack);
     }
 
     @Environment(EnvType.CLIENT)
-    private void openRadialMenu(Hand hand, PlayerEntity player) {
-        List<RadialNoHoverValues.ValueNoHover> list;
-        Text title;
-        ItemStack stack = player.getStackInHand(hand);
-        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
-
-        if (player.isSneaking() && type == WrenchType.WIRE_COMPLEX) {
-            list = getNoHoversComplex();
-            title = Text.translatable("radial.btc.spell.select_complex");
-        } else {
-            list = getValueNoHovers();
-            title = Text.translatable("radial.btc.spell.select_mode");
-        }
-
+    private void openRadialMenu(List<RadialNoHoverValues.ValueNoHover> options, Text title) {
         MinecraftClient.getInstance().setScreen(new RadialMenuNoHover(
                 title,
-                list,
-                0,
-                Math.min(list.size(), 6)
+                options
         ));
     }
-    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getNoHoversComplex() {
+
+    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getValuesType() {
         List<RadialNoHoverValues.ValueNoHover> list = new ArrayList<>();
 
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("block.btc.wrench.wire.complex_direction", Text.translatable("block.btc.wire.face.up")), "btcwrench complex_wire up"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("block.btc.wrench.wire.complex_direction", Text.translatable("block.btc.wire.face.down")), "btcwrench complex_wire down"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("block.btc.wrench.wire.complex_direction", Text.translatable("block.btc.wire.face.north")), "btcwrench complex_wire north"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("block.btc.wrench.wire.complex_direction", Text.translatable("block.btc.wire.face.east")), "btcwrench complex_wire east"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("block.btc.wrench.wire.complex_direction", Text.translatable("block.btc.wire.face.south")), "btcwrench complex_wire south"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("block.btc.wrench.wire.complex_direction", Text.translatable("block.btc.wire.face.west")), "btcwrench complex_wire "));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.rotate"), "btcwrench rotate"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.mirror"), "btcwrench mirror"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.copy"), "btcwrench copy"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.paste"), "btcwrench paste"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.wire"), "btcwrench wire"));
+        return list;
+    }
+    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getValuesWire() {
+        List<RadialNoHoverValues.ValueNoHover> list = new ArrayList<>();
+
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.connections"), "btcwrench wire connection"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.operator"), "btcwrench wire operator"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.delay"), "btcwrench wire delay"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.back"), "btcwrench"));
         return list;
     }
 
-    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getValueNoHovers() {
+    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getValuesConnection() {
         List<RadialNoHoverValues.ValueNoHover> list = new ArrayList<>();
 
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.rotate"), "btcwrench type rotate"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.wire"), "btcwrench type wire"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.wire_complex"), "btcwrench type wire_complex"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.wire_delay"), "btcwrench type wire_delay"));
-        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.type.wire_operator"), "btcwrench type wire_operator"));
+        for (var connection : WireBlock.ConnectionType.values()) {
+            list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable(String.format("block.btc.wire.connection.%s", connection.asString())), String.format("btcwrench wire connection %s", connection.asString())));
+        }
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.cycle"), "btcwrench wire connection"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.back"), "btcwrench wire"));
+
+        return list;
+    }
+    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getValuesOperator() {
+        List<RadialNoHoverValues.ValueNoHover> list = new ArrayList<>();
+
+        for (var operator : WireBlock.Operator.values()) {
+            list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable(String.format("block.btc.wire.operator.%s", operator.asString())), String.format("btcwrench wire operator %s", operator.asString())));
+        }
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.cycle"), "btcwrench wire operator"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.back"), "btcwrench wire"));
         return list;
     }
 
+    private static @NotNull List<RadialNoHoverValues.ValueNoHover> getValuesDelay() {
+        List<RadialNoHoverValues.ValueNoHover> list = new ArrayList<>();
+
+        for (var delay = 0; delay <= 7; delay++) {
+            list.add(new RadialNoHoverValues.ValueNoHover(Text.literal(Integer.toString(delay)), String.format("btcwrench wire delay %s", delay)));
+        }
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.cycle"), "btcwrench wire delay"));
+        list.add(new RadialNoHoverValues.ValueNoHover(Text.translatable("item.btc.wrench.back"), "btcwrench wire"));
+        return list;
+    }
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockState state = context.getWorld().getBlockState(context.getBlockPos());
@@ -124,49 +150,54 @@ public class WrenchItem extends Item {
         BlockPos pos = context.getBlockPos();
         Direction hitSide = context.getSide();
 
-        if (state.getBlock() instanceof IHaveWrenchActions actions) {
-            return actions.onWrenchUse(stack, state, world, pos, player, hand, hitSide);
-        } else if (player.isSneaking() && hand != Hand.OFF_HAND) {
-            stack.set(ModComponents.WRENCH_TYPE, nextWrench);
-            player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
-            return ActionResult.SUCCESS;
-        } else if (type == WrenchType.WIRE_COMPLEX) {
-            if (hand == Hand.OFF_HAND) {
-                Direction current = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
 
-                Direction next = next(current);
-
-                stack.set(ModComponents.WRENCH_DIRECTION, next);
-
-                player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
-                return ActionResult.SUCCESS;
-            }
-        } else if (type == WrenchType.ROTATE) {
-            var stateRotate = context.getWorld().getBlockState(context.getBlockPos());
-            if (!stateRotate.streamTags().anyMatch(t -> t == BTC.WRENCH_ROTATION_BLACKLIST) && !(stateRotate.getBlock() instanceof PistonBlock && stateRotate.get(PistonBlock.EXTENDED))) {
-                Property<?> facingProperty = null;
-
-                if (stateRotate.contains(Properties.FACING)) {
-                    facingProperty = Properties.FACING;
-                } else if (stateRotate.contains(Properties.HORIZONTAL_FACING)) {
-                    facingProperty = Properties.HORIZONTAL_FACING;
-                } else if (stateRotate.contains(Properties.HORIZONTAL_AXIS)) {
-                    facingProperty = Properties.HORIZONTAL_AXIS;
-                } else if (stateRotate.contains(Properties.ORIENTATION)) {
-                    facingProperty = Properties.ORIENTATION;
-                } else if (stateRotate.contains(Properties.AXIS)) {
-                    facingProperty = Properties.AXIS;
-                }
-
-                if (facingProperty != null) {
-                    world.setBlockState(pos, stateRotate.cycle(facingProperty));
-                    return ActionResult.SUCCESS;
-                } else {
-                    world.setBlockState(pos, stateRotate.rotate(BlockRotation.CLOCKWISE_90));
-                    return ActionResult.SUCCESS;
-                }
-            }
+        if (stack.contains(ModComponents.WRENCH_TYPE)) {
+            return Objects.requireNonNull(stack.get(ModComponents.WRENCH_TYPE)).useOnBlock(context);
         }
+
+//        if (state.getBlock() instanceof IHaveWrenchActions actions) {
+//            return actions.onWrenchUse(stack, state, world, pos, player, hand, hitSide);
+//        } else if (player.isSneaking() && hand != Hand.OFF_HAND) {
+//            stack.set(ModComponents.WRENCH_TYPE, nextWrench);
+//            player.sendMessage(Text.translatable("item.btc.wrench.type.switch", Text.translatable("item.btc.wrench.type." + nextWrench.asString())), true);
+//            return ActionResult.SUCCESS;
+//        } else if (type == WrenchType.WIRE_COMPLEX) {
+//            if (hand == Hand.OFF_HAND) {
+//                Direction current = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
+//
+//                Direction next = next(current);
+//
+//                stack.set(ModComponents.WRENCH_DIRECTION, next);
+//
+//                player.sendMessage(Text.translatable("item.btc.wrench.wire.face_label", Text.translatable("block.btc.wire.face." + next.asString())), true);
+//                return ActionResult.SUCCESS;
+//            }
+//        } else if (type == WrenchType.ROTATE) {
+//            var stateRotate = context.getWorld().getBlockState(context.getBlockPos());
+//            if (!stateRotate.streamTags().anyMatch(t -> t == BTC.WRENCH_ROTATION_BLACKLIST) && !(stateRotate.getBlock() instanceof PistonBlock && stateRotate.get(PistonBlock.EXTENDED))) {
+//                Property<?> facingProperty = null;
+//
+//                if (stateRotate.contains(Properties.FACING)) {
+//                    facingProperty = Properties.FACING;
+//                } else if (stateRotate.contains(Properties.HORIZONTAL_FACING)) {
+//                    facingProperty = Properties.HORIZONTAL_FACING;
+//                } else if (stateRotate.contains(Properties.HORIZONTAL_AXIS)) {
+//                    facingProperty = Properties.HORIZONTAL_AXIS;
+//                } else if (stateRotate.contains(Properties.ORIENTATION)) {
+//                    facingProperty = Properties.ORIENTATION;
+//                } else if (stateRotate.contains(Properties.AXIS)) {
+//                    facingProperty = Properties.AXIS;
+//                }
+//
+//                if (facingProperty != null) {
+//                    world.setBlockState(pos, stateRotate.cycle(facingProperty));
+//                    return ActionResult.SUCCESS;
+//                } else {
+//                    world.setBlockState(pos, stateRotate.rotate(BlockRotation.CLOCKWISE_90));
+//                    return ActionResult.SUCCESS;
+//                }
+//            }
+//        }
 
         return super.useOnBlock(context);
     }

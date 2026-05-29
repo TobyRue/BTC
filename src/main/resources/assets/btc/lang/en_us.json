@@ -309,11 +309,17 @@
   "item.btc.wrench.type.wire_delay": "Wire Delay",
   "item.btc.wrench.type.wire_operator": "Wire Operator",
   "item.btc.wrench.type.switch": "Wrench Type: %s",
+  "item.btc.wrench.back": "Back",
+  "item.btc.wrench.cycle": "Cycle",
 
   "item.btc.wrench.type.rotate": "Rotate",
   "item.btc.wrench.type.mirror": "Mirror",
   "item.btc.wrench.type.copy": "Copy",
   "item.btc.wrench.type.paste": "Paste",
+  "item.btc.wrench.type.connections": "Connections",
+  "item.btc.wrench.type.operator": "Operator",
+  "item.btc.wrench.type.delay": "Delay",
+
   "item.btc.wrench.type.rotate.tooltip": " - Click to rotate block, shift to go backwards",
   "item.btc.wrench.type.mirror.tooltip": " - Click to mirror the blocks facing state",
   "item.btc.wrench.type.copy.tooltip": " - Click to copy block state and NBT",
@@ -322,7 +328,6 @@
 
 
   "item.btc.wrench.wire.face_label": "Target Face: %s",
-  "block.btc.wrench.wire.complex_direction": "Complex Wire: %s",
   "block.btc.wire.face.up": "Top",
   "block.btc.wire.face.down": "Bottom",
   "block.btc.wire.face.north": "North",
@@ -338,12 +343,18 @@
   "item.btc.wrench.types.wire_complex_offhand": "Use in off-hand to cycle target face.",
   "item.btc.wrench.set.wire_complex": "Wrench set to Complex Wire facing: %s",
   "item.btc.wrench.set.type": "Wrench type set to: %s",
+  "item.btc.wrench.title.categories": "Wire Categories",
+  "item.btc.wrench.title.modes": "Wrench Modes",
+  "item.btc.wrench.title.delay": "Select Delay",
+  "item.btc.wrench.title.operator": "Select Operator",
+  "item.btc.wrench.title.connection": "Select Connection",
 
   "command.btc.wrench.success.type": "Wrench type set to: %s",
   "command.btc.wrench.success.complex": "Wrench set to Complex Wire facing: %s",
   "command.btc.wrench.success.delay": "Wrench set to Wire Delay: %s",
   "command.btc.wrench.error.no_item": "You must be holding a wrench!",
-
+  "message.btc.wrench.copied": "Copied %s to clipboard",
+  "message.btc.wrench.pasted": "Pasted block properties",
 
   "item.btc.spell.type.generic": "Type: Generic",
   "item.btc.spell.type.fire": "Type: Fire",
@@ -524,4 +535,5 @@
 
   "trim_pattern.btc.eldritch": "Eldritch Armor Trim",
   "trim_pattern.btc.sun": "Sun Armor Trim"
+
 }

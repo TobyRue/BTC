@@ -7,6 +7,9 @@ import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModComponents;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
+import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,8 +27,9 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
+import java.util.Map;
 
-public class WireBlock extends Block implements ModBlockEntityProvider<WireBlockEntity>, IDungeonWire, IHaveWrenchActions {
+public class WireBlock extends Block implements ModBlockEntityProvider<WireBlockEntity>, IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     /**
@@ -37,6 +41,75 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
     @Override
     public BlockEntityType<WireBlockEntity> getBlockEntityType() {
         return ModBlockEntities.WIRE_BLOCK_ENTITY;
+    }
+
+    @Override
+    public void setConnection(Direction face, ConnectionType connectionType, World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            entity.setConnection(face, connectionType, world, state, pos);
+        }
+    }
+
+    @Override
+    public ConnectionType cycleConnection(Direction face, World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            return entity.cycleConnection(face, world, state, pos);
+        }
+        return ConnectionType.NONE;
+    }
+
+    @Override
+    public ConnectionType getConnection(Direction face, World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            return entity.getConnection(face, world, state, pos);
+        }
+        return ConnectionType.NONE;
+    }
+
+    @Override
+    public Map<Direction, ConnectionType> getConnections(World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            return entity.getConnections(world, state, pos);
+        }
+        return Map.of();
+    }
+
+    @Override
+    public void setDelay(int delay, World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            entity.setDelay(delay, world, state, pos);
+        }
+    }
+
+    @Override
+    public int getDelay(World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            return entity.getDelay(world, state, pos);
+        }
+        return 0;
+    }
+
+    @Override
+    public void setOperator(Operator op, World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            entity.setOperator(op, world, state, pos);
+        }
+    }
+
+    @Override
+    public Operator cycleOperator(World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            return entity.cycleOperator(world, state, pos);
+        }
+        return Operator.OR;
+    }
+
+    @Override
+    public Operator getOperator(World world, BlockState state, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity entity) {
+            return entity.getOperator(world, state, pos);
+        }
+        return Operator.OR;
     }
 
     public enum ConnectionType implements StringIdentifiable {
@@ -107,10 +180,10 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         if (world.isClient) return;
 
         if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            if (wire.getDelay() == 0) {
+            if (wire.getDelay(world, state, pos) == 0) {
                 wire.updatePower();
             } else if (!world.getBlockTickScheduler().isQueued(pos, this)) {
-                world.scheduleBlockTick(pos, this, wire.getDelay());
+                world.scheduleBlockTick(pos, this, wire.getDelay(world, state, pos));
             }
 
             Direction currentFacing = state.get(FACING);
@@ -169,55 +242,55 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         if (oldDir.getOpposite() == newDir) return BlockRotation.CLOCKWISE_180;
         return BlockRotation.COUNTERCLOCKWISE_90;
     }
-    @Override
-    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
-
-        if (!(world.getBlockEntity(pos) instanceof WireBlockEntity wire) || !stack.isOf(ModItems.COPPER_WRENCH)) {
-            return ActionResult.PASS;
-        }
-
-        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
-
-        if (type == WrenchType.WIRE) {
-            wire.cycleConnection(hitSide);
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("block.btc.wire.change_connection",
-                        Text.translatable("block.btc.wire.face." + hitSide.asString()),
-                        Text.translatable("block.btc.wire.connection." + wire.getConnection(hitSide).asString())), true);
-            }
-            return ActionResult.SUCCESS;
-        } else if (type == WrenchType.WIRE_OPERATOR) {
-            wire.cycleOperator();
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("block.btc.wire.change_operator",
-                        Text.translatable("block.btc.wire.operator." + wire.getOperator().asString())), true);
-            }
-            return ActionResult.SUCCESS;
-        } else if (type == WrenchType.WIRE_DELAY) {
-            int newDelay;
-            if (hand == Hand.MAIN_HAND) {
-                newDelay = player.isSneaking() ? wire.getDelay() - 1 % 8 : (wire.getDelay() + 1) % 8;
-            } else {
-                newDelay = 0;
-            }
-            wire.setDelay(newDelay);
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", newDelay), true);
-            }
-            return ActionResult.SUCCESS;
-        } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
-            Direction dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
-
-            var next = wire.cycleConnection(dir);
-
-            if (world.isClient) {
-                player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + next.name)), true);
-            }
-            return ActionResult.SUCCESS;
-        }
-
-        return ActionResult.CONSUME;
-    }
+//    @Override
+//    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
+//
+//        if (!(world.getBlockEntity(pos) instanceof WireBlockEntity wire) || !stack.isOf(ModItems.COPPER_WRENCH)) {
+//            return ActionResult.PASS;
+//        }
+//
+//        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
+//
+//        if (type == WrenchType.WIRE) {
+//            wire.cycleConnection(hitSide, world, state, pos);
+//            if (world.isClient) {
+//                player.sendMessage(Text.translatable("block.btc.wire.change_connection",
+//                        Text.translatable("block.btc.wire.face." + hitSide.asString()),
+//                        Text.translatable("block.btc.wire.connection." + wire.getConnection(hitSide, world, state, pos).asString())), true);
+//            }
+//            return ActionResult.SUCCESS;
+//        } else if (type == WrenchType.WIRE_OPERATOR) {
+//            wire.cycleOperator(world, state, pos);
+//            if (world.isClient) {
+//                player.sendMessage(Text.translatable("block.btc.wire.change_operator",
+//                        Text.translatable("block.btc.wire.operator." + wire.getOperator(world, state, pos).asString())), true);
+//            }
+//            return ActionResult.SUCCESS;
+//        } else if (type == WrenchType.WIRE_DELAY) {
+//            int newDelay;
+//            if (hand == Hand.MAIN_HAND) {
+//                newDelay = player.isSneaking() ? wire.getDelay(world, state, pos) - 1 % 8 : (wire.getDelay(world, state, pos) + 1) % 8;
+//            } else {
+//                newDelay = 0;
+//            }
+//            wire.setDelay(newDelay, world, state, pos);
+//            if (world.isClient) {
+//                player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", newDelay), true);
+//            }
+//            return ActionResult.SUCCESS;
+//        } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
+//            Direction dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
+//
+//            var next = wire.cycleConnection(dir, world, state, pos);
+//
+//            if (world.isClient) {
+//                player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + next.name)), true);
+//            }
+//            return ActionResult.SUCCESS;
+//        }
+//
+//        return ActionResult.CONSUME;
+//    }
 
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {

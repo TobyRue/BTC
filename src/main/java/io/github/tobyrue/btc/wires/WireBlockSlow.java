@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 @Deprecated
-public class WireBlockSlow extends Block implements IWireConnect, IHaveWrenchActions {
+public class WireBlockSlow extends Block implements IWireConnect {
 
     public static final Supplier<ImmutableBiMap<EnumProperty<ConnectionType>, Direction>> CONNECTION_TO_DIRECTION = Suppliers.memoize(() ->
         ImmutableBiMap.<EnumProperty<ConnectionType>, Direction>builder()
@@ -189,69 +189,69 @@ public class WireBlockSlow extends Block implements IWireConnect, IHaveWrenchAct
         }
     }
 
-    @Override
-    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
-        ItemStack heldItem = player.getStackInHand(hand);
-        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
-        if (heldItem.isIn(BTC.WRENCHES) && (player.isCreative() || !this.IMMUTABLE)) {
-            if (hand == Hand.OFF_HAND && type == WrenchType.WIRE) {
-                var newState = state.cycle(OPERATOR);
-                world.setBlockState(pos, newState);
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("block.btc.wire.change_operator", Text.translatable("block.btc.wire.operator." + newState.get(OPERATOR).asString())), true);
-                }
-                return ActionResult.SUCCESS;
-            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE) {
-                var property = CONNECTION_TO_DIRECTION.get().inverse().get(hitSide);
-                var newState = state.cycle(property);
-                world.setBlockState(pos, newState);
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + hitSide.asString()), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
-                }
-                return ActionResult.SUCCESS;
-            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_DELAY) {
-                if (!player.isSneaking()) {
-                    var newState = state.cycle(DELAY);
-                    world.setBlockState(pos, newState);
-                    if (world.isClient) {
-                        if (state.get(DELAY) != 7) {
-                            player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", state.get(DELAY) + 1), true);
-                        } else {
-                            player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", 0), true);
-                        }
-                    }
-                    return ActionResult.SUCCESS;
-                } else {
-                    world.setBlockState(pos, state.with(DELAY, 0));
-                    if (world.isClient) {
-                        player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", 0), true);
-                    }
-                    return ActionResult.SUCCESS;
-                }
-
-                } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
-                Direction dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
-                var property = switch (dir) {
-                    case DOWN -> CONNECTION_TO_DIRECTION.get().inverse().get(Direction.DOWN);
-                    case UP ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.UP);
-                    case NORTH ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.NORTH);
-                    case EAST ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.EAST);
-                    case SOUTH ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.SOUTH);
-                    case WEST ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.WEST);
-                };
-                var newState = state.cycle(property);
-                world.setBlockState(pos, newState);
-                if (world.isClient) {
-                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
-                }
-                return ActionResult.SUCCESS;
-            }
-        }
-        if (world.isClient) {
-            player.sendMessage(Text.literal("Has power: " + hasPower(state, world, pos)));
-        }
-        return ActionResult.FAIL;
-    }
+//    @Override
+//    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
+//        ItemStack heldItem = player.getStackInHand(hand);
+//        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
+//        if (heldItem.isIn(BTC.WRENCHES) && (player.isCreative() || !this.IMMUTABLE)) {
+//            if (hand == Hand.OFF_HAND && type == WrenchType.WIRE) {
+//                var newState = state.cycle(OPERATOR);
+//                world.setBlockState(pos, newState);
+//                if (world.isClient) {
+//                    player.sendMessage(Text.translatable("block.btc.wire.change_operator", Text.translatable("block.btc.wire.operator." + newState.get(OPERATOR).asString())), true);
+//                }
+//                return ActionResult.SUCCESS;
+//            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE) {
+//                var property = CONNECTION_TO_DIRECTION.get().inverse().get(hitSide);
+//                var newState = state.cycle(property);
+//                world.setBlockState(pos, newState);
+//                if (world.isClient) {
+//                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + hitSide.asString()), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
+//                }
+//                return ActionResult.SUCCESS;
+//            } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_DELAY) {
+//                if (!player.isSneaking()) {
+//                    var newState = state.cycle(DELAY);
+//                    world.setBlockState(pos, newState);
+//                    if (world.isClient) {
+//                        if (state.get(DELAY) != 7) {
+//                            player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", state.get(DELAY) + 1), true);
+//                        } else {
+//                            player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", 0), true);
+//                        }
+//                    }
+//                    return ActionResult.SUCCESS;
+//                } else {
+//                    world.setBlockState(pos, state.with(DELAY, 0));
+//                    if (world.isClient) {
+//                        player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", 0), true);
+//                    }
+//                    return ActionResult.SUCCESS;
+//                }
+//
+//                } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
+//                Direction dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
+//                var property = switch (dir) {
+//                    case DOWN -> CONNECTION_TO_DIRECTION.get().inverse().get(Direction.DOWN);
+//                    case UP ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.UP);
+//                    case NORTH ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.NORTH);
+//                    case EAST ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.EAST);
+//                    case SOUTH ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.SOUTH);
+//                    case WEST ->  CONNECTION_TO_DIRECTION.get().inverse().get(Direction.WEST);
+//                };
+//                var newState = state.cycle(property);
+//                world.setBlockState(pos, newState);
+//                if (world.isClient) {
+//                    player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + newState.get(property).asString())), true);
+//                }
+//                return ActionResult.SUCCESS;
+//            }
+//        }
+//        if (world.isClient) {
+//            player.sendMessage(Text.literal("Has power: " + hasPower(state, world, pos)));
+//        }
+//        return ActionResult.FAIL;
+//    }
 
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {

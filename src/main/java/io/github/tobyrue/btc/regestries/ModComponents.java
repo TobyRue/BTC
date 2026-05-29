@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.regestries;
 
+import com.mojang.serialization.Codec;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.Direction;
 import java.util.UUID;
 
 public class ModComponents {
+    @Deprecated
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("wrench_direction"),
@@ -35,11 +37,33 @@ public class ModComponents {
                     .codec(WrenchType.CODEC)
                     .build()
     );
+    public static final ComponentType<Integer> WRENCH_DELAY = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_delay"),
+            ComponentType.<Integer>builder()
+                    .codec(Codec.INT)
+                    .build()
+    );
+    public static final ComponentType<String> WRENCH_OPERATOR = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_operator"),
+            ComponentType.<String>builder()
+                    .codec(Codec.STRING)
+                    .build()
+    );
+    public static final ComponentType<String> WRENCH_CONNECTION = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_connection"),
+            ComponentType.<String>builder()
+                    .codec(Codec.STRING)
+                    .build()
+    );
     public static final ComponentType<WrenchType.WireSubtype> WRENCH_SUBTYPE = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("wrench_subtype"),
             ComponentType.<WrenchType.WireSubtype>builder()
                     .codec(WrenchType.WireSubtype.CODEC)
+                    .packetCodec(PacketCodecs.indexed(i -> WrenchType.WireSubtype.values()[i], Enum::ordinal))
                     .build()
     );
 
