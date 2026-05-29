@@ -55,7 +55,7 @@ public class RadialMenuWithPrefix extends Screen {
         this.start = start;
         this.suffixTitle = suffixTitle;
         this.key = key;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
         this.end = Math.min(end, radialIdentifiers.sectors());
     }
 
@@ -63,7 +63,7 @@ public class RadialMenuWithPrefix extends Screen {
         super(title);
         this.spells = spells;
         this.suffixTitle = suffixTitle;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
         this.start = 0;
         this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.key = key;
@@ -96,7 +96,7 @@ public class RadialMenuWithPrefix extends Screen {
         this.spells = spells;
         this.start = start;
         this.key = key;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
         this.end = Math.min(end, radialIdentifiers.sectors());
         this.suffixTitle = title;
     }
@@ -104,7 +104,7 @@ public class RadialMenuWithPrefix extends Screen {
     public RadialMenuWithPrefix(Text title, List<PrefixValue> spells, KeyBinding key) {
         super(title);
         this.spells = spells;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
         this.start = 0;
         this.end = Math.min(spells.size(), radialIdentifiers.sectors());
         this.key = key;
@@ -287,7 +287,7 @@ public class RadialMenuWithPrefix extends Screen {
         context.getMatrices().pop();
 
         // Draw text for spells[start..end)
-        int radius = radialIdentifiers.textRadius();
+        int radius = this.radialIdentifiers.textRadius();
         for (int i = 0; i < (end - start); i++) {
             PrefixValue spell = spells.get(start + i);
             double angleStep = 360.0 / radialIdentifiers.sectors();
@@ -296,46 +296,61 @@ public class RadialMenuWithPrefix extends Screen {
             int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
 
             Text displayText = spell.display();
+            int maxWidth = this.radialIdentifiers.maxTextWidth();
 
             String[] words = displayText.getString().split(" ");
-            List<Text> lines = new ArrayList<>();
+            List<String> lines = new ArrayList<>();
             StringBuilder currentLine = new StringBuilder();
 
             for (String word : words) {
                 String testLine = (currentLine.length() == 0 ? "" : currentLine + " ") + word;
-                if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
+                if (this.textRenderer.getWidth(testLine) <= maxWidth) {
                     currentLine = new StringBuilder(testLine);
                 } else {
-                    lines.add(Text.literal(currentLine.toString()));
+                    if (currentLine.length() > 0) lines.add(currentLine.toString());
                     currentLine = new StringBuilder(word);
                 }
             }
-            if (currentLine.length() > 0) lines.add(Text.literal(currentLine.toString()));
-
-            boolean shrink = lines.size() > 3;
+            if (currentLine.length() > 0) lines.add(currentLine.toString());
 
             context.getMatrices().push();
-            if (shrink) {
-                context.getMatrices().translate(hexCenterX, hexCenterY, 0);
-                context.getMatrices().scale(0.75f, 0.75f, 1f);
-                hexCenterX = 0;
-                hexCenterY = 0;
-            }
+            context.getMatrices().translate(hexCenterX, hexCenterY, 0);
 
-            int totalHeight = lines.size() * this.textRenderer.fontHeight;
-            int startY = hexCenterY - totalHeight / 2;
+            int fontHeight = this.textRenderer.fontHeight;
+            int totalHeight = lines.size() * fontHeight;
+            float startY = -totalHeight / 2.0f;
 
             for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
-                Text line = lines.get(lineIndex);
-                int lineWidth = this.textRenderer.getWidth(line);
-                int lineX = hexCenterX - lineWidth / 2;
-                int lineY = startY + lineIndex * this.textRenderer.fontHeight;
-                context.drawText(this.textRenderer, line, lineX, lineY, displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.textShadow());
+                String lineText = lines.get(lineIndex);
+                int lineWidth = this.textRenderer.getWidth(lineText);
+
+                context.getMatrices().push();
+
+                float lineScale = 1.0f;
+                if (lineWidth > maxWidth) {
+                    lineScale = (float) maxWidth / (float) lineWidth;
+                }
+
+                float lineY = startY + (lineIndex * fontHeight);
+
+                context.getMatrices().translate(0, lineY + (fontHeight / 2.0f), 0);
+                context.getMatrices().scale(lineScale, lineScale, 1.0f);
+
+                int color = displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF;
+                context.drawText(
+                        this.textRenderer,
+                        lineText,
+                        -lineWidth / 2,
+                        -fontHeight / 2,
+                        color,
+                        radialIdentifiers.textShadow()
+                );
+
+                context.getMatrices().pop();
             }
 
             context.getMatrices().pop();
         }
-        context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - (this.textRenderer.fontHeight * 2), this.title.getStyle().getColor() != null ? this.title.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.titleShadow());
     }
 
 
@@ -378,7 +393,7 @@ public class RadialMenuWithPrefix extends Screen {
         public HexagonRadialMenuWithSuffix(Text title, String prefixCommand, List<SuffixValue> spells, int start, int end, KeyBinding key) {
             super(title);
             this.prefixCommand = prefixCommand;
-            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
             this.spells = spells;
             this.start = start;
             this.end = Math.min(end, radialIdentifiers.sectors());
@@ -389,7 +404,7 @@ public class RadialMenuWithPrefix extends Screen {
             super(title);
             this.prefixCommand = prefixCommand;
             this.spells = spells;
-            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+            this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
             this.start = 0;
             this.end = Math.min(spells.size(), radialIdentifiers.sectors());
             this.key = key;
@@ -527,9 +542,7 @@ public class RadialMenuWithPrefix extends Screen {
             RenderSystem.disableBlend();
 
             context.getMatrices().pop();
-
-            // Draw text for spells[start..end)
-            int radius = radialIdentifiers.textRadius();
+            int radius = this.radialIdentifiers.textRadius();
             for (int i = 0; i < (end - start); i++) {
                 SuffixValue spell = spells.get(start + i);
                 double angleStep = 360.0 / radialIdentifiers.sectors();
@@ -538,47 +551,61 @@ public class RadialMenuWithPrefix extends Screen {
                 int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
 
                 Text displayText = spell.display();
+                int maxWidth = this.radialIdentifiers.maxTextWidth();
 
                 String[] words = displayText.getString().split(" ");
-                List<Text> lines = new ArrayList<>();
+                List<String> lines = new ArrayList<>();
                 StringBuilder currentLine = new StringBuilder();
 
                 for (String word : words) {
                     String testLine = (currentLine.length() == 0 ? "" : currentLine + " ") + word;
-                    if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
+                    if (this.textRenderer.getWidth(testLine) <= maxWidth) {
                         currentLine = new StringBuilder(testLine);
                     } else {
-                        lines.add(Text.literal(currentLine.toString()));
+                        if (currentLine.length() > 0) lines.add(currentLine.toString());
                         currentLine = new StringBuilder(word);
                     }
                 }
-                if (currentLine.length() > 0) lines.add(Text.literal(currentLine.toString()));
-
-                boolean shrink = lines.size() > 3;
+                if (currentLine.length() > 0) lines.add(currentLine.toString());
 
                 context.getMatrices().push();
-                if (shrink) {
-                    context.getMatrices().translate(hexCenterX, hexCenterY, 0);
-                    context.getMatrices().scale(0.75f, 0.75f, 1f);
-                    hexCenterX = 0;
-                    hexCenterY = 0;
-                }
+                context.getMatrices().translate(hexCenterX, hexCenterY, 0);
 
-                int totalHeight = lines.size() * this.textRenderer.fontHeight;
-                int startY = hexCenterY - totalHeight / 2;
+                int fontHeight = this.textRenderer.fontHeight;
+                int totalHeight = lines.size() * fontHeight;
+                float startY = -totalHeight / 2.0f;
 
                 for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
-                    Text line = lines.get(lineIndex);
-                    int lineWidth = this.textRenderer.getWidth(line);
-                    int lineX = hexCenterX - lineWidth / 2;
-                    int lineY = startY + lineIndex * this.textRenderer.fontHeight;
-                    context.drawText(this.textRenderer, line, lineX, lineY, displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.textShadow());
+                    String lineText = lines.get(lineIndex);
+                    int lineWidth = this.textRenderer.getWidth(lineText);
+
+                    context.getMatrices().push();
+
+                    float lineScale = 1.0f;
+                    if (lineWidth > maxWidth) {
+                        lineScale = (float) maxWidth / (float) lineWidth;
+                    }
+
+                    float lineY = startY + (lineIndex * fontHeight);
+
+                    context.getMatrices().translate(0, lineY + (fontHeight / 2.0f), 0);
+                    context.getMatrices().scale(lineScale, lineScale, 1.0f);
+
+                    int color = displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF;
+                    context.drawText(
+                            this.textRenderer,
+                            lineText,
+                            -lineWidth / 2,
+                            -fontHeight / 2,
+                            color,
+                            radialIdentifiers.textShadow()
+                    );
+
+                    context.getMatrices().pop();
                 }
 
                 context.getMatrices().pop();
             }
-            context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - (this.textRenderer.fontHeight * 2), this.title.getStyle().getColor() != null ? this.title.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.titleShadow());
-
         }
     }
 }

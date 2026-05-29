@@ -58,14 +58,14 @@ public class RadialMenu extends Screen {
         this.spells = spells;
         this.start = start;
         this.end = Math.min(spells.size(), end);
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
         this.key = key;
     }
 
     public RadialMenu(Text title, List<Value> spells, KeyBinding key) {
         super(title);
         this.spells = spells;
-        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 40, 6, true, true, 582, 603, 0.3f);
+        this.radialIdentifiers = new RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_stone.png"), 200f, BTC.identifierOf("textures/gui/honeycomb_sector_"), 150f, 60, 30, 54, 6, true, true, 582, 603, 0.3f);
         this.end = Math.min(spells.size(), 6);
         this.start = 0;
         this.key = key;
@@ -217,46 +217,61 @@ public class RadialMenu extends Screen {
             int hexCenterY = centerY + (int) (radius * Math.sin(angleRad));
 
             Text displayText = spell.display();
+            int maxWidth = this.radialIdentifiers.maxTextWidth();
 
             String[] words = displayText.getString().split(" ");
-            List<Text> lines = new ArrayList<>();
+            List<String> lines = new ArrayList<>();
             StringBuilder currentLine = new StringBuilder();
 
             for (String word : words) {
                 String testLine = (currentLine.length() == 0 ? "" : currentLine + " ") + word;
-                if (this.textRenderer.getWidth(testLine) <= this.radialIdentifiers.maxTextWidth()) {
+                if (this.textRenderer.getWidth(testLine) <= maxWidth) {
                     currentLine = new StringBuilder(testLine);
                 } else {
-                    lines.add(Text.literal(currentLine.toString()));
+                    if (currentLine.length() > 0) lines.add(currentLine.toString());
                     currentLine = new StringBuilder(word);
                 }
             }
-            if (currentLine.length() > 0) lines.add(Text.literal(currentLine.toString()));
-
-            boolean shrink = lines.size() > 3;
+            if (currentLine.length() > 0) lines.add(currentLine.toString());
 
             context.getMatrices().push();
-            if (shrink) {
-                context.getMatrices().translate(hexCenterX, hexCenterY, 0);
-                context.getMatrices().scale(0.75f, 0.75f, 1f);
-                hexCenterX = 0;
-                hexCenterY = 0;
-            }
+            context.getMatrices().translate(hexCenterX, hexCenterY, 0);
 
-            int totalHeight = lines.size() * this.textRenderer.fontHeight;
-            int startY = hexCenterY - totalHeight / 2;
+            int fontHeight = this.textRenderer.fontHeight;
+            int totalHeight = lines.size() * fontHeight;
+            float startY = -totalHeight / 2.0f;
 
             for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
-                Text line = lines.get(lineIndex);
-                int lineWidth = this.textRenderer.getWidth(line);
-                int lineX = hexCenterX - lineWidth / 2;
-                int lineY = startY + lineIndex * this.textRenderer.fontHeight;
-                context.drawText(this.textRenderer, line, lineX, lineY, displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.textShadow());
+                String lineText = lines.get(lineIndex);
+                int lineWidth = this.textRenderer.getWidth(lineText);
+
+                context.getMatrices().push();
+
+                float lineScale = 1.0f;
+                if (lineWidth > maxWidth) {
+                    lineScale = (float) maxWidth / (float) lineWidth;
+                }
+
+                float lineY = startY + (lineIndex * fontHeight);
+
+                context.getMatrices().translate(0, lineY + (fontHeight / 2.0f), 0);
+                context.getMatrices().scale(lineScale, lineScale, 1.0f);
+
+                int color = displayText.getStyle().getColor() != null ? displayText.getStyle().getColor().getRgb() : 0xFFFFFF;
+                context.drawText(
+                        this.textRenderer,
+                        lineText,
+                        -lineWidth / 2,
+                        -fontHeight / 2,
+                        color,
+                        radialIdentifiers.textShadow()
+                );
+
+                context.getMatrices().pop();
             }
 
             context.getMatrices().pop();
         }
-        context.drawText(this.textRenderer, this.title, (this.width / 2) - (this.textRenderer.getWidth(this.title) / 2), this.height - (this.textRenderer.fontHeight * 2), this.title.getStyle().getColor() != null ? this.title.getStyle().getColor().getRgb() : 0xFFFFFF, radialIdentifiers.titleShadow());
     }
 }
 
