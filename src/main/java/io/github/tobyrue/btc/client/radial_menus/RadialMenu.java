@@ -20,9 +20,7 @@ import java.util.List;
 
 public class RadialMenu extends Screen {
 
-    /** Absolute white */
     public static final int WHITE = 0xFFFFFFFF;
-    /** Light silver, useful for inactive or platinum-style UI */
     public static final int LIGHT_GRAY = 0xFFC6C6C6;
     public static final int GRAY = 0xFF808080;
     public static final int DARK_GRAY = 0xFF373737;
