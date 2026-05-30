@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RadialMenu extends Screen {
+    private int lastHovered = -2;
 
     public static final int WHITE = 0xFFFFFFFF;
     public static final int LIGHT_GRAY = 0xFFC6C6C6;
@@ -38,6 +39,7 @@ public class RadialMenu extends Screen {
     public static final int RED = 0xFFFF3131;
     public static final int GREEN = 0xFF55FF55;
     public static final int DARK_RED = 0xFF8B0000;
+
 
     public enum TriggerType {
         CLICK, KEY_RELEASE;
@@ -65,7 +67,9 @@ public class RadialMenu extends Screen {
         public boolean shadow = true;
 
         public int maxWidth = 50;
+        public @Nullable Text tooltip;
         private boolean manuallyStyled = false;
+
 
         public RadialValue(Text display, RadialAction action) {
             this.display = display;
@@ -179,6 +183,12 @@ public class RadialMenu extends Screen {
             }
             return list;
         }
+
+        public RadialValue withTooltip(Text tooltip) {
+            this.tooltip = tooltip;
+            return this;
+        }
+
         public RadialValue setManuallyStyled(boolean manuallyStyled) {
             this.manuallyStyled = manuallyStyled;
             return this;
@@ -207,6 +217,7 @@ public class RadialMenu extends Screen {
     private double mouseX, mouseY;
     private final int layer;
     private final RadialMenu parent;
+    private final boolean renderCenter;
 
 
     /**
@@ -235,7 +246,7 @@ public class RadialMenu extends Screen {
             }
         }
 
-        this.client.setScreen(new RadialMenu(newTitle, subValues, this.context, this.key, this.config, 0, this.layer + 1, this));
+        this.client.setScreen(new RadialMenu(newTitle, subValues, this.context, this.key, this.config, this.renderCenter, this.layer + 1, this, 0));
     }
 
     public void goBack() {
@@ -250,7 +261,7 @@ public class RadialMenu extends Screen {
         return layer;
     }
 
-    public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, int start, int layer, @Nullable RadialMenu parent) {
+    public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, boolean renderCenter, int layer, @Nullable RadialMenu parent, int start) {
         super(title);
         this.values = values;
         this.context = context;
@@ -259,6 +270,43 @@ public class RadialMenu extends Screen {
         this.start = start;
         this.layer = layer;
         this.parent = parent;
+        this.renderCenter = renderCenter;
+        this.end = Math.min(values.size(), start + config.sectors());
+    }
+
+    public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, boolean renderCenter, int start) {
+        this(title, values, context, key, new Config(
+                BTC.identifierOf("textures/gui/honeycomb.png"),
+                renderCenter ? BTC.identifierOf("textures/gui/honeycomb_stone.png") : BTC.identifierOf("textures/gui/honeycomb_stone_no_center.png"),
+                BTC.identifierOf("textures/gui/honeycomb_sector_"),
+                BTC.identifierOf("textures/gui/title_plate.png"),
+                200f / 255f, 255f / 255f, 150f / 255f,
+                60, 30, 6, 0.0f, 603, 582, 0.3f,
+                0xFFFFFF, 100, true
+        ), renderCenter, start, null, 0);
+    }
+    public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, int titleColor, boolean titleShadow, boolean renderCenter, int start) {
+        this(title, values, context, key, new Config(
+                BTC.identifierOf("textures/gui/honeycomb.png"),
+                renderCenter ? BTC.identifierOf("textures/gui/honeycomb_stone.png") : BTC.identifierOf("textures/gui/honeycomb_stone_no_center.png"),
+                BTC.identifierOf("textures/gui/honeycomb_sector_"),
+                BTC.identifierOf("textures/gui/title_plate.png"),
+                200f / 255f, 255f / 255f, 150f / 255f,
+                60,  30, 6, 0.0f, 603, 582, 0.3f,
+                titleColor, 100, titleShadow
+        ), renderCenter, start, null, 0);
+    }
+
+    public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, int layer, @Nullable RadialMenu parent, int start) {
+        super(title);
+        this.values = values;
+        this.context = context;
+        this.config = config;
+        this.key = key;
+        this.start = start;
+        this.layer = layer;
+        this.parent = parent;
+        this.renderCenter = true;
         this.end = Math.min(values.size(), start + config.sectors());
     }
 
@@ -271,7 +319,7 @@ public class RadialMenu extends Screen {
                 200f / 255f, 255f / 255f, 150f / 255f,
                 60, 30, 6, 0.0f, 603, 582, 0.3f,
                 0xFFFFFF, 100, true
-        ), start, 0, null);
+        ), true, start, null, 0);
     }
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, int titleColor, boolean titleShadow, int start) {
         this(title, values, context, key, new Config(
@@ -282,8 +330,9 @@ public class RadialMenu extends Screen {
                 200f / 255f, 255f / 255f, 150f / 255f,
                 60,  30, 6, 0.0f, 603, 582, 0.3f,
                 titleColor, 100, titleShadow
-        ), start, 0, null);
+        ), true, start, null, 0);
     }
+
 
     public boolean sendCommand(String command) {
         if (client == null || client.player == null) return false;
@@ -300,7 +349,7 @@ public class RadialMenu extends Screen {
             if (values.size() <= config.sectors()) return;
             int next = vert > 0 ? start - config.sectors() : start + config.sectors();
             if (next >= 0 && next < values.size()) {
-                MinecraftClient.getInstance().setScreen(new RadialMenu(title, values, context, key, config, next, layer, this.parent));
+                MinecraftClient.getInstance().setScreen(new RadialMenu(title, values, context, key, config, layer, this.parent, next));
             }
         });
     }
@@ -342,6 +391,13 @@ public class RadialMenu extends Screen {
         this.renderInGameBackground(context);
         int hovered = getHoveredSector();
 
+        if (hovered != lastHovered) {
+            if (((hovered != -1 && !renderCenter) || (hovered >= -1 && renderCenter)) && client != null && client.player != null) {
+                client.player.playSound(net.minecraft.sound.SoundEvents.UI_BUTTON_CLICK.value(), 0.4f, 1.5f);
+            }
+            lastHovered = hovered;
+        }
+
         context.getMatrices().push();
         context.getMatrices().translate((width - (config.texW() * config.scale())) / 2, (height - (config.texH() * config.scale())) / 2, 0);
         context.getMatrices().scale(config.scale(), config.scale(), 1f);
@@ -349,7 +405,7 @@ public class RadialMenu extends Screen {
 
         RenderSystem.setShaderColor(1, 1, 1, config.bgAlpha());
         context.drawTexture(config.bg(), 0, 0, 0, 0, config.texW(), config.texH(), config.texW(), config.texH());
-        if (hovered >= -1) {
+        if ((hovered >= -1 && renderCenter) || (hovered > -1 && !renderCenter)) {
             RenderSystem.setShaderColor(1, 1, 1, config.highlightAlpha());
             Identifier hTex = Identifier.of(config.highlight().getNamespace(), config.highlight().getPath() + (hovered + 1) + ".png");
             context.drawTexture(hTex, 0, 0, 0, 0, config.texW(), config.texH(), config.texW(), config.texH());
@@ -407,6 +463,12 @@ public class RadialMenu extends Screen {
             }
 
             renderText(context, this.title, titleX, titleY, config.titleColor(), config.maxTitleWidth, config.titleShadow());
+        }
+        if (hovered >= 0 && (hovered + start) < values.size()) {
+            RadialValue val = values.get(hovered + start);
+            if (val.tooltip != null) {
+                context.drawTooltip(textRenderer, val.tooltip, mouseX, mouseY);
+            }
         }
     }
 

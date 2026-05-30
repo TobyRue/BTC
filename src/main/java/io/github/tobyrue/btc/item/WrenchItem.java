@@ -113,6 +113,7 @@ public class WrenchItem extends Item {
                 null,
                 0xFFD67B5B,
                 true,
+                false,
                 0
         ));
     }
