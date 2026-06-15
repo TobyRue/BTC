@@ -30,6 +30,14 @@ public class ModBlocks {
 
         return Registry.register(Registries.BLOCK, id, block);
     }
+
+    public static final Block BELLOW = register(
+            new BellowBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOD).mapColor(MapColor.SPRUCE_BROWN).requiresTool().strength(1.5F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
+            "bellow",
+            true
+    );
+
+
     public static final GunpowderDustBlock GUNPOWDER_DUST = (GunpowderDustBlock) register(
             new GunpowderDustBlock(AbstractBlock.Settings.create().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)),
             "gunpowder_dust",
@@ -196,6 +204,9 @@ public class ModBlocks {
 //            "dungeon_wire",
 //            true
 //    );
+
+
+
     public static final BrazierBlock BRAZIER = (BrazierBlock) register(
             new BrazierBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
                 return 15;

@@ -17,7 +17,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * A specialized {@link Screen} that renders a radial selection menu.
+ * Supports nesting, text coloring, hover effects, images, and custom textures for the thing itself.
+ */
 public class RadialMenu extends Screen {
     private int lastHovered = -2;
 
@@ -40,16 +43,31 @@ public class RadialMenu extends Screen {
     public static final int GREEN = 0xFF55FF55;
     public static final int DARK_RED = 0xFF8B0000;
 
-
+    /** Determines if the action was triggered by a mouse click or releasing the menu key. */
     public enum TriggerType {
-        CLICK, KEY_RELEASE;
+        /** Selection triggered via a primary mouse button click. */
+        CLICK,
+        /** Selection triggered by releasing the {@link KeyBinding} associated with the menu. */
+        KEY_RELEASE;
     }
 
     @FunctionalInterface
     public interface RadialAction {
+        /**
+         * Executed when a sector is successfully selected.
+         * @param menu The current instance of the {@link RadialMenu}.
+         * @param type The input method used to trigger the selection.
+         */
         void execute(RadialMenu menu, TriggerType type);
     }
 
+
+    /**
+     * A builder-compliant data object representing a selectable entry in the menu.
+     * <p>
+     * Supports dual-state visual properties (Idle vs. Hover) and stores the {@link RadialAction}
+     * to be dispatched upon selection.
+     */
     public static class RadialValue {
         public Text display;
         public RadialAction action;
@@ -77,22 +95,41 @@ public class RadialMenu extends Screen {
         }
 
 
-
+        /**
+         * Toggles whether the menu should apply hover-specific scales and colors.
+         * @param enable If true, uses hover_color and hover_icon_scale and all other hover action when the sector is active.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue enableHoverEffects(boolean enable) {
             this.useHoverEffects = enable;
             return this;
         }
 
+        /**
+         * Assigns a specific icon texture to be rendered when the sector is hovered.
+         * @param iconHover {@link Identifier} pointing to a texture.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withHoverIcon(Identifier iconHover) {
             this.icon_hover = iconHover;
             return this;
         }
 
+        /**
+         * Sets the rendering scale for the hover icon.
+         * @param scale 1.0f is native; values > 1.0f create a "pop-out" effect.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withHoverIconScale(float scale) {
             this.hover_icon_scale = scale;
             return this;
         }
 
+        /**
+         * Defines the text color applied during hover states.
+         * @param hexColor 24-bit or 32-bit hex color.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withHoverColor(int hexColor) {
             if ((hexColor & 0xFF000000) == 0) {
                 this.hover_color = 0xFF000000 | hexColor;
@@ -103,6 +140,11 @@ public class RadialMenu extends Screen {
             return this;
         }
 
+        /**
+         * Applies Minecraft {@link Formatting} codes to the text during hover.
+         * @param formattingHover Variadic list of formats (e.g., {@link Formatting#BOLD}).
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withHoverFormatting(Formatting... formattingHover) {
             this.formattingHover = formattingHover;
             this.manuallyStyled = true;
@@ -129,6 +171,11 @@ public class RadialMenu extends Screen {
             return this;
         }
 
+        /**
+         * Sets the base icon for the idle state.
+         * @param icon {@link Identifier} to the texture.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withIcon(Identifier icon) {
             this.icon = icon;
             return this;
@@ -139,6 +186,11 @@ public class RadialMenu extends Screen {
             return this;
         }
 
+        /**
+         * Sets the text color for the idle state.
+         * @param hexColor Hex integer.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withColor(int hexColor) {
             if ((hexColor & 0xFF000000) == 0) {
                 this.color = 0xFF000000 | hexColor;
@@ -162,22 +214,46 @@ public class RadialMenu extends Screen {
         }
 
 
-
+        /**
+         * Defines the horizontal pixel limit for the label.
+         * <p>
+         * If the text exceeds this value, the renderer will attempt to wrap at spaces.
+         * If a single word still exceeds this value, it will be scaled down.
+         * @param maxWidth Pixel width limit.
+         * @return This {@link RadialValue} for chaining.
+         */
         public RadialValue withMaxWidth(int maxWidth) {
             this.maxWidth = maxWidth;
             return this;
         }
 
+        /**
+         * Helper for creating deep-layered menus.
+         * @param display The label shown in the current menu and on the button.
+         * @param subValues The list of values to be shown in the next menu.
+         * @return A {@link RadialValue} that triggers {@link #openSubMenu}.
+         */
         public static RadialValue nested(Text display, List<RadialValue> subValues) {
             return new RadialValue(display, (menu, type) -> menu.openSubMenu(display, subValues));
         }
-        public static List<RadialValue> styleAll(List<RadialValue> list, int color, net.minecraft.util.Formatting... formatting) {
+
+        /**
+         * Helper for creating deep-layered menus.
+         * @param display The label shown on the button itself.
+         * @param titlePlate The label shown in the current menu.
+         * @param subValues The list of values to be shown in the next menu.
+         * @return A {@link RadialValue} that triggers {@link #openSubMenu}.
+         */
+        public static RadialValue nested(Text display, Text titlePlate, List<RadialValue> subValues) {
+            return new RadialValue(display, (menu, type) -> menu.openSubMenu(titlePlate, subValues));
+        }
+        public static List<RadialValue> styleAll(List<RadialValue> list, int color, Formatting... formatting) {
             for (RadialValue val : list) {
                 val.withColor(color).withFormatting(formatting);
             }
             return list;
         }
-        public static List<RadialValue> styleAllWithHover(List<RadialValue> list, int hoverColor, net.minecraft.util.Formatting... hoverFormatting) {
+        public static List<RadialValue> styleAllWithHover(List<RadialValue> list, int hoverColor, Formatting... hoverFormatting) {
             for (RadialValue val : list) {
                 val.enableHoverEffects(true).withHoverColor(hoverColor).withHoverFormatting(hoverFormatting);
             }
@@ -189,12 +265,41 @@ public class RadialMenu extends Screen {
             return this;
         }
 
+        /**
+         * Forces the manual styling flag. If true, this item will ignore theme-inheritance
+         * when opened via {@link #openSubMenu}.
+         */
         public RadialValue setManuallyStyled(boolean manuallyStyled) {
             this.manuallyStyled = manuallyStyled;
             return this;
         }
     }
 
+
+    /**
+     * Spatial and Visual configuration for the radial interface.
+     * @param outline The texture for the outer hexagon borders.
+     * @param bg The texture for the main hexagon plate.
+     * @param highlight The base {@link Identifier} for the highlight assets.
+            * The {@link Identifier} prefix used to resolve sector-specific highlight textures.
+            * <p>
+            * The system resolves textures using a "Prefix + ID" pattern. The texture files in your assets
+            * folder must follow a 1-based indexing scheme appended to this prefix (e.g., {@code highlight_1.png}).
+            * </p>
+            * <ul>
+            * <li><b>ID 0:</b> Reserved for the center/dead-zone highlight (rendered when {@code renderCenter} is true).</li>
+            * <li><b>IDs 1 through N:</b> Represent individual sectors, mapped clockwise starting from the
+            * {@link Config#angleOffset()}. For a standard 6-sector menu with 0° offset, ID 1 is the
+            * top-most sector, and ID 2 is the top-right.</li>
+            * </ul>
+            * <b>Note:</b> Do not include the numerical suffix or the {@code .png} extension;
+            * the renderer appends these dynamically during the draw call.
+     * @param titlePlate Nine-patch texture for the bottom title background.
+     * @param textRadius Distance from screen center to the sector content center.
+     * @param centerRadius Distance from center where the "Dead Zone" ends.
+     * @param sectors Number of slices in the radial circle.
+     * @param angleOffset Rotational offset in degrees (0 = First sector at top).
+     */
     public record Config(
             Identifier outline, Identifier bg, Identifier highlight,
             @Nullable Identifier titlePlate,
@@ -221,7 +326,8 @@ public class RadialMenu extends Screen {
 
 
     /**
-     * Easily opens a new radial menu using the current menu's configuration and context.
+     * Initializes a sub-menu layer. Inherits stylistic attributes from the parent sector unless
+     * the sub-item specifies its own styling.
      */
     public void openSubMenu(Text newTitle, List<RadialValue> subValues) {
         if (this.client == null) return;
@@ -261,6 +367,21 @@ public class RadialMenu extends Screen {
         return layer;
     }
 
+
+    /**
+     * Initializes a new menu layer based on a list of {@link RadialValue} objects.
+     * <p>
+     * This constructor is the primary entry point for manual menu creation.
+     * * @param title The title displayed at the bottom plate.
+     * @param values The full list of entries to be displayed (will be paginated based on config).
+     * @param context An arbitrary object (e.g., TileEntity) to be passed through menu layers.
+     * @param key The {@link KeyBinding} used to open the menu; used for {@link TriggerType#KEY_RELEASE}.
+     * @param config The visual/spatial settings.
+     * @param renderCenter If false, uses a hollow center texture.
+     * @param layer The depth of the current menu (0 = root).
+     * @param parent The previous menu instance, used for {@link #goBack}.
+     * @param start The index in the {@code values} list to begin rendering from.
+     */
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, boolean renderCenter, int layer, @Nullable RadialMenu parent, int start) {
         super(title);
         this.values = values;
@@ -333,7 +454,10 @@ public class RadialMenu extends Screen {
         ), true, start, null, 0);
     }
 
-
+    /**
+     * Helper to send a server-side command through the client player.
+     * @return True if the command was successfully dispatched.
+     */
     public boolean sendCommand(String command) {
         if (client == null || client.player == null) return false;
         client.player.networkHandler.sendCommand(command);
@@ -354,6 +478,11 @@ public class RadialMenu extends Screen {
         });
     }
 
+    /**
+     * Calculates the currently hovered sector ID.
+     * Uses Atan2 to determine rotation angle relative to screen center.
+     * @return -1 if mouse is within centerRadius, otherwise 0 to (sectors - 1).
+     */
     private int getHoveredSector() {
         double dx = mouseX - (width / 2);
         double dy = mouseY - (height / 2);
@@ -472,6 +601,18 @@ public class RadialMenu extends Screen {
         }
     }
 
+
+    /**
+     * Renders a {@link Text} component with Smart Scaling.
+     * Wraps lines only at spaces. If a word or line exceeds <code>maxWidth</code>,
+     * the entire block is scaled down proportionally to fit.
+     * @param text The text object to render.
+     * @param x The horizontal center position.
+     * @param y The vertical center position.
+     * @param defaultColor The hex color to apply.
+     * @param maxWidth The maximum pixel width allowed before scaling/wrapping.
+     * @param hasShadow Whether to render the font shadow.
+     */
     private void renderText(DrawContext ctx, Text text, int x, int y, int defaultColor, int maxWidth, boolean hasShadow) {
         String textContent = text.getString();
         String[] words = textContent.split(" ");

@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -62,7 +63,6 @@ public class BrazierBlock extends Block implements Waterloggable {
         COAL_SHAPE4 = Block.createCuboidShape(7.0, 13.0, 7.0, 10.0, 14.0, 9.0);
         SHAPE = VoxelShapes.union(BOTTOM_SHAPE, MIDDLE_SHAPE, MIDDLE_SHAPE2, TOP_SHAPE, COAL_SHAPE1, COAL_SHAPE2, COAL_SHAPE3, COAL_SHAPE4);
     }
-
 
 
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {

@@ -140,7 +140,6 @@ public class BTC implements ModInitializer {
             }
             return ActionResult.PASS;
         });
-
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             var stack = player.getStackInHand(hand);
             if (stack.isOf(ModItems.PET_TOTEM)) {

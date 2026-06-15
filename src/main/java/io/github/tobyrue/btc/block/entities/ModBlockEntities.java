@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.wires.WireBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;

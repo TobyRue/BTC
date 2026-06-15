@@ -1,0 +1,163 @@
+{
+  "variants": {
+    "face=ceiling,facing=east,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=north,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=south,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 180
+    },
+    "face=ceiling,facing=south,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 180
+    },
+    "face=ceiling,facing=south,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 180
+    },
+    "face=ceiling,facing=west,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 180,
+      "y": 90
+    },
+    "face=floor,facing=east,level=0": {
+      "model": "btc:block/bellow_high",
+      "y": 90
+    },
+    "face=floor,facing=east,level=1": {
+      "model": "btc:block/bellow_middle",
+      "y": 90
+    },
+    "face=floor,facing=east,level=2": {
+      "model": "btc:block/bellow_low",
+      "y": 90
+    },
+    "face=floor,facing=north,level=0": {
+      "model": "btc:block/bellow_high"
+    },
+    "face=floor,facing=north,level=1": {
+      "model": "btc:block/bellow_middle"
+    },
+    "face=floor,facing=north,level=2": {
+      "model": "btc:block/bellow_low"
+    },
+    "face=floor,facing=south,level=0": {
+      "model": "btc:block/bellow_high",
+      "y": 180
+    },
+    "face=floor,facing=south,level=1": {
+      "model": "btc:block/bellow_middle",
+      "y": 180
+    },
+    "face=floor,facing=south,level=2": {
+      "model": "btc:block/bellow_low",
+      "y": 180
+    },
+    "face=floor,facing=west,level=0": {
+      "model": "btc:block/bellow_high",
+      "y": 270
+    },
+    "face=floor,facing=west,level=1": {
+      "model": "btc:block/bellow_middle",
+      "y": 270
+    },
+    "face=floor,facing=west,level=2": {
+      "model": "btc:block/bellow_low",
+      "y": 270
+    },
+    "face=wall,facing=east,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=north,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 90
+    },
+    "face=wall,facing=north,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 90
+    },
+    "face=wall,facing=north,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 90
+    },
+    "face=wall,facing=south,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=west,level=0": {
+      "model": "btc:block/bellow_high",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,level=1": {
+      "model": "btc:block/bellow_middle",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,level=2": {
+      "model": "btc:block/bellow_low",
+      "x": 90,
+      "y": 270
+    }
+  }
+}
