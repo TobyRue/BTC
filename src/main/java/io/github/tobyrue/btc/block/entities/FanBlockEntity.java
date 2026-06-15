@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.WaxedCopperFanBlock;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -86,10 +87,24 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
                     boolean canApply = isPulling ? speedInDirection > -maxSpeed : speedInDirection < maxSpeed;
 
                     if (canApply) {
-                        entity.setVelocity(currentVel.add(forceVec));
-                        entity.velocityModified = true;
-                    }
+                        if (entity instanceof SuperHappyKillBallEntity shkbEntity) {
+                            double currentSpeed = currentVel.length();
 
+                            double baseFallbackSpeed = 0.75;
+                            double finalSpeed = currentSpeed > 0.001 ? currentSpeed : baseFallbackSpeed;
+
+                            Vec3d blastDirection = direction.normalize();
+                            if (isPulling) {
+                                blastDirection = blastDirection.multiply(-1);
+                            }
+
+                            entity.setVelocity(blastDirection.multiply(finalSpeed));
+                            entity.velocityModified = true;
+                        } else {
+                            entity.setVelocity(currentVel.add(forceVec));
+                            entity.velocityModified = true;
+                        }
+                    }
                     Vec3d entityCenter = entity.getBoundingBox().getCenter();
 
                     if (isPulling) {
@@ -124,7 +139,6 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             }
         }
     }
-
     private boolean applyElementalEffect(Entity entity, BlockState state) {
         if (state.isOf(Blocks.FIRE) ||
                 state.isOf(Blocks.SOUL_FIRE) ||
@@ -141,6 +155,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         }
         return false;
     }
+
 
     private void spawnGustParticles(World world, BlockPos pos, Vec3d direction, WaxedCopperFanBlock.FanMode mode) {
         var percentSpeed = fanSpeed / MAX_SPEED;

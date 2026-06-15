@@ -1,22 +1,32 @@
 package io.github.tobyrue.btc.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.BlockFace;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,7 +113,7 @@ public class BellowBlock extends HorizontalFacingBlock {
 
         if (face == BlockFace.CEILING) {
             VoxelShape current = VoxelShapes.empty();
-            for (net.minecraft.util.math.Box box : buffer[0].getBoundingBoxes()) {
+            for (Box box : buffer[0].getBoundingBoxes()) {
                 current = VoxelShapes.union(current, VoxelShapes.cuboid(
                         box.minX, 1.0 - box.maxY, box.minZ,
                         box.maxX, 1.0 - box.minY, box.maxZ
@@ -112,7 +122,7 @@ public class BellowBlock extends HorizontalFacingBlock {
             buffer[0] = current;
         } else if (face == BlockFace.WALL) {
             VoxelShape current = VoxelShapes.empty();
-            for (net.minecraft.util.math.Box box : buffer[0].getBoundingBoxes()) {
+            for (Box box : buffer[0].getBoundingBoxes()) {
                 current = VoxelShapes.union(current, VoxelShapes.cuboid(
                         box.minX, box.minZ, 1.0 - box.maxY,
                         box.maxX, box.maxZ, 1.0 - box.minY
@@ -130,7 +140,7 @@ public class BellowBlock extends HorizontalFacingBlock {
 
         for (int i = 0; i < rotationSteps; i++) {
             VoxelShape rotated = VoxelShapes.empty();
-            for (net.minecraft.util.math.Box box : buffer[0].getBoundingBoxes()) {
+            for (Box box : buffer[0].getBoundingBoxes()) {
                 rotated = VoxelShapes.union(rotated, VoxelShapes.cuboid(
                         1.0 - box.maxZ, box.minY, box.minX,
                         1.0 - box.minZ, box.maxY, box.maxX
@@ -211,10 +221,168 @@ public class BellowBlock extends HorizontalFacingBlock {
         if ((receivingPower && nextLevel < 2) || (!receivingPower && nextLevel > 0)) {
             world.scheduleBlockTick(pos, this, 2);
         }
+
+        if (receivingPower && nextLevel == 2) {
+            Direction nozzleDir = getDirection(state).getOpposite();
+
+            Vec3d blockCenter = pos.toCenterPos();
+
+            Vec3d faceCenter = blockCenter.add(Vec3d.of(nozzleDir.getVector()).multiply(0.5));
+            Vec3d blastEnd = faceCenter.add(Vec3d.of(nozzleDir.getVector()).multiply(3.0));
+
+            Box searchBox = new Box(faceCenter, blastEnd);
+
+            double expandX = nozzleDir.getAxis() == Direction.Axis.X ? 0.0 : 1.0;
+            double expandY = nozzleDir.getAxis() == Direction.Axis.Y ? 0.0 : 1.0;
+            double expandZ = nozzleDir.getAxis() == Direction.Axis.Z ? 0.0 : 1.0;
+            searchBox = searchBox.expand(expandX, expandY, expandZ);
+
+            Direction facing = getDirection(state).getOpposite();
+            Vec3d direction = Vec3d.of(facing.getVector()).normalize();
+
+            double forceStrength = 0.8;
+            Vec3d forceVec = direction.multiply(forceStrength);
+
+            double baseFallbackSpeed = 0.75;
+            Vec3d fanFaceCenter = pos.toCenterPos().add(direction.multiply(0.5));
+
+            for (var entity : world.getEntitiesByClass(Entity.class, searchBox, entity -> true)) {
+                Vec3d currentVel = entity.getVelocity();
+
+                if (entity instanceof SuperHappyKillBallEntity shkbEntity) {
+                    double currentSpeed = currentVel.length();
+
+                    double finalSpeed = currentSpeed > 0.001 ? currentSpeed : baseFallbackSpeed;
+
+                    entity.setVelocity(direction.multiply(finalSpeed));
+                    entity.velocityModified = true;
+                } else {
+                    entity.setVelocity(currentVel.add(forceVec));
+                    entity.velocityModified = true;
+                }
+                Vec3d entityCenter = entity.getBoundingBox().getCenter();
+
+                scanForEffects(world, entity, fanFaceCenter, entityCenter);
+
+                if (!world.isClient) {
+                    for (int i = 0; i < 15; i++) {
+                        spawnBellowsBurstParticles(world, pos, nozzleDir);
+                    }
+                }
+            }
+        }
+    }
+    private void scanForEffects(World world, Entity entity, Vec3d source, Vec3d target) {
+        Vec3d path = target.subtract(source);
+        double distance = path.length();
+        Vec3d unitDir = path.normalize();
+
+        for (double d = 0; d < distance; d += 0.5) {
+            BlockPos checkPos = BlockPos.ofFloored(source.add(unitDir.multiply(d)));
+            BlockState checkState = world.getBlockState(checkPos);
+
+            if (applyElementalEffect(entity, checkState)) {
+                break;
+            }
+        }
+    }
+    private boolean applyElementalEffect(Entity entity, BlockState state) {
+        if (state.isOf(Blocks.FIRE) ||
+                state.isOf(Blocks.SOUL_FIRE) ||
+                state.getFluidState().isIn(FluidTags.LAVA)) {
+            entity.setOnFireFor(5);
+            return true;
+        }
+        else if (state.getFluidState().isIn(FluidTags.WATER)) {
+            entity.extinguish();
+            if (entity instanceof LivingEntity living && living.hurtByWater()) {
+                living.damage(entity.getDamageSources().magic(), 1.0f);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void spawnBellowsBurstParticles(World world, BlockPos pos, Direction direction) {
+        Vec3d start = pos.toCenterPos().add(Vec3d.of(direction.getVector()).multiply(0.5));
+
+        Vec3d ortho = direction.getAxis() == Direction.Axis.Y ? new Vec3d(1, 0, 0) : new Vec3d(0, 1, 0);
+
+        double dirX = direction.getOffsetX();
+        double dirY = direction.getOffsetY();
+        double dirZ = direction.getOffsetZ();
+
+        double secX = dirY * ortho.z - dirZ * ortho.y;
+        double secY = dirZ * ortho.x - dirX * ortho.z;
+        double secZ = dirX * ortho.y - dirY * ortho.x;
+        Vec3d secondaryOrtho = new Vec3d(secX, secY, secZ).normalize();
+
+        double ortX = dirY * secondaryOrtho.z - dirZ * secondaryOrtho.y;
+        double ortY = dirZ * secondaryOrtho.x - dirX * secondaryOrtho.z;
+        double ortZ = dirX * secondaryOrtho.y - dirY * secondaryOrtho.x;
+        ortho = new Vec3d(ortX, ortY, ortZ).normalize();
+
+        double offsetX = (world.random.nextDouble() * 2.0 - 1.0);
+        double offsetY = (world.random.nextDouble() * 2.0 - 1.0);
+
+        Vec3d crossSectionOffset = ortho.multiply(offsetX).add(secondaryOrtho.multiply(offsetY));
+
+        Vec3d actualStart = start.add(crossSectionOffset);
+        Vec3d targetPoint = actualStart.add(Vec3d.of(direction.getVector()).multiply(3.0));
+
+        BlockHitResult hit = world.raycast(new RaycastContext(
+                actualStart, targetPoint,
+                RaycastContext.ShapeType.COLLIDER,
+                RaycastContext.FluidHandling.NONE,
+                ShapeContext.absent()
+        ));
+
+        double fullPathLength = targetPoint.distanceTo(actualStart);
+        double maxTravel = hit.getType() == HitResult.Type.MISS ? fullPathLength : hit.getPos().distanceTo(actualStart);
+        if (maxTravel < 0.1) return;
+
+        Vec3d pathDir = Vec3d.of(direction.getVector());
+
+        ParticleEffect elementalParticle = null;
+        double elementDist = -1;
+        for (double d = 0; d < maxTravel; d += 0.5) {
+            BlockPos checkPos = BlockPos.ofFloored(actualStart.add(pathDir.multiply(d)));
+            BlockState checkState = world.getBlockState(checkPos);
+            elementalParticle = getElementalParticle(checkState);
+            if (elementalParticle != null) {
+                elementDist = d;
+                break;
+            }
+        }
+
+        int maxAge = 15;
+        double dragCompensation = 1.2;
+        double finalMultiplier = (1.0 / (double) maxAge) * dragCompensation;
+
+        Vec3d windTravel = pathDir.multiply(maxTravel);
+        Vec3d windVel = windTravel.multiply(finalMultiplier);
+        world.addParticle(ParticleTypes.CLOUD, actualStart.x, actualStart.y, actualStart.z, windVel.x, windVel.y, windVel.z);
+
+        if (elementalParticle != null) {
+            Vec3d elemSpawn = actualStart.add(pathDir.multiply(elementDist));
+            Vec3d elemTravel = pathDir.multiply(maxTravel - elementDist);
+            Vec3d elemVel = elemTravel.multiply(finalMultiplier);
+            world.addParticle(elementalParticle, elemSpawn.x, elemSpawn.y, elemSpawn.z, elemVel.x, elemVel.y, elemVel.z);
+        }
+    }
+
+    private ParticleEffect getElementalParticle(BlockState state) {
+        if (!state.getFluidState().isEmpty()) {
+            if (state.getFluidState().isIn(FluidTags.LAVA)) return ParticleTypes.FLAME;
+            if (state.getFluidState().isIn(FluidTags.WATER)) return ParticleTypes.FISHING;
+        }
+        if (state.isOf(Blocks.FIRE)) return ParticleTypes.FLAME;
+        if (state.isOf(Blocks.SOUL_FIRE)) return ParticleTypes.SOUL_FIRE_FLAME;
+        return null;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, net.minecraft.block.ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         int level = state.get(LEVEL);
         BlockFace face = state.get(FACE);
         Direction facing = state.get(FACING);

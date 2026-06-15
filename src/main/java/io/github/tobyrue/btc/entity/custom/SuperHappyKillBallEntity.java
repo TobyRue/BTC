@@ -212,10 +212,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         this.setPosition(this.getPos().add(nudge));
     }
 
-    @Override
-    public boolean canHit() {
-        return !this.isRemoved();
-    }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
@@ -282,8 +278,25 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
+//        return super.getDimensions(pose);
         return super.getDimensions(pose).scaled(this.dataTracker.get(SIZE));
     }
+
+    @Override
+    public Box getVisibilityBoundingBox() {
+        return super.getVisibilityBoundingBox().expand(getSize());
+    }
+
+    @Override
+    public boolean canHit() {
+        return true;
+    }
+
+    @Override
+    public float getTargetingMargin() {
+        return (float) 1/3;
+    }
+
     public void onTrackedDataSet(TrackedData<?> data) {
         if (SIZE.equals(data)) {
             this.calculateDimensions();
@@ -309,5 +322,6 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         this.dataTracker.set(SET, nbt.getBoolean("Set"));
         this.dataTracker.set(WAIT, nbt.getInt("WaitForNextHit"));
         this.dataTracker.set(DMG, nbt.getInt("Damage"));
+        this.calculateDimensions();
     }
 }

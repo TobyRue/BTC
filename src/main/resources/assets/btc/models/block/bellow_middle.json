@@ -2,11 +2,11 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "btc:block/bellow_input",
 		"1": "btc:block/bellow_inside",
 		"2": "btc:block/bellow_spout",
 		"3": "btc:block/bellow_wood",
-		"particle": "btc:block/bellow_input"
+		"4": "btc:block/bellow_input_activated",
+		"particle": "btc:block/bellow_input_activated"
 	},
 	"elements": [
 		{
@@ -41,11 +41,11 @@
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
 			"faces": {
 				"north": {"uv": [2, 0, 14, 14], "rotation": 180, "texture": "#3"},
-				"east": {"uv": [0, 5, 14, 12], "rotation": 270, "texture": "#1"},
+				"east": {"uv": [0, 4, 14, 11], "rotation": 270, "texture": "#1"},
 				"south": {"uv": [2, 0, 14, 14], "texture": "#3"},
-				"west": {"uv": [2, 5, 16, 12], "rotation": 90, "texture": "#1"},
-				"up": {"uv": [2, 5, 14, 12], "rotation": 180, "texture": "#1"},
-				"down": {"uv": [2, 5, 14, 12], "texture": "#0"}
+				"west": {"uv": [2, 4, 16, 11], "rotation": 90, "texture": "#1"},
+				"up": {"uv": [2, 4, 14, 11], "rotation": 180, "texture": "#1"},
+				"down": {"uv": [2, 5, 14, 12], "texture": "#4"}
 			}
 		},
 		{
@@ -61,5 +61,42 @@
 				"down": {"uv": [6, 7, 10, 11], "texture": "#2"}
 			}
 		}
-	]
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -135, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"rotation": [-90, 0, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [-75, 0, -150],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"head": {
+			"rotation": [-90, 0, 0],
+			"translation": [0, 11.25, 0]
+		},
+		"fixed": {
+			"rotation": [-90, 0, 0],
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
 }

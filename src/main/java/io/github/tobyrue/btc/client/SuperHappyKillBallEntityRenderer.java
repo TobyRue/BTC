@@ -34,7 +34,7 @@ public class SuperHappyKillBallEntityRenderer extends EntityRenderer<SuperHappyK
     public void render(SuperHappyKillBallEntity entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 
         super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
-        this.shadowRadius = 1 * (float)entity.getSize();
+        this.shadowRadius = 0.5f * entity.getSize();
 
         matrixStack.push();
         float h = (float)entity.age + g;
