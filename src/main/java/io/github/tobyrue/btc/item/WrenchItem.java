@@ -167,6 +167,8 @@ public class WrenchItem extends Item {
                 RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.fan.depth"), fanDepthTypes).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
                 RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.fan.base_radius"), fanBaseRadiusTypes).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
                 RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.fan.far_radius"), fanFarRadiusTypes).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new RadialMenu.RadialValue(Text.translatable("item.btc.wrench.fan.mode"), (m, t) -> m.sendCommand("btcwrench fan mode")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new RadialMenu.RadialValue(Text.translatable("item.btc.wrench.fan.toggle"), (m, t) -> m.sendCommand("btcwrench fan toggle")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
                 new RadialMenu.RadialValue(Text.translatable("item.btc.wrench.fan.show_cone"), (m, t) -> m.sendCommand("btcwrench fan show_cone")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
                 new RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD)
         );
@@ -188,7 +190,7 @@ public class WrenchItem extends Item {
                 stack,
                 BTCClient.radialMenuKeyBinding,
                 0xFFD67B5B,
-                false,
+                true,
                 false,
                 0
         ));

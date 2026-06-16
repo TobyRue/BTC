@@ -93,6 +93,10 @@ public class WrenchCommand {
                         .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.FAR_RADIUS, 0, 0, -1.0))
                         .then(argument("value", IntegerArgumentType.integer(1, 12))
                                 .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.FAR_RADIUS, -1.0, -1.0, (double) IntegerArgumentType.getInteger(ctx, "value")))))
+                .then(literal("mode")
+                        .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.MODE, 0, 0, 0)))
+                .then(literal("toggle")
+                        .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.TOGGLE, 0, 0, 0)))
                 .then(literal("show_cone")
                         .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.SHOW_CONE, 0, 0, 0)))
         );

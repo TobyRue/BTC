@@ -31,6 +31,13 @@ public class ModBlocks {
         return Registry.register(Registries.BLOCK, id, block);
     }
 
+    public static final Block KILL_BALL_RECEPTOR = register(
+            new KillBallReceptorBlock(AbstractBlock.Settings.create().requiresTool().strength(1.5F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
+            "kill_ball_receptor",
+            true
+    );
+
+
     public static final Block BELLOW = register(
             new BellowBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOD).mapColor(MapColor.SPRUCE_BROWN).requiresTool().strength(1.5F, 6.0F).instrument(NoteBlockInstrument.SNARE)),
             "bellow",

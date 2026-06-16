@@ -572,6 +572,60 @@ public enum WrenchType implements IWrenchType {
                 return ActionResult.FAIL;
             }
         },
+        MODE("mode") {
+            @Override
+            public ActionResult useOnBlock(ItemUsageContext context) {
+                World world = context.getWorld();
+                BlockPos pos = context.getBlockPos();
+                BlockState state = world.getBlockState(pos);
+                ItemStack stack = context.getStack();
+                PlayerEntity player = context.getPlayer();
+
+                if (world.getBlockState(pos).getBlock() instanceof WaxedCopperFanBlock fanBlock) {
+
+
+                    if (!world.isClient()) {
+                        if (state.get(WaxedCopperFanBlock.MODE) == WaxedCopperFanBlock.FanMode.BLOW) {
+                            world.setBlockState(pos, state.with(WaxedCopperFanBlock.MODE, WaxedCopperFanBlock.FanMode.PULL));
+                        } else {
+                            world.setBlockState(pos, state.with(WaxedCopperFanBlock.MODE, WaxedCopperFanBlock.FanMode.BLOW));
+                        }
+                    }
+                    if (player != null) {
+                        if (state.get(WaxedCopperFanBlock.MODE) == WaxedCopperFanBlock.FanMode.BLOW) {
+                            player.sendMessage(Text.translatable("item.btc.wrench.fan.mode_changed_pull"), true);
+                        } else {
+                            player.sendMessage(Text.translatable("item.btc.wrench.fan.mode_changed_blow"), true);
+                        }
+                    }
+                    return ActionResult.SUCCESS;
+                }
+                return ActionResult.FAIL;
+            }
+        },
+        TOGGLE("toggle") {
+            @Override
+            public ActionResult useOnBlock(ItemUsageContext context) {
+                World world = context.getWorld();
+                BlockPos pos = context.getBlockPos();
+                BlockState state = world.getBlockState(pos);
+                ItemStack stack = context.getStack();
+                PlayerEntity player = context.getPlayer();
+
+                if (world.getBlockState(pos).getBlock() instanceof WaxedCopperFanBlock fanBlock) {
+
+
+                    if (!world.isClient()) {
+                        world.setBlockState(pos, state.with(WaxedCopperFanBlock.TOGGLE_MODE, !state.get(WaxedCopperFanBlock.TOGGLE_MODE)));
+                    }
+                    if (player != null) {
+                        player.sendMessage(Text.translatable("item.btc.wrench.fan.toggle_mode_changed", (Boolean.toString(!state.get(WaxedCopperFanBlock.TOGGLE_MODE)))), true);
+                    }
+                    return ActionResult.SUCCESS;
+                }
+                return ActionResult.FAIL;
+            }
+        },
         SHOW_CONE("fan_show_cone") {
             @Override
             public ActionResult useOnBlock(ItemUsageContext context) {

@@ -1,6 +1,8 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ModEntities;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
@@ -185,6 +187,7 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         }
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
         this.hitOrDeflect(hitResult);
+        this.checkCollidingReceptors();
     }
 
     public float getRotationSpeed() {
@@ -210,6 +213,7 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
 
         Vec3d nudge = Vec3d.of(hitSide.getVector()).multiply(0.02);
         this.setPosition(this.getPos().add(nudge));
+
     }
 
 
@@ -223,8 +227,49 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
     }
 
 
+    private void checkCollidingReceptors() {
+        World world = this.getWorld();
+        if (world.isClient()) return;
+
+        Box expandedBox = this.getBoundingBox().expand(0.01);
+        double velocityY = this.getVelocity().y;
+
+        if (velocityY <= 0 || this.verticalCollision) {
+            expandedBox = expandedBox.stretch(0, -0.2, 0);
+        }
+
+        int minX = MathHelper.floor(expandedBox.minX);
+        int minY = MathHelper.floor(expandedBox.minY);
+        int minZ = MathHelper.floor(expandedBox.minZ);
+
+        int maxX = MathHelper.floor(expandedBox.maxX);
+        int maxY = MathHelper.floor(expandedBox.maxY);
+        int maxZ = MathHelper.floor(expandedBox.maxZ);
 
 
+        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    mutablePos.set(x, y, z);
+                    BlockState state = world.getBlockState(mutablePos);
+
+
+                    if (state.getBlock() instanceof io.github.tobyrue.btc.block.KillBallReceptorBlock) {
+                        BlockPos permanentPos = mutablePos.toImmutable();
+
+                        world.scheduleBlockTick(permanentPos, state.getBlock(), 20);
+
+                        if (!state.get(io.github.tobyrue.btc.block.KillBallReceptorBlock.POWERED)) {
+                            world.setBlockState(permanentPos, state.with(io.github.tobyrue.btc.block.KillBallReceptorBlock.POWERED, true), Block.NOTIFY_ALL);
+                            world.updateNeighbors(permanentPos, state.getBlock());
+                        }
+                    }
+                }
+            }
+        }
+    }
     @Override
     public void move(MovementType movementType, Vec3d movement) {
         if (this.noClip) {

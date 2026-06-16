@@ -43,7 +43,7 @@ public class ModEntities {
             EntityType.Builder.<WindTornadoEntity>create(WindTornadoEntity::new, SpawnGroup.MISC)
                     .dimensions(1f, 1f).eyeHeight(0.75f).makeFireImmune().build());
     public static final EntityType<SuperHappyKillBallEntity> SUPER_HAPPY_KILL_BALL = Registry.register(Registries.ENTITY_TYPE,
-            Identifier.of(BTC.MOD_ID, "high_energy_pellet"),
+            Identifier.of(BTC.MOD_ID, "super_happy_kill_ball"),
             EntityType.Builder.<SuperHappyKillBallEntity>create(SuperHappyKillBallEntity::new, SpawnGroup.MISC)
                     .dimensions(1f, 1f).eyeHeight(0.5f).makeFireImmune().build());
     public static final EntityType<KeyGolemEntity> KEY_GOLEM = Registry.register(Registries.ENTITY_TYPE,
