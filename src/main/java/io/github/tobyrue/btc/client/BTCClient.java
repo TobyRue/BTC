@@ -43,6 +43,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
@@ -152,6 +153,7 @@ public class BTCClient implements ClientModInitializer {
                 InputUtil.UNKNOWN_KEY.getCode(),
                 "category.btc.spell"
         ));
+
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             assert client.player != null;
@@ -333,7 +335,7 @@ public class BTCClient implements ClientModInitializer {
                                     radialMenuKeyBinding
                             ));
                         } else if (item instanceof WrenchItem wrenchItem) {
-
+                            wrenchItem.openWrenchMenu(stack);
                         }
 
 //                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
@@ -389,6 +391,21 @@ public class BTCClient implements ClientModInitializer {
 
             return inst.spell().getColor(inst.args());
         }, ModItems.UNLOCK_SCROLL);
+
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            if (tintIndex == 1 && stack.getItem() instanceof PetTotemItem) {
+                if (stack.contains(ModComponents.STORED_MOB_UUID)) {
+                    try {
+                        return 0xFF000000 | Integer.parseInt(Objects.requireNonNull(stack.get(ModComponents.STORED_MOB_UUID)).toString(), 0, 6, 16) & 0xFFF0F0F0;
+                    } catch (NumberFormatException | IndexOutOfBoundsException | NullPointerException ignored) {
+                    }
+                } else {
+                    return 0xFF00AA2C;
+                }
+            }
+            return 0xFFFFFFFF;
+        }, ModItems.PET_TOTEM);
 
 
         ModelPredicateProviderRegistry.register(ModItems.SPELLSTONE, Identifier.ofVanilla("spelltype"),

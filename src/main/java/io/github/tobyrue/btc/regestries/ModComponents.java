@@ -66,6 +66,40 @@ public class ModComponents {
                     .packetCodec(PacketCodecs.indexed(i -> WrenchType.WireSubtype.values()[i], Enum::ordinal))
                     .build()
     );
+    public static final ComponentType<WrenchType.SelectorSubtype> WRENCH_SELECTOR_SUBTYPE = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_selector_subtype"),
+            ComponentType.<WrenchType.SelectorSubtype>builder()
+                    .codec(WrenchType.SelectorSubtype.CODEC)
+                    .packetCodec(PacketCodecs.indexed(i -> WrenchType.SelectorSubtype.values()[i], Enum::ordinal))
+                    .build()
+    );
+    public static final ComponentType<WrenchType.FanSubtype> WRENCH_FAN_SUBTYPE = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_fan_subtype"),
+            ComponentType.<WrenchType.FanSubtype>builder()
+                    .codec(WrenchType.FanSubtype.CODEC)
+                    .packetCodec(PacketCodecs.indexed(i -> WrenchType.FanSubtype.values()[i], Enum::ordinal))
+                    .build()
+    );
+
+    public static final ComponentType<Double> WRENCH_FAN_DEPTH = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_fan_depth"),
+            ComponentType.<Double>builder().codec(Codec.DOUBLE).build()
+    );
+
+    public static final ComponentType<Double> WRENCH_FAN_BASE_RADIUS = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_fan_base_radius"),
+            ComponentType.<Double>builder().codec(Codec.DOUBLE).build()
+    );
+
+    public static final ComponentType<Double> WRENCH_FAN_FAR_RADIUS = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("wrench_fan_far_radius"),
+            ComponentType.<Double>builder().codec(Codec.DOUBLE).build()
+    );
 
     public static final ComponentType<WrenchType.WrenchClipboardComponent> WRENCH_CLIPBOARD = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
@@ -136,6 +170,25 @@ public class ModComponents {
                     ComponentType.<EntityType<?>>builder()
                             .codec(Registries.ENTITY_TYPE.getCodec())
                             .packetCodec(PacketCodecs.registryValue(RegistryKeys.ENTITY_TYPE))
+                            .build()
+            );
+    public static final ComponentType<String> STORED_ENTITY_NAME =
+            Registry.register(
+                    Registries.DATA_COMPONENT_TYPE,
+                    BTC.identifierOf("stored_entity_name"),
+                    ComponentType.<String>builder()
+                            .codec(Codec.STRING)
+                            .packetCodec(PacketCodecs.STRING)
+                            .build()
+            );
+
+    public static final ComponentType<String> STORED_OWNER_NAME =
+            Registry.register(
+                    Registries.DATA_COMPONENT_TYPE,
+                    BTC.identifierOf("stored_owner_name"),
+                    ComponentType.<String>builder()
+                            .codec(Codec.STRING)
+                            .packetCodec(PacketCodecs.STRING)
                             .build()
             );
 }

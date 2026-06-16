@@ -431,6 +431,19 @@ public class RadialMenu extends Screen {
         this.end = Math.min(values.size(), start + config.sectors());
     }
 
+    public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, int layer, @Nullable RadialMenu parent, boolean renderCenter, int start) {
+        super(title);
+        this.values = values;
+        this.context = context;
+        this.config = config;
+        this.key = key;
+        this.start = start;
+        this.layer = layer;
+        this.parent = parent;
+        this.renderCenter = renderCenter;
+        this.end = Math.min(values.size(), start + config.sectors());
+    }
+
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, int start) {
         this(title, values, context, key, new Config(
                 BTC.identifierOf("textures/gui/honeycomb.png"),
@@ -473,7 +486,7 @@ public class RadialMenu extends Screen {
             if (values.size() <= config.sectors()) return;
             int next = vert > 0 ? start - config.sectors() : start + config.sectors();
             if (next >= 0 && next < values.size()) {
-                MinecraftClient.getInstance().setScreen(new RadialMenu(title, values, context, key, config, layer, this.parent, next));
+                MinecraftClient.getInstance().setScreen(new RadialMenu(title, values, context, key, config, layer, this.parent, renderCenter, next));
             }
         });
     }

@@ -263,12 +263,19 @@ public class BellowBlock extends HorizontalFacingBlock {
                 Vec3d entityCenter = entity.getBoundingBox().getCenter();
 
                 scanForEffects(world, entity, fanFaceCenter, entityCenter);
-
-                if (!world.isClient) {
-                    for (int i = 0; i < 15; i++) {
-                        spawnBellowsBurstParticles(world, pos, nozzleDir);
-                    }
-                }
+            }
+            world.playSound(
+                    null,
+                    pos.getX() + 0.5,
+                    pos.getY() + 0.5,
+                    pos.getZ() + 0.5,
+                    net.minecraft.sound.SoundEvents.ENTITY_GHAST_SHOOT,
+                    net.minecraft.sound.SoundCategory.BLOCKS,
+                    0.2f,
+                    0.7f
+            );
+            for (int i = 0; i < 15; i++) {
+                spawnBellowsBurstParticles(world, pos, nozzleDir);
             }
         }
     }
@@ -303,8 +310,8 @@ public class BellowBlock extends HorizontalFacingBlock {
         return false;
     }
 
-    private void spawnBellowsBurstParticles(World world, BlockPos pos, Direction direction) {
-        Vec3d start = pos.toCenterPos().add(Vec3d.of(direction.getVector()).multiply(0.5));
+    private void spawnBellowsBurstParticles(ServerWorld world, BlockPos pos, Direction direction) {
+        Vec3d start = pos.toCenterPos().add(Vec3d.of(direction.getVector()).multiply(0.55));
 
         Vec3d ortho = direction.getAxis() == Direction.Axis.Y ? new Vec3d(1, 0, 0) : new Vec3d(0, 1, 0);
 
@@ -322,12 +329,12 @@ public class BellowBlock extends HorizontalFacingBlock {
         double ortZ = dirX * secondaryOrtho.y - dirY * secondaryOrtho.x;
         ortho = new Vec3d(ortX, ortY, ortZ).normalize();
 
-        double offsetX = (world.random.nextDouble() * 2.0 - 1.0);
-        double offsetY = (world.random.nextDouble() * 2.0 - 1.0);
+        double offsetX = (world.random.nextDouble() * 2.0 - 1.0) * 0.25;
+        double offsetY = (world.random.nextDouble() * 2.0 - 1.0) * 0.25;
 
         Vec3d crossSectionOffset = ortho.multiply(offsetX).add(secondaryOrtho.multiply(offsetY));
-
         Vec3d actualStart = start.add(crossSectionOffset);
+
         Vec3d targetPoint = actualStart.add(Vec3d.of(direction.getVector()).multiply(3.0));
 
         BlockHitResult hit = world.raycast(new RaycastContext(
@@ -339,7 +346,8 @@ public class BellowBlock extends HorizontalFacingBlock {
 
         double fullPathLength = targetPoint.distanceTo(actualStart);
         double maxTravel = hit.getType() == HitResult.Type.MISS ? fullPathLength : hit.getPos().distanceTo(actualStart);
-        if (maxTravel < 0.1) return;
+
+        if (maxTravel < 0.2) maxTravel = 0.5;
 
         Vec3d pathDir = Vec3d.of(direction.getVector());
 
@@ -359,15 +367,26 @@ public class BellowBlock extends HorizontalFacingBlock {
         double dragCompensation = 1.2;
         double finalMultiplier = (1.0 / (double) maxAge) * dragCompensation;
 
+        double spreadFactor = 0.12;
+        double randomSpreadX = (world.random.nextDouble() * 2.0 - 1.0) * spreadFactor;
+        double randomSpreadY = (world.random.nextDouble() * 2.0 - 1.0) * spreadFactor;
+        double randomSpreadZ = (world.random.nextDouble() * 2.0 - 1.0) * spreadFactor;
+
         Vec3d windTravel = pathDir.multiply(maxTravel);
-        Vec3d windVel = windTravel.multiply(finalMultiplier);
-        world.addParticle(ParticleTypes.CLOUD, actualStart.x, actualStart.y, actualStart.z, windVel.x, windVel.y, windVel.z);
+        Vec3d windVel = windTravel.multiply(finalMultiplier).add(randomSpreadX, randomSpreadY, randomSpreadZ);
+
+        world.spawnParticles(ParticleTypes.CLOUD,
+                actualStart.x, actualStart.y, actualStart.z,
+                0, windVel.x, windVel.y, windVel.z, 1.0);
 
         if (elementalParticle != null) {
             Vec3d elemSpawn = actualStart.add(pathDir.multiply(elementDist));
             Vec3d elemTravel = pathDir.multiply(maxTravel - elementDist);
-            Vec3d elemVel = elemTravel.multiply(finalMultiplier);
-            world.addParticle(elementalParticle, elemSpawn.x, elemSpawn.y, elemSpawn.z, elemVel.x, elemVel.y, elemVel.z);
+            Vec3d elemVel = elemTravel.multiply(finalMultiplier).add(randomSpreadX, randomSpreadY, randomSpreadZ);
+
+            world.spawnParticles(elementalParticle,
+                    elemSpawn.x, elemSpawn.y, elemSpawn.z,
+                    0, elemVel.x, elemVel.y, elemVel.z, 1.0);
         }
     }
 

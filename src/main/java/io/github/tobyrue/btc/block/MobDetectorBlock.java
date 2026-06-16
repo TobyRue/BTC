@@ -98,9 +98,10 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        boolean isWrenchSelector = stack.getItem() instanceof io.github.tobyrue.btc.item.WrenchItem
+                && stack.get(ModComponents.WRENCH_TYPE) == io.github.tobyrue.btc.enums.WrenchType.SELECTOR;
 
-
-        if (!(stack.getItem() instanceof SelectorItem) || player.isSneaking()) {
+        if (!isWrenchSelector || player.isSneaking()) {
             return ItemActionResult.FAIL;
         }
 
@@ -118,7 +119,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
             detector.setDetectionBox(b1, b2);
             detector.markDirty();
             player.sendMessage(
-                    Text.translatable("item.btc.selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
+                    Text.translatable("item.btc.wrench.selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
                     true
             );
             return ItemActionResult.SUCCESS;
@@ -126,7 +127,6 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
 
         return ItemActionResult.FAIL;
     }
-
 
     @Override
     public boolean hasComparatorOutput(BlockState state) {

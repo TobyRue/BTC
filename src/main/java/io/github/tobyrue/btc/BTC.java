@@ -21,11 +21,15 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.registry.Registries;
@@ -58,6 +62,7 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> PANE = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pane"));
     public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
     public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
+    public static final TagKey<EntityType<?>> PET_TOTEM_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "pet_totem_whitelist"));
 
     public static final StructureProcessorType<BookshelfProcessor> BOOKSHELF_PROCESSOR =
             Registry.register(Registries.STRUCTURE_PROCESSOR, Identifier.of("btc", "bookshelf_processor"), () -> BookshelfProcessor.CODEC);
@@ -143,29 +148,46 @@ public class BTC implements ModInitializer {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             var stack = player.getStackInHand(hand);
             if (stack.isOf(ModItems.PET_TOTEM)) {
-                if (entity instanceof TameableEntity tameableEntity) {
-                    if (tameableEntity.getOwner() == player && !stack.contains(ModComponents.STORED_MOB_UUID)) {
-                        UUID uuid = tameableEntity.getUuid();
-                        stack.set(ModComponents.STORED_MOB_UUID, uuid);
-                        tameableEntity.setInvulnerable(true);
-                        tameableEntity.setPersistent();
-                        var nbt = tameableEntity.writeNbt(new NbtCompound());
-                        stack.set(ModComponents.STORED_MOB_NBT, nbt);
-                        stack.set(ModComponents.STORED_ENTITY_TYPE, tameableEntity.getType());
-                        player.sendMessage(Text.literal("Pet bound to totem"), true);
-                        return ActionResult.SUCCESS;
+                if (entity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_TOTEM_WHITELIST)) {
+                    LivingEntity owner = null;
+                    boolean ownable = false;
+
+                    if (entity instanceof Tameable tameable) {
+                        owner = tameable.getOwner();
+                        ownable = true;
+                    } else if (entity instanceof TameableEntity ownableEntity) {
+                        owner = ownableEntity.getOwner();
+                        ownable = true;
                     }
-                } else if (entity instanceof Tameable tameable && entity instanceof MobEntity mob) {
-                    System.out.println("Owner: " + tameable.getOwner() + " Player: " + player);
-                    if (tameable.getOwner() == player && !stack.contains(ModComponents.STORED_MOB_UUID)) {
+
+                    if ((owner == player || !ownable) && !stack.contains(ModComponents.STORED_MOB_UUID)) {
                         UUID uuid = mob.getUuid();
-                        stack.set(ModComponents.STORED_MOB_UUID, uuid);
+
                         mob.setInvulnerable(true);
                         mob.setPersistent();
                         var nbt = mob.writeNbt(new NbtCompound());
+
+
+                        stack.set(ModComponents.STORED_MOB_UUID, uuid);
+
                         stack.set(ModComponents.STORED_MOB_NBT, nbt);
                         stack.set(ModComponents.STORED_ENTITY_TYPE, mob.getType());
-                        player.sendMessage(Text.literal("Pet bound to totem"), true);
+
+                        String petName = mob.hasCustomName() ? mob.getCustomName().getString() : mob.getType().getName().getString();
+                        stack.set(ModComponents.STORED_ENTITY_NAME, petName);
+
+                        String ownerName = owner != null ? owner.getName().getString() : player.getName().getString();
+                        stack.set(ModComponents.STORED_OWNER_NAME, ownerName);
+
+                        player.sendMessage(Text.translatable("item.btc.pet_totem.action.bind"), true);
+
+                        for(int i = 0; i < 7; ++i) {
+                            double d0 = mob.getRandom().nextGaussian() * 0.02D;
+                            double d1 = mob.getRandom().nextGaussian() * 0.02D;
+                            double d2 = mob.getRandom().nextGaussian() * 0.02D;
+                            mob.getWorld().addParticle(ParticleTypes.HEART, mob.getParticleX(1.0D), mob.getRandomBodyY() + 0.5D, mob.getParticleZ(1.0D), d0, d1, d2);
+                        }
+
                         return ActionResult.SUCCESS;
                     }
                 }

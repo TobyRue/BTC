@@ -1,12 +1,16 @@
 package io.github.tobyrue.btc.item;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -15,18 +19,19 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.LeadItem;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ClickType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PetTotemItem extends Item {
@@ -36,41 +41,40 @@ public class PetTotemItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        var stack = player.getStackInHand(hand);
+        ItemStack stack = player.getStackInHand(hand);
+
         if (stack.contains(ModComponents.STORED_MOB_UUID) && world instanceof ServerWorld serverWorld) {
             UUID uuid = stack.get(ModComponents.STORED_MOB_UUID);
             var entity = serverWorld.getEntity(uuid);
+
             if (entity != null) {
-                if (entity instanceof TameableEntity tameableEntity) {
-                    tryTeleportToOwner(tameableEntity, player);
-                    var nbt = tameableEntity.writeNbt(new NbtCompound());
-                    stack.set(ModComponents.STORED_MOB_NBT, nbt);
-                } else if (entity instanceof Tameable tameable && entity instanceof MobEntity mob) {
-                    tryTeleportToOwner(mob, player);
-                    var nbt = mob.writeNbt(new NbtCompound());
-                    stack.set(ModComponents.STORED_MOB_NBT, nbt);
+                if (entity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_TOTEM_WHITELIST)) {
+                    if (tryTeleportToOwner(mob, player)) {
+                        player.sendMessage(Text.translatable("item.btc.pet_totem.action.teleport"), true);
+                    }
+
+                    String petName = mob.hasCustomName() ? mob.getCustomName().getString() : mob.getType().getName().getString();
+                    stack.set(ModComponents.STORED_ENTITY_NAME, petName);
+
+                    String ownerName = player.getName().getString();
+                    stack.set(ModComponents.STORED_OWNER_NAME, ownerName);
+
+                    NbtCompound mobNbt = new NbtCompound();
+                    mob.writeNbt(mobNbt);
+                    mob.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+
+                    stack.set(ModComponents.STORED_MOB_NBT, mobNbt);
                 }
             } else {
                 var entityType = stack.get(ModComponents.STORED_ENTITY_TYPE);
                 var nbt = stack.get(ModComponents.STORED_MOB_NBT);
+
                 if (entityType != null && nbt != null) {
                     var newEntity = entityType.create(serverWorld);
-                    if (newEntity instanceof TameableEntity tameableEntity) {
-                        tameableEntity.readNbt(nbt);
-                        tameableEntity.refreshPositionAndAngles(
-                                player.getX(),
-                                player.getY(),
-                                player.getZ(),
-                                player.getYaw(),
-                                player.getPitch()
-                        );
-                        tameableEntity.setInvulnerable(true);
-                        tameableEntity.setPersistent();
-                        serverWorld.spawnEntity(tameableEntity);
-                        stack.set(ModComponents.STORED_MOB_UUID, tameableEntity.getUuid());
-                        player.sendMessage(Text.literal("Pet revived"), true);
-                    } else if (newEntity instanceof Tameable tameable && newEntity instanceof MobEntity mob) {
+
+                    if (newEntity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_TOTEM_WHITELIST)) {
                         mob.readNbt(nbt);
+
                         mob.refreshPositionAndAngles(
                                 player.getX(),
                                 player.getY(),
@@ -78,11 +82,13 @@ public class PetTotemItem extends Item {
                                 player.getYaw(),
                                 player.getPitch()
                         );
+
                         mob.setInvulnerable(true);
                         mob.setPersistent();
                         serverWorld.spawnEntity(mob);
+
                         stack.set(ModComponents.STORED_MOB_UUID, mob.getUuid());
-                        player.sendMessage(Text.literal("Pet revived"), true);
+                        player.sendMessage(Text.translatable("item.btc.pet_totem.action.revive"), true);
                     }
                 }
             }
@@ -90,24 +96,23 @@ public class PetTotemItem extends Item {
         }
         return TypedActionResult.fail(stack);
     }
-    public void tryTeleportToOwner(MobEntity entity, LivingEntity owner) {
+    public boolean tryTeleportToOwner(MobEntity entity, LivingEntity owner) {
         if (owner != null) {
-            this.tryTeleportNear(owner.getBlockPos(), entity);
+            return this.tryTeleportNear(owner.getBlockPos(), entity);
         }
+        return false;
     }
 
-    private void tryTeleportNear(BlockPos pos, MobEntity entity) {
+    private boolean tryTeleportNear(BlockPos pos, MobEntity entity) {
         for(int i = 0; i < 10; ++i) {
             int j = entity.getRandom().nextBetween(-3, 3);
             int k = entity.getRandom().nextBetween(-3, 3);
             if (Math.abs(j) >= 2 || Math.abs(k) >= 2) {
                 int l = entity.getRandom().nextBetween(-1, 1);
-                if (this.tryTeleportTo(pos.getX() + j, pos.getY() + l, pos.getZ() + k, entity)) {
-                    return;
-                }
+                return this.tryTeleportTo(pos.getX() + j, pos.getY() + l, pos.getZ() + k, entity);
             }
         }
-
+        return false;
     }
 
     private boolean tryTeleportTo(int x, int y, int z, MobEntity entity) {
@@ -136,5 +141,30 @@ public class PetTotemItem extends Item {
     }
     protected boolean canTeleportOntoLeaves() {
         return true;
+    }
+
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+
+        if (stack.contains(ModComponents.STORED_MOB_UUID)) {
+            String petName = stack.getOrDefault(ModComponents.STORED_ENTITY_NAME, "Unknown");
+            String ownerName = stack.getOrDefault(ModComponents.STORED_OWNER_NAME, "None");
+            UUID mobUuid = stack.get(ModComponents.STORED_MOB_UUID);
+
+            Text entityTypeName = Text.literal("Unknown Type");
+            var entityType = stack.get(ModComponents.STORED_ENTITY_TYPE);
+            if (entityType != null) {
+                entityTypeName = entityType.getName();
+            }
+
+            tooltip.add(Text.translatable("item.btc.pet_totem.tooltip.stored_mob", petName, entityTypeName).formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("item.btc.pet_totem.tooltip.stored_owner", ownerName).formatted(Formatting.GRAY));
+
+            if (type.isAdvanced() && mobUuid != null) {
+                tooltip.add(Text.translatable("item.btc.pet_totem.tooltip.stored_uuid", mobUuid.toString()).formatted(Formatting.DARK_GRAY));
+            }
+        }
     }
 }

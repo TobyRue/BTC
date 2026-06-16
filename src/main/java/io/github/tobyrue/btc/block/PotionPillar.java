@@ -111,7 +111,11 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (!(stack.getItem() instanceof SelectorItem) || player.isSneaking()) {
+
+        boolean isWrenchSelector = stack.getItem() instanceof io.github.tobyrue.btc.item.WrenchItem
+                && stack.get(ModComponents.WRENCH_TYPE) == io.github.tobyrue.btc.enums.WrenchType.SELECTOR;
+
+        if (!isWrenchSelector || player.isSneaking()) {
             if (be instanceof PotionPillarBlockEntity detector) {
                 return detector.onUseWithItem(stack, state, world, pos, player, hand, hit);
             }
@@ -131,7 +135,7 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
             detector.setDetectionBox(b1, b2);
             detector.markDirty();
             player.sendMessage(
-                    Text.translatable("item.btc.selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
+                    Text.translatable("item.btc.wrench.selector.set_box", b1.toShortString(), b2.toShortString(), pos.toShortString()),
                     true
             );
             return ItemActionResult.SUCCESS;

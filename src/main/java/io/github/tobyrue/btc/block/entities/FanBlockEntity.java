@@ -30,20 +30,37 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<FanBlockEntity> {
+
+
     private double FAR_RADIUS = 1;
     private double DEPTH = 3;
     private double BASE_RADIUS = 0.5;
     private float fanSpeed = 0f;
     public float visualRotation = 0f;
 
-    public double getFAR_RADIUS() {
+    public double getFarRadius() {
         return FAR_RADIUS;
+    }
+    public double getBaseRadius() {
+        return BASE_RADIUS;
     }
 
     private static final float MAX_SPEED = 0.5f;
 
-    public double getDEPTH() {
+    public double getDepth() {
         return DEPTH;
+    }
+
+    public void setFarRadius(double farRadius) {
+        this.FAR_RADIUS = farRadius;
+    }
+
+    public void setDepth(double depth) {
+        this.DEPTH = depth;
+    }
+
+    public void setBaseRadius(double baseRadius) {
+        this.BASE_RADIUS = baseRadius;
     }
 
     private static final float ACCELERATION = 0.02f;
@@ -115,7 +132,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
                     }
                 }
             }
-            for (int x = 0; x < ((this.BASE_RADIUS * this.getFAR_RADIUS()) * 2); x++) {
+            for (int x = 0; x < ((this.BASE_RADIUS * this.getFarRadius()) * 2); x++) {
                 spawnGustParticles(world, pos, direction, state.get(WaxedCopperFanBlock.MODE));
             }
         }
