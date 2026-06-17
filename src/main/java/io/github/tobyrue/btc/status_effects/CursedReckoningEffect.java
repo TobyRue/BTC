@@ -16,7 +16,7 @@ public class CursedReckoningEffect extends StatusEffect {
     private static final WeakHashMap<LivingEntity, Float> STORED_START = new WeakHashMap<>();
 
     public CursedReckoningEffect() {
-        super(StatusEffectCategory.HARMFUL, 0x5E0A0A); // dark crimson red
+        super(StatusEffectCategory.HARMFUL, 0x5E0A0A);
     }
 
     @Override

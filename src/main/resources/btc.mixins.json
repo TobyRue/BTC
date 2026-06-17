@@ -13,6 +13,7 @@
     "CrossbowMixin",
     "DispenserBlockEntityMixin",
     "EnchantmentScreenHandlerMixin",
+    "EnderPearlMixin",
     "EntityAccessor",
     "EntityTeamColorMixin",
     "ExplosionMixin",

@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
+import io.github.tobyrue.btc.block.KillBallReceptorBlock;
 import io.github.tobyrue.btc.entity.ModEntities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -264,6 +265,9 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
                         if (!state.get(io.github.tobyrue.btc.block.KillBallReceptorBlock.POWERED)) {
                             world.setBlockState(permanentPos, state.with(io.github.tobyrue.btc.block.KillBallReceptorBlock.POWERED, true), Block.NOTIFY_ALL);
                             world.updateNeighbors(permanentPos, state.getBlock());
+                            if (state.get(KillBallReceptorBlock.KILL_ON_HIT)) {
+                                this.kill();
+                            }
                         }
                     }
                 }

@@ -20,6 +20,7 @@ public class ModStatusEffects {
     public static final RegistryEntry<StatusEffect> DEFERRED_DEATH;
     public static final RegistryEntry<StatusEffect> CURSED_RECKONING;
     public static final RegistryEntry<StatusEffect> FRAGILITY;
+    public static final RegistryEntry<StatusEffect> UNWARPING;
 
     static {
         BUILDER_BLUNDER = ModStatusEffects.register("builder_blunder", new BuilderBlunderEffect());
@@ -31,6 +32,7 @@ public class ModStatusEffects {
         DEFERRED_DEATH = ModStatusEffects.register("deferred_death", new DeferredDeathEffect());
         CURSED_RECKONING = ModStatusEffects.register("cursed_reckoning", new CursedReckoningEffect());
         FRAGILITY = ModStatusEffects.register("fragility", new FragilityEffect());
+        UNWARPING = ModStatusEffects.register("unwarping", new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x994786));
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
