@@ -31,6 +31,18 @@ public class ModBlocks {
         return Registry.register(Registries.BLOCK, id, block);
     }
 
+    public static final Block REINFORCED_DUNGEON_TILES = register(
+            new Block(AbstractBlock.Settings.copy(Blocks.BEDROCK).sounds(BlockSoundGroup.METAL)),
+            "reinforced_dungeon_tiles",
+            true
+    );
+
+    public static final Block REINFORCED_DUNGEON_BLOCK = register(
+            new Block(AbstractBlock.Settings.copy(Blocks.BEDROCK).sounds(BlockSoundGroup.METAL)),
+            "reinforced_dungeon_block",
+            true
+    );
+
     public static final Block GUNPOWDER_BARREL = register(
             new GunpowderBarrelBlock(AbstractBlock.Settings.copy(Blocks.BARREL)),
             "gunpowder_barrel",
@@ -51,49 +63,49 @@ public class ModBlocks {
     );
 
 
-    public static final GunpowderDustBlock GUNPOWDER_DUST = (GunpowderDustBlock) register(
+    public static final Block GUNPOWDER_DUST = register(
             new GunpowderDustBlock(AbstractBlock.Settings.create().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)),
             "gunpowder_dust",
             false
     );
 
-    public static final CopperFanBlock COPPER_TRIAL_FAN = (CopperFanBlock) register(
+    public static final Block COPPER_TRIAL_FAN = register(
             new CopperFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.UNAFFECTED),
             "copper_fan",
             true
     );
 
-    public static final ExposedFanBlock EXPOSED_COPPER_TRIAL_FAN = (ExposedFanBlock) register(
+    public static final Block EXPOSED_COPPER_TRIAL_FAN = register(
             new ExposedFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.EXPOSED),
             "exposed_copper_fan",
             true
     );
-    public static final WeatheredFanBlock WEATHERED_COPPER_TRIAL_FAN = (WeatheredFanBlock) register(
+    public static final Block WEATHERED_COPPER_TRIAL_FAN = register(
             new WeatheredFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.WEATHERED),
             "weathered_copper_fan",
             true
     );
-    public static final OxidizedFanBlock OXIDIZED_COPPER_TRIAL_FAN = (OxidizedFanBlock) register(
+    public static final Block OXIDIZED_COPPER_TRIAL_FAN = register(
             new OxidizedFanBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F), Oxidizable.OxidationLevel.OXIDIZED),
             "oxidized_copper_fan",
             true
     );
-    public static final WaxedCopperFanBlock WAXED_COPPER_TRIAL_FAN = (WaxedCopperFanBlock) register(
+    public static final Block WAXED_COPPER_TRIAL_FAN = register(
             new WaxedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.COPPER_TRIAL_FAN)),
             "waxed_copper_fan",
             true
     );
-    public static final WaxedExposedCopperFanBlock WAXED_EXPOSED_COPPER_TRIAL_FAN = (WaxedExposedCopperFanBlock) register(
+    public static final Block WAXED_EXPOSED_COPPER_TRIAL_FAN = register(
             new WaxedExposedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.EXPOSED_COPPER_TRIAL_FAN)),
             "waxed_exposed_copper_fan",
             true
     );
-    public static final WaxedWeatheredCopperFanBlock WAXED_WEATHERED_COPPER_TRIAL_FAN = (WaxedWeatheredCopperFanBlock) register(
+    public static final Block WAXED_WEATHERED_COPPER_TRIAL_FAN = register(
             new WaxedWeatheredCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.WEATHERED_COPPER_TRIAL_FAN)),
             "waxed_weathered_copper_fan",
             true
     );
-    public static final WaxedOxidizedCopperFanBlock WAXED_OXIDIZED_COPPER_TRIAL_FAN = (WaxedOxidizedCopperFanBlock) register(
+    public static final Block WAXED_OXIDIZED_COPPER_TRIAL_FAN = register(
             new WaxedOxidizedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.OXIDIZED_COPPER_TRIAL_FAN)),
             "waxed_oxidized_copper_fan",
             true
@@ -101,102 +113,102 @@ public class ModBlocks {
 
 
 
-    public static final TrialCoreBlock TRIAL_CORE = (TrialCoreBlock) register(
+    public static final Block TRIAL_CORE = register(
             new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
             "trial_core",
             true
     );
-    public static final BonfireBlock BONFIRE = (BonfireBlock) register(
+    public static final Block BONFIRE = register(
             new BonfireBlock(AbstractBlock.Settings.copy(Blocks.OAK_PLANKS).strength(1000000.0F, 3600000.0F)),
             "bonfire",
             true
     );
-    public static final PowerPilasterBlock POWER_PILASTER = (PowerPilasterBlock) register(
+    public static final Block POWER_PILASTER = register(
             new PowerPilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
             "power_pilaster",
             true
     );
-    public static final PowerPillarBlock POWER_PILLAR = (PowerPillarBlock) register(
+    public static final Block POWER_PILLAR = register(
             new PowerPillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
             "power_pillar",
             true
     );
-    public static final WireBlock DUNGEON_WIRE = (WireBlock) register(
+    public static final Block DUNGEON_WIRE = register(
             new WireBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).strength(1000000.0F, 3600000.0F)),
             "dungeon_wire",
             true
     );
-    public static final ObsidianChestBlock OBSIDIAN_CHEST = (ObsidianChestBlock) register(
+    public static final Block OBSIDIAN_CHEST = register(
             new ObsidianChestBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(1000000.0F, 3600000.0F)),
             "obsidian_chest",
             true
     );
-    public static final PillarBlock CHISELED_TUFF_BRICKS_PILLAR = (PillarBlock) register(
+    public static final Block CHISELED_TUFF_BRICKS_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
             "chiseled_tuff_bricks_pillar",
             true
     );
-    public static final PillarBlock TUFF_PILLAR = (PillarBlock) register(
+    public static final Block TUFF_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
             "tuff_pillar",
             true
     );
-    public static final PillarBlock STONE_PILLAR = (PillarBlock) register(
+    public static final Block STONE_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
             "stone_pillar",
             true
     );
-    public static final PillarBlock CRACKED_STONE_BRICKS_PILLAR = (PillarBlock) register(
+    public static final Block CRACKED_STONE_BRICKS_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
             "cracked_stone_bricks_pillar",
             true
     );
-    public static final PillarBlock STONE_BRICKS_PILLAR = (PillarBlock) register(
+    public static final Block STONE_BRICKS_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
             "stone_bricks_pillar",
             true
     );
-    public static final PillarBlock POLISHED_TUFF_PILLAR = (PillarBlock) register(
+    public static final Block POLISHED_TUFF_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
             "polished_tuff_pillar",
             true
     );
-    public static final PillarBlock TUFF_BRICKS_PILLAR = (PillarBlock) register(
+    public static final Block TUFF_BRICKS_PILLAR = register(
             new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
             "tuff_bricks_pillar",
             true
     );
-    public static final PilasterBlock STONE_PILASTER = (PilasterBlock) register(
+    public static final Block STONE_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
             "stone_pilaster",
             true
     );
-    public static final PilasterBlock STONE_BRICKS_PILASTER = (PilasterBlock) register(
+    public static final Block STONE_BRICKS_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
             "stone_bricks_pilaster",
             true
     );
-    public static final PilasterBlock CRACKED_STONE_BRICKS_PILASTER = (PilasterBlock) register(
+    public static final Block CRACKED_STONE_BRICKS_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
             "cracked_stone_bricks_pilaster",
             true
     );
-    public static final PilasterBlock TUFF_BRICK_PILASTER = (PilasterBlock) register(
+    public static final Block TUFF_BRICK_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
             "tuff_brick_pilaster",
             true
     );
-    public static final PilasterBlock CHISELED_TUFF_BRICKS_PILASTER = (PilasterBlock) register(
+    public static final Block CHISELED_TUFF_BRICKS_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
             "chiseled_tuff_bricks_pilaster",
             true
     );
-    public static final PilasterBlock POLISHED_TUFF_PILASTER = (PilasterBlock) register(
+    public static final Block POLISHED_TUFF_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
             "polished_tuff_pilaster",
             true
     );
-    public static final PilasterBlock TUFF_PILASTER = (PilasterBlock) register(
+    public static final Block TUFF_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
             "tuff_pilaster",
             true
@@ -220,7 +232,7 @@ public class ModBlocks {
 
 
 
-    public static final BrazierBlock BRAZIER = (BrazierBlock) register(
+    public static final Block BRAZIER = register(
             new BrazierBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> {
                 return 15;
             }).strength(3.5F, 3600000.0F)),
@@ -228,83 +240,83 @@ public class ModBlocks {
             true
 
             );
-    public static final OminousBeaconBlock OMINOUS_BEACON = (OminousBeaconBlock) register(
+    public static final Block OMINOUS_BEACON = register(
             new OminousBeaconBlock(AbstractBlock.Settings.create().nonOpaque().sounds(BlockSoundGroup.VAULT).requiresTool().luminance((state) -> {
                 return 14;
             }).strength(3.5F, 3600000.0F)),
             "ominous_beacon",
             true
     );
-    public static final MobDetectorBlock MOB_DETECTOR = (MobDetectorBlock) register(
+    public static final Block MOB_DETECTOR = register(
             new MobDetectorBlock(AbstractBlock.Settings.create().nonOpaque()),
             "mob_detector",
             true
 
     );
-    public static final DungeonPressurePlateBlock DUNGEON_PRESSURE_PLATE = (DungeonPressurePlateBlock) register(
+    public static final Block DUNGEON_PRESSURE_PLATE = register(
             new DungeonPressurePlateBlock(AbstractBlock.Settings.create().requiresTool().strength(2.0F, 3600000.0F).sounds(BlockSoundGroup.STONE)),
             "dungeon_pressure_plate",
             true
     );
-    public static final PressurePlateBlock POLISHED_TUFF_PRESSURE_PLATE = (PressurePlateBlock) register(
+    public static final Block POLISHED_TUFF_PRESSURE_PLATE = register(
             new PressurePlateBlock(BlockSetType.STONE, AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
             "polished_tuff_pressure_plate",
             true
     );
-    public static final DungeonButtonBlock DUNGEON_BUTTON = (DungeonButtonBlock) register(
+    public static final Block DUNGEON_BUTTON = register(
             new DungeonButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.TUFF_BRICKS)),
             "dungeon_button",
             true
     );
-    public static final CopperButtonBlock UNOXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
+    public static final Block UNOXIDIZED_COPPER_BUTTON = register(
             new CopperButtonBlock(BlockSetType.STONE, 10, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.UNAFFECTED),
             "copper_button_unoxidized",
             true
     );
-    public static final ButtonBlock WAXED_UNOXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
+    public static final Block WAXED_UNOXIDIZED_COPPER_BUTTON = register(
             new ButtonBlock(BlockSetType.STONE, 10, AbstractBlock.Settings.copy(UNOXIDIZED_COPPER_BUTTON)),
             "waxed_copper_button_unoxidized",
             true
     );
-    public static final CopperButtonBlock EXPOSED_COPPER_BUTTON = (CopperButtonBlock) register(
+    public static final Block EXPOSED_COPPER_BUTTON = register(
             new CopperButtonBlock(BlockSetType.STONE, 20, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.EXPOSED),
             "copper_button_exposed",
             true
     );
-    public static final ButtonBlock WAXED_EXPOSED_COPPER_BUTTON = (ButtonBlock) register(
+    public static final Block WAXED_EXPOSED_COPPER_BUTTON = register(
             new ButtonBlock(BlockSetType.STONE, 20, AbstractBlock.Settings.copy(EXPOSED_COPPER_BUTTON)),
             "waxed_copper_button_exposed",
             true
     );
-    public static final CopperButtonBlock WEATHERED_COPPER_BUTTON = (CopperButtonBlock) register(
+    public static final Block WEATHERED_COPPER_BUTTON = register(
             new CopperButtonBlock(BlockSetType.STONE, 30, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.WEATHERED),
             "copper_button_weathered",
             true
     );
-    public static final ButtonBlock WAXED_WEATHERED_COPPER_BUTTON = (ButtonBlock) register(
+    public static final Block WAXED_WEATHERED_COPPER_BUTTON = register(
             new ButtonBlock(BlockSetType.STONE, 30, AbstractBlock.Settings.copy(WEATHERED_COPPER_BUTTON)),
             "waxed_copper_button_weathered",
             true
     );
-    public static final CopperButtonBlock OXIDIZED_COPPER_BUTTON = (CopperButtonBlock) register(
+    public static final Block OXIDIZED_COPPER_BUTTON = register(
             new CopperButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.create().noCollision().strength(0.5F).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.COPPER), Oxidizable.OxidationLevel.OXIDIZED),
             "copper_button_oxidized",
             true
     );
 
-    public static final ButtonBlock WAXED_OXIDIZED_COPPER_BUTTON = (ButtonBlock) register(
+    public static final Block WAXED_OXIDIZED_COPPER_BUTTON = register(
             new ButtonBlock(BlockSetType.STONE, 40, AbstractBlock.Settings.copy(OXIDIZED_COPPER_BUTTON)),
             "waxed_copper_button_oxidized",
             true
     );
 
-    public static final PotionPillar POTION_PILLAR = (PotionPillar) register(
+    public static final Block POTION_PILLAR = register(
             new PotionPillar(AbstractBlock.Settings.create().nonOpaque().strength(-1.0F, 3600000.0F)),
             "potion_pillar",
             true
     );
 
-    public static final PedestalBlock PEDESTAL = (PedestalBlock) register(
+    public static final Block PEDESTAL = register(
             new PedestalBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
             }).strength(-1.0F, 3600000.0F)),
@@ -312,14 +324,14 @@ public class ModBlocks {
             true
     );
 
-    public static final KeyDispenserBlock KEY_DISPENSER_BLOCK = (KeyDispenserBlock) register(
+    public static final Block KEY_DISPENSER_BLOCK = register(
             new KeyDispenserBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
             }).strength(-1.0F, 3600000.0F)),
             "key_dispenser",
             true
     );
-    public static final KeyAcceptorBlock KEY_ACCEPTOR = (KeyAcceptorBlock) register(
+    public static final Block KEY_ACCEPTOR = register(
             new KeyAcceptorBlock(AbstractBlock.Settings.create().nonOpaque().luminance((state) -> {
                 return 12;
             }).strength(-1.0F, 3600000.0F)),
@@ -342,7 +354,7 @@ public class ModBlocks {
 //            true
 //    );
     //TODO :/ dungeon flambeaux
-    public static final DungeonFlameBlock DUNGEON_FLAME = (DungeonFlameBlock) register(
+    public static final Block DUNGEON_FLAME = register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
                     DungeonFlameBlock::getLuminance).emissiveLighting((state, blockView, pos) -> DungeonFlameBlock.getLuminance(state) > 0), new DungeonFlameBlock.Config() {
                 @Override
@@ -364,7 +376,7 @@ public class ModBlocks {
             true
     );
     //TODO :/ deep flambeaux
-    public static final DungeonFlameBlock DEEP_FLAME = (DungeonFlameBlock) register(
+    public static final Block DEEP_FLAME = register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(
                     DungeonFlameBlock::getLuminance).emissiveLighting((state,blockView,pos) -> DungeonFlameBlock.getLuminance(state) > 0), new DungeonFlameBlock.Config() {
                 @Override
@@ -386,7 +398,7 @@ public class ModBlocks {
             true
     );
     //TODO :/ fortress flambeaux
-    public static final DungeonFlameBlock FORTRESS_FLAME = (DungeonFlameBlock) register(
+    public static final Block FORTRESS_FLAME = register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().requiresTool().strength(4.5F, 3600000.0F).luminance(state -> 15).emissiveLighting((state,blockView,pos) -> true), new DungeonFlameBlock.Config() {
                 @Override
                 public float getDamage(boolean powered) {
@@ -406,7 +418,7 @@ public class ModBlocks {
             "fortress_flame",
             true
     );
-    public static final DungeonDoorBlock DUNGEON_DOOR = (DungeonDoorBlock) register(
+    public static final Block DUNGEON_DOOR = register(
             new DungeonDoorBlock(AbstractBlock.Settings.create().requiresTool().strength(6.5F, .0F)),
             "dungeon_door",
             true
