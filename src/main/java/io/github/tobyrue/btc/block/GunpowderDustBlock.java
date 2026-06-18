@@ -2,18 +2,13 @@ package io.github.tobyrue.btc.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import io.github.tobyrue.btc.entity.custom.WaterBlastEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.WireConnection;
-import net.minecraft.client.gui.screen.option.ControlsListWidget;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -416,13 +411,7 @@ public class GunpowderDustBlock extends Block {
     }
 
     protected static boolean connectsTo(BlockState state, @Nullable Direction dir) {
-        if (state.isOf(ModBlocks.GUNPOWDER_DUST)) {
-            return true;
-        }
-        if (state.isOf(Blocks.TNT)) {
-            return true;
-        }
-        return false;
+        return state.isOf(Blocks.TNT) || state.isOf(ModBlocks.GUNPOWDER_DUST) || state.isOf(ModBlocks.GUNPOWDER_BARREL);
     }
 
     public void ignite(World world, BlockPos pos, BlockState state) {
@@ -468,6 +457,9 @@ public class GunpowderDustBlock extends Block {
         BlockState state = world.getBlockState(pos);
         if (state.isOf(this)) {
             ignite(world, pos, state);
+        }
+        if (state.getBlock() instanceof GunpowderBarrelBlock gunpowderBarrelBlock) {
+            gunpowderBarrelBlock.ignite(world, state, pos);
         }
     }
 

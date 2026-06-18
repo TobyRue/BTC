@@ -103,6 +103,7 @@ public class ModSpells {
     public static final Spell ELDRITCH_ILLUSION = register("eldritch_illusion", new EldritchIllusionSpell(), false);
     public static final Spell PURGE_BOLT = register("purge_bolt", new PurgeBoltSpell());
     public static final Spell DISSOLUTION = register("dissolution", new SpellOfDissolution());
+    public static final Spell KILL_BALL = register("kill_ball", new KillBallSpell());
 
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {

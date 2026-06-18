@@ -198,7 +198,7 @@ public class BTC implements ModInitializer {
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack stack = player.getStackInHand(hand);
 
-            if (stack.isOf(Items.GUNPOWDER) && BTCConfig.placableGunpowder) {
+            if (stack.isOf(Items.GUNPOWDER) && BTCConfig.placableGunpowder && !(world.getBlockState(hitResult.getBlockPos()).getBlock() instanceof GunpowderBarrelBlock)) {
                 BlockPos pos = hitResult.getBlockPos().offset(hitResult.getSide());
 
                 if (world.getBlockState(pos).isAir()) {

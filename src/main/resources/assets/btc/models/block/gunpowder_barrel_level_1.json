@@ -1,0 +1,9 @@
+{
+  "parent": "btc:block/cube_bottom_top_with_inside",
+  "textures": {
+    "bottom": "minecraft:block/barrel_bottom",
+    "side": "minecraft:block/barrel_side",
+    "top": "btc:block/gunpowder_barrel_top",
+    "inside": "btc:block/gunpowder_level_1"
+  }
+}
