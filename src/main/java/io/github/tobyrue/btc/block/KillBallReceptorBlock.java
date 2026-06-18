@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block;
 
 import com.jcraft.jorbis.DspState;
 import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RedstoneLampBlock;
@@ -16,11 +17,12 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class KillBallReceptorBlock extends Block {
+public class KillBallReceptorBlock extends Block implements IDungeonWire {
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final BooleanProperty KILL_ON_HIT = BooleanProperty.of("kill_on_hit");
 
@@ -83,4 +85,8 @@ public class KillBallReceptorBlock extends Block {
         builder.add(POWERED, KILL_ON_HIT);
     }
 
+    @Override
+    public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        return state.isOf(ModBlocks.KILL_BALL_RECEPTOR) && state.get(POWERED);
+    }
 }

@@ -23,7 +23,7 @@ public class KillBallSpell extends Spell {
 
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
-        SuperHappyKillBallEntity killBall = new SuperHappyKillBallEntity(ctx.pos(), ctx.direction().multiply(args.getDouble("speed", 1.0d)), ctx.world(), args.getInt("bounces", 0), args.getFloat("size", 1.0f));
+        SuperHappyKillBallEntity killBall = new SuperHappyKillBallEntity(ctx.pos(), ctx.direction().multiply(args.getDouble("speed", 0.25d)), ctx.world(), args.getInt("bounces", 0), args.getFloat("size", 1.0f));
         killBall.setPos(ctx.pos().getX() + ctx.direction().x * 1.5, ctx.pos().getY() + ctx.direction().y * 1.5, ctx.pos().getZ() + ctx.direction().z * 1.5);
         ctx.world().spawnEntity(killBall);
     }

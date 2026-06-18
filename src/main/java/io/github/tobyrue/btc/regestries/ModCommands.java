@@ -5,7 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.commands.ApplyRandomNameCommand;
 import io.github.tobyrue.btc.commands.SetStatusEffectCommand;
+import io.github.tobyrue.btc.commands.TellTranslatedCommand;
 import io.github.tobyrue.btc.commands.WrenchCommand;
 import io.github.tobyrue.btc.packets.OpenFavoritePayload;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
@@ -59,6 +61,8 @@ public class ModCommands {
     public static void initialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             WrenchCommand.register(dispatcher);
+            TellTranslatedCommand.register(dispatcher);
+            ApplyRandomNameCommand.register(dispatcher);
         });
         ArgumentTypeRegistry.registerArgumentType(
                 BTC.identifierOf("spell"),

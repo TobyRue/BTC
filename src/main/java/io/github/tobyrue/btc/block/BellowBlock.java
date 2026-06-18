@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import io.github.tobyrue.btc.entity.custom.SuperHappyKillBallEntity;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -226,6 +228,26 @@ public class BellowBlock extends HorizontalFacingBlock {
 
         if (receivingPower && nextLevel == 2) {
             Direction nozzleDir = getDirection(state).getOpposite();
+
+            final int COOK_TIME_REDUCTION_TICKS = 60;
+
+            BlockPos targetPos = pos.offset(nozzleDir);
+            BlockEntity targetEntity = world.getBlockEntity(targetPos);
+
+            if (targetEntity instanceof AbstractFurnaceBlockEntity furnace) {
+                var delegate = ((io.github.tobyrue.btc.mixin.AbstractFurnaceBlockEntityAccessor) furnace).btc$getPropertyDelegate();
+
+                int currentCookTime = delegate.get(2);
+                int totalCookTime = delegate.get(3);
+
+                if (totalCookTime > 0) {
+                    int newCookTime = Math.min(totalCookTime - 1, currentCookTime + (COOK_TIME_REDUCTION_TICKS));
+                    delegate.set(2, newCookTime);
+                    furnace.markDirty();
+                }
+            }
+
+
 
             Vec3d blockCenter = pos.toCenterPos();
 
