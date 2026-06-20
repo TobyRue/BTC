@@ -43,36 +43,6 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .criterion("has_planks", conditionsFromTag(net.minecraft.registry.tag.ItemTags.PLANKS))
                 .offerTo(exporter);
 
-        offerWaxingRecipe(exporter, ModBlocks.COPPER_TRIAL_FAN, ModBlocks.WAXED_COPPER_TRIAL_FAN);
-        offerWaxingRecipe(exporter, ModBlocks.EXPOSED_COPPER_TRIAL_FAN, ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN);
-        offerWaxingRecipe(exporter, ModBlocks.WEATHERED_COPPER_TRIAL_FAN, ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN);
-        offerWaxingRecipe(exporter, ModBlocks.OXIDIZED_COPPER_TRIAL_FAN, ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN);
-
-        offerWaxingRecipe(exporter, ModBlocks.UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON);
-        offerWaxingRecipe(exporter, ModBlocks.EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON);
-        offerWaxingRecipe(exporter, ModBlocks.WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON);
-        offerWaxingRecipe(exporter, ModBlocks.OXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.STONE_PILLAR, Items.STONE);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.STONE_PILASTER, Items.STONE);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.CRACKED_STONE_BRICKS_PILLAR, Items.CRACKED_STONE_BRICKS);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.CRACKED_STONE_BRICKS_PILASTER, Items.CRACKED_STONE_BRICKS);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.STONE_BRICKS_PILLAR, Items.STONE_BRICKS);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.STONE_BRICKS_PILASTER, Items.STONE_BRICKS);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.TUFF_PILLAR, Items.TUFF);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.TUFF_PILASTER, Items.TUFF);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.TUFF_BRICKS_PILLAR, Items.TUFF_BRICKS);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.TUFF_BRICK_PILASTER, Items.TUFF_BRICKS);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.POLISHED_TUFF_PILLAR, Items.POLISHED_TUFF);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.POLISHED_TUFF_PILASTER, Items.POLISHED_TUFF);
-
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR, Items.CHISELED_TUFF_BRICKS);
-        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.CHISELED_TUFF_BRICKS_PILASTER, Items.CHISELED_TUFF_BRICKS);
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.POLISHED_TUFF_PRESSURE_PLATE)
                 .pattern("TT")
                 .input('T', Items.POLISHED_TUFF)
@@ -105,8 +75,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SCOPED_CROSSBOW)
                 .input(Items.CROSSBOW)
-                .input(ModItems.AMETHYST_LENS)
-                .criterion(hasItem(ModItems.AMETHYST_LENS), conditionsFromItem(ModItems.AMETHYST_LENS))
+                .input(ModItems.SCOPED_CROSSBOW)
+                .criterion(hasItem(ModItems.SCOPED_CROSSBOW), conditionsFromItem(ModItems.SCOPED_CROSSBOW))
                 .offerTo(exporter);
 
 
@@ -115,7 +85,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .pattern("DSD")
                 .pattern("DDD")
                 .input('T', ModItems.ELDRITCH_ARMOR_TRIM)
-                .input('S', Items.COBBLED_DEEPSLATE)
+                .input('S', Items.COPPER_BLOCK)
                 .input('D', Items.DIAMOND)
                 .criterion(hasItem(ModItems.ELDRITCH_ARMOR_TRIM), conditionsFromItem(ModItems.ELDRITCH_ARMOR_TRIM))
                 .offerTo(exporter, getRecipeName(ModItems.ELDRITCH_ARMOR_TRIM) + "_duplication");
@@ -125,20 +95,10 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .pattern("DSD")
                 .pattern("DDD")
                 .input('T', ModItems.SUN_ARMOR_TRIM)
-                .input('S', Items.SMOOTH_SANDSTONE)
+                .input('S', Items.COPPER_BLOCK)
                 .input('D', Items.DIAMOND)
                 .criterion(hasItem(ModItems.SUN_ARMOR_TRIM), conditionsFromItem(ModItems.SUN_ARMOR_TRIM))
                 .offerTo(exporter, getRecipeName(ModItems.SUN_ARMOR_TRIM) + "_duplication");
-
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.UNBREAKABLE_UPGRADE_TEMPLATE, 2)
-                .pattern("DTD")
-                .pattern("DSD")
-                .pattern("DDD")
-                .input('T', ModItems.UNBREAKABLE_UPGRADE_TEMPLATE)
-                .input('S', Items.OBSIDIAN)
-                .input('D', Items.DIAMOND)
-                .criterion(hasItem(ModItems.UNBREAKABLE_UPGRADE_TEMPLATE), conditionsFromItem(ModItems.UNBREAKABLE_UPGRADE_TEMPLATE))
-                .offerTo(exporter, getRecipeName(ModItems.UNBREAKABLE_UPGRADE_TEMPLATE) + "_duplication");
     }
 
 

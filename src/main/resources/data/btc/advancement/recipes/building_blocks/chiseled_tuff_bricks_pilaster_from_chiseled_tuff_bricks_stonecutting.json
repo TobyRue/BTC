@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_scoped_crossbow": {
+    "has_chiseled_tuff_bricks": {
       "conditions": {
         "items": [
           {
-            "items": "btc:scoped_crossbow"
+            "items": "minecraft:chiseled_tuff_bricks"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:scoped_crossbow"
+        "recipe": "btc:chiseled_tuff_bricks_pilaster_from_chiseled_tuff_bricks_stonecutting"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_scoped_crossbow"
+      "has_chiseled_tuff_bricks"
     ]
   ],
   "rewards": {
     "recipes": [
-      "btc:scoped_crossbow"
+      "btc:chiseled_tuff_bricks_pilaster_from_chiseled_tuff_bricks_stonecutting"
     ]
   }
 }

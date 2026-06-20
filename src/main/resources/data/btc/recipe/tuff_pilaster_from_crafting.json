@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:tuff"
+    }
+  },
+  "pattern": [
+    "   ",
+    " B ",
+    "BBB"
+  ],
+  "result": {
+    "count": 4,
+    "id": "btc:tuff_pilaster"
+  }
+}

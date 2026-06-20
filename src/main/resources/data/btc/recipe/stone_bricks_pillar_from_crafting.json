@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:stone_bricks"
+    }
+  },
+  "pattern": [
+    "B",
+    "B",
+    "B"
+  ],
+  "result": {
+    "count": 6,
+    "id": "btc:stone_bricks_pillar"
+  }
+}

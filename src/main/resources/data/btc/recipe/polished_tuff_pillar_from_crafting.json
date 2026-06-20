@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:polished_tuff"
+    }
+  },
+  "pattern": [
+    "B",
+    "B",
+    "B"
+  ],
+  "result": {
+    "count": 6,
+    "id": "btc:polished_tuff_pillar"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "T": {
+      "item": "minecraft:polished_tuff"
+    }
+  },
+  "pattern": [
+    "TT"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:polished_tuff_pressure_plate"
+  }
+}

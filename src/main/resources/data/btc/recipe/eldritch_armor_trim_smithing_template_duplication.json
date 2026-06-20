@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "S": {
+      "item": "minecraft:copper_block"
+    },
+    "T": {
+      "item": "btc:eldritch_armor_trim_smithing_template"
+    }
+  },
+  "pattern": [
+    "DTD",
+    "DSD",
+    "DDD"
+  ],
+  "result": {
+    "count": 2,
+    "id": "btc:eldritch_armor_trim_smithing_template"
+  }
+}

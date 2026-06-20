@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_scoped_crossbow": {
+    "has_sun_armor_trim_smithing_template": {
       "conditions": {
         "items": [
           {
-            "items": "btc:scoped_crossbow"
+            "items": "btc:sun_armor_trim_smithing_template"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:scoped_crossbow"
+        "recipe": "btc:sun_armor_trim_smithing_template_duplication"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_scoped_crossbow"
+      "has_sun_armor_trim_smithing_template"
     ]
   ],
   "rewards": {
     "recipes": [
-      "btc:scoped_crossbow"
+      "btc:sun_armor_trim_smithing_template_duplication"
     ]
   }
 }

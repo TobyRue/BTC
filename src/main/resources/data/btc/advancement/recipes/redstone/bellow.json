@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_scoped_crossbow": {
+    "has_planks": {
       "conditions": {
         "items": [
           {
-            "items": "btc:scoped_crossbow"
+            "items": "#minecraft:planks"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:scoped_crossbow"
+        "recipe": "btc:bellow"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_scoped_crossbow"
+      "has_planks"
     ]
   ],
   "rewards": {
     "recipes": [
-      "btc:scoped_crossbow"
+      "btc:bellow"
     ]
   }
 }

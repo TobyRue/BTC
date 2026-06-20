@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:waxed_weathered_copper_fan_from_waxing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_weathered_copper_fan": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:weathered_copper_fan"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_weathered_copper_fan"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:waxed_weathered_copper_fan_from_waxing"
+    ]
+  }
+}

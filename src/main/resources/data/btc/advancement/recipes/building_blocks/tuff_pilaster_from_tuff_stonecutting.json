@@ -1,32 +1,32 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_scoped_crossbow": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:tuff_pilaster_from_tuff_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_tuff": {
       "conditions": {
         "items": [
           {
-            "items": "btc:scoped_crossbow"
+            "items": "minecraft:tuff"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
-    },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "btc:scoped_crossbow"
-      },
-      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
       "has_the_recipe",
-      "has_scoped_crossbow"
+      "has_tuff"
     ]
   ],
   "rewards": {
     "recipes": [
-      "btc:scoped_crossbow"
+      "btc:tuff_pilaster_from_tuff_stonecutting"
     ]
   }
 }

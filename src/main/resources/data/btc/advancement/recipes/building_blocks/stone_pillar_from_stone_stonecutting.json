@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_scoped_crossbow": {
+    "has_stone": {
       "conditions": {
         "items": [
           {
-            "items": "btc:scoped_crossbow"
+            "items": "minecraft:stone"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "btc:scoped_crossbow"
+        "recipe": "btc:stone_pillar_from_stone_stonecutting"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_scoped_crossbow"
+      "has_stone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "btc:scoped_crossbow"
+      "btc:stone_pillar_from_stone_stonecutting"
     ]
   }
 }

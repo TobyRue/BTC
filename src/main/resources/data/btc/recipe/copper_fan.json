@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "W": {
+      "item": "minecraft:wind_charge"
+    },
+    "I": {
+      "item": "minecraft:copper_ingot"
+    },
+    "T": {
+      "item": "minecraft:tuff_bricks"
+    }
+  },
+  "pattern": [
+    "IWI",
+    "TDT",
+    "IRI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:copper_fan"
+  }
+}
