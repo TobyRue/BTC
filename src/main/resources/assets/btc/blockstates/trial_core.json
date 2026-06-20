@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "powered=false,facing=down": {
+      "model": "btc:block/unpowered_trial_core",
+      "x": 90
+    },
+    "powered=false,facing=east": {
+      "model": "btc:block/unpowered_trial_core",
+      "y": 90
+    },
+    "powered=false,facing=north": {
+      "model": "btc:block/unpowered_trial_core"
+    },
+    "powered=false,facing=south": {
+      "model": "btc:block/unpowered_trial_core",
+      "y": 180
+    },
+    "powered=false,facing=up": {
+      "model": "btc:block/unpowered_trial_core",
+      "x": 270
+    },
+    "powered=false,facing=west": {
+      "model": "btc:block/unpowered_trial_core",
+      "y": 270
+    },
+    "powered=true,facing=down": {
+      "model": "btc:block/powered_trial_core",
+      "x": 90
+    },
+    "powered=true,facing=east": {
+      "model": "btc:block/powered_trial_core",
+      "y": 90
+    },
+    "powered=true,facing=north": {
+      "model": "btc:block/powered_trial_core"
+    },
+    "powered=true,facing=south": {
+      "model": "btc:block/powered_trial_core",
+      "y": 180
+    },
+    "powered=true,facing=up": {
+      "model": "btc:block/powered_trial_core",
+      "x": 270
+    },
+    "powered=true,facing=west": {
+      "model": "btc:block/powered_trial_core",
+      "y": 270
+    }
+  }
+}

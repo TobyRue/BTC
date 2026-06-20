@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "btc:block/powered_kill_ball_receptor_kill"
+  }
+}

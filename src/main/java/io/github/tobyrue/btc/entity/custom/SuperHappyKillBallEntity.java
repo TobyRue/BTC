@@ -281,12 +281,28 @@ public class SuperHappyKillBallEntity extends ProjectileEntity {
         if (world.isClient()) return;
 
         Box expandedBox = this.getBoundingBox().expand(0.01);
+        double velocityX = this.getVelocity().x;
         double velocityY = this.getVelocity().y;
+        double velocityZ = this.getVelocity().z;
 
+        if (velocityX <= 0 || this.horizontalCollision) {
+            expandedBox = expandedBox.stretch(-0.2, 0, 0);
+        }
         if (velocityY <= 0 || this.verticalCollision) {
             expandedBox = expandedBox.stretch(0, -0.2, 0);
         }
-
+        if (velocityZ <= 0 || this.horizontalCollision) {
+            expandedBox = expandedBox.stretch(0, 0, -0.2);
+        }
+        if (velocityX >= 0 || this.horizontalCollision) {
+            expandedBox = expandedBox.stretch(0.2, 0, 0);
+        }
+        if (velocityY >= 0 || this.verticalCollision) {
+            expandedBox = expandedBox.stretch(0, 0.2, 0);
+        }
+        if (velocityZ >= 0 || this.horizontalCollision) {
+            expandedBox = expandedBox.stretch(0, 0, 0.2);
+        }
         int minX = MathHelper.floor(expandedBox.minX);
         int minY = MathHelper.floor(expandedBox.minY);
         int minZ = MathHelper.floor(expandedBox.minZ);

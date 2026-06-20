@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "powered=false,kill_on_hit=false": {
+      "model": "btc:block/unpowered_kill_ball_receptor_no_kill"
+    },
+    "powered=true,kill_on_hit=false": {
+      "model": "btc:block/powered_kill_ball_receptor_no_kill"
+    },
+    "powered=false,kill_on_hit=true": {
+      "model": "btc:block/unpowered_kill_ball_receptor_kill"
+    },
+    "powered=true,kill_on_hit=true": {
+      "model": "btc:block/powered_kill_ball_receptor_kill"
+    }
+  }
+}

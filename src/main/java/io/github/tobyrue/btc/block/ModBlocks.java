@@ -123,7 +123,7 @@ public class ModBlocks {
     );
 
     public static final Block TRIAL_CORE = register(
-            new TrialCoreBlock(AbstractBlock.Settings.create().mapColor(MapColor.DIAMOND_BLUE).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.GLASS).instrument(NoteBlockInstrument.CHIME)),
+            new TrialCoreBlock(AbstractBlock.Settings.create().mapColor(MapColor.GRAY).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.CHIME)),
             "trial_core",
             true
     );

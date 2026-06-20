@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/template_command_block",
+  "textures": {
+    "back": "btc:block/unpowered_trial_core_bottom",
+    "front": "btc:block/unpowered_trial_core_top",
+    "side": "btc:block/unpowered_trial_core_side"
+  }
+}

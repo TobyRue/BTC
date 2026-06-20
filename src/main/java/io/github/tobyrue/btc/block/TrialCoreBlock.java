@@ -43,10 +43,26 @@ public class TrialCoreBlock extends Block implements ModBlockEntityProvider<Tria
     }
 
     @Override
+    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        if (world.isClient) return;
+
+        boolean isPowered = (IDungeonWire.isReceivingDungeonWirePower(world.getBlockState(pos), world, pos, Direction.values()));
+
+        if (isPowered != state.get(POWERED)) {
+            if (isPowered) {
+                if (world.getBlockEntity(pos) instanceof TrialCoreBlockEntity core) {
+                    core.runRandomFunction((ServerWorld) world, pos);
+                }
+            }
+            world.setBlockState(pos, state.with(POWERED, isPowered), 3);
+        }
+    }
+
+    @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (world.isClient) return;
 
-        boolean isPowered = (sourceBlock instanceof IDungeonWire wire && IDungeonWire.isReceivingDungeonWirePower(world.getBlockState(pos), world, pos, Direction.values()));
+        boolean isPowered = (IDungeonWire.isReceivingDungeonWirePower(world.getBlockState(pos), world, pos, Direction.values()));
 
         if (isPowered != state.get(POWERED)) {
             if (isPowered) {
