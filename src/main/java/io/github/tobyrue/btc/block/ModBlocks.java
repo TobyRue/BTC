@@ -37,15 +37,27 @@ public class ModBlocks {
             true
     );
 
-    public static final Block GUNPOWDER_BARREL = register(
-            new GunpowderBarrelBlock(AbstractBlock.Settings.create().mapColor(MapColor.SPRUCE_BROWN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD).instrument(NoteBlockInstrument.BASS)),
-            "gunpowder_barrel",
+    public static final Block KILL_BALL_RECEPTOR = register(
+            new KillBallReceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.SNARE)),
+            "kill_ball_receptor",
             true
     );
 
-    public static final Block KILL_BALL_RECEPTOR = register(
-            new KillBallReceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(3.5F, 6.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.SNARE)),
-            "kill_ball_receptor",
+    public static final Block MOB_DETECTOR = register(
+            new MobDetectorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).nonOpaque()),
+            "mob_detector",
+            true
+    );
+
+    public static final Block OMINOUS_BEACON = register(
+            new OminousBeaconBlock(AbstractBlock.Settings.create().mapColor(MapColor.LAPIS_BLUE).nonOpaque().requiresTool().strength(6.5F, 6.0F).sounds(BlockSoundGroup.VAULT).luminance((state) -> 14)),
+            "ominous_beacon",
+            true
+    );
+
+    public static final Block GUNPOWDER_BARREL = register(
+            new GunpowderBarrelBlock(AbstractBlock.Settings.create().mapColor(MapColor.SPRUCE_BROWN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD).instrument(NoteBlockInstrument.BASS)),
+            "gunpowder_barrel",
             true
     );
 
@@ -239,18 +251,6 @@ public class ModBlocks {
     public static final Block BRAZIER = register(
             new BrazierBlock(AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).nonOpaque().requiresTool().strength(3.5F, 6.0F).sounds(BlockSoundGroup.POLISHED_DEEPSLATE).luminance((state) -> 15)),
             "brazier",
-            true
-    );
-
-    public static final Block OMINOUS_BEACON = register(
-            new OminousBeaconBlock(AbstractBlock.Settings.create().mapColor(MapColor.LAPIS_BLUE).nonOpaque().requiresTool().strength(3.5F, 6.0F).sounds(BlockSoundGroup.VAULT).luminance((state) -> 14)),
-            "ominous_beacon",
-            true
-    );
-
-    public static final Block MOB_DETECTOR = register(
-            new MobDetectorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.STONE).nonOpaque()),
-            "mob_detector",
             true
     );
 
