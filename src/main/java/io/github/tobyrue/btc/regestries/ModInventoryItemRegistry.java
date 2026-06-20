@@ -9,7 +9,6 @@ import net.minecraft.item.Items;
 
 public class ModInventoryItemRegistry {
 
-
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.addAfter(Items.OMINOUS_TRIAL_KEY, ModItems.RUBY_TRIAL_KEY, ModItems.STAFF, ModItems.DRAGON_ROD);
@@ -19,13 +18,15 @@ public class ModInventoryItemRegistry {
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
-            content.addAfter(Items.LIGHT, ModItems.TEST, ModItems.SPELLSTONE);
+            content.addAfter(Items.LIGHT, ModItems.SPELLSTONE);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.MUSIC_DISC_PIGSTEP, ModItems.CRYSTAL_FOREST_MUSIC_DISC);
             content.addAfter(Items.WARPED_FUNGUS_ON_A_STICK, ModItems.SELECTOR);
-            content.addAfter(Items.LEAD, ModItems.BLOCK_KEY);
+            content.addAfter(Items.LEAD, ModItems.BLOCK_KEY, ModItems.AMETHYST_LENS);
+
+            content.addAfter(ModItems.BLOCK_KEY, ModItems.COPPER_WRENCH);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
@@ -37,6 +38,8 @@ public class ModInventoryItemRegistry {
                     ModBlocks.DEEP_FLAME, ModBlocks.FORTRESS_FLAME,
                     ModBlocks.BRAZIER);
             content.addAfter(Blocks.VAULT, ModBlocks.MOB_DETECTOR, ModBlocks.MELTING_ICE);
+
+            content.addAfter(Blocks.JUKEBOX, ModBlocks.TRIAL_CORE, ModBlocks.BONFIRE, ModBlocks.BELLOW, ModBlocks.GUNPOWDER_BARREL, ModBlocks.OBSIDIAN_CHEST);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
@@ -54,6 +57,9 @@ public class ModInventoryItemRegistry {
                     ModBlocks.WAXED_COPPER_TRIAL_FAN, ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN,
                     ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN, ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN);
             content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
+
+            content.addAfter(Blocks.TARGET, ModBlocks.KILL_BALL_RECEPTOR, ModBlocks.POLISHED_TUFF_PRESSURE_PLATE);
+            content.addAfter(ModBlocks.DUNGEON_PRESSURE_PLATE, ModBlocks.COPPER_TRIAL_FAN, ModBlocks.EXPOSED_COPPER_TRIAL_FAN, ModBlocks.WEATHERED_COPPER_TRIAL_FAN, ModBlocks.OXIDIZED_COPPER_TRIAL_FAN);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(content -> {
@@ -79,6 +85,8 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.CHISELED_TUFF_BRICKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR);
             content.addAfter(Blocks.POLISHED_TUFF, ModBlocks.POLISHED_TUFF_PILLAR);
             content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR);
+
+            content.addAfter(Blocks.BEDROCK, ModBlocks.REINFORCED_DUNGEON_BLOCK, ModBlocks.REINFORCED_DUNGEON_TILES);
         });
     }
 }

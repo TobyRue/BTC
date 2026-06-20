@@ -10,6 +10,9 @@
     "minecraft:respawn_anchor",
     "minecraft:crying_obsidian",
     "minecraft:respawn_anchor",
+    "btc:reinforced_dungeon_block",
+    "btc:reinforced_dungeon_tiles",
+    "btc:trial_core",
     "btc:dungeon_wire"
   ]
 }

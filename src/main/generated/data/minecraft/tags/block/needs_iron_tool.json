@@ -1,0 +1,20 @@
+{
+  "values": [
+    "btc:kill_ball_receptor",
+    "btc:copper_fan",
+    "btc:exposed_copper_fan",
+    "btc:weathered_copper_fan",
+    "btc:oxidized_copper_fan",
+    "btc:waxed_copper_fan",
+    "btc:waxed_exposed_copper_fan",
+    "btc:waxed_weathered_copper_fan",
+    "btc:waxed_oxidized_copper_fan",
+    "btc:brazier",
+    "btc:ominous_beacon",
+    "btc:mob_detector",
+    "btc:dungeon_door",
+    "btc:dungeon_flame",
+    "btc:deep_flame",
+    "btc:fortress_flame"
+  ]
+}

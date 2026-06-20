@@ -1,9 +1,12 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.DungeonDoorBlock;
 import io.github.tobyrue.btc.block.KeyDispenserBlock;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import io.github.tobyrue.btc.wires.IDungeonWirePowered;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,13 +22,14 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.HashSet;
 
 
-public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWirePowered {
+public class KeyDispenserBlockEntity extends BlockEntity {
 
     public final HashSet<String> HASH_SET = new HashSet<>();
 
@@ -37,7 +41,7 @@ public class KeyDispenserBlockEntity extends BlockEntity implements IDungeonWire
         var uuid = player.getUuid().toString();
         ItemStack dropStack = new ItemStack(ModItems.RUBY_TRIAL_KEY);
 
-        if (!HASH_SET.contains(uuid) && (shouldWirePower(state, world, pos, false, true, false) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
+        if (!HASH_SET.contains(uuid) && (IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Direction.DOWN) || state.get(KeyDispenserBlock.ALWAYS_ACCEPTABLE))) {
             HASH_SET.add(uuid);
             world.addParticle(ParticleTypes.GUST, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 0, 0, 0);
             world.emitGameEvent(GameEvent.ENTITY_INTERACT, pos, GameEvent.Emitter.of(state));

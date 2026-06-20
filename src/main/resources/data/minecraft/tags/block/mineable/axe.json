@@ -1,5 +1,11 @@
 {
   "replace": false,
   "values": [
+    "btc:gunpowder_barrel",
+    "btc:bellow"
+  ],
+  "remove": [
+    "#btc:pillars",
+    "#btc:pilasters"
   ]
 }

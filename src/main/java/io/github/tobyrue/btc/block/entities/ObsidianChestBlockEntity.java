@@ -1,33 +1,26 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.SpellDataStore;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.LootableInventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -97,10 +90,9 @@ public class ObsidianChestBlockEntity extends BlockEntity implements LidOpenable
         }
 
         if (type == 2) {
-            if (this.world != null && this.world.isClient) {
-                PlayerEntity localPlayer = MinecraftClient.getInstance().player;
-                if (localPlayer != null && !lootedPlayers.contains(localPlayer.getUuid())) {
-                    this.lootedPlayers.add(localPlayer.getUuid());
+            if (this.world != null && this.world.isClient()) {
+                if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+                    addLootedPlayers();
                 }
             }
             return true;
@@ -108,9 +100,18 @@ public class ObsidianChestBlockEntity extends BlockEntity implements LidOpenable
 
         return super.onSyncedBlockEvent(type, data);
     }
+
+    @Environment(EnvType.CLIENT)
+    private void addLootedPlayers() {
+        PlayerEntity localPlayer = MinecraftClient.getInstance().player;
+        if (localPlayer != null && !lootedPlayers.contains(localPlayer.getUuid())) {
+            this.lootedPlayers.add(localPlayer.getUuid());
+        }
+    }
+
+
     public void tick(World world, BlockPos pos, BlockState state, ObsidianChestBlockEntity blockEntity) {
         this.stateManager.updateViewerCount(world, pos, state);
-        lootedPlayers.iterator().forEachRemaining(System.out::println);
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, ObsidianChestBlockEntity blockEntity) {

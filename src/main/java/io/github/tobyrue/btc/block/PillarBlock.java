@@ -351,44 +351,51 @@ public class PillarBlock extends HorizontalConnectingBlock {
     }
     @Override
     protected BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(AXIS, switch (state.get(AXIS)) {
-            case X -> switch (rotation) {
-                case NONE, CLOCKWISE_180 -> state.get(AXIS);
-                case CLOCKWISE_90, COUNTERCLOCKWISE_90 -> Direction.Axis.Z;
-            };
-            case Y -> switch (rotation) {
-                case NONE, CLOCKWISE_180, CLOCKWISE_90, COUNTERCLOCKWISE_90 -> state.get(AXIS);
-            };
-            case Z -> switch (rotation) {
-                case NONE, CLOCKWISE_180 -> state.get(AXIS);
-                case CLOCKWISE_90, COUNTERCLOCKWISE_90 -> Direction.Axis.X;
-            };
-        });
+        Direction.Axis currentAxis = state.get(AXIS);
+        Direction axisDir = Direction.from(currentAxis, Direction.AxisDirection.POSITIVE);
+        Direction.Axis newAxis = rotation.rotate(axisDir).getAxis();
+
+        BlockState newState = this.getDefaultState()
+                .with(AXIS, newAxis)
+                .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED))
+                .with(CONNECTS, state.get(CONNECTS))
+                .with(OTHER_BLOCKS, state.get(OTHER_BLOCKS));
+
+        for (Direction dir : Direction.values()) {
+            BooleanProperty oldProp = getProperty(dir, currentAxis);
+            if (oldProp != null && state.get(oldProp)) {
+                Direction newDir = rotation.rotate(dir);
+                BooleanProperty newProp = getProperty(newDir, newAxis);
+                if (newProp != null) {
+                    newState = newState.with(newProp, true);
+                }
+            }
+        }
+        return newState;
     }
+
     @Override
     protected BlockState mirror(BlockState state, net.minecraft.util.BlockMirror mirror) {
-        Direction.Axis axis = state.get(AXIS);
+        Direction.Axis currentAxis = state.get(AXIS);
+        Direction axisDir = Direction.from(currentAxis, Direction.AxisDirection.POSITIVE);
+        Direction.Axis newAxis = mirror.apply(axisDir).getAxis();
 
-        if (mirror == net.minecraft.util.BlockMirror.LEFT_RIGHT) {
-            if (axis == Direction.Axis.Y) {
-                return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
-            } else if (axis == Direction.Axis.X) {
-                return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
-            } else if (axis == Direction.Axis.Z) {
-                return state;
+        BlockState newState = this.getDefaultState()
+                .with(AXIS, newAxis)
+                .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED))
+                .with(CONNECTS, state.get(CONNECTS))
+                .with(OTHER_BLOCKS, state.get(OTHER_BLOCKS));
+
+        for (Direction dir : Direction.values()) {
+            BooleanProperty oldProp = getProperty(dir, currentAxis);
+            if (oldProp != null && state.get(oldProp)) {
+                Direction newDir = mirror.apply(dir);
+                BooleanProperty newProp = getProperty(newDir, newAxis);
+                if (newProp != null) {
+                    newState = newState.with(newProp, true);
+                }
             }
         }
-        else if (mirror == net.minecraft.util.BlockMirror.FRONT_BACK) {
-            if (axis == Direction.Axis.Y) {
-
-                return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
-            } else if (axis == Direction.Axis.X) {
-                return state;
-            } else if (axis == Direction.Axis.Z) {
-                return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
-            }
-        }
-
-        return super.mirror(state, mirror);
+        return newState;
     }
 }

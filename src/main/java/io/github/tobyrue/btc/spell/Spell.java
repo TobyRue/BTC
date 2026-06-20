@@ -122,7 +122,7 @@ public abstract class Spell {
     }
 
     public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(Vec3d lookVec, LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
+        Vec3d eyePos = player.getEyePos();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
 
@@ -144,7 +144,7 @@ public abstract class Spell {
         return hitEntity;
     }
     public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
-        Vec3d eyePos = player.getCameraPosVec(1.0F);
+        Vec3d eyePos = player.getEyePos();
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
@@ -168,12 +168,10 @@ public abstract class Spell {
     }
     public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(World world, Vec3d startPos, Vec3d lookVec, double range, double aimingForgiveness) {
         Vec3d reachVec = startPos.add(lookVec.multiply(range));
-
         Box searchBox = new Box(startPos, reachVec).expand(1.0D);
 
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
-
 
         for (Entity entity : world.getOtherEntities(null, searchBox, e -> e.isAttackable() && e.canHit())) {
             Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);

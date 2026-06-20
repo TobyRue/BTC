@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect {
     public static final EnumProperty<DoorType> TYPE = EnumProperty.of("door_type", DoorType.class);
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
-    public static final BooleanProperty SURVIVAL = BooleanProperty.of("survival");
 
     public enum DoorType implements StringIdentifiable {
         NORMAL("normal"),
@@ -70,7 +69,6 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(OPEN, false)
-                .with(SURVIVAL, true)
                 .with(TYPE, DoorType.NORMAL));
     }
 
@@ -79,14 +77,12 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(OPEN, false)
-                .with(SURVIVAL, true)
                 .with(TYPE, DoorType.NORMAL);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(OPEN);
-        builder.add(SURVIVAL);
         builder.add(TYPE);
     }
 

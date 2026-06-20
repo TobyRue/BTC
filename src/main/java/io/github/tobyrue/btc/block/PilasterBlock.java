@@ -509,23 +509,49 @@ public class PilasterBlock extends HorizontalConnectingBlock {
 
     @Override
     protected BlockState rotate(BlockState state, BlockRotation rotation) {
-        return switch (rotation) {
-            case CLOCKWISE_180 ->
-                    state.with(NORTH, state.get(SOUTH)).with(EAST, state.get(WEST)).with(SOUTH, state.get(NORTH)).with(WEST, state.get(EAST)).with(FacingBlock.FACING, rotation.rotate(state.get(FacingBlock.FACING)));
-            case COUNTERCLOCKWISE_90 ->
-                    state.with(NORTH, state.get(EAST)).with(EAST, state.get(SOUTH)).with(SOUTH, state.get(WEST)).with(WEST, state.get(NORTH)).with(FacingBlock.FACING, rotation.rotate(state.get(FacingBlock.FACING)));
-            case CLOCKWISE_90 ->
-                    state.with(NORTH, state.get(WEST)).with(EAST, state.get(NORTH)).with(SOUTH, state.get(EAST)).with(WEST, state.get(SOUTH)).with(FacingBlock.FACING, rotation.rotate(state.get(FacingBlock.FACING)));
-            default -> state;
-        };
+        Direction currentFacing = state.get(FacingBlock.FACING);
+        Direction newFacing = rotation.rotate(currentFacing);
+
+        BlockState newState = this.getDefaultState()
+                .with(FacingBlock.FACING, newFacing)
+                .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED))
+                .with(CONNECTS, state.get(CONNECTS))
+                .with(OTHER_BLOCKS, state.get(OTHER_BLOCKS));
+
+        for (Direction dir : Direction.values()) {
+            BooleanProperty oldProp = getProperty(dir, currentFacing);
+            if (oldProp != null && state.get(oldProp)) {
+                Direction rotatedDir = rotation.rotate(dir);
+                BooleanProperty newProp = getProperty(rotatedDir, newFacing);
+                if (newProp != null) {
+                    newState = newState.with(newProp, true);
+                }
+            }
+        }
+        return newState;
     }
 
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        return switch (mirror) {
-            case LEFT_RIGHT -> state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH)).rotate(mirror.getRotation(state.get(FacingBlock.FACING)));
-            case FRONT_BACK -> state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST)).rotate(mirror.getRotation(state.get(FacingBlock.FACING)));
-            default -> super.mirror(state, mirror).rotate(mirror.getRotation(state.get(FacingBlock.FACING)));
-        };
+        Direction currentFacing = state.get(FacingBlock.FACING);
+        Direction newFacing = mirror.apply(currentFacing);
+
+        BlockState newState = this.getDefaultState()
+                .with(FacingBlock.FACING, newFacing)
+                .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED))
+                .with(CONNECTS, state.get(CONNECTS))
+                .with(OTHER_BLOCKS, state.get(OTHER_BLOCKS));
+
+        for (Direction dir : Direction.values()) {
+            BooleanProperty oldProp = getProperty(dir, currentFacing);
+            if (oldProp != null && state.get(oldProp)) {
+                Direction mirroredDir = mirror.apply(dir);
+                BooleanProperty newProp = getProperty(mirroredDir, newFacing);
+                if (newProp != null) {
+                    newState = newState.with(newProp, true);
+                }
+            }
+        }
+        return newState;
     }
 }

@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.TrialCoreBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -12,6 +13,8 @@ import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -35,13 +38,30 @@ public class TrialCoreBlockEntity extends BlockEntity {
         if (functions.isEmpty()) return;
 
         Identifier selected = functions.get(random.nextInt(functions.size()));
-
         CommandFunctionManager manager = world.getServer().getCommandFunctionManager();
 
         manager.getFunction(selected).ifPresent(function -> {
+            BlockState state = this.getCachedState();
+            Direction facing = state.contains(TrialCoreBlock.FACING) ? state.get(TrialCoreBlock.FACING) : Direction.NORTH;
+
+
+            float yaw = switch (facing) {
+                case SOUTH -> 0.0F;
+                case WEST -> 90.0F;
+                case NORTH -> 180.0F;
+                case EAST -> 270.0F;
+                default -> 0.0F;
+            };
+
+            float pitch = switch (facing) {
+                case UP -> -90.0F;
+                case DOWN -> 90.0F;
+                default -> 0.0F;
+            };
             ServerCommandSource source = world.getServer().getCommandSource()
                     .withWorld(world)
                     .withPosition(Vec3d.ofCenter(pos))
+                    .withRotation(new Vec2f(pitch, yaw)) // Integrates direction vectors directly into the source
                     .withLevel(2)
                     .withSilent();
 

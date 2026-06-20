@@ -11,11 +11,10 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "btc:dungeon_fire"
+          "name": "btc:cracked_stone_bricks_pillar"
         }
       ],
       "rolls": 1.0
     }
-  ],
-  "random_sequence": "btc:blocks/dungeon_fire"
+  ]
 }

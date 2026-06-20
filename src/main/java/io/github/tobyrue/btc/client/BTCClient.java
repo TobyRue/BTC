@@ -20,6 +20,7 @@ import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.ClientOreRadar;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
+import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.WireBlockEntityRenderer;
 import io.github.tobyrue.rtc.RTC;
 import net.fabricmc.api.ClientModInitializer;
@@ -63,6 +64,7 @@ import io.github.tobyrue.btc.client.screen.RadialValues.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -335,8 +337,8 @@ public class BTCClient implements ClientModInitializer {
                                     Math.min(maxSlots, 6),
                                     radialMenuKeyBinding
                             ));
-                        } else if (item instanceof WrenchItem wrenchItem) {
-                            wrenchItem.openWrenchMenu(stack);
+                        } else if (item instanceof WrenchItem) {
+                            openWrenchMenu(stack);
                         }
 
 //                    if (client.player.getStackInHand(h).getItem() == ModItems.TEST) {
@@ -641,5 +643,109 @@ public class BTCClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.TRIAL_CUBE, TrialCubeEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.FAN_BLADES_LAYER, FanBlockModel::getTexturedModelData);
 
+    }
+
+    public void openWrenchMenu(ItemStack stack) {
+
+        //CONNECTIONS
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> connTypes = new ArrayList<>();
+        connTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench wire connection")));
+        for (var type : WireBlock.ConnectionType.values()) {
+            connTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("block.btc.wire.connection." + type.asString()),
+                    (menu,triggerType) -> menu.sendCommand("btcwrench wire connection " + type.asString())));
+        }
+        connTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"),  (menu, type) -> menu.goBack()));
+
+        //OPERATOR
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> opTypes = new ArrayList<>();
+        opTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench wire operator")));
+        for (var op : WireBlock.Operator.values()) {
+            opTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("block.btc.wire.operator." + op.asString()),
+                    (menu,type) -> menu.sendCommand("btcwrench wire operator " + op.asString())));
+        }
+        opTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()));
+
+
+        //DELAY
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> delayTypes = new ArrayList<>();
+        delayTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench wire delay")));
+        for (int i = 0; i <= 7; i++) {
+            final int val = i;
+            delayTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.literal(String.valueOf(val)), (menu, type) -> menu.sendCommand("btcwrench wire delay " + val)));
+        }
+        delayTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()));
+
+
+        //CONNECTION, OPERATOR, AND DELAY, NESTED TOGETHER
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> wireOptions = List.of(
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.type.connections"), connTypes),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.type.operator"), opTypes),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.type.delay"), delayTypes),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD)
+        );
+
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> selectorOptions = List.of(
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.selector.auto_mode"), (m, t) ->  m.sendCommand("btcwrench selector selector_auto")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.selector.corner_1_set_mode"), (m, t) -> m.sendCommand("btcwrench selector selector_pos1")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.selector.corner_2_set_mode"), (m, t) -> m.sendCommand("btcwrench selector selector_pos2")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.selector.clear"), (m, t) -> m.sendCommand("btcwrench selector selector_clear")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD)
+        );
+
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> fanDepthTypes = new ArrayList<>();
+        fanDepthTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench fan depth")));
+        for (int i = 1; i <= 16; i++) {
+            final int val = i;
+            fanDepthTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.literal(String.valueOf(val)), (menu, type) -> menu.sendCommand("btcwrench fan depth " + val)));
+        }
+        fanDepthTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()));
+
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> fanBaseRadiusTypes = new ArrayList<>();
+        fanBaseRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench fan base_radius")));
+        for (int i = 0; i <= 8; i++) {
+            final int val = i;
+            fanBaseRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.literal(String.valueOf(val)), (menu, type) -> menu.sendCommand("btcwrench fan base_radius " + val)));
+        }
+        fanBaseRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()));
+
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> fanFarRadiusTypes = new ArrayList<>();
+        fanFarRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench fan far_radius")));
+        for (int i = 1; i <= 12; i++) {
+            final int val = i;
+            fanFarRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.literal(String.valueOf(val)), (menu, type) -> menu.sendCommand("btcwrench fan far_radius " + val)));
+        }
+        fanFarRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()));
+
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> fanOptions = List.of(
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.fan.depth"), fanDepthTypes).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.fan.base_radius"), fanBaseRadiusTypes).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.fan.far_radius"), fanFarRadiusTypes).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.fan.mode"), (m, t) -> m.sendCommand("btcwrench fan mode")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.fan.toggle"), (m, t) -> m.sendCommand("btcwrench fan toggle")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.fan.show_cone"), (m, t) -> m.sendCommand("btcwrench fan show_cone")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.back"), (menu, type) -> menu.goBack()).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD)
+        );
+
+        List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> mainCategories = List.of(
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.type.rotate"), (m, t) -> m.sendCommand("btcwrench rotate")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.type.mirror"), (m, t) -> m.sendCommand("btcwrench mirror")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.type.copy"), (m, t) -> m.sendCommand("btcwrench copy")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.type.paste"), (m, t) -> m.sendCommand("btcwrench paste")).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.type.wire"), wireOptions).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.type.selector"), selectorOptions).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue.nested(Text.translatable("item.btc.wrench.type.fan"), fanOptions).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD),
+                new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.close"), (menu, type) -> menu.close()).withColor(0xFFD67B5B).enableHoverEffects(true).withHoverEffectsText(0xFFFFE16B, Formatting.BOLD)
+        );
+
+        MinecraftClient.getInstance().setScreen(new io.github.tobyrue.btc.client.radial_menus.RadialMenu(
+                Text.translatable("item.btc.wrench.title.modes"),
+                mainCategories,
+                stack,
+                BTCClient.radialMenuKeyBinding,
+                0xFFD67B5B,
+                true,
+                false,
+                0
+        ));
     }
 }

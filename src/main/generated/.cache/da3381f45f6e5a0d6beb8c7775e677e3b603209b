@@ -1,0 +1,4 @@
+// 1.21.1	2026-06-19T19:58:45.2290819	BTC/Tags for minecraft:block
+7d71d0e17bbbcdf353aafebec60de4435efe9707 data\minecraft\tags\block\mineable\pickaxe.json
+bead83dfa9b7d1705b2f12fed97aef5c133da8ae data\minecraft\tags\block\needs_iron_tool.json
+a4f9b59777f0067ff34f5f656b7a8ac62817918c data\minecraft\tags\block\mineable\axe.json

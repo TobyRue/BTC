@@ -3,6 +3,8 @@ package io.github.tobyrue.btc.spell;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.xml.util.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.type.NbtComponent;
@@ -32,13 +34,28 @@ public abstract class SpellItem extends Item implements SpellHost<ItemStack> {
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
         final var data = this.getSpellDataStore(stack);
-        return data.getSpell() != null && data.getCooldown(data.getSpell().getCooldown(data.getArgs(), MinecraftClient.getInstance().player)) > 0;
+        if (data.getSpell() == null) return false;
+
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            return data.getCooldown(getClientCooldown(data)) > 0;
+        }
+        return false;
     }
 
     @Override
     public int getItemBarStep(ItemStack stack) {
         final var data = this.getSpellDataStore(stack);
-        return data.getSpell() != null ? (int) (13 * data.getCooldownPercent(data.getSpell().getCooldown(data.getArgs(), MinecraftClient.getInstance().player))) : 0;
+        if (data.getSpell() == null) return 0;
+
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            return (int) (13 * data.getCooldownPercent(getClientCooldown(data)));
+        }
+        return 0;
+    }
+
+    @Environment(EnvType.CLIENT)
+    private Spell.SpellCooldown getClientCooldown(SpellDataStore data) {
+        return data.getSpell().getCooldown(data.getArgs(), MinecraftClient.getInstance().player);
     }
 
     @Override

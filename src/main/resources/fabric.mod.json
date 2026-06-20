@@ -18,7 +18,7 @@
       "io.github.tobyrue.btc.BTC"
     ],
     "fabric-datagen": [
-      "io.github.tobyrue.btc.ExampleModDataGenerator"
+      "io.github.tobyrue.btc.BTCDataGenerator"
     ],
     "client": [
       "io.github.tobyrue.btc.client.BTCClient"
