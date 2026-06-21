@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": {
+      "item": "minecraft:brick"
+    },
+    "D": {
+      "item": "minecraft:cyan_dye"
+    },
+    "G": {
+      "item": "minecraft:gold_nugget"
+    }
+  },
+  "pattern": [
+    "GBG",
+    "BDB",
+    "GBG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:fancy_blue_pot"
+  }
+}
