@@ -9,7 +9,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public record BonfireSyncPayload(NbtCompound bonfireData) implements CustomPayload {
-    public static final Id<BonfireSyncPayload> ID = new Id<>(BTC.identifierOf("bonfire_sync"));
+    public static final Id<BonfireSyncPayload> ID = new CustomPayload.Id<>(ModClientPackets.BONFIRE_SYNC_S2C);;
 
     public static final PacketCodec<RegistryByteBuf, BonfireSyncPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.NBT_COMPOUND, BonfireSyncPayload::bonfireData,

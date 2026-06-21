@@ -38,14 +38,20 @@ public class ModBlocks {
     );
 
     public static final Block KILL_BALL_RECEPTOR = register(
-            new KillBallReceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.SNARE)),
+            new KillBallReceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.SNARE)),
             "kill_ball_receptor",
             true
     );
 
     public static final Block MOB_DETECTOR = register(
-            new MobDetectorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).nonOpaque()),
+            new MobDetectorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).nonOpaque()),
             "mob_detector",
+            true
+    );
+
+    public static final Block DUNGEON_DOOR = register(
+            new DungeonDoorBlock(AbstractBlock.Settings.create().mapColor(MapColor.IRON_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.NETHERITE)),
+            "dungeon_door",
             true
     );
 
@@ -343,6 +349,21 @@ public class ModBlocks {
             "key_acceptor",
             true
     );
+    public static final Block FANCY_RED_POT = register(
+            new FancyPotBlock.RedFancyPot(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.DECORATED_POT)),
+            "fancy_red_pot",
+            true
+    );
+    public static final Block FANCY_GREEN_POT = register(
+            new FancyPotBlock.GreenFancyPot(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.DECORATED_POT)),
+            "fancy_green_pot",
+            true
+    );
+    public static final Block FANCY_BLUE_POT = register(
+            new FancyPotBlock.BlueFancyPot(AbstractBlock.Settings.create().breakInstantly().sounds(BlockSoundGroup.DECORATED_POT)),
+            "fancy_blue_pot",
+            true
+    );
 
     // --- MINEABLE HAZARDS & DUNGEON GATES ---
     public static final Block DUNGEON_FLAME = register(
@@ -375,11 +396,6 @@ public class ModBlocks {
             true
     );
 
-    public static final Block DUNGEON_DOOR = register(
-            new DungeonDoorBlock(AbstractBlock.Settings.create().mapColor(MapColor.IRON_GRAY).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.NETHERITE)),
-            "dungeon_door",
-            true
-    );
 
     public static void initialize() {
         Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));

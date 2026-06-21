@@ -1,0 +1,7 @@
+{
+  "parent": "btc:block/fancy_pot",
+  "textures": {
+    "pot": "btc:block/dungeon_pot_red",
+    "side": "btc:block/dungeon_pot_side_red"
+  }
+}

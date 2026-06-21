@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "color=red": { "model": "btc:block/red_dungeon_pot" },
+    "color=green": { "model": "btc:block/green_dungeon_pot" },
+    "color=blue": { "model": "btc:block/blue_dungeon_pot" }
+  }
+}

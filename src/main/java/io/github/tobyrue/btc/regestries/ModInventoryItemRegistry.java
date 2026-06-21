@@ -38,6 +38,7 @@ public class ModInventoryItemRegistry {
                     ModBlocks.DEEP_FLAME, ModBlocks.FORTRESS_FLAME,
                     ModBlocks.BRAZIER);
             content.addAfter(Blocks.VAULT, ModBlocks.MOB_DETECTOR, ModBlocks.MELTING_ICE);
+            content.addAfter(Blocks.DECORATED_POT, ModBlocks.FANCY_RED_POT, ModBlocks.FANCY_GREEN_POT, ModBlocks.FANCY_BLUE_POT);
 
             content.addAfter(Blocks.JUKEBOX, ModBlocks.TRIAL_CORE, ModBlocks.BONFIRE, ModBlocks.BELLOW, ModBlocks.GUNPOWDER_BARREL, ModBlocks.OBSIDIAN_CHEST);
         });
@@ -57,6 +58,7 @@ public class ModInventoryItemRegistry {
                     ModBlocks.WAXED_COPPER_TRIAL_FAN, ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN,
                     ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN, ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN);
             content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
+            content.addAfter(Blocks.DECORATED_POT, ModBlocks.FANCY_RED_POT, ModBlocks.FANCY_GREEN_POT, ModBlocks.FANCY_BLUE_POT);
 
             content.addAfter(Blocks.TARGET, ModBlocks.KILL_BALL_RECEPTOR, ModBlocks.POLISHED_TUFF_PRESSURE_PLATE);
             content.addAfter(ModBlocks.DUNGEON_PRESSURE_PLATE, ModBlocks.COPPER_TRIAL_FAN, ModBlocks.EXPOSED_COPPER_TRIAL_FAN, ModBlocks.WEATHERED_COPPER_TRIAL_FAN, ModBlocks.OXIDIZED_COPPER_TRIAL_FAN);

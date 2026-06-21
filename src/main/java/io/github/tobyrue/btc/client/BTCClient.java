@@ -645,7 +645,7 @@ public class BTCClient implements ClientModInitializer {
 
     }
 
-    public void openWrenchMenu(ItemStack stack) {
+    public static void openWrenchMenu(ItemStack stack) {
 
         //CONNECTIONS
         List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> connTypes = new ArrayList<>();

@@ -3,9 +3,11 @@ package io.github.tobyrue.btc.packets;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.MobDetectorBlockEntity;
 import io.github.tobyrue.btc.block.entities.ObsidianChestBlockEntity;
+import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.client.screen.RadialMenuWithPrefixNoHover;
 import io.github.tobyrue.btc.client.screen.RadialNoHoverValues;
 import io.github.tobyrue.btc.client.screen.RadialValues;
+import io.github.tobyrue.btc.item.WrenchItem;
 import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
@@ -17,6 +19,7 @@ import io.github.tobyrue.btc.util.AdvancementUtils;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -33,6 +36,7 @@ public class ModClientPackets {
     public static final Identifier STATUS_EFFECT_SYNC = BTC.identifierOf("status_effect_sync");
     public static final Identifier MARK_LOOTED = BTC.identifierOf("mark_looted_sync");
     public static final Identifier BONFIRE_SYNC_S2C = BTC.identifierOf("bonfire_sync");
+    public static final Identifier OPEN_WRENCH_MENU = BTC.identifierOf("open_wrench_menu");
 
     public static void initialize() {
         PayloadTypeRegistry.playS2C().register(BonfireSyncPayload.ID, BonfireSyncPayload.CODEC);
@@ -41,6 +45,16 @@ public class ModClientPackets {
         PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(OpenWrenchMenuPayload.ID, OpenWrenchMenuPayload.CODEC);
+
+        ClientPlayNetworking.registerGlobalReceiver(OpenWrenchMenuPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                ItemStack stack = context.player().getStackInHand(payload.hand());
+                if (stack.getItem() instanceof WrenchItem wrench) {
+                    BTCClient.openWrenchMenu(stack);
+                }
+            });
+        });
 
         ClientPlayNetworking.registerGlobalReceiver(
                 BonfireSyncPayload.ID, (payload, context) -> {

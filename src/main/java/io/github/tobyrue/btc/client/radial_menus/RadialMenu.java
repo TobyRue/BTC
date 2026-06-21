@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.mixin.KeyBindingAccessor;
 import io.github.tobyrue.btc.util.NinePatchHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -21,6 +23,7 @@ import java.util.List;
  * A specialized {@link Screen} that renders a radial selection menu.
  * Supports nesting, text coloring, hover effects, images, and custom textures for the thing itself.
  */
+@Environment(EnvType.CLIENT)
 public class RadialMenu extends Screen {
     private int lastHovered = -2;
 
@@ -393,6 +396,7 @@ public class RadialMenu extends Screen {
         this.parent = parent;
         this.renderCenter = renderCenter;
         this.end = Math.min(values.size(), start + config.sectors());
+        this.client = MinecraftClient.getInstance();
     }
 
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, boolean renderCenter, int start) {
@@ -404,7 +408,8 @@ public class RadialMenu extends Screen {
                 200f / 255f, 255f / 255f, 150f / 255f,
                 60, 30, 6, 0.0f, 603, 582, 0.3f,
                 0xFFFFFF, 100, true
-        ), renderCenter, start, null, 0);
+        ), renderCenter, 0, null, start);
+        this.client = MinecraftClient.getInstance();
     }
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, int titleColor, boolean titleShadow, boolean renderCenter, int start) {
         this(title, values, context, key, new Config(
@@ -415,7 +420,8 @@ public class RadialMenu extends Screen {
                 200f / 255f, 255f / 255f, 150f / 255f,
                 60,  30, 6, 0.0f, 603, 582, 0.3f,
                 titleColor, 100, titleShadow
-        ), renderCenter, start, null, 0);
+        ), renderCenter, 0, null, start);
+        this.client = MinecraftClient.getInstance();
     }
 
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, int layer, @Nullable RadialMenu parent, int start) {
@@ -429,6 +435,7 @@ public class RadialMenu extends Screen {
         this.parent = parent;
         this.renderCenter = true;
         this.end = Math.min(values.size(), start + config.sectors());
+        this.client = MinecraftClient.getInstance();
     }
 
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, Config config, int layer, @Nullable RadialMenu parent, boolean renderCenter, int start) {
@@ -442,6 +449,7 @@ public class RadialMenu extends Screen {
         this.parent = parent;
         this.renderCenter = renderCenter;
         this.end = Math.min(values.size(), start + config.sectors());
+        this.client = MinecraftClient.getInstance();
     }
 
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, int start) {
@@ -453,7 +461,8 @@ public class RadialMenu extends Screen {
                 200f / 255f, 255f / 255f, 150f / 255f,
                 60, 30, 6, 0.0f, 603, 582, 0.3f,
                 0xFFFFFF, 100, true
-        ), true, start, null, 0);
+        ), true, 0, null, start);
+        this.client = MinecraftClient.getInstance();
     }
     public RadialMenu(Text title, List<RadialValue> values, @Nullable Object context, @Nullable KeyBinding key, int titleColor, boolean titleShadow, int start) {
         this(title, values, context, key, new Config(
@@ -464,7 +473,8 @@ public class RadialMenu extends Screen {
                 200f / 255f, 255f / 255f, 150f / 255f,
                 60,  30, 6, 0.0f, 603, 582, 0.3f,
                 titleColor, 100, titleShadow
-        ), true, start, null, 0);
+        ), true, 0, null, start);
+        this.client = MinecraftClient.getInstance();
     }
 
     /**
@@ -509,8 +519,13 @@ public class RadialMenu extends Screen {
     public boolean mouseClicked(double mx, double my, int button) {
         int s = getHoveredSector();
         if (s >= 0 && (s + start) < values.size()) {
-            this.close();
-            values.get(s + start).action.execute(this, TriggerType.CLICK);
+            RadialValue clickedVal = values.get(s + start);
+
+            clickedVal.action.execute(this, TriggerType.CLICK);
+
+            if (this.client != null && this.client.currentScreen == this) {
+                this.close();
+            }
             return true;
         }
         return super.mouseClicked(mx, my, button);
@@ -520,8 +535,17 @@ public class RadialMenu extends Screen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (key != null && keyCode == ((KeyBindingAccessor) key).getBoundKey().getCode()) {
             int s = getHoveredSector();
-            this.close();
-            if (s >= 0 && (s + start) < values.size()) values.get(s + start).action.execute(this, TriggerType.KEY_RELEASE);
+            if (s >= 0 && (s + start) < values.size()) {
+                RadialValue releasedVal = values.get(s + start);
+
+                releasedVal.action.execute(this, TriggerType.KEY_RELEASE);
+
+                if (this.client != null && this.client.currentScreen == this) {
+                    this.close();
+                }
+            } else {
+                this.close();
+            }
             return true;
         }
         return super.keyReleased(keyCode, scanCode, modifiers);

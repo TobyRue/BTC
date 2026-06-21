@@ -15,6 +15,7 @@ import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.PistonBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -109,24 +110,46 @@ public enum WrenchType implements IWrenchType {
         }
     },
     PASTE("paste") {
+        @SuppressWarnings("unchecked")
         @Override
         public ActionResult useOnBlock(ItemUsageContext context) {
             World world = context.getWorld();
             BlockPos pos = context.getBlockPos();
-            BlockState state = world.getBlockState(pos);
             PlayerEntity player = context.getPlayer();
             WrenchClipboardComponent clipboard = context.getStack().get(ModComponents.WRENCH_CLIPBOARD);
 
             if (clipboard != null && player != null) {
-                world.setBlockState(pos.offset(context.getSide()), clipboard.state());
+                BlockState targetState = world.getBlockState(pos);
+                BlockState updatedState = targetState;
+                boolean propertyChanged = false;
 
-                clipboard.component().ifPresent(nbt -> {
-                    var be = world.getBlockEntity(pos);
-                    if (be != null) {
-                        nbt.applyToBlockEntity(be, world.getRegistryManager());
+                for (Property<?> property : clipboard.state().getProperties()) {
+                    if (updatedState.contains(property)) {
+                        Comparable<?> value = clipboard.state().get(property);
+
+                        updatedState = applyProperty(updatedState, (Property) property, value);
+
+                        propertyChanged = true;
                     }
-                });
-                return ActionResult.SUCCESS;
+                }
+
+                if (propertyChanged) {
+                    world.setBlockState(pos, updatedState);
+                }
+
+                Optional<NbtComponent> nbtOpt = clipboard.component();
+                if (nbtOpt.isPresent()) {
+                    BlockEntity be = world.getBlockEntity(pos);
+                    if (be != null) {
+                        nbtOpt.get().applyToBlockEntity(be, world.getRegistryManager());
+                        be.markDirty();
+                    }
+                }
+
+                if (propertyChanged || nbtOpt.isPresent()) {
+                    player.sendMessage(Text.translatable("message.btc.wrench.pasted", updatedState.getBlock().getName()), true);
+                    return ActionResult.SUCCESS;
+                }
             }
             return ActionResult.FAIL;
         }
@@ -194,6 +217,12 @@ public enum WrenchType implements IWrenchType {
             ).apply(builder, WrenchClipboardComponent::new);
         });
     }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Comparable<T>> BlockState applyProperty(BlockState state, Property<T> property, Comparable<?> value) {
+        return state.with(property, (T) value);
+    }
+
     public enum WireSubtype implements IWrenchType {
         CONNECTION("connection") {
             @Override

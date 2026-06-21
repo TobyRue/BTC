@@ -4,9 +4,13 @@ import io.github.tobyrue.btc.client.BTCClient;
 import io.github.tobyrue.btc.client.radial_menus.RadialMenu;
 import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.enums.WrenchType;
+import io.github.tobyrue.btc.packets.OpenWrenchMenuPayload;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.WireBlock;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -64,6 +68,12 @@ public class WrenchItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
+        if (!world.isClient()) {
+            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+                    (net.minecraft.server.network.ServerPlayerEntity) player,
+                    new OpenWrenchMenuPayload(hand)
+            );
+        }
         return TypedActionResult.success(stack);
     }
 
@@ -162,4 +172,6 @@ public class WrenchItem extends Item {
             }
         }
     }
+
+
 }
