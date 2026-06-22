@@ -33,7 +33,6 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
     private final Map<Direction, WireBlock.ConnectionType> connections = new HashMap<>();
     private final Map<Direction, Boolean> outputPowerStates = new HashMap<>();
 
-    // Tracks the current state of variables across evaluation ticks (enables loop feedback)
     private final Map<String, Boolean> variableMemoryRegistry = new HashMap<>();
 
     public FPGABlockEntity(BlockPos pos, BlockState state) {
