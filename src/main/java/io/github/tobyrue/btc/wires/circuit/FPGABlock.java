@@ -9,6 +9,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
@@ -38,6 +39,22 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
                 .with(MIRRORED, BlockMirror.NONE));
     }
 
+    @Nullable
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING))).with(MIRRORED, mirror);
+    }
+
     @Override
     protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
@@ -51,17 +68,12 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(POWERED);
-        builder.add(FACING);
-        builder.add(MIRRORED);
+        builder.add(POWERED, FACING, MIRRORED);
     }
-
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
-            ItemStack heldItem = player.getStackInHand(hand);
-
             if (fpga.hasBook()) {
                 if (!world.isClient) {
                     ItemStack book = fpga.removeBook();
@@ -70,9 +82,9 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
                     }
                 }
                 return ItemActionResult.SUCCESS;
-            } else if (heldItem.isOf(Items.WRITABLE_BOOK) || heldItem.isOf(Items.WRITTEN_BOOK)) {
+            } else if (stack.isOf(Items.WRITABLE_BOOK) || stack.isOf(Items.WRITTEN_BOOK)) {
                 if (!world.isClient) {
-                    fpga.setBook(heldItem.split(1));
+                    fpga.setBook(stack.split(1));
                 }
                 return ItemActionResult.SUCCESS;
             }
@@ -87,6 +99,10 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
                 ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), fpga.removeBook());
             }
             super.onStateReplaced(state, world, pos, newState, moved);
+        } else {
+            if (!world.isClient && world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
+                fpga.forceLogicRecomputation();
+            }
         }
     }
 

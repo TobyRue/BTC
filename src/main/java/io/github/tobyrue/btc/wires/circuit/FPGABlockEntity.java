@@ -16,11 +16,10 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
+import net.minecraft.util.BlockMirror;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,21 +31,73 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
     private ItemStack bookStack = ItemStack.EMPTY;
     private final Map<Direction, WireBlock.ConnectionType> connections = new HashMap<>();
     private final Map<Direction, Boolean> outputPowerStates = new HashMap<>();
-
     private final Map<String, Boolean> variableMemoryRegistry = new HashMap<>();
+
+    private final Map<String, String> cachedDeclarations = new HashMap<>();
+    private final List<String> cachedExecutionLines = new ArrayList<>();
+    private boolean isScriptCompiled = false;
+
+    private final Map<Direction, Integer> renderedFaceNumbers = new HashMap<>();
 
     public FPGABlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DUNGEON_WIRE_CIRCUIT_BLOCK_ENTITY, pos, state);
         for (Direction dir : Direction.values()) {
             connections.put(dir, WireBlock.ConnectionType.NONE);
             outputPowerStates.put(dir, false);
+            renderedFaceNumbers.put(dir, 0);
         }
     }
 
     public boolean hasBook() { return !this.bookStack.isEmpty(); }
-    public void setBook(ItemStack stack) { this.bookStack = stack; this.markDirty(); this.updateCircuitLogic(); }
-    public ItemStack removeBook() { ItemStack s = this.bookStack; this.bookStack = ItemStack.EMPTY; this.markDirty(); this.updateCircuitLogic(); return s; }
+
+    public void setBook(ItemStack stack) {
+        this.bookStack = stack;
+        this.isScriptCompiled = false;
+        this.markDirty();
+        this.compileBookScript();
+    }
+
+    public ItemStack removeBook() {
+        ItemStack s = this.bookStack;
+        this.bookStack = ItemStack.EMPTY;
+        this.isScriptCompiled = false;
+        this.cachedDeclarations.clear();
+        this.cachedExecutionLines.clear();
+        clearRenderFaceNumbers();
+        clearHardwarePins();
+        this.markDirty();
+        this.updateCircuitLogic();
+        return s;
+    }
+
     public boolean getOutputPowerState(Direction direction) { return this.outputPowerStates.getOrDefault(direction, false); }
+
+    public int getRenderedNumberForFace(Direction face) {
+        return this.renderedFaceNumbers.getOrDefault(face, 0);
+    }
+
+    private void clearRenderFaceNumbers() {
+        for (Direction dir : Direction.values()) {
+            renderedFaceNumbers.put(dir, 0);
+        }
+    }
+
+    private void clearHardwarePins() {
+        for (Direction dir : Direction.values()) {
+            connections.put(dir, WireBlock.ConnectionType.NONE);
+        }
+    }
+
+    /**
+     * Forces logic execution to recompute hardware orientations immediately when rotated or mirrored.
+     */
+    public void forceLogicRecomputation() {
+        clearHardwarePins();
+        clearRenderFaceNumbers();
+        if (world != null && !world.isClient) {
+            updateCircuitLogic();
+        }
+    }
 
     private String extractScriptFromBook() {
         if (!hasBook()) return "";
@@ -65,28 +116,212 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
         return sb.toString();
     }
 
-    public void updateCircuitLogic() {
-        if (world == null || world.isClient) return;
+    public void compileBookScript() {
+        if (this.isScriptCompiled) return;
+
+        this.cachedDeclarations.clear();
+        this.cachedExecutionLines.clear();
 
         String script = extractScriptFromBook();
         if (script.isEmpty()) {
+            this.isScriptCompiled = false;
             return;
         }
 
-        executeExpressionScript(script);
+        String cleanScript = script.replace("\\n", "\n");
+        String[] lines = cleanScript.split("\n");
+
+        for (String line : lines) {
+            line = line.trim();
+            if (line.endsWith(";")) {
+                line = line.substring(0, line.length() - 1).trim();
+            }
+            if (line.isEmpty() || line.startsWith("//") || line.startsWith("///")) continue;
+
+            if (line.startsWith("input ") || line.startsWith("output ")) {
+                String type = line.startsWith("input ") ? "input" : "output";
+                this.cachedDeclarations.put(line.substring(type.length() + 1).trim(), type);
+            } else {
+                this.cachedExecutionLines.add(line);
+            }
+        }
+        this.isScriptCompiled = true;
+        this.updateCircuitLogic();
+    }
+
+    private Direction getRotatedDirection(int nativeSideIndex) {
+        Direction baseDir = switch (nativeSideIndex) {
+            case 1 -> Direction.NORTH;
+            case 2 -> Direction.EAST;
+            case 3 -> Direction.SOUTH;
+            case 4 -> Direction.WEST;
+            case 5 -> Direction.UP;
+            case 6 -> Direction.DOWN;
+            default -> null;
+        };
+
+        if (world == null || baseDir == null || baseDir == Direction.UP || baseDir == Direction.DOWN) {
+            return baseDir;
+        }
+
+        BlockState state = getCachedState();
+        Direction facing = state.contains(FPGABlock.FACING) ? state.get(FPGABlock.FACING) : Direction.NORTH;
+        BlockMirror mirror = state.contains(FPGABlock.MIRRORED) ? state.get(FPGABlock.MIRRORED) : BlockMirror.NONE;
+
+        Direction mirrored = mirror.apply(baseDir);
+        int horizontalOffset = (mirrored.getHorizontal() + facing.getHorizontal()) % 4;
+        return Direction.fromHorizontal(horizontalOffset);
+    }
+
+    public void updateCircuitLogic() {
+        if (world == null || world.isClient) return;
+
+        if (!isScriptCompiled) {
+            compileBookScript();
+            if (!isScriptCompiled) return;
+        }
+
+        clearRenderFaceNumbers();
+        Map<String, Direction> varToDir = new HashMap<>();
+        Map<String, Boolean> isOutputPin = new HashMap<>();
+        Map<String, Boolean> localEvaluationMap = new HashMap<>(variableMemoryRegistry);
+
+        for (Map.Entry<String, String> decl : cachedDeclarations.entrySet()) {
+            String definition = decl.getKey();
+            boolean isOut = decl.getValue().equals("output");
+
+            if (definition.contains(" on ")) {
+                String[] parts = definition.split(" on ", 2);
+                String varName = parts[0].trim().toLowerCase();
+                String remaining = parts[1].trim();
+
+                int nativeSideIndex = -1;
+                String typeToken = "wire";
+
+                if (remaining.contains(" as ")) {
+                    String[] typeSplit = remaining.split(" as ", 2);
+                    try { nativeSideIndex = Integer.parseInt(typeSplit[0].trim()); } catch (NumberFormatException ignored) {}
+                    typeToken = typeSplit[1].trim().toLowerCase();
+                } else {
+                    try { nativeSideIndex = Integer.parseInt(remaining); } catch (NumberFormatException ignored) {}
+                }
+
+                if (nativeSideIndex >= 1 && nativeSideIndex <= 6) {
+                    Direction targetDir = getRotatedDirection(nativeSideIndex);
+
+                    if (targetDir != null) {
+                        this.renderedFaceNumbers.put(targetDir, nativeSideIndex);
+
+                        String ioType = (isOut ? "output" : "input");
+                        if (typeToken.contains("redstone")) ioType = "redstone_" + ioType;
+                        configureHardwarePin(targetDir, ioType);
+
+                        varToDir.put(varName, targetDir);
+                        isOutputPin.put(varName, isOut);
+
+                        if (!isOut) {
+                            localEvaluationMap.put(varName, readLiveInput(targetDir, connections.get(targetDir)));
+                        } else {
+                            localEvaluationMap.put(varName, variableMemoryRegistry.getOrDefault(varName, false));
+                        }
+                    }
+                }
+            }
+        }
+
+        boolean insideSwitchBlock = false;
+        List<String> switchVariables = new ArrayList<>();
+        boolean switchCaseMatched = false;
+
+        for (String line : cachedExecutionLines) {
+            if (line.startsWith("switch ")) {
+                insideSwitchBlock = true;
+                switchCaseMatched = false;
+                switchVariables.clear();
+                String[] tokens = line.substring(7).trim().split(",");
+                for (String t : tokens) switchVariables.add(t.trim().toLowerCase());
+                continue;
+            }
+
+            if (insideSwitchBlock && line.equals("end")) {
+                insideSwitchBlock = false;
+                continue;
+            }
+
+            if (insideSwitchBlock) {
+                if (line.startsWith("case ") && line.contains(":")) {
+                    if (switchCaseMatched) continue;
+                    String[] split = line.substring(5).split(":", 2);
+                    String pattern = split[0].trim();
+                    String action = split[1].trim();
+
+                    if (pattern.length() == switchVariables.size()) {
+                        boolean patternMatchesEnv = true;
+                        for (int i = 0; i < pattern.length(); i++) {
+                            char bit = pattern.charAt(i);
+                            if (localEvaluationMap.getOrDefault(switchVariables.get(i), false) != (bit == '1')) {
+                                patternMatchesEnv = false;
+                                break;
+                            }
+                        }
+
+                        if (patternMatchesEnv && action.contains("=")) {
+                            switchCaseMatched = true;
+                            String[] assignment = action.split("=", 2);
+                            String targetVar = assignment[0].trim().toLowerCase();
+                            boolean targetValue = assignment[1].trim().equals("1") || assignment[1].trim().equalsIgnoreCase("true");
+
+                            localEvaluationMap.put(targetVar, targetValue);
+                            variableMemoryRegistry.put(targetVar, targetValue);
+
+                            if (varToDir.containsKey(targetVar) && isOutputPin.getOrDefault(targetVar, false)) {
+                                outputPowerStates.put(varToDir.get(targetVar), targetValue);
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+
+            if (line.contains("=")) {
+                String leftVar;
+                String rightExpr;
+
+                if (line.startsWith("reg ") || line.startsWith("assign ")) {
+                    String assignmentContent = line.substring(line.indexOf(" ") + 1).trim();
+                    String[] parts = assignmentContent.split("=", 2);
+                    leftVar = parts[0].trim().toLowerCase();
+                    rightExpr = parts[1].trim();
+
+                    if (leftVar.contains("[")) {
+                        leftVar = leftVar.substring(0, leftVar.indexOf("[")).trim();
+                    }
+                } else {
+                    String[] parts = line.split("=", 2);
+                    leftVar = parts[0].trim().toLowerCase();
+                    rightExpr = parts[1].trim();
+                }
+
+                boolean evaluatedValue = evaluateBooleanAlgebra(rightExpr, localEvaluationMap);
+                localEvaluationMap.put(leftVar, evaluatedValue);
+                variableMemoryRegistry.put(leftVar, evaluatedValue);
+
+                if (varToDir.containsKey(leftVar) && isOutputPin.getOrDefault(leftVar, false)) {
+                    outputPowerStates.put(varToDir.get(leftVar), evaluatedValue);
+                }
+            }
+        }
 
         boolean updatesTriggered = false;
         boolean globalBlockGlow = false;
 
         for (Direction dir : Direction.values()) {
             WireBlock.ConnectionType type = connections.get(dir);
-            boolean isOutput = (type == WireBlock.ConnectionType.OUTPUT || type == WireBlock.ConnectionType.REDSTONE_OUTPUT);
-
-            if (isOutput) {
+            if (type == WireBlock.ConnectionType.OUTPUT || type == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
                 boolean nextState = outputPowerStates.getOrDefault(dir, false);
                 if (nextState) globalBlockGlow = true;
 
-                if (outputPowerStates.get(dir) != nextState) {
+                if (outputPowerStates.getOrDefault(dir, false) != nextState) {
                     outputPowerStates.put(dir, nextState);
                     updatesTriggered = true;
 
@@ -109,163 +344,6 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
         }
     }
 
-    private void executeExpressionScript(String script) {
-        Map<String, Direction> varToDir = new HashMap<>();
-        Map<String, Boolean> isOutputPin = new HashMap<>();
-
-        Map<String, Boolean> localEvaluationMap = new HashMap<>(variableMemoryRegistry);
-
-        String cleanScript = script.replace("\\n", "\n");
-        String[] lines = cleanScript.split("\n");
-
-        boolean insideSwitchBlock = false;
-        List<String> switchVariables = new ArrayList<>();
-        boolean switchCaseMatched = false;
-
-        for (String line : lines) {
-            line = line.trim();
-            if (line.endsWith(";")) {
-                line = line.substring(0, line.length() - 1).trim();
-            }
-            if (line.isEmpty() || line.startsWith("//") || line.startsWith("///")) continue;
-
-
-            if (line.startsWith("input ") || line.startsWith("output ")) {
-                boolean isOut = line.startsWith("output ");
-                String definition = line.substring(6).trim();
-
-                if (definition.contains(" on ")) {
-                    String[] parts = definition.split(" on ", 2);
-                    String varName = parts[0].trim().toLowerCase();
-                    String remaining = parts[1].trim();
-
-                    Direction targetDir = null;
-                    String typeToken = "wire";
-
-                    if (remaining.contains(" as ")) {
-                        String[] typeSplit = remaining.split(" as ", 2);
-                        targetDir = parseDirection(typeSplit[0].trim());
-                        typeToken = typeSplit[1].trim().toLowerCase();
-                    } else {
-                        targetDir = parseDirection(remaining);
-                    }
-
-                    if (targetDir != null) {
-                        String ioType = (isOut ? "output" : "input");
-                        if (typeToken.contains("redstone")) ioType = "redstone_" + ioType;
-                        configureHardwarePin(targetDir, ioType);
-
-                        varToDir.put(varName, targetDir);
-                        isOutputPin.put(varName, isOut);
-
-                        if (!isOut) {
-                            boolean activeSignal = readLiveInput(targetDir, connections.get(targetDir));
-                            localEvaluationMap.put(varName, activeSignal);
-                        } else {
-                            boolean lastState = variableMemoryRegistry.getOrDefault(varName, false);
-                            localEvaluationMap.put(varName, lastState);
-                        }
-                    }
-                }
-                continue;
-            }
-
-            if (line.startsWith("switch ")) {
-                insideSwitchBlock = true;
-                switchCaseMatched = false;
-                switchVariables.clear();
-
-                String[] tokens = line.substring(7).trim().split(",");
-                for (String t : tokens) {
-                    switchVariables.add(t.trim().toLowerCase());
-                }
-                continue;
-            }
-
-            if (insideSwitchBlock && line.equals("end")) {
-                insideSwitchBlock = false;
-                continue;
-            }
-
-            if (insideSwitchBlock) {
-                if (line.startsWith("case ") && line.contains(":")) {
-                    if (switchCaseMatched) continue;
-
-                    String[] split = line.substring(5).split(":", 2);
-                    String pattern = split[0].trim();
-                    String action = split[1].trim();
-
-                    if (pattern.length() == switchVariables.size()) {
-                        boolean patternMatchesEnv = true;
-
-                        for (int i = 0; i < pattern.length(); i++) {
-                            char bit = pattern.charAt(i);
-                            String variableName = switchVariables.get(i);
-                            boolean currentActualValue = localEvaluationMap.getOrDefault(variableName, false);
-                            boolean expectedBitValue = (bit == '1');
-
-                            if (currentActualValue != expectedBitValue) {
-                                patternMatchesEnv = false;
-                                break;
-                            }
-                        }
-
-                        if (patternMatchesEnv) {
-                            switchCaseMatched = true;
-
-                            if (action.contains("=")) {
-                                String[] assignment = action.split("=", 2);
-                                String targetVar = assignment[0].trim().toLowerCase();
-                                boolean targetValue = assignment[1].trim().equals("1") || assignment[1].trim().equalsIgnoreCase("true");
-
-                                localEvaluationMap.put(targetVar, targetValue);
-                                variableMemoryRegistry.put(targetVar, targetValue);
-
-                                if (varToDir.containsKey(targetVar) && isOutputPin.getOrDefault(targetVar, false)) {
-                                    Direction targetDir = varToDir.get(targetVar);
-                                    outputPowerStates.put(targetDir, targetValue);
-                                }
-                            }
-                        }
-                    }
-                }
-                continue;
-            }
-
-
-            if (line.contains("=")) {
-                String leftVar = "";
-                String rightExpr = "";
-
-                if (line.startsWith("reg ") || line.startsWith("assign ")) {
-                    String assignmentContent = line.substring(line.indexOf(" ") + 1).trim();
-                    String[] parts = assignmentContent.split("=", 2);
-                    leftVar = parts[0].trim().toLowerCase();
-                    rightExpr = parts[1].trim();
-
-                    if (leftVar.contains("[")) {
-                        leftVar = leftVar.substring(0, leftVar.indexOf("[")).trim();
-                    }
-                } else {
-                    String[] parts = line.split("=", 2);
-                    leftVar = parts[0].trim().toLowerCase();
-                    rightExpr = parts[1].trim();
-                }
-
-
-                boolean evaluatedValue = evaluateBooleanAlgebra(rightExpr, localEvaluationMap);
-
-                localEvaluationMap.put(leftVar, evaluatedValue);
-                variableMemoryRegistry.put(leftVar, evaluatedValue);
-
-                if (varToDir.containsKey(leftVar) && isOutputPin.getOrDefault(leftVar, false)) {
-                    Direction targetDir = varToDir.get(leftVar);
-                    outputPowerStates.put(targetDir, evaluatedValue);
-                }
-            }
-        }
-    }
-
     private boolean readLiveInput(Direction dir, WireBlock.ConnectionType type) {
         if (world == null) return false;
         BlockPos nPos = pos.offset(dir);
@@ -280,7 +358,6 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
 
     private boolean evaluateBooleanAlgebra(String expr, Map<String, Boolean> context) {
         expr = expr.trim();
-
         while (expr.startsWith("(") && expr.endsWith(")")) {
             int openCount = 0;
             boolean matchingPairs = true;
@@ -292,11 +369,8 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
                     break;
                 }
             }
-            if (matchingPairs) {
-                expr = expr.substring(1, expr.length() - 1).trim();
-            } else {
-                break;
-            }
+            if (matchingPairs) expr = expr.substring(1, expr.length() - 1).trim();
+            else break;
         }
 
         if (expr.equalsIgnoreCase("true") || expr.equals("1")) return true;
@@ -314,30 +388,20 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
                     && evaluateBooleanAlgebra(expr.substring(splitIdx + 1), context);
         }
 
-        if (expr.startsWith("~")) {
-            return !evaluateBooleanAlgebra(expr.substring(1), context);
-        }
-
-        if (context.containsKey(expr.toLowerCase())) {
-            return context.get(expr.toLowerCase());
-        }
-
+        if (expr.startsWith("~")) return !evaluateBooleanAlgebra(expr.substring(1), context);
+        if (context.containsKey(expr.toLowerCase())) return context.get(expr.toLowerCase());
         return false;
     }
-
 
     private int findTopLevelOperator(String expr, String targetOp) {
         int bracketDepth = 0;
         int opLen = targetOp.length();
-
         for (int i = 0; i < expr.length() - opLen + 1; i++) {
             char c = expr.charAt(i);
             if (c == '(') bracketDepth++;
             else if (c == ')') bracketDepth--;
-            else if (bracketDepth == 0) {
-                if (expr.substring(i, i + opLen).equals(targetOp)) {
-                    return i;
-                }
+            else if (bracketDepth == 0 && expr.substring(i, i + opLen).equals(targetOp)) {
+                return i;
             }
         }
         return -1;
@@ -351,18 +415,6 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
             target = typeToken.contains("input") ? WireBlock.ConnectionType.INPUT : WireBlock.ConnectionType.OUTPUT;
         }
         connections.put(dir, target);
-    }
-
-    private Direction parseDirection(String input) {
-        return switch (input.toLowerCase()) {
-            case "north", "n" -> Direction.NORTH;
-            case "east", "e" -> Direction.EAST;
-            case "south", "s" -> Direction.SOUTH;
-            case "west", "w" -> Direction.WEST;
-            case "up", "u" -> Direction.UP;
-            case "down", "d" -> Direction.DOWN;
-            default -> null;
-        };
     }
 
     @Override
@@ -394,6 +446,7 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
             NbtCompound mem = nbt.getCompound("LoopMemory");
             for (String key : mem.getKeys()) variableMemoryRegistry.put(key, mem.getBoolean(key));
         }
+        this.isScriptCompiled = false;
     }
 
     @Override public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) { return this.connections.get(face) == WireBlock.ConnectionType.OUTPUT && this.outputPowerStates.getOrDefault(face, false); }
