@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
+import io.github.tobyrue.btc.wires.circuit.WireCircuitBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -155,6 +156,12 @@ public class ModBlocks {
     public static final Block DUNGEON_WIRE = register(
             new WireBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
             "dungeon_wire",
+            true
+    );
+
+    public static final Block DUNGEON_WIRE_CIRCUIT = register(
+            new WireCircuitBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
+            "dungeon_circuit_wire",
             true
     );
 
