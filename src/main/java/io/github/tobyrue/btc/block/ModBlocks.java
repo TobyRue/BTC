@@ -2,7 +2,7 @@ package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
-import io.github.tobyrue.btc.wires.circuit.WireCircuitBlock;
+import io.github.tobyrue.btc.wires.circuit.FPGABlock;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -159,9 +159,9 @@ public class ModBlocks {
             true
     );
 
-    public static final Block DUNGEON_WIRE_CIRCUIT = register(
-            new WireCircuitBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
-            "dungeon_circuit_wire",
+    public static final Block FPGA_BLOCK = register(
+            new FPGABlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
+            "fpga_wire",
             true
     );
 
