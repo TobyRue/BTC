@@ -55,10 +55,6 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
         return state.rotate(mirror.getRotation(state.get(FACING))).with(MIRRORED, mirror);
     }
 
-    @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
 
     @Override
     public BlockEntityType<FPGABlockEntity> getBlockEntityType() {
