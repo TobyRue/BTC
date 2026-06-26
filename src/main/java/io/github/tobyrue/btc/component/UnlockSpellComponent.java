@@ -9,18 +9,18 @@ import net.minecraft.nbt.NbtCompound;
 public record UnlockSpellComponent(Identifier advancement, int textureInt, Identifier id, String args) {
 
     public NbtCompound argsAsNbt() {
-        System.out.println("ARGS: " + args);
+//        System.out.println("ARGS: " + args);
         var nbtArgs = args;
         if (!nbtArgs.endsWith("}")) {
             nbtArgs = "{" + args + "}";
         }
-        System.out.println("NBT ARGS: " + nbtArgs);
+//        System.out.println("NBT ARGS: " + nbtArgs);
         try {
             NbtCompound result = StringNbtReader.parse(nbtArgs);
-            System.out.println("Args successfully parsed: " + result);
+//            System.out.println("Args successfully parsed: " + result);
             return result;
         } catch (Exception e) {
-            System.out.println("Args failed to parse: " + nbtArgs);
+//            System.out.println("Args failed to parse: " + nbtArgs);
             e.printStackTrace();
             return new NbtCompound();
         }

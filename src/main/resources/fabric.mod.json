@@ -10,7 +10,7 @@
   "contact": {
     "repo": "https://github.com/TobyRue/BTC"
   },
-  "license": "BTC-GPLv1.0",
+  "license": "GNU LGPLv3",
   "icon": "assets/btc/btc_title.png",
   "environment": "*",
   "entrypoints": {
