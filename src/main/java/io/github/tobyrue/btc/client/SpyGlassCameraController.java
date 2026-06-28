@@ -47,7 +47,7 @@ public class SpyGlassCameraController {
                         return new StateConfig(facing, facing);
                 }
             default:
-                return new StateConfig(facing, facing.getOpposite());
+                return new StateConfig(facing, facing);
         }
     }
 
@@ -68,11 +68,11 @@ public class SpyGlassCameraController {
 
         baseYaw = config.lookDirection.asRotation();
 
-        client.player.setYaw(client.player.bodyYaw);
-        client.player.setPitch(MathHelper.clamp(client.player.getPitch(), -SpyGlassBlockEntity.MAX_PITCH_LIMIT, SpyGlassBlockEntity.MAX_PITCH_LIMIT));
+        client.player.setYaw(baseYaw);
+        client.player.setPitch(0.0F);
 
         if (client.world.getBlockEntity(pos) instanceof SpyGlassBlockEntity spyglass) {
-            spyglass.setAngles(MathHelper.clamp(client.player.getPitch(), -SpyGlassBlockEntity.MAX_PITCH_LIMIT, SpyGlassBlockEntity.MAX_PITCH_LIMIT), client.player.bodyYaw);
+            spyglass.syncAngles(0.0F, 0.0F);
         }
     }
 
@@ -101,23 +101,33 @@ public class SpyGlassCameraController {
             float deltaYaw = MathHelper.wrapDegrees(client.player.getYaw() - baseYaw);
             float playerPitch = client.player.getPitch();
 
-            deltaYaw = MathHelper.clamp(deltaYaw, -SpyGlassBlockEntity.MAX_YAW_LIMIT, SpyGlassBlockEntity.MAX_YAW_LIMIT);
+            if (deltaYaw > SpyGlassBlockEntity.MAX_YAW_LIMIT) {
+                baseYaw = MathHelper.wrapDegrees(client.player.getYaw() - SpyGlassBlockEntity.MAX_YAW_LIMIT);
+                deltaYaw = SpyGlassBlockEntity.MAX_YAW_LIMIT;
+            } else if (deltaYaw < -SpyGlassBlockEntity.MAX_YAW_LIMIT) {
+                baseYaw = MathHelper.wrapDegrees(client.player.getYaw() + SpyGlassBlockEntity.MAX_YAW_LIMIT);
+                deltaYaw = -SpyGlassBlockEntity.MAX_YAW_LIMIT;
+            }
+
             playerPitch = MathHelper.clamp(playerPitch, -SpyGlassBlockEntity.MAX_PITCH_LIMIT, SpyGlassBlockEntity.MAX_PITCH_LIMIT);
 
             client.player.setYaw(MathHelper.wrapDegrees(baseYaw + deltaYaw));
             client.player.setPitch(playerPitch);
 
+            Direction facing = client.world.getBlockState(targetBlockPos).get(SpyGlassBlock.FACING);
+            float absoluteYawOffset = MathHelper.wrapDegrees(client.player.getYaw() - facing.asRotation());
+
+            float targetBlockYaw = absoluteYawOffset;
             float targetBlockPitch = playerPitch;
-            float targetBlockYaw = deltaYaw;
 
             if (location == BlockFace.CEILING) {
-                targetBlockYaw = -deltaYaw;
+                targetBlockYaw = -targetBlockYaw;
             } else if (location == BlockFace.WALL) {
                 targetBlockYaw = playerPitch;
-                targetBlockPitch = deltaYaw;
+                targetBlockPitch = absoluteYawOffset + 90;
             }
 
-            spyglass.setAngles(targetBlockPitch, targetBlockYaw);
+            spyglass.syncAngles(targetBlockPitch, targetBlockYaw);
         }
     }
 
@@ -130,26 +140,19 @@ public class SpyGlassCameraController {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.world == null) return originalPos;
 
-        BlockFace face = client.world.getBlockState(targetBlockPos).get(SpyGlassBlock.FACE);
-        Direction facing = client.world.getBlockState(targetBlockPos).get(SpyGlassBlock.FACING);
-
-        StateConfig config = getConfigForState(face, facing);
-
         double cx = targetBlockPos.getX() + 0.5;
         double cy = targetBlockPos.getY() + 0.5;
         double cz = targetBlockPos.getZ() + 0.5;
 
-        cx += config.offsetDirection.getOffsetX() * 1.25;
-        cy += config.offsetDirection.getOffsetY() * 1.25;
-        cz += config.offsetDirection.getOffsetZ() * 1.25;
-
         double radYaw = Math.toRadians(client.player.getYaw());
         double radPitch = Math.toRadians(client.player.getPitch());
 
-        double orbitRadius = 0.55;
-        cx += Math.sin(radYaw) * Math.cos(radPitch) * orbitRadius;
-        cy += Math.sin(radPitch) * orbitRadius;
-        cz += -Math.cos(radYaw) * Math.cos(radPitch) * orbitRadius;
+        double totalForwardOffset = 1.25;
+
+        // FIXED MATH: Sign inversion pulls the position forward out of the lens barrel
+        cx += -Math.sin(radYaw) * Math.cos(radPitch) * totalForwardOffset;
+        cy += -Math.sin(radPitch) * totalForwardOffset;
+        cz += Math.cos(radYaw) * Math.cos(radPitch) * totalForwardOffset;
 
         return new Vec3d(cx, cy, cz);
     }

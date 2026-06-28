@@ -29,10 +29,18 @@ public class SpyGlassBlockEntity extends BlockEntity {
         this.yaw = yaw;
         this.markDirty();
 
-        if (world != null) {
-            if (!world.isClient) {
-                world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-            }
+        if (this.world != null && this.world.isClient) {
+            this.world.updateListeners(this.pos, getCachedState(), getCachedState(), 3);
+        }
+    }
+
+    public void syncAngles(float pitch, float yaw) {
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.markDirty();
+
+        if (this.world != null && this.world.isClient) {
+            this.world.updateListeners(this.pos, getCachedState(), getCachedState(), 3);
         }
     }
 
