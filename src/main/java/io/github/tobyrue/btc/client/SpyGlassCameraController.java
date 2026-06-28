@@ -149,7 +149,6 @@ public class SpyGlassCameraController {
 
         double totalForwardOffset = 1.25;
 
-        // FIXED MATH: Sign inversion pulls the position forward out of the lens barrel
         cx += -Math.sin(radYaw) * Math.cos(radPitch) * totalForwardOffset;
         cy += -Math.sin(radPitch) * totalForwardOffset;
         cz += Math.cos(radYaw) * Math.cos(radPitch) * totalForwardOffset;
