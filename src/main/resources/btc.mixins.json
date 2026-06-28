@@ -40,6 +40,7 @@
     "KeyBindingAccessor",
     "MinecraftClientMixin",
     "ModelLoaderMixin",
+    "MouseMixin",
     "PlayerArmPoseMixin",
     "PlayerRendererMixin"
   ],

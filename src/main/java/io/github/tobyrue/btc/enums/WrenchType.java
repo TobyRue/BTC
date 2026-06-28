@@ -243,7 +243,7 @@ public enum WrenchType implements IWrenchType {
 
                     switch (side) {
                         case UP -> { u = x; v = z; }
-                        case DOWN -> { u = x; v = 1 - z; }
+                        case DOWN -> { u = 1 - x; v = 1 - z; }
                         case NORTH -> { u = 1 - x; v = 1 - y; }
                         case SOUTH -> { u = x; v = 1 - y; }
                         case EAST -> { u = 1 - z; v = 1 - y; }

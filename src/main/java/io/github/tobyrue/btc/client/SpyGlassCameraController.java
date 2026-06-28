@@ -14,41 +14,23 @@ public class SpyGlassCameraController {
     private static BlockPos targetBlockPos = null;
 
     private static float baseYaw = 0.0F;
+    private static float basePitch = 0.0F;
     private static float originalPlayerYaw = 0.0F;
     private static float originalPlayerPitch = 0.0F;
 
-    private static class StateConfig {
-        final Direction lookDirection;
-        final Direction offsetDirection;
+    private static double zoomFactor = 0.5D;
+    private static final double MIN_ZOOM = 0.1D;
+    private static final double MAX_ZOOM = 1.0D;
+    private static final double SCROLL_SENSITIVITY = 0.05D;
 
-        StateConfig(Direction lookDirection, Direction offsetDirection) {
-            this.lookDirection = lookDirection;
-            this.offsetDirection = offsetDirection;
-        }
-    }
 
-    private static StateConfig getConfigForState(BlockFace face, Direction facing) {
-        switch (face) {
-            case FLOOR:
-                return new StateConfig(facing, facing);
-            case CEILING:
-                return new StateConfig(facing, facing);
-            case WALL:
-                switch (facing) {
-                    case SOUTH:
-                        return new StateConfig(Direction.EAST, Direction.EAST);
-                    case NORTH:
-                        return new StateConfig(Direction.WEST, Direction.WEST);
-                    case EAST:
-                        return new StateConfig(Direction.NORTH, Direction.NORTH);
-                    case WEST:
-                        return new StateConfig(Direction.SOUTH, Direction.SOUTH);
-                    default:
-                        return new StateConfig(facing, facing);
-                }
-            default:
-                return new StateConfig(facing, facing);
-        }
+    public static boolean handleMouseScroll(double amount) {
+        if (!active) return false;
+
+        zoomFactor -= amount * SCROLL_SENSITIVITY;
+        zoomFactor = MathHelper.clamp(zoomFactor, MIN_ZOOM, MAX_ZOOM);
+
+        return true;
     }
 
     public static void startZooming(BlockPos pos) {
@@ -57,19 +39,16 @@ public class SpyGlassCameraController {
 
         active = true;
         targetBlockPos = pos;
+        zoomFactor = 0.5D;
 
         originalPlayerYaw = client.player.getYaw();
         originalPlayerPitch = client.player.getPitch();
 
-        BlockFace face = client.world.getBlockState(pos).get(SpyGlassBlock.FACE);
-        Direction facing = client.world.getBlockState(pos).get(SpyGlassBlock.FACING);
-
-        StateConfig config = getConfigForState(face, facing);
-
-        baseYaw = config.lookDirection.asRotation();
+        baseYaw = client.player.getHeadYaw();
+        basePitch = MathHelper.clamp(client.player.getPitch(), -SpyGlassBlockEntity.MAX_PITCH_LIMIT, SpyGlassBlockEntity.MAX_PITCH_LIMIT);
 
         client.player.setYaw(baseYaw);
-        client.player.setPitch(0.0F);
+        client.player.setPitch(basePitch);
 
         if (client.world.getBlockEntity(pos) instanceof SpyGlassBlockEntity spyglass) {
             spyglass.syncAngles(0.0F, 0.0F);
@@ -132,7 +111,7 @@ public class SpyGlassCameraController {
     }
 
     public static double modifyFieldOfView(double currentFov) {
-        return active ? currentFov * 0.1D : currentFov;
+        return active ? currentFov * zoomFactor : currentFov;
     }
 
     public static Vec3d getCameraPositionOverride(Vec3d originalPos) {
@@ -147,7 +126,7 @@ public class SpyGlassCameraController {
         double radYaw = Math.toRadians(client.player.getYaw());
         double radPitch = Math.toRadians(client.player.getPitch());
 
-        double totalForwardOffset = 1.25;
+        double totalForwardOffset = 0.1;
 
         cx += -Math.sin(radYaw) * Math.cos(radPitch) * totalForwardOffset;
         cy += -Math.sin(radPitch) * totalForwardOffset;

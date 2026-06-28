@@ -22,7 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 
 public class SpyGlassBlockEntityRenderer implements BlockEntityRenderer<SpyGlassBlockEntity> {
-    private static final Identifier TEXTURE = BTC.identifierOf("textures/entity/spy_glass_block.png");
+    private static final Identifier TEXTURE = Identifier.ofVanilla("textures/block/dark_oak_planks.png");
     private final SpyGlassBlockModel model;
     private final ItemRenderer itemRenderer;
     private final ItemStack spyglassStack = new ItemStack(Items.SPYGLASS);
