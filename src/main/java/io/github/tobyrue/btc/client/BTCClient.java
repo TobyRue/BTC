@@ -127,6 +127,45 @@ public class BTCClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (SpyGlassCameraController.isActive() && client.player != null) {
+                SpyGlassCameraController.updateTelescopeRotation();
+                if (client.options.sneakKey.isPressed()) {
+                    SpyGlassCameraController.stopZooming();
+                }
+            }
+        });
+//        HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+//            if (SpyGlassCameraController.isActive()) {
+//                int width = drawContext.getScaledWindowWidth();
+//                int height = drawContext.getScaledWindowHeight();
+//
+//                int scaledSize = Math.min(width, height);
+//                int x = (width - scaledSize) / 2;
+//                int y = (height - scaledSize) / 2;
+//
+//                Identifier scopeTexture = Identifier.of("minecraft", "textures/misc/spyglass_scope.png");
+//
+//                drawContext.drawTexture(
+//                        scopeTexture,
+//                        x, y,
+//                        0.0F, 0.0F,
+//                        scaledSize, scaledSize,
+//                        scaledSize, scaledSize
+//                );
+//
+//                if (x > 0) {
+//                    drawContext.fill(0, 0, x, height, 0xFF000000);
+//                    drawContext.fill(x + scaledSize, 0, width, height, 0xFF000000);
+//                }
+//                if (y > 0) {
+//                    drawContext.fill(0, 0, width, y, 0xFF000000);
+//                    drawContext.fill(0, y + scaledSize, width, height, 0xFF000000);
+//                }
+//            }
+//        });
+
+
         WorldRenderEvents.AFTER_SETUP.register(context -> {
             ClientLensHandler.setActiveFrustum(context.frustum());
         });
@@ -526,6 +565,7 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.KEY_DISPENSER_BLOCK, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MOB_DETECTOR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GUNPOWDER_BARREL, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SPY_GLASS_BLOCK, RenderLayer.getCutoutMipped());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BELLOW, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.COPPER_TRIAL_FAN, RenderLayer.getCutout());
@@ -572,6 +612,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.WIRE_BLOCK_ENTITY, WireBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.BONFIRE_BLOCK_ENTITY, BonfireBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SPY_GLASS_BLOCK_ENTITY, SpyGlassBlockEntityRenderer::new);
 
 
         BlockEntityRendererFactories.register(ModBlockEntities.COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
@@ -642,6 +683,7 @@ public class BTCClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.MINE, MineEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.TRIAL_CUBE, TrialCubeEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.FAN_BLADES_LAYER, FanBlockModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SPY_GLASS_BLOCK_LAYER, SpyGlassBlockModel::getTexturedModelData);
 
     }
 

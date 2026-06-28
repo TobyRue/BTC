@@ -32,6 +32,7 @@ public class ModBlockEntities {
     public static BlockEntityType<FancyPotBlockEntity> FANCY_RED_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_red_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_RED_POT).build());
     public static BlockEntityType<FancyPotBlockEntity> FANCY_GREEN_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_green_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_GREEN_POT).build());
     public static BlockEntityType<FancyPotBlockEntity> FANCY_BLUE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_blue_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_BLUE_POT).build());
+    public static BlockEntityType<SpyGlassBlockEntity> SPY_GLASS_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("spy_glass_block"), BlockEntityType.Builder.create(SpyGlassBlockEntity::new, ModBlocks.SPY_GLASS_BLOCK).build());
     public static void initialize() {
     }
 }

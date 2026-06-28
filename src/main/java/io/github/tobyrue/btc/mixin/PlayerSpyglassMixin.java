@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
+import io.github.tobyrue.btc.client.SpyGlassCameraController;
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -22,7 +23,7 @@ public class PlayerSpyglassMixin {
     @Inject(method = "isUsingSpyglass", at = @At("HEAD"), cancellable = true)
     private void modifySpyglassCondition(CallbackInfoReturnable<Boolean> cir) {
         PlayerEntity player = (PlayerEntity) ((Object) this);
-        if (isUsingScopedCrossbow(player)) {
+        if (isUsingScopedCrossbow(player) || SpyGlassCameraController.isActive()) {
             cir.setReturnValue(true);
         }
     }

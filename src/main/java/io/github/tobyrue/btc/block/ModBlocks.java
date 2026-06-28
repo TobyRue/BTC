@@ -80,7 +80,6 @@ public class ModBlocks {
             false
     );
 
-    // --- COPPER TRIAL FANS ---
     public static final Block COPPER_TRIAL_FAN = register(
             new CopperFanBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).requiresTool().strength(3.5F, 6.0F).sounds(BlockSoundGroup.COPPER).instrument(NoteBlockInstrument.IRON_XYLOPHONE), Oxidizable.OxidationLevel.UNAFFECTED),
             "copper_fan",
@@ -252,6 +251,12 @@ public class ModBlocks {
     public static final Block TUFF_PILASTER = register(
             new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
             "tuff_pilaster",
+            true
+    );
+
+    public static final Block SPY_GLASS_BLOCK = register(
+            new SpyGlassBlock(AbstractBlock.Settings.copy(Blocks.DARK_OAK_FENCE).nonOpaque()),
+            "spy_glass_block",
             true
     );
 

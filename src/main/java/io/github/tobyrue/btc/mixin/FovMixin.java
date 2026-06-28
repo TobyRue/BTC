@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.mixin;
 
+import io.github.tobyrue.btc.client.SpyGlassCameraController;
 import io.github.tobyrue.btc.item.ModItems;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -13,7 +14,7 @@ public class FovMixin {
     @Inject(method = "getFovMultiplier", at = @At("HEAD"), cancellable = true)
     public void getFovMultiplier(CallbackInfoReturnable<Float> cir) {
         AbstractClientPlayerEntity player = (AbstractClientPlayerEntity) ((Object) this);
-        if (MinecraftClient.getInstance().options.getPerspective().isFirstPerson() && player.isUsingSpyglass() && player.isSneaking() && player.getMainHandStack().isOf(ModItems.SCOPED_CROSSBOW)) {
+        if (MinecraftClient.getInstance().options.getPerspective().isFirstPerson() && player.isUsingSpyglass() && !SpyGlassCameraController.isActive() && player.isSneaking() && player.getMainHandStack().isOf(ModItems.SCOPED_CROSSBOW)) {
             cir.setReturnValue(0.1f);
         }
     }

@@ -29,4 +29,6 @@ public class ModModelLayers {
             new EntityModelLayer(Identifier.of(BTC.MOD_ID, "trial_cube"), "main");
     public static final EntityModelLayer FAN_BLADES_LAYER =
             new EntityModelLayer(BTC.identifierOf("fan_blades"), "main");
+    public static final EntityModelLayer SPY_GLASS_BLOCK_LAYER =
+            new EntityModelLayer(BTC.identifierOf("spy_glass_block"), "main");
 }

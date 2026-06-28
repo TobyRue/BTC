@@ -3,6 +3,8 @@ package io.github.tobyrue.btc.component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.util.Identifier;
 import net.minecraft.nbt.NbtCompound;
 
@@ -14,6 +16,7 @@ public record UnlockSpellComponent(Identifier advancement, int textureInt, Ident
         if (!nbtArgs.endsWith("}")) {
             nbtArgs = "{" + args + "}";
         }
+
 //        System.out.println("NBT ARGS: " + nbtArgs);
         try {
             NbtCompound result = StringNbtReader.parse(nbtArgs);
