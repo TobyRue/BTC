@@ -25,7 +25,7 @@ public class SpyGlassBlockEntity extends BlockEntity {
     public float getYaw() { return this.yaw; }
 
     public void setAngles(float pitch, float yaw) {
-        this.pitch = MathHelper.clamp(pitch, -MAX_PITCH_LIMIT, MAX_PITCH_LIMIT);
+        this.pitch = pitch;
         this.yaw = yaw;
         this.markDirty();
 

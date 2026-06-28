@@ -27,7 +27,6 @@ public class SpyGlassCameraController {
         }
     }
 
-
     private static StateConfig getConfigForState(BlockFace face, Direction facing) {
         switch (face) {
             case FLOOR:
@@ -36,9 +35,9 @@ public class SpyGlassCameraController {
                 return new StateConfig(facing, facing);
             case WALL:
                 switch (facing) {
-                    case NORTH:
-                        return new StateConfig(Direction.EAST, Direction.EAST);
                     case SOUTH:
+                        return new StateConfig(Direction.EAST, Direction.EAST);
+                    case NORTH:
                         return new StateConfig(Direction.WEST, Direction.WEST);
                     case EAST:
                         return new StateConfig(Direction.NORTH, Direction.NORTH);
@@ -69,11 +68,11 @@ public class SpyGlassCameraController {
 
         baseYaw = config.lookDirection.asRotation();
 
-        client.player.setYaw(baseYaw);
-        client.player.setPitch(0.0F);
+        client.player.setYaw(client.player.bodyYaw);
+        client.player.setPitch(MathHelper.clamp(client.player.getPitch(), -SpyGlassBlockEntity.MAX_PITCH_LIMIT, SpyGlassBlockEntity.MAX_PITCH_LIMIT));
 
         if (client.world.getBlockEntity(pos) instanceof SpyGlassBlockEntity spyglass) {
-            spyglass.setAngles(0.0F, 0.0F);
+            spyglass.setAngles(MathHelper.clamp(client.player.getPitch(), -SpyGlassBlockEntity.MAX_PITCH_LIMIT, SpyGlassBlockEntity.MAX_PITCH_LIMIT), client.player.bodyYaw);
         }
     }
 
@@ -140,16 +139,17 @@ public class SpyGlassCameraController {
         double cy = targetBlockPos.getY() + 0.5;
         double cz = targetBlockPos.getZ() + 0.5;
 
-        cx += config.offsetDirection.getOffsetX() * 1.42;
-        cy += config.offsetDirection.getOffsetY() * 1.42;
-        cz += config.offsetDirection.getOffsetZ() * 1.42;
+        cx += config.offsetDirection.getOffsetX() * 1.25;
+        cy += config.offsetDirection.getOffsetY() * 1.25;
+        cz += config.offsetDirection.getOffsetZ() * 1.25;
 
         double radYaw = Math.toRadians(client.player.getYaw());
         double radPitch = Math.toRadians(client.player.getPitch());
 
-        cx += Math.sin(radYaw) * Math.cos(radPitch) * 0.45;
-        cy += Math.sin(radPitch) * 0.45;
-        cz += -Math.cos(radYaw) * Math.cos(radPitch) * 0.45;
+        double orbitRadius = 0.55;
+        cx += Math.sin(radYaw) * Math.cos(radPitch) * orbitRadius;
+        cy += Math.sin(radPitch) * orbitRadius;
+        cz += -Math.cos(radYaw) * Math.cos(radPitch) * orbitRadius;
 
         return new Vec3d(cx, cy, cz);
     }
