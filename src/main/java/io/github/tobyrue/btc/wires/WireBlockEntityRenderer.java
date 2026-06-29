@@ -157,8 +157,8 @@ public class WireBlockEntityRenderer implements BlockEntityRenderer<WireBlockEnt
         if (face.getAxis() == Direction.Axis.Y) {
             boolean isUp = face == Direction.UP;
             return switch (to) {
-                case NORTH -> 180;
-                case SOUTH -> 0;
+                case NORTH -> isUp ? 180 : 0;
+                case SOUTH -> isUp ? 0 : 180;
                 case EAST -> 270;
                 case WEST -> 90;
                 default -> 0;

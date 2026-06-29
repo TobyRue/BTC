@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "btc:block/spy_glass_block" }
+  }
+}

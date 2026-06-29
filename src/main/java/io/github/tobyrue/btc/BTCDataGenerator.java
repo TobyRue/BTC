@@ -13,6 +13,8 @@ public class BTCDataGenerator implements DataGeneratorEntrypoint {
     public void onInitializeDataGenerator(FabricDataGenerator generator) {
         FabricDataGenerator.Pack pack = generator.createPack();
         pack.addProvider(ModRecipeProvider::new);
+        pack.addProvider(ModBlockLootTableProvider::new);
+        pack.addProvider(ModBlockTagProvider::new);
     }
 
 //    @Override

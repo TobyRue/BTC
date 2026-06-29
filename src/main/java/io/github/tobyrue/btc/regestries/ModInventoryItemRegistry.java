@@ -27,6 +27,8 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.LEAD, ModItems.BLOCK_KEY, ModItems.AMETHYST_LENS);
 
             content.addAfter(ModItems.BLOCK_KEY, ModItems.COPPER_WRENCH);
+
+            content.addAfter(Items.SPYGLASS, ModBlocks.SPY_GLASS_BLOCK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
@@ -36,7 +38,7 @@ public class ModInventoryItemRegistry {
                     ModBlocks.KEY_ACCEPTOR, ModBlocks.POTION_PILLAR,
                     ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_FLAME,
                     ModBlocks.DEEP_FLAME, ModBlocks.FORTRESS_FLAME,
-                    ModBlocks.BRAZIER);
+                    ModBlocks.BRAZIER, ModBlocks.SPY_GLASS_BLOCK);
             content.addAfter(Blocks.VAULT, ModBlocks.MOB_DETECTOR, ModBlocks.MELTING_ICE);
             content.addAfter(Blocks.DECORATED_POT, ModBlocks.FANCY_RED_POT, ModBlocks.FANCY_GREEN_POT, ModBlocks.FANCY_BLUE_POT);
 

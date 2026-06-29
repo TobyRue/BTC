@@ -14,6 +14,6 @@ public class ModBlockLootTableProvider extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-
+        addDrop(ModBlocks.SPY_GLASS_BLOCK);
     }
 }

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "tag": "minecraft:wooden_fences"
+    },
+    "S": {
+      "item": "minecraft:spyglass"
+    }
+  },
+  "pattern": [
+    "FS",
+    "FF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:spy_glass_block"
+  }
+}
