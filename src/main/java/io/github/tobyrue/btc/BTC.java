@@ -10,6 +10,7 @@ import io.github.tobyrue.btc.entity.custom.KeyGolemEntity;
 import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.packets.ModPackets;
+import io.github.tobyrue.btc.processors.ModStructureProcessors;
 import io.github.tobyrue.btc.recipes.KeyDuplicateRecipe;
 import io.github.tobyrue.btc.recipes.UnbreakableSmithingRecipe;
 import io.github.tobyrue.btc.regestries.*;
@@ -106,6 +107,7 @@ public class BTC implements ModInitializer {
         ModSpells.initialize();
         ModEvents.init();
         BTCConfig.load();
+        ModStructureProcessors.registerProcessors();
 
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());

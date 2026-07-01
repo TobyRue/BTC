@@ -38,6 +38,7 @@
     "GameRendererMixin",
     "ItemRendererMixin",
     "KeyBindingAccessor",
+    "KeyboardInputMixin",
     "MinecraftClientMixin",
     "ModelLoaderMixin",
     "MouseMixin",

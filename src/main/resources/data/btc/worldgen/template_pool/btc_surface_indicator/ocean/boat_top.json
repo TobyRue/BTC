@@ -1,0 +1,21 @@
+{
+  "name": "btc:boat_top",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "btc:btc_surface_indicator/ocean/boat_top",
+        "projection": "rigid",
+        "processors": {
+          "processors": [
+            {
+              "processor_type": "btc:randomize_wool_color"
+            }
+          ]
+        },
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
