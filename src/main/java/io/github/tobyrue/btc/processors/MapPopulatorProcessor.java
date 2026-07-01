@@ -1,7 +1,10 @@
 package io.github.tobyrue.btc.processors;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.block.AirBlock;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.StructureBlock;
+import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -18,11 +21,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldView;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MapPopulatorProcessor extends StructureProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger("BTC-MapProcessor");
@@ -30,47 +32,27 @@ public class MapPopulatorProcessor extends StructureProcessor {
 
     public MapPopulatorProcessor() {}
 
+    @Nullable
     @Override
-    public List<StructureTemplate.StructureBlockInfo> reprocess(
-            ServerWorldAccess world, BlockPos pos, BlockPos pivot,
-            List<StructureTemplate.StructureBlockInfo> originalBlockInfos,
-            List<StructureTemplate.StructureBlockInfo> currentBlockInfos,
+    public StructureTemplate.StructureBlockInfo process(
+            WorldView world, BlockPos pos, BlockPos pivot,
+            StructureTemplate.StructureBlockInfo originalBlockInfo,
+            StructureTemplate.StructureBlockInfo currentBlockInfo,
             StructurePlacementData data
     ) {
-        ServerWorld serverWorld = world.toServerWorld();
-        if (serverWorld == null) {
-            LOGGER.error("[Map Processor] Reprocess failed: ServerWorld is null!");
-            return currentBlockInfos;
+        if (!currentBlockInfo.state().isOf(Blocks.AIR) && !currentBlockInfo.state().getBlock().getTranslationKey().contains("spruce") && !currentBlockInfo.state().getBlock().getTranslationKey().contains("dark_oak")) {
+            System.out.println("Current Block: " + currentBlockInfo.state().getBlock() + " Pos: " + currentBlockInfo.pos());
         }
+        if (currentBlockInfo.state().isOf(Blocks.STRUCTURE_BLOCK) && currentBlockInfo.nbt() != null) {
+            String mode = currentBlockInfo.nbt().getString("mode");
+            String metadata = currentBlockInfo.nbt().getString("metadata");
 
-        if (currentBlockInfos.isEmpty()) {
-            LOGGER.warn("[Map Processor] Reprocess called, but currentBlockInfos list is completely empty.");
-            return currentBlockInfos;
-        }
+            if (currentBlockInfo.state().get(StructureBlock.MODE) == StructureBlockMode.DATA && "Map Frame".equals(metadata)) {
+                BlockPos targetPos = currentBlockInfo.pos();
+                LOGGER.info("[Map Processor] 'process' method matched target data block at {}", targetPos.toShortString());
 
-        LOGGER.info("[Map Processor] Reprocess triggered! Scanning {} total blocks in this structure piece...", currentBlockInfos.size());
-        List<StructureTemplate.StructureBlockInfo> modifiedBlocks = new ArrayList<>();
-        int dataBlocksFound = 0;
-
-        for (StructureTemplate.StructureBlockInfo info : currentBlockInfos) {
-            if (info.state().isOf(Blocks.STRUCTURE_BLOCK)) {
-                dataBlocksFound++;
-
-                if (info.nbt() == null) {
-                    LOGGER.warn("[Map Processor] Found Structure Block at {}, but its NBT data is NULL!", info.pos().toShortString());
-                    modifiedBlocks.add(info);
-                    continue;
-                }
-
-                String mode = info.nbt().contains("mode") ? info.nbt().getString("mode") : "UNKNOWN";
-                String metadata = info.nbt().contains("metadata") ? info.nbt().getString("metadata") : "";
-
-                LOGGER.info("[Map Processor] Inspecting Structure Block at {} -> Mode: '{}', Metadata Tag: '{}'",
-                        info.pos().toShortString(), mode, metadata);
-
-                if ("DATA".equalsIgnoreCase(mode) && "Map Frame".equals(metadata)) {
-                    BlockPos targetPos = info.pos();
-                    LOGGER.info("[Map Processor] CRITICAL TARGET MATCHED! Initializing map frame generation at {}", targetPos.toShortString());
+                if (world instanceof ServerWorldAccess serverWorldAccess) {
+                    ServerWorld serverWorld = serverWorldAccess.toServerWorld();
 
                     ChunkPos centerChunk = new ChunkPos(targetPos);
                     for (int x = -1; x <= 1; x++) {
@@ -94,17 +76,14 @@ public class MapPopulatorProcessor extends StructureProcessor {
                     frame.setHeldItemStack(filledMap);
 
                     serverWorld.spawnEntityAndPassengers(frame);
-
-                    modifiedBlocks.add(new StructureTemplate.StructureBlockInfo(targetPos, Blocks.AIR.getDefaultState(), null));
-                    continue;
+                    LOGGER.info("[Map Processor] Spawned item frame successfully via 'process' loop.");
                 }
-            }
 
-            modifiedBlocks.add(info);
+                return new StructureTemplate.StructureBlockInfo(targetPos, Blocks.AIR.getDefaultState(), null);
+            }
         }
 
-        LOGGER.info("[Map Processor] Scan Finished. Out of {} blocks, checked {} structure blocks.", currentBlockInfos.size(), dataBlocksFound);
-        return modifiedBlocks;
+        return currentBlockInfo;
     }
 
     @Override
