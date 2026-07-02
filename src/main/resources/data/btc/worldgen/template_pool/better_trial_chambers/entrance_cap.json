@@ -1,11 +1,11 @@
 {
-  "name": "btc:stair_up",
-  "fallback": "btc:better_trial_chambers/entrance_cap",
+  "name": "btc:entrance_cap",
+  "fallback": "minecraft:empty",
   "elements": [
     {
       "weight": 1,
       "element": {
-        "location": "btc:better_trial_chambers/stair/up/stairs_up",
+        "location": "btc:better_trial_chambers/room/entrance_cap",
         "processors": "minecraft:empty",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"

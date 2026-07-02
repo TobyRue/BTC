@@ -4,8 +4,10 @@ import com.mojang.serialization.MapCodec;
 import io.github.tobyrue.btc.BTC;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorType;
+import net.minecraft.world.gen.structure.EndCityStructure;
 
 public class ModStructureProcessors {
 

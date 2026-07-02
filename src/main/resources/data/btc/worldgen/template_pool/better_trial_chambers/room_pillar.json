@@ -1,6 +1,6 @@
 {
   "name": "btc:room_pillar",
-  "fallback": "minecraft:empty",
+  "fallback": "btc:better_trial_chambers/entrance_cap",
   "elements": [
     {
       "weight": 2,
