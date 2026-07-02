@@ -11,9 +11,6 @@
           "processors": [
             {
               "processor_type": "btc:randomize_wool_color"
-            },
-            {
-              "processor_type": "btc:map_populator"
             }
           ]
         },

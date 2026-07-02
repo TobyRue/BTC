@@ -14,6 +14,7 @@ import io.github.tobyrue.btc.processors.ModStructureProcessors;
 import io.github.tobyrue.btc.recipes.KeyDuplicateRecipe;
 import io.github.tobyrue.btc.recipes.UnbreakableSmithingRecipe;
 import io.github.tobyrue.btc.regestries.*;
+import io.github.tobyrue.btc.util.BTCSpawnQueue;
 import io.github.tobyrue.btc.util.BookshelfProcessor;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -108,6 +109,7 @@ public class BTC implements ModInitializer {
         ModEvents.init();
         BTCConfig.load();
         ModStructureProcessors.registerProcessors();
+        BTCSpawnQueue.init();
 
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());

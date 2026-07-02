@@ -11,8 +11,6 @@ public class ModStructureProcessors {
 
     public static final StructureProcessorType<RandomizeWoolColorProcessor> RANDOMIZE_WOOL_COLOR =
             register("randomize_wool_color", RandomizeWoolColorProcessor.CODEC);
-    public static final StructureProcessorType<MapPopulatorProcessor> MAP_POPULATOR =
-            register("map_populator", MapPopulatorProcessor.CODEC);
 
     private static <P extends StructureProcessor> StructureProcessorType<P> register(String id, MapCodec<P> codec) {
         return Registry.register(Registries.STRUCTURE_PROCESSOR, BTC.identifierOf(id), () -> codec);
