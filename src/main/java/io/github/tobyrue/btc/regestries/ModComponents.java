@@ -7,8 +7,12 @@ import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
@@ -19,6 +23,8 @@ import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Direction;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ModComponents {
@@ -191,4 +197,12 @@ public class ModComponents {
                             .packetCodec(PacketCodecs.STRING)
                             .build()
             );
+
+    public static final FoodComponent TRIAL_JERKY =
+            (new FoodComponent(2, 0.3f, true, 0.4f, Optional.empty(), List.of()));
+
+    public static final FoodComponent COOKED_MEAT_CLUB =
+            (new FoodComponent.Builder()).nutrition(8).saturationModifier(0.8F).usingConvertsTo(Items.BONE).build();
+    public static final FoodComponent RAW_MEAT_CLUB =
+            (new FoodComponent.Builder()).nutrition(3).saturationModifier(0.3F).usingConvertsTo(Items.BONE).build();
 }

@@ -5,7 +5,7 @@ import io.github.tobyrue.btc.client.RuneTextLoader;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
-import io.github.tobyrue.btc.wires.WireBlockSlow;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -63,7 +63,21 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     }
 
     public int getColor() {
-        return storedEffect.value().getColor();
+        return isPowered() ? hslToRGB(rgbToHSL(storedEffect.value().getColor()).multiply(1d, 1d, 0.35d)) : storedEffect.value().getColor();
+    }
+
+
+
+
+    private boolean isPowered() {
+        if (world.getBlockState(pos).getBlock() instanceof PotionPillar) {
+            return IDungeonWire.isReceivingDungeonWirePower(world.getBlockState(pos), world, pos, switch (world.getBlockState(pos).get(PotionPillar.AXIS)) {
+                case X -> new Direction[]{Direction.EAST, Direction.WEST};
+                case Y -> new Direction[]{Direction.UP, Direction.DOWN};
+                case Z -> new Direction[]{Direction.NORTH, Direction.SOUTH};
+            });
+        }
+        return false;
     }
 
     public int getRuneIndex() {
@@ -90,23 +104,11 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         if (storedEffect == null) {
             return;
         }
-        Box box = new Box(new Vec3d(pos.getX() - range, pos.getY() - range, pos.getZ() - range), new Vec3d(pos.getX() + range, pos.getY() + range, pos.getZ() + range));
-        for (var l : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
-            if (!state.get(PotionPillar.DISABLE)) {
+        boolean powered = IDungeonWire.isReceivingDungeonWirePower(state, world, pos, state.get(PotionPillar.AXIS).getType().stream());
+        if (!powered) {
+            Box box = new Box(new Vec3d(pos.getX() - range, pos.getY() - range, pos.getZ() - range), new Vec3d(pos.getX() + range, pos.getY() + range, pos.getZ() + range));
+            for (var l : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
                 l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
-            } else {
-                for (Direction direction : Direction.values()) {
-                    BlockPos neighborPos = blockPos.offset(direction);
-                    BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.getBlock() instanceof WireBlockSlow) {
-                        var property = WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
-                        if (state.get(property) == WireBlockSlow.ConnectionType.OUTPUT) {
-                            if (!neighborState.get(WireBlockSlow.POWERED)) {
-                                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -115,23 +117,10 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         if (storedEffect == null) {
             return;
         }
-        Box box = getBox(pos);
-        for (var l : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
-            if (!state.get(PotionPillar.DISABLE)) {
+        boolean powered = IDungeonWire.isReceivingDungeonWirePower(state, world, pos, state.get(PotionPillar.AXIS).getType().stream());
+        if (!powered) {
+            for (var l : world.getEntitiesByClass(LivingEntity.class, getBox(pos), LivingEntity::isAlive)) {
                 l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
-            } else {
-                for (Direction direction : Direction.values()) {
-                    BlockPos neighborPos = blockPos.offset(direction);
-                    BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.getBlock() instanceof WireBlockSlow) {
-                        var property = WireBlockSlow.CONNECTION_TO_DIRECTION.get().inverse().get(direction.getOpposite());
-                        if (state.get(property) == WireBlockSlow.ConnectionType.OUTPUT) {
-                            if (!neighborState.get(WireBlockSlow.POWERED)) {
-                                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -516,17 +505,54 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         return createNbt(registryLookup);
     }
-//    @Override
-//    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
-//        if (state.get(AntierBlock.DISABLE)) {
-//
-//        }
-//    }
-//
-//    @Override
-//    public void onDungeonWireDestroy(BlockState state, World world, BlockPos pos, boolean powered) {
-//        if (state.get(AntierBlock.DISABLE)) {
-//
-//        }
-//    }
+
+    public static Vec3d rgbToHSL(int hex) {
+        double r = ((hex & 0xFF0000) >> 16) / 255d;
+        double g = ((hex & 0x00FF00) >> 8) / 255d;
+        double b = ((hex & 0x0000FF) >> 0) / 255d;
+
+        double cMax = Math.max(r, Math.max(g, b));
+        double cMin = Math.min(r, Math.min(g, b));
+
+        double delta = cMax - cMin;
+
+        double l = (cMax + cMin) / 2;
+        double h =
+                cMax == r ? 60d * (((g-b)/delta) % 6d) :
+                cMax == g ? 60d * (((b-r)/delta) + 2d) :
+                cMax == b ? 60d * (((r-g)/delta) + 4d) : 0d;
+        double s = delta != 0d ? delta/(1d-Math.abs(2d*l-1d)) : 0d;
+
+        return new Vec3d(h, s, l);
+    }
+
+    public static int hslToRGB(Vec3d hsl) {
+        double h = hsl.x;
+        double s = hsl.y;
+        double l = hsl.z;
+
+        double c = (1d - Math.abs(2d*l-1d)) * s;
+        double x = c*(1d-Math.abs(((h/60d)%2d)-1d));
+        double m = l-(c/2d);
+
+        Vec3d t;
+
+        if (0d <= h && h < 60d) {
+            t = new Vec3d(c, x, 0d);
+        } else if (60d <= h && h < 120d) {
+            t = new Vec3d(x, c, 0d);
+        } else if (120d <= h && h < 180d) {
+            t = new Vec3d(0d, c, x);
+        } else if (180d <= h && h < 240d) {
+            t = new Vec3d(0d, x, c);
+        } else if (240d <= h && h < 300d) {
+            t = new Vec3d(x, 0d, c);
+        } else if (300d <= h && h < 360d) {
+            t = new Vec3d(c, 0d, x);
+        } else {
+            t = new Vec3d(0d, 0d, 0d);
+        }
+
+        return (((int) ((t.x + m) * 255d)) << 16) | (((int) ((t.y + m) * 255d)) << 8) | (((int) ((t.z + m) * 255d)) << 0);
+    }
 }

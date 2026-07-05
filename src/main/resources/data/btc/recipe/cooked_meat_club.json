@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "btc:raw_meat_club"
+  },
+  "result": {
+    "id": "btc:cooked_meat_club"
+  }
+}

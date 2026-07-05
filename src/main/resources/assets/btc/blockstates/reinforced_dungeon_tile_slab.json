@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "btc:block/reinforced_dungeon_tile_slab"
+    },
+    "type=double": {
+      "model": "btc:block/reinforced_dungeon_tiles"
+    },
+    "type=top": {
+      "model": "btc:block/reinforced_dungeon_tile_slab_top"
+    }
+  }
+}

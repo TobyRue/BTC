@@ -4,8 +4,6 @@ import io.github.tobyrue.btc.block.entities.*;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.regestries.ModComponents;
-import io.github.tobyrue.btc.wires.IWireConnect;
-import io.github.tobyrue.btc.wires.WireBlockSlow;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -17,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, IWireConnect, CornerStorage {
+public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, CornerStorage {
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     /*
@@ -70,22 +69,15 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
 
     public MobDetectorBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(WireBlockSlow.CONNECTION_TO_DIRECTION.get().keySet().stream().reduce(
-                this.stateManager.getDefaultState().with(WireBlockSlow.POWERED, false).with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE).with(TYPE, DetectorType.HOSTILE),
-                (acc, con) -> acc.with(con, WireBlockSlow.ConnectionType.OUTPUT),
-                (lhs, rhs) -> {
-                    throw new RuntimeException("Don't fold in parallel");
-                }
-        ));
+        this.setDefaultState(
+                this.stateManager.getDefaultState().with(Properties.POWERED, false).with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE).with(TYPE, DetectorType.HOSTILE));
     }
 
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        for (var conn : WireBlockSlow.CONNECTION_TO_DIRECTION.get().keySet())
-            builder.add(conn);
-        builder.add(WireBlockSlow.POWERED);
+        builder.add(Properties.POWERED);
         builder.add(FACING);
         builder.add(MIRRORED);
         builder.add(TYPE);
@@ -135,7 +127,7 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return state.get(WireBlockSlow.POWERED) ? 15 : 0;
+        return state.get(Properties.POWERED) ? 15 : 0;
     }
 
     @Override

@@ -6,8 +6,10 @@ import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.IDungeonWire;
+import io.github.tobyrue.btc.wires.IOnBlockUpdate;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import net.minecraft.block.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -32,7 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class PowerPilasterBlock extends Block implements IDungeonWire, Waterloggable, IWireDelayHelper {
+public class PowerPilasterBlock extends Block implements IDungeonWire, Waterloggable, IWireDelayHelper, IOnBlockUpdate {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     /**
      * If this state, <code>INVERTED</code> is true, the {@link Direction} of the <code>FACING</code> property is in reference to the direction of the input rather than the output of the block, if the output is <code>UP</code> and input <code>DOWN</code>, and the state <code>INVERTED</code> is true, the {@link Direction} of the block will be <code>DOWN</code>
@@ -124,16 +126,16 @@ public class PowerPilasterBlock extends Block implements IDungeonWire, Waterlogg
         return state.getBlock() instanceof PowerPilasterBlock && state.get(POWERED)
                 && ((state.get(INVERTED) && state.get(FACING).getOpposite() == face) || (!state.get(INVERTED) && state.get(FACING) == face));
     }
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        this.onUpdate(world, pos, state);
+    }
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        if (!world.isClient) {
-            if (state.get(DELAY) == 0) {
-                this.updatePower(world, pos, state);
-            } else {
-                world.scheduleBlockTick(pos, this, state.get(DELAY));
-            }
-        }
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+        this.onUpdate(world, pos, state);
     }
 
     @Override
@@ -249,5 +251,16 @@ public class PowerPilasterBlock extends Block implements IDungeonWire, Waterlogg
             return state.get(DELAY);
         }
         return 0;
+    }
+
+    @Override
+    public void onUpdate(World world, BlockPos pos, BlockState state) {
+        if (!world.isClient) {
+            if (state.get(DELAY) == 0) {
+                this.updatePower(world, pos, state);
+            } else {
+                world.scheduleBlockTick(pos, this, state.get(DELAY));
+            }
+        }
     }
 }

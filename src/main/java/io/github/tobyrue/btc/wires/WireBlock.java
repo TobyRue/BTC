@@ -128,7 +128,7 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         boolean apply(Boolean... args);
     }
 
-    public enum Operator implements StringIdentifiable, WireBlockSlow.ApplyOperator {
+    public enum Operator implements StringIdentifiable, ApplyOperator {
         TRUE("true", 0x28CC3B /* Green */,args -> true),
         FALSE("false", 0xD733C4 /* Magenta */, args -> false),
         OR("or", 0xCCCC28 /* Yellow */,args -> Arrays.stream(args).anyMatch(b -> b)),

@@ -1,7 +1,0 @@
-{
-  "variants": {
-    "": {
-      "model": "btc:block/key_dispenser"
-    }
-  }
-}

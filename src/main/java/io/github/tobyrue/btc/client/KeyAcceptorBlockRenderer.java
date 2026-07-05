@@ -2,8 +2,6 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.block.KeyAcceptorBlock;
 import io.github.tobyrue.btc.block.entities.KeyAcceptorBlockEntity;
-import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
-import io.github.tobyrue.btc.item.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -17,8 +15,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.RotationAxis;
-
-import java.security.Key;
 
 @Environment(EnvType.CLIENT)
 public class KeyAcceptorBlockRenderer implements BlockEntityRenderer<KeyAcceptorBlockEntity> {

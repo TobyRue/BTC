@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "powered=false,always_acceptable=false": {
+      "model": "btc:block/item_pedestal_off"
+    },
+    "powered=true,always_acceptable=false": {
+      "model": "btc:block/item_pedestal"
+    },
+    "powered=false,always_acceptable=true": {
+      "model": "btc:block/item_pedestal"
+    },
+    "powered=true,always_acceptable=true": {
+      "model": "btc:block/item_pedestal"
+    }
+  }
+}

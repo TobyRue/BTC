@@ -20,7 +20,10 @@ public class ModInventoryItemRegistry {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
             content.addAfter(Items.LIGHT, ModItems.SPELLSTONE);
         });
-
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
+            content.addAfter(Items.DRIED_KELP, ModItems.RAW_MEAT_CLUB, ModItems.COOKED_MEAT_CLUB);
+            content.addAfter(Items.ROTTEN_FLESH, ModItems.TRIAL_JERKY);
+        });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.MUSIC_DISC_PIGSTEP, ModItems.CRYSTAL_FOREST_MUSIC_DISC);
             content.addAfter(Items.WARPED_FUNGUS_ON_A_STICK, ModItems.SELECTOR);
@@ -34,7 +37,7 @@ public class ModInventoryItemRegistry {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);
             content.addAfter(Blocks.ENCHANTING_TABLE, ModBlocks.DUNGEON_WIRE,
-                    ModBlocks.PEDESTAL, ModBlocks.KEY_DISPENSER_BLOCK,
+                    ModBlocks.PEDESTAL, ModBlocks.ITEM_PEDESTAL,
                     ModBlocks.KEY_ACCEPTOR, ModBlocks.POTION_PILLAR,
                     ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_FLAME,
                     ModBlocks.DEEP_FLAME, ModBlocks.FORTRESS_FLAME,
@@ -53,7 +56,7 @@ public class ModInventoryItemRegistry {
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
-            content.addAfter(Items.REDSTONE_ORE, ModBlocks.KEY_DISPENSER_BLOCK,
+            content.addAfter(Items.REDSTONE_ORE, ModBlocks.ITEM_PEDESTAL,
                     ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_WIRE,
                     ModBlocks.POWER_PILASTER, ModBlocks.POWER_PILLAR,
                     ModBlocks.DUNGEON_BUTTON, ModBlocks.DUNGEON_PRESSURE_PLATE,
@@ -77,20 +80,19 @@ public class ModInventoryItemRegistry {
                     ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.EXPOSED_COPPER_BUTTON,
                     ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WEATHERED_COPPER_BUTTON,
                     ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.OXIDIZED_COPPER_BUTTON,
-                    ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON, ModBlocks.TUFF_BRICK_PILASTER,
-                    ModBlocks.TUFF_PILASTER, ModBlocks.POLISHED_TUFF_PILASTER,
-                    ModBlocks.CHISELED_TUFF_BRICKS_PILASTER, ModBlocks.STONE_PILASTER,
-                    ModBlocks.STONE_BRICKS_PILASTER, ModBlocks.CRACKED_STONE_BRICKS_PILASTER);
+                    ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
 
-            content.addAfter(Blocks.STONE, ModBlocks.STONE_PILLAR);
-            content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_BRICKS_PILLAR);
-            content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_BRICKS_PILLAR);
-            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_PILLAR);
-            content.addAfter(Blocks.CHISELED_TUFF_BRICKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR);
-            content.addAfter(Blocks.POLISHED_TUFF, ModBlocks.POLISHED_TUFF_PILLAR);
-            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR);
+            content.addAfter(Blocks.STONE, ModBlocks.STONE_PILLAR, ModBlocks.STONE_PILASTER);
+            content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_BRICKS_PILLAR, ModBlocks.STONE_BRICKS_PILASTER);
+            content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_BRICKS_PILLAR, ModBlocks.CRACKED_STONE_BRICKS_PILASTER);
+            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_PILLAR, ModBlocks.TUFF_PILASTER);
+            content.addAfter(Blocks.CHISELED_TUFF_BRICKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR, ModBlocks.CHISELED_TUFF_BRICKS_PILASTER);
+            content.addAfter(Blocks.POLISHED_TUFF, ModBlocks.POLISHED_TUFF_PILLAR, ModBlocks.POLISHED_TUFF_PILASTER);
+            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR, ModBlocks.TUFF_BRICK_PILASTER);
 
-            content.addAfter(Blocks.BEDROCK, ModBlocks.REINFORCED_DUNGEON_BLOCK, ModBlocks.REINFORCED_DUNGEON_TILES);
+            content.addAfter(Blocks.AMETHYST_BLOCK, ModBlocks.REINFORCED_DUNGEON_BLOCK,
+                    ModBlocks.REINFORCED_DUNGEON_GRATE, ModBlocks.REINFORCED_DUNGEON_TILES,
+                    ModBlocks.REINFORCED_DUNGEON_TILE_STAIRS, ModBlocks.REINFORCED_DUNGEON_TILE_SLAB);
         });
     }
 }

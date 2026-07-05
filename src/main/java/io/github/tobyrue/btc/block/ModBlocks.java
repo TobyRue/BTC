@@ -38,6 +38,25 @@ public class ModBlocks {
             true
     );
 
+    public static final Block REINFORCED_DUNGEON_TILE_STAIRS = register(
+            new StairsBlock(REINFORCED_DUNGEON_TILES.getDefaultState(), AbstractBlock.Settings.copy(REINFORCED_DUNGEON_TILES)),
+            "reinforced_dungeon_tile_stairs",
+            true
+    );
+
+    public static final Block REINFORCED_DUNGEON_TILE_SLAB = register(
+            new SlabBlock(AbstractBlock.Settings.copy(REINFORCED_DUNGEON_TILES)),
+            "reinforced_dungeon_tile_slab",
+            true
+    );
+
+    public static final Block REINFORCED_DUNGEON_GRATE = register(
+            new GrateBlock(AbstractBlock.Settings.copy(REINFORCED_DUNGEON_TILES).nonOpaque()),
+            "reinforced_dungeon_grate",
+            true
+    );
+
+
     public static final Block KILL_BALL_RECEPTOR = register(
             new KillBallReceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.SNARE)),
             "kill_ball_receptor",
@@ -260,6 +279,12 @@ public class ModBlocks {
             true
     );
 
+    public static final Block SALT_BLOCK = register(
+            new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
+            "salt_block",
+            true
+    );
+
     public static final Block MELTING_ICE = register(
             new MeltingIceBlock(AbstractBlock.Settings.create().mapColor(MapColor.WATER_BLUE).slipperiness(0.98F).strength(0.5F).sounds(BlockSoundGroup.GLASS).instrument(NoteBlockInstrument.SNARE).nonOpaque()),
             "melting_ice",
@@ -345,19 +370,19 @@ public class ModBlocks {
     );
 
     public static final Block PEDESTAL = register(
-            new PedestalBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).nonOpaque().strength(4.0F, 6.0F).sounds(BlockSoundGroup.STONE).luminance((state) -> 12)),
+            new PedestalBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).nonOpaque().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).luminance((state) -> 12)),
             "pedestal",
             true
     );
 
-    public static final Block KEY_DISPENSER_BLOCK = register(
-            new KeyDispenserBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).nonOpaque().strength(4.0F, 6.0F).sounds(BlockSoundGroup.STONE).luminance((state) -> 12)),
-            "key_dispenser",
+    public static final Block ITEM_PEDESTAL = register(
+            new ItemPedestalBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).nonOpaque().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).luminance((state) -> 12)),
+            "item_pedestal",
             true
     );
 
     public static final Block KEY_ACCEPTOR = register(
-            new KeyAcceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).nonOpaque().strength(4.0F, 6.0F).sounds(BlockSoundGroup.STONE).luminance((state) -> 12)),
+            new KeyAcceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).nonOpaque().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).luminance((state) -> 12)),
             "key_acceptor",
             true
     );
@@ -432,5 +457,6 @@ public class ModBlocks {
         Registries.ITEM.addAlias(BTC.identifierOf("cracked_stone_pillar"), BTC.identifierOf("cracked_stone_bricks_pillar"));
         Registries.BLOCK.addAlias(BTC.identifierOf("fan"), BTC.identifierOf("waxed_copper_fan"));
         Registries.ITEM.addAlias(BTC.identifierOf("fan"), BTC.identifierOf("waxed_copper_fan"));
+        Registries.ITEM.addAlias(BTC.identifierOf("key_dispenser"), BTC.identifierOf("item_pedestal"));
     }
 }

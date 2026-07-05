@@ -1,15 +1,9 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.OminousBeaconBlock;
-import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
 import io.github.tobyrue.btc.block.entities.MobDetectorBlockEntity;
-import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
-import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.util.VectorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -17,18 +11,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
 public class MobDetectorBlockRenderer implements BlockEntityRenderer<MobDetectorBlockEntity> {

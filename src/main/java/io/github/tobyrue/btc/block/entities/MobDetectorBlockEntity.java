@@ -3,7 +3,6 @@ package io.github.tobyrue.btc.block.entities;
 import io.github.tobyrue.btc.block.MobDetectorBlock;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.packets.MobDetectorSyncPayload;
-import io.github.tobyrue.btc.wires.WireBlockSlow;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
@@ -20,6 +19,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
@@ -200,10 +200,10 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         }
 
 
-        if (state.get(WireBlockSlow.POWERED) != shouldBePowered) {
+        if (state.get(Properties.POWERED) != shouldBePowered) {
             world.setBlockState(
                     pos,
-                    state.with(WireBlockSlow.POWERED, shouldBePowered),
+                    state.with(Properties.POWERED, shouldBePowered),
                     Block.NOTIFY_ALL
             );
         }

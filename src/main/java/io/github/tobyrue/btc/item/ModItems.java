@@ -6,6 +6,8 @@ import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.FoodComponents;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -24,6 +26,21 @@ public class ModItems {
         // Return the registered item!
         return registeredItem;
     }
+
+    public static final Item COOKED_MEAT_CLUB = register(
+            new Item(new Item.Settings().maxCount(1).food(ModComponents.COOKED_MEAT_CLUB).attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.STONE, 7.0F, -3.2F))),
+            "cooked_meat_club"
+    );
+
+    public static final Item RAW_MEAT_CLUB = register(
+            new Item(new Item.Settings().maxCount(1).food(ModComponents.RAW_MEAT_CLUB).attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.WOOD, 6.0F, -3.2F))),
+            "raw_meat_club"
+    );
+
+    public static final Item TRIAL_JERKY = register(
+            new Item(new Item.Settings().food(ModComponents.TRIAL_JERKY)),
+            "trial_jerky"
+    );
 
     public static final Item AMETHYST_LENS = register(
             new AmethystLensItem(new Item.Settings().maxCount(1)),

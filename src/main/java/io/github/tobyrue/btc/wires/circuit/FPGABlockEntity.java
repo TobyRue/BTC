@@ -1,9 +1,11 @@
 package io.github.tobyrue.btc.wires.circuit;
 
+import com.mojang.serialization.Codec;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
+import io.github.tobyrue.rsl.BitString;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -36,6 +38,23 @@ public class FPGABlockEntity extends BlockEntity implements IDungeonWire, IWireC
     private final Map<String, String> cachedDeclarations = new HashMap<>();
     private final List<String> cachedExecutionLines = new ArrayList<>();
     private boolean isScriptCompiled = false;
+
+    public static final Codec<BitString> BIT_STRING_CODEC =
+            Codec.STRING.xmap(
+                    BitString::valueOf,
+                    BitString::toString
+            );
+
+    public static final Codec<HashMap<String, BitString>> BIT_STRING_MAP_CODEC =
+            Codec.unboundedMap(
+                    Codec.STRING,
+                    BIT_STRING_CODEC
+            ).xmap(
+                    HashMap::new,
+                    map -> map
+            );
+
+
 
     private final Map<Direction, Integer> renderedFaceNumbers = new HashMap<>();
 

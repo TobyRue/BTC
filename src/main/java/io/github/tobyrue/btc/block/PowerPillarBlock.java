@@ -6,8 +6,10 @@ import io.github.tobyrue.btc.item.IHaveWrenchActions;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.IDungeonWire;
+import io.github.tobyrue.btc.wires.IOnBlockUpdate;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import net.minecraft.block.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -32,7 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWire, IWireDelayHelper {
+public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWire, IWireDelayHelper, IOnBlockUpdate {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     /**
      * This property <code>FACING</code> is in reference to the direction of the output of the block, if the output is <code>UP</code> and input <code>DOWN</code>, the {@link Direction} of the block will be <code>UP</code>.
@@ -80,15 +82,17 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        if (!world.isClient) {
-            if (state.get(DELAY) == 0) {
-                this.updatePower(world, pos, state);
-            } else {
-                world.scheduleBlockTick(pos, this, state.get(DELAY));
-            }
-        }
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        this.onUpdate(world, pos, state);
     }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+        this.onUpdate(world, pos, state);
+    }
+
 
     @Override
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
@@ -196,5 +200,16 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
             return state.get(DELAY);
         }
         return 0;
+    }
+
+    @Override
+    public void onUpdate(World world, BlockPos pos, BlockState state) {
+        if (!world.isClient) {
+            if (state.get(DELAY) == 0) {
+                this.updatePower(world, pos, state);
+            } else {
+                world.scheduleBlockTick(pos, this, state.get(DELAY));
+            }
+        }
     }
 }

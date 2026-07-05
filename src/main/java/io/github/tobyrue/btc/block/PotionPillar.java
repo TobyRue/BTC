@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.IDungeonWireConnect;
 import io.github.tobyrue.btc.block.entities.*;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
@@ -35,8 +34,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class PotionPillar extends Block implements ModBlockEntityProvider<PotionPillarBlockEntity>, ModTickBlockEntityProvider<PotionPillarBlockEntity>, IDungeonWireConnect, CornerStorage, Waterloggable {
-    public static final BooleanProperty DISABLE = BooleanProperty.of("disable");
+public class PotionPillar extends Block implements ModBlockEntityProvider<PotionPillarBlockEntity>, ModTickBlockEntityProvider<PotionPillarBlockEntity>, CornerStorage, Waterloggable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
     /*
@@ -59,7 +57,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
     public PotionPillar(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(DISABLE, false)
                 .with(USES_SELECTOR, false)
                 .with(FACING, Direction.NORTH)
                 .with(MIRRORED, BlockMirror.NONE).with(AXIS, Direction.Axis.Y)
@@ -74,7 +71,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
 
         return this.getDefaultState()
-                .with(DISABLE, false)
                 .with(USES_SELECTOR, false)
                 .with(AXIS, direction.getAxis())
                 .with(FACING, Direction.NORTH)
@@ -84,7 +80,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(DISABLE);
         builder.add(FACING);
         builder.add(MIRRORED);
         builder.add(AXIS);
@@ -194,15 +189,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
     @Override
     public BlockEntityType<PotionPillarBlockEntity> getBlockEntityType() {
         return ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY;
-    }
-
-    @Override
-    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
-        if (state.get(PotionPillar.DISABLE) && state.getBlock() instanceof PotionPillar) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     @Override

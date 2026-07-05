@@ -1,22 +1,30 @@
 package io.github.tobyrue.btc.block;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
-import io.github.tobyrue.btc.block.entities.KeyDispenserBlockEntity;
-import io.github.tobyrue.btc.wires.IDungeonWirePowered;
+import io.github.tobyrue.btc.block.entities.ItemPedestalBlockEntity;
+import io.github.tobyrue.btc.wires.IDungeonWire;
+import io.github.tobyrue.btc.wires.IOnBlockUpdate;
+import io.github.tobyrue.btc.wires.circuit.FPGABlockEntity;
+import io.github.tobyrue.rsl.BitString;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -29,7 +37,9 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<KeyDispenserBlockEntity>, IDungeonWirePowered, Waterloggable {
+import java.util.HashMap;
+
+public class ItemPedestalBlock extends Block implements ModBlockEntityProvider<ItemPedestalBlockEntity>, Waterloggable, IOnBlockUpdate {
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape TOP_MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
@@ -41,15 +51,15 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
 
     public static final BooleanProperty ALWAYS_ACCEPTABLE  = BooleanProperty.of("always_acceptable");
 
-    public KeyDispenserBlock(Settings settings) {
+    public ItemPedestalBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false).with(Properties.WATERLOGGED, false));
+        this.setDefaultState((this.stateManager.getDefaultState()).with(ALWAYS_ACCEPTABLE, false).with(Properties.POWERED, false).with(Properties.WATERLOGGED, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(ALWAYS_ACCEPTABLE, Properties.WATERLOGGED);
+        builder.add(ALWAYS_ACCEPTABLE, Properties.POWERED, Properties.WATERLOGGED);
     }
 
     static {
@@ -86,7 +96,7 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        return world.getBlockEntity(pos, ModBlockEntities.KEY_DISPENSER_ENTITY).get().onUse(state, world, pos, player, hit);
+        return world.getBlockEntity(pos, ModBlockEntities.ITEM_PEDESTAL_BLOCK_ENTITY).get().onUse(player, hit);
     }
 
 
@@ -96,20 +106,34 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
         double d2;
         double e2;
         double f2;
-        for(i = 0; i < 3; ++i) {
-            d2 = (double)pos.getX() + random.nextDouble() * 0.35 + 0.35;
-            e2 = (double)pos.getY() + random.nextDouble() * 0.5 + 0.9;
-            f2 = (double)pos.getZ() + random.nextDouble() * 0.35 + 0.35;
-            if (shouldWirePower(state, world, pos, false, true, false) || state.get(ALWAYS_ACCEPTABLE)) {
-                world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
+        if (state.getBlock() instanceof ItemPedestalBlock) {
+            for (i = 0; i < 3; ++i) {
+                d2 = (double) pos.getX() + random.nextDouble() * 0.35 + 0.35;
+                e2 = (double) pos.getY() + random.nextDouble() * 0.5 + 0.9;
+                f2 = (double) pos.getZ() + random.nextDouble() * 0.35 + 0.35;
+                if (IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Direction.DOWN) || state.get(ALWAYS_ACCEPTABLE)) {
+                    world.addParticle(ParticleTypes.ENCHANTED_HIT, d2, e2, f2, 0.0, 0.0, 0.0);
+                }
             }
         }
         super.randomDisplayTick(state, world, pos, random);
     }
 
     @Override
-    public BlockEntityType<KeyDispenserBlockEntity> getBlockEntityType() {
-        return ModBlockEntities.KEY_DISPENSER_ENTITY;
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        this.onUpdate(world, pos, state);
+    }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+        this.onUpdate(world, pos, state);
+    }
+
+    @Override
+    public BlockEntityType<ItemPedestalBlockEntity> getBlockEntityType() {
+        return ModBlockEntities.ITEM_PEDESTAL_BLOCK_ENTITY;
     }
     @Override
     protected FluidState getFluidState(BlockState state) {
@@ -117,5 +141,15 @@ public class KeyDispenserBlock extends Block implements ModBlockEntityProvider<K
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);
+    }
+
+    @Override
+    public void onUpdate(World world, BlockPos pos, BlockState state) {
+        if (IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Direction.DOWN) && !state.get(Properties.POWERED)) {
+            if (world.getBlockEntity(pos) instanceof ItemPedestalBlockEntity itemPedestalBlockEntity) {
+                itemPedestalBlockEntity.HASH_SET.clear();
+            }
+        }
+        world.setBlockState(pos, state.with(Properties.POWERED, IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Direction.DOWN)));
     }
 }

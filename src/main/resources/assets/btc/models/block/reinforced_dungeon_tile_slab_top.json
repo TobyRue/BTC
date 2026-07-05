@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "btc:block/reinforced_dungeon_tiles",
+    "side": "btc:block/reinforced_dungeon_tiles",
+    "top": "btc:block/reinforced_dungeon_tiles"
+  }
+}

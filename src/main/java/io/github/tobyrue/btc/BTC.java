@@ -28,7 +28,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -129,7 +128,7 @@ public class BTC implements ModInitializer {
                         (block instanceof FurnaceBlock) || (block instanceof BlastFurnaceBlock) || (block instanceof SmokerBlock) ||
                         (block instanceof SmithingTableBlock) || (block instanceof LoomBlock) || (block instanceof ComposterBlock) ||
                         (block instanceof CampfireBlock) || (block instanceof JukeboxBlock) || (block instanceof PedestalBlock) ||
-                        (block instanceof VaultBlock) || (block instanceof KeyAcceptorBlock) || (block instanceof KeyDispenserBlock)||
+                        (block instanceof VaultBlock) || (block instanceof KeyAcceptorBlock) || (block instanceof ItemPedestalBlock)||
                         (block instanceof DungeonDoorBlock) || (block instanceof LecternBlock) || (block instanceof EndPortalFrameBlock) ||
                         (block instanceof DragonEggBlock) || (block instanceof BedBlock) || (block instanceof BeaconBlock) ||
                         (block instanceof BellBlock) || (block instanceof BrewingStandBlock) || (block instanceof CauldronBlock) ||

@@ -1,12 +1,8 @@
 package io.github.tobyrue.btc.block;
 
-import io.github.tobyrue.btc.ICopperWireConnect;
-import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.wires.IDungeonWire;
-import io.github.tobyrue.btc.wires.IDungeonWireAction;
-import io.github.tobyrue.btc.IDungeonWireConnect;
+import io.github.tobyrue.btc.wires.IOnBlockUpdate;
 import net.minecraft.block.*;
-import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -34,9 +30,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDungeonWireConnect, ICopperWireConnect {
+public class DungeonDoorBlock extends Block {
     public static final EnumProperty<DoorType> TYPE = EnumProperty.of("door_type", DoorType.class);
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
+
 
     public enum DoorType implements StringIdentifiable {
         NORMAL("normal"),
@@ -127,10 +124,7 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        System.out.println("Type: " + state.get(TYPE));
         if (state.get(TYPE) == DoorType.GOLEM && !state.get(OPEN)) {
-            System.out.println("Left Shoulder: " + player.getShoulderEntityLeft() + " ID: " + player.getShoulderEntityLeft().getString("id"));
-            System.out.println("Right Shoulder: " + player.getShoulderEntityRight() + " ID: " + player.getShoulderEntityRight().getString("id"));
             NbtCompound leftShoulder = player.getShoulderEntityLeft();
             NbtCompound rightShoulder = player.getShoulderEntityLeft();
             if (!leftShoulder.isEmpty()) {
@@ -293,27 +287,5 @@ public class DungeonDoorBlock extends Block implements IDungeonWireAction, IDung
             }
         }
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
-    }
-
-
-    @Override
-    public void onDungeonWireChange(BlockState state, World world, BlockPos pos, boolean powered) {
-        if(state.get(TYPE) == DoorType.WIRED) {
-//            System.out.println("Pos is:" + pos + ", Offset block is: " + offset);
-            for (BlockPos offsetPos : findDoors(world, pos)) {
-                setOpen(world.getBlockState(offsetPos), world, offsetPos, powered);
-            }
-        }
-    }
-
-    @Override
-    public boolean shouldConnect(BlockState state, World world, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean shouldCopperConnect(BlockState state, World world, BlockPos pos) {
-        //TODO
-        return true;
     }
 }
