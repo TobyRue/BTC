@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.circuit.FPGABlock;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -280,7 +281,7 @@ public class ModBlocks {
     );
 
     public static final Block SALT_BLOCK = register(
-            new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
+            new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF).nonOpaque()),
             "salt_block",
             true
     );

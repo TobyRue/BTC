@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "btc:block/salt_block" }
+  }
+}

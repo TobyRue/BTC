@@ -27,14 +27,11 @@ public class SaltBlock extends Block {
         builder.add(ABSORBED_LIGHT);
     }
 
-    /**
-     * Randomly ticks to absorb light from its surroundings, behaving like a sponge for ambient light.
-     */
+
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int currentStored = state.get(ABSORBED_LIGHT);
         int surroundingLight = world.getLightLevel(pos);
-
         if (surroundingLight > currentStored) {
             world.setBlockState(pos, state.with(ABSORBED_LIGHT, currentStored + 1), 3);
         } else if (surroundingLight < currentStored && random.nextInt(5) == 0) {
