@@ -74,6 +74,13 @@ public class SaltBlock extends Block {
         world.scheduleBlockTick(pos, this, 20);
     }
 
+    @Override
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        super.randomTick(state, world, pos, random);
+        if (!world.getBlockTickScheduler().isQueued(pos, this)) {
+            world.scheduleBlockTick(pos, this, 20);
+        }
+    }
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
