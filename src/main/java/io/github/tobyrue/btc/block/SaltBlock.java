@@ -53,7 +53,6 @@ public class SaltBlock extends Block {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int currentStored = state.get(ABSORBED_LIGHT);
-        boolean isSuperheated = isHeatSource(world.getBlockState(pos.down()));
 
         int maxSurroundingLight = 0;
         for (Direction direction : Direction.values()) {
@@ -64,11 +63,7 @@ public class SaltBlock extends Block {
                 maxSurroundingLight = Math.max(maxSurroundingLight, blockLight);
             }
         }
-        if (isSuperheated) {
-            if (currentStored < 15) {
-                world.setBlockState(pos, state.with(ABSORBED_LIGHT, currentStored + 1), 3);
-            }
-        } else if (maxSurroundingLight > currentStored) {
+        if (maxSurroundingLight > currentStored) {
             world.setBlockState(pos, state.with(ABSORBED_LIGHT, currentStored + 1), 3);
         } else if (maxSurroundingLight <= currentStored && currentStored > 0) {
             if (random.nextInt(3) == 0) {
@@ -79,60 +74,6 @@ public class SaltBlock extends Block {
         world.scheduleBlockTick(pos, this, 20);
     }
 
-
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        int heat = state.get(ABSORBED_LIGHT);
-        ItemStack heldItem = player.getStackInHand(player.getActiveHand());
-
-        if (heat >= 6 && !heldItem.isEmpty()) {
-            Optional<SmeltingRecipe> recipe = world.getRecipeManager()
-                    .getFirstMatch(RecipeType.SMELTING, new SingleStackRecipeInput(heldItem), world)
-                    .map(entry -> entry.value());
-
-            if (recipe.isPresent()) {
-                if (!world.isClient) {
-                    ItemStack cookedResult = recipe.get().getResult(world.getRegistryManager()).copy();
-
-                    heldItem.decrement(1);
-                    if (!player.getInventory().insertStack(cookedResult)) {
-                        player.dropItem(cookedResult, false);
-                    }
-
-                    int newHeat = Math.max(0, heat - 2);
-                    world.setBlockState(pos, state.with(ABSORBED_LIGHT, newHeat), 3);
-
-                    world.playSound(null, pos, SoundEvents.BLOCK_CAMPFIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.2F);
-                }
-                return ActionResult.SUCCESS;
-            }
-        }
-        return ActionResult.PASS;
-    }
-
-    @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        int heat = state.get(ABSORBED_LIGHT);
-        if (heat >= 8) {
-            double x = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.4;
-            double y = (double)pos.getY() + 1.0;
-            double z = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.4;
-
-            world.addParticle(ParticleTypes.SMALL_FLAME, x, y, z, 0.0, 0.02, 0.0);
-            if (random.nextInt(3) == 0) {
-                world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0, 0.01, 0.0);
-            }
-        }
-    }
-
-    private boolean isHeatSource(BlockState state) {
-        return state.isOf(Blocks.CAMPFIRE) ||
-                state.isOf(Blocks.SOUL_CAMPFIRE) ||
-                state.isOf(Blocks.LAVA) ||
-                state.isOf(Blocks.FIRE) ||
-                state.isOf(Blocks.SOUL_FIRE) ||
-                state.isOf(Blocks.MAGMA_BLOCK);
-    }
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
