@@ -1,9 +1,9 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.circuit.FPGABlock;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -26,6 +26,8 @@ public class ModBlocks {
         }
         return Registry.register(Registries.BLOCK, id, block);
     }
+
+    public static Block TOXIC_SLUDGE = Registry.register(Registries.BLOCK, BTC.identifierOf("toxic_sludge"), new FluidBlock(ModFluids.TOXIC_SLUDGE_SOURCE, AbstractBlock.Settings.copy(Blocks.WATER)));
 
     public static final Block REINFORCED_DUNGEON_TILES = register(
             new Block(AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.METAL).instrument(NoteBlockInstrument.BASEDRUM)),

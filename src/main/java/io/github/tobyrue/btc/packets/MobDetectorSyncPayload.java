@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.packets;
 
+import io.github.tobyrue.btc.BTC;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -14,7 +15,7 @@ public record MobDetectorSyncPayload(
         List<Integer> entityIds
 ) implements CustomPayload {
 
-    public static final Id<MobDetectorSyncPayload> ID = new Id<>(ModClientPackets.MOB_DETECTOR_SYNC_ID);
+    public static final Id<MobDetectorSyncPayload> ID = new Id<>(BTC.identifierOf("mob_detector_sync"));
 
     public static final PacketCodec<RegistryByteBuf, MobDetectorSyncPayload> CODEC =
             PacketCodec.tuple(

@@ -1,12 +1,12 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.client.BTCClient;
-import io.github.tobyrue.btc.client.radial_menus.RadialMenu;
 import io.github.tobyrue.btc.component.BlockPosComponent;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.packets.OpenWrenchMenuPayload;
 import io.github.tobyrue.btc.regestries.ModComponents;
-import io.github.tobyrue.btc.wires.WireBlock;
+import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.SpellDataStore;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -19,9 +19,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -29,8 +27,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class WrenchItem extends Item {
@@ -68,13 +64,15 @@ public class WrenchItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if (!world.isClient()) {
-            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
-                    (net.minecraft.server.network.ServerPlayerEntity) player,
-                    new OpenWrenchMenuPayload(hand)
-            );
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            openMenu(stack);
         }
         return TypedActionResult.success(stack);
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openMenu(ItemStack stack) {
+        BTCClient.openWrenchMenu(stack);
     }
 
     @Override

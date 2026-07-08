@@ -1,13 +1,12 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
+import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModSounds;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.component.type.FoodComponents;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -26,6 +25,7 @@ public class ModItems {
         // Return the registered item!
         return registeredItem;
     }
+    public static final Item TOXIC_SLUDGE_BUCKET = Registry.register(Registries.ITEM, BTC.identifierOf("toxic_sludge_bucket"), new BucketItem(ModFluids.TOXIC_SLUDGE_SOURCE, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1)));
 
     public static final Item COOKED_MEAT_CLUB = register(
             new Item(new Item.Settings().maxCount(1).food(ModComponents.COOKED_MEAT_CLUB).attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.STONE, 7.0F, -3.2F))),

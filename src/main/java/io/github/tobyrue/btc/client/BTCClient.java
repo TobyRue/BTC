@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.block.GunpowderBarrelBlock;
 import io.github.tobyrue.btc.block.GunpowderDustBlock;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
@@ -28,6 +29,8 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -126,6 +129,17 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        FluidRenderHandlerRegistry.INSTANCE.register(
+                ModFluids.TOXIC_SLUDGE_SOURCE,
+                ModFluids.FLOWING_TOXIC_SLUDGE,
+                SimpleFluidRenderHandler.coloredWater(0xFF553B0C)
+        );
+
+        BlockRenderLayerMap.INSTANCE.putFluids(
+                RenderLayer.getTranslucent(),
+                ModFluids.TOXIC_SLUDGE_SOURCE,
+                ModFluids.FLOWING_TOXIC_SLUDGE
+        );
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (SpyGlassCameraController.isActive() && client.player != null) {

@@ -2,6 +2,8 @@ package io.github.tobyrue.btc;
 
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.block.fluids.ModFluids;
+import io.github.tobyrue.btc.block.fluids.ToxicSludgeFluid;
 import io.github.tobyrue.btc.config.BTCConfig;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
@@ -29,11 +31,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -87,9 +91,10 @@ public class BTC implements ModInitializer {
     public static final TagKey<Structure> SURFACE_INDICATOR_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "surface_indicator"));
 
 
+    public static Block ACID;
+
     @Override
     public void onInitialize() {
-
 
         TradeOfferHelper.registerWanderingTraderOffers( 1, factories -> {
             factories.add(new BetterTrialChambersMapTrade());
@@ -106,6 +111,7 @@ public class BTC implements ModInitializer {
         ModInventoryItemRegistry.initialize();
         ModPackets.initialize();
         ModSpells.initialize();
+        ModFluids.initialize();
         ModEvents.init();
         BTCConfig.load();
         ModStructureProcessors.registerProcessors();

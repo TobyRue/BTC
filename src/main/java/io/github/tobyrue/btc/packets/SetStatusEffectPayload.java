@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.packets;
 
+import io.github.tobyrue.btc.BTC;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -17,7 +18,7 @@ public record SetStatusEffectPayload(
 ) implements CustomPayload {
 
     public static final Id<SetStatusEffectPayload> ID =
-            new Id<>(ModClientPackets.STATUS_EFFECT_SYNC);
+            new Id<>(BTC.identifierOf("status_effect_sync"));
 
     public static final PacketCodec<RegistryByteBuf, SetStatusEffectPayload> CODEC =
             PacketCodec.tuple(
