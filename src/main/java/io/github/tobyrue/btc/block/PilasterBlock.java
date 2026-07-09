@@ -144,7 +144,7 @@ public class PilasterBlock extends HorizontalConnectingBlock {
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Direction direction = ctx.getPlayerLookDirection();
+        Direction direction = ctx.getSide();
 
         World world = ctx.getWorld();
         BlockPos blockPos = ctx.getBlockPos();

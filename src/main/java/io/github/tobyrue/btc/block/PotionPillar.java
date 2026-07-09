@@ -66,7 +66,7 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Direction direction = ctx.getPlayerLookDirection();
+        Direction direction = ctx.getSide();
         BlockPos blockPos = ctx.getBlockPos();
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
 
