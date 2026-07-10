@@ -38,29 +38,35 @@ public class EnderPearlMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         var me = (EnderPearlEntity) (Object) this;
-        System.out.println(me.age);
         if (me.age > 7 && me.getOwner() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(ModStatusEffects.UNWARPING)) {
-
             this.breakEnderPearl(me);
             me.kill();
         }
     }
     @Unique
     private void breakEnderPearl(EnderPearlEntity me) {
-        var world = MinecraftClient.getInstance().world;
-        double d = me.getX();
-        double e = me.getY();
-        double f = me.getZ();
-        if (world != null) {
-            Random random = world.random;
+        //TODO
+        if (me.getWorld() instanceof ServerWorld serverWorld) {
+            double d = me.getX();
+            double e = me.getY();
+            double f = me.getZ();
+            var random = serverWorld.getRandom();
 
             for (int i = 0; i < 8; ++i) {
-                world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.ENDER_PEARL)), d, e, f, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);
+                serverWorld.spawnParticles(
+                        new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.ENDER_PEARL)),
+                        d, e, f, 1,
+                        random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15,
+                        0.0
+                );
             }
 
-            for (var g = 0.0; g < 40; g += 1) {
-                world.addParticle(ParticleTypes.PORTAL, d + Math.cos(g) * 5.0, e - 0.4, f + Math.sin(g) * 5.0, Math.cos(g) * -5.0, 0.0, Math.sin(g) * -5.0);
-                world.addParticle(ParticleTypes.PORTAL, d + Math.cos(g) * 5.0, e - 0.4, f + Math.sin(g) * 5.0, Math.cos(g) * -7.0, 0.0, Math.sin(g) * -7.0);
+            for (double g = 0.0; g < 40; g += 1.0) {
+                double xOffset = Math.cos(g) * 5.0;
+                double zOffset = Math.sin(g) * 5.0;
+
+                serverWorld.spawnParticles(ParticleTypes.PORTAL, d + xOffset, e - 0.4, f + zOffset, 1, Math.cos(g) * -5.0, 0.0, Math.sin(g) * -5.0, 1.0);
+                serverWorld.spawnParticles(ParticleTypes.PORTAL, d + xOffset, e - 0.4, f + zOffset, 1, Math.cos(g) * -7.0, 0.0, Math.sin(g) * -7.0, 1.0);
             }
         }
     }

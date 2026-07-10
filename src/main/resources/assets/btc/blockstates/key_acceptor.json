@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "is_ominous=false": {
       "model": "btc:block/key_acceptor"
+    },
+    "is_ominous=true": {
+      "model": "btc:block/key_acceptor_ominous"
     }
   }
 }

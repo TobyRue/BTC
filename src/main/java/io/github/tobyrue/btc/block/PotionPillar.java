@@ -42,7 +42,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
      * This is used to detect if the BlockBox needs to be mirrored, this is done by returning a new distance array with the opposite axis it was mirrored on with the same numbers but negative.
      */
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
-    public static final BooleanProperty USES_SELECTOR = BooleanProperty.of("uses_selector");
 
     private static final VoxelShape COLUMN_UP_DOWN = VoxelShapes.union(
             VoxelShapes.cuboid(0.25, 0, 0.25, 0.75, 1, 0.75)
@@ -57,7 +56,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
     public PotionPillar(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(USES_SELECTOR, false)
                 .with(FACING, Direction.NORTH)
                 .with(MIRRORED, BlockMirror.NONE).with(AXIS, Direction.Axis.Y)
                 .with(Properties.WATERLOGGED, false));
@@ -71,7 +69,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
 
         return this.getDefaultState()
-                .with(USES_SELECTOR, false)
                 .with(AXIS, direction.getAxis())
                 .with(FACING, Direction.NORTH)
                 .with(MIRRORED, BlockMirror.NONE)
@@ -83,7 +80,6 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
         builder.add(FACING);
         builder.add(MIRRORED);
         builder.add(AXIS);
-        builder.add(USES_SELECTOR);
         builder.add(Properties.WATERLOGGED);
     }
 

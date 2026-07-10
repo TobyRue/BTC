@@ -57,6 +57,8 @@ public class TuffGolemEntity extends GolemEntity {
     private boolean justWokeUp = false;
     private Float homeYaw = null;
     private Vec3d homePos = null;
+    private Vec3d relativeHomePos = null;
+    private boolean needsHomePositionAdjustment = false;
 
     private Vec3d lastPosition = Vec3d.ZERO;
     private int ticksStill = 0;
@@ -110,6 +112,27 @@ public class TuffGolemEntity extends GolemEntity {
         super.tick();
 
         if (!this.getWorld().isClient()) {
+            if (this.needsHomePositionAdjustment && this.relativeHomePos != null) {
+                float savedYaw = this.homeYaw != null ? this.homeYaw : this.getYaw();
+                float yawDelta = this.getYaw() - savedYaw;
+
+                double radians = Math.toRadians(-yawDelta);
+                double cos = Math.cos(radians);
+                double sin = Math.sin(radians);
+
+                double rotatedX = this.relativeHomePos.x * cos - this.relativeHomePos.z * sin;
+                double rotatedZ = this.relativeHomePos.x * sin + this.relativeHomePos.z * cos;
+
+                this.relativeHomePos = new Vec3d(rotatedX, this.relativeHomePos.y, rotatedZ);
+                this.homePos = this.getPos().add(this.relativeHomePos);
+
+                if (this.homeYaw != null) {
+                    this.homeYaw = this.getYaw() + (this.homeYaw - savedYaw);
+                }
+
+                this.needsHomePositionAdjustment = false;
+            }
+
             Vec3d currentPosition = this.getPos();
             if (currentPosition.squaredDistanceTo(lastPosition) < 0.001) {
                 ticksStill++;
@@ -163,9 +186,16 @@ public class TuffGolemEntity extends GolemEntity {
     public void setHome(Vec3d pos, float yaw) {
         this.homeYaw = yaw;
         this.homePos = pos;
+        this.relativeHomePos = pos.subtract(this.getPos());
     }
-    public void setHomePos(Vec3d pos) {
+
+    public void setHomePos(@Nullable Vec3d pos) {
         this.homePos = pos;
+        if (pos == null) {
+            this.relativeHomePos = null;
+        } else {
+            this.relativeHomePos = pos.subtract(this.getPos());
+        }
     }
 
     @Nullable
@@ -311,15 +341,22 @@ public class TuffGolemEntity extends GolemEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putBoolean("Sleeping", this.isSleeping());
         nbt.putBoolean("Dyed", this.getDyed());
+
         if (!this.getHeldItem().isEmpty()) {
             nbt.put("Item", this.getHeldItem().encode(this.getRegistryManager()));
         }
-        if (homePos != null) {
-            nbt.putDouble("HomeX", homePos.x);
-            nbt.putDouble("HomeY", homePos.y);
-            nbt.putDouble("HomeZ", homePos.z);
+
+        if (this.homePos != null) {
+            this.relativeHomePos = this.homePos.subtract(this.getPos());
+
+            nbt.putDouble("RelHomeX", this.relativeHomePos.x);
+            nbt.putDouble("RelHomeY", this.relativeHomePos.y);
+            nbt.putDouble("RelHomeZ", this.relativeHomePos.z);
         }
+
         if (homeYaw != null) {
+            float relYaw = homeYaw - this.getYaw();
+            nbt.putFloat("RelHomeYaw", relYaw);
             nbt.putFloat("HomeYaw", homeYaw);
         }
         nbt.putInt("Color", this.getColor());
@@ -330,6 +367,7 @@ public class TuffGolemEntity extends GolemEntity {
         super.readCustomDataFromNbt(nbt);
         this.setSleeping(nbt.getBoolean("Sleeping"));
         this.setDyed(nbt.getBoolean("Dyed"));
+
         ItemStack itemStack;
         if (nbt.contains("Item", 10)) {
             NbtCompound nbtCompound = nbt.getCompound("Item");
@@ -337,17 +375,27 @@ public class TuffGolemEntity extends GolemEntity {
         } else {
             itemStack = ItemStack.EMPTY;
         }
-        if (nbt.contains("Item", 10)) {
-            NbtCompound nbtCompound = nbt.getCompound("Item");
-            itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
-        }
         setHeldItem(itemStack);
-        if (nbt.contains("HomeX")) {
-            this.homePos = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
-        }
+
         if (nbt.contains("HomeYaw")) {
             this.homeYaw = nbt.getFloat("HomeYaw");
         }
+
+        if (nbt.contains("RelHomeX")) {
+            this.relativeHomePos = new Vec3d(
+                    nbt.getDouble("RelHomeX"),
+                    nbt.getDouble("RelHomeY"),
+                    nbt.getDouble("RelHomeZ")
+            );
+            this.needsHomePositionAdjustment = true;
+            this.homePos = this.getPos().add(this.relativeHomePos);
+        }
+        else if (nbt.contains("HomeX")) {
+            this.homePos = new Vec3d(nbt.getDouble("HomeX"), nbt.getDouble("HomeY"), nbt.getDouble("HomeZ"));
+            this.relativeHomePos = this.homePos.subtract(this.getPos());
+            this.needsHomePositionAdjustment = false;
+        }
+
         this.dataTracker.set(COLOR, nbt.getInt("Color"));
     }
 

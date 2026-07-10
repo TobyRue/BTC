@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.block.entities.*;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -25,7 +26,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<KeyAcceptorBlockEntity>, ModTickBlockEntityProvider<KeyAcceptorBlockEntity>, Waterloggable {
+public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<KeyAcceptorBlockEntity>, ModTickBlockEntityProvider<KeyAcceptorBlockEntity>, IDungeonWire, Waterloggable {
     private static final VoxelShape TOP_SHAPE;
     private static final VoxelShape TOP_MIDDLE_SHAPE;
     private static final VoxelShape MIDDLE_SHAPE;
@@ -36,20 +37,22 @@ public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<Ke
     private static final VoxelShape SHAPE;
 
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
+    public static final BooleanProperty STAYS_POWERED = BooleanProperty.of("stays_powered");
+    public static final BooleanProperty IS_OMINOUS = BooleanProperty.of("is_ominous");
 
     public KeyAcceptorBlock(Settings settings) {
         super(settings);
-        this.stateManager.getDefaultState().with(POWERED, false).with(Properties.WATERLOGGED, false);
+        this.stateManager.getDefaultState().with(POWERED, false).with(STAYS_POWERED, false).with(IS_OMINOUS, false).with(Properties.WATERLOGGED, false);
     }
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(POWERED, Properties.WATERLOGGED);
+        builder.add(POWERED, STAYS_POWERED, IS_OMINOUS, Properties.WATERLOGGED);
     }
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
-                .with(POWERED, false).with(Properties.WATERLOGGED, false);
+                .with(POWERED, false).with(STAYS_POWERED, false).with(IS_OMINOUS, false).with(Properties.WATERLOGGED, false);
     }
 
     static {
@@ -109,5 +112,10 @@ public class KeyAcceptorBlock extends Block implements ModBlockEntityProvider<Ke
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);
+    }
+
+    @Override
+    public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        return face == Direction.DOWN && state.getBlock() instanceof KeyAcceptorBlock && state.get(POWERED);
     }
 }

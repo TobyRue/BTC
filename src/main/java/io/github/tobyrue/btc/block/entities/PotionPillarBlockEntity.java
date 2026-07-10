@@ -100,18 +100,6 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
         markDirty();
     }
 
-    public void checkPlayersInRange(ServerWorld world, BlockPos blockPos, BlockState state, double range) {
-        if (storedEffect == null) {
-            return;
-        }
-        boolean powered = IDungeonWire.isReceivingDungeonWirePower(state, world, pos, state.get(PotionPillar.AXIS).getType().stream());
-        if (!powered) {
-            Box box = new Box(new Vec3d(pos.getX() - range, pos.getY() - range, pos.getZ() - range), new Vec3d(pos.getX() + range, pos.getY() + range, pos.getZ() + range));
-            for (var l : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
-                l.addStatusEffect(new StatusEffectInstance(storedEffect, duration, amplifier));
-            }
-        }
-    }
 
     public void checkPlayersInRangeViaSelector(ServerWorld world, BlockPos blockPos, BlockState state) {
         if (storedEffect == null) {
@@ -215,11 +203,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
             tickCounter++;
 
             if (tickCounter % 20 == 0) {
-                if (state.get(PotionPillar.USES_SELECTOR)) {
-                    checkPlayersInRangeViaSelector(serverWorld, blockPos, state);
-                } else {
-                    checkPlayersInRange(serverWorld, blockPos, state, 15.0);
-                }
+                checkPlayersInRangeViaSelector(serverWorld, blockPos, state);
             }
         }
     }
@@ -371,14 +355,7 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
                     customBox.getMaxZ() + 1
             );
         } else {
-            box = new Box(
-                    pos.getX(),
-                    pos.getY(),
-                    pos.getZ(),
-                    pos.getX(),
-                    pos.getY(),
-                    pos.getZ()
-            );
+            box = new Box(new Vec3d(pos.getX() - 15, pos.getY() - 15, pos.getZ() - 15), new Vec3d(pos.getX() + 15, pos.getY() + 15, pos.getZ() + 15));
         }
         return box;
     }
