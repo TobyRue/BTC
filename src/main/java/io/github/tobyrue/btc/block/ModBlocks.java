@@ -16,10 +16,19 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ModBlocks {
+
+    public static final Set<Identifier> BLOCK_IDENTIFIERS = new HashSet<>();
 
     public static Block register(Block block, String name, boolean shouldRegisterItem) {
         Identifier id = Identifier.of(BTC.MOD_ID, name);
+        if (BLOCK_IDENTIFIERS.contains(id)) {
+            throw new RuntimeException("Dear Tobin, you royally fucked up. Rename the duplicate block '" + name + "' because the registry does not check these things itself.");
+        }
+        BLOCK_IDENTIFIERS.add(id);
         if (shouldRegisterItem) {
             BlockItem blockItem = new BlockItem(block, new Item.Settings());
             Registry.register(Registries.ITEM, id, blockItem);
@@ -147,6 +156,59 @@ public class ModBlocks {
     public static final Block WAXED_OXIDIZED_COPPER_TRIAL_FAN = register(
             new WaxedOxidizedCopperFanBlock(AbstractBlock.Settings.copy(ModBlocks.OXIDIZED_COPPER_TRIAL_FAN)),
             "waxed_oxidized_copper_fan",
+            true
+    );
+
+    public static final Block CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 8, Oxidizable.OxidationLevel.UNAFFECTED),
+            "charged_copper_block",
+            true
+    );
+
+    public static final Block EXPOSED_CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 4, Oxidizable.OxidationLevel.EXPOSED),
+            "exposed_charged_copper",
+            true
+    );
+
+    public static final Block WEATHERED_CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 2, Oxidizable.OxidationLevel.WEATHERED),
+            "weathered_charged_copper",
+            true
+    );
+
+    public static final Block OXIDIZED_CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 1, Oxidizable.OxidationLevel.OXIDIZED),
+            "oxidized_charged_copper",
+            true
+    );
+    public static final Block WAXED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 8),
+            "waxed_charged_copper_block",
+            true
+    );
+
+    public static final Block WAXED_EXPOSED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 4),
+            "waxed_exposed_charged_copper",
+            true
+    );
+
+    public static final Block WAXED_WEATHERED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 2),
+            "waxed_weathered_charged_copper",
+            true
+    );
+
+    public static final Block WAXED_OXIDIZED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 1),
+            "waxed_oxidized_charged_copper",
+            true
+    );
+
+    public static final Block CHARGED_REINFORCED_DUNGEON_BLOCK = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(ModBlocks.REINFORCED_DUNGEON_BLOCK), 15),
+            "charged_reinforced_dungeon_block",
             true
     );
 
