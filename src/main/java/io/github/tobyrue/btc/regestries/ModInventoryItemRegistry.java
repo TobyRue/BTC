@@ -32,6 +32,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(ModItems.BLOCK_KEY, ModItems.COPPER_WRENCH);
 
             content.addAfter(Items.SPYGLASS, ModBlocks.SPY_GLASS_BLOCK);
+            content.addAfter(Items.MILK_BUCKET, ModItems.TOXIC_SLUDGE_BUCKET);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
@@ -62,11 +63,20 @@ public class ModInventoryItemRegistry {
                     ModBlocks.DUNGEON_BUTTON, ModBlocks.DUNGEON_PRESSURE_PLATE,
                     ModBlocks.WAXED_COPPER_TRIAL_FAN, ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN,
                     ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN, ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN);
-            content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
+            content.addAfter(Blocks.STONE_BUTTON, ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON,
+                    ModBlocks.WAXED_EXPOSED_COPPER_BUTTON,
+                    ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
             content.addAfter(Blocks.DECORATED_POT, ModBlocks.FANCY_RED_POT, ModBlocks.FANCY_GREEN_POT, ModBlocks.FANCY_BLUE_POT);
 
             content.addAfter(Blocks.TARGET, ModBlocks.KILL_BALL_RECEPTOR, ModBlocks.POLISHED_TUFF_PRESSURE_PLATE);
             content.addAfter(ModBlocks.DUNGEON_PRESSURE_PLATE, ModBlocks.COPPER_TRIAL_FAN, ModBlocks.EXPOSED_COPPER_TRIAL_FAN, ModBlocks.WEATHERED_COPPER_TRIAL_FAN, ModBlocks.OXIDIZED_COPPER_TRIAL_FAN);
+
+            content.addAfter(ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON,
+                    ModBlocks.WAXED_CHARGED_COPPER,
+                    ModBlocks.WAXED_EXPOSED_CHARGED_COPPER,
+                    ModBlocks.WAXED_WEATHERED_CHARGED_COPPER,
+                    ModBlocks.WAXED_OXIDIZED_CHARGED_COPPER,
+                    ModBlocks.CHARGED_REINFORCED_DUNGEON_BLOCK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(content -> {
@@ -80,7 +90,13 @@ public class ModInventoryItemRegistry {
                     ModBlocks.WAXED_UNOXIDIZED_COPPER_BUTTON, ModBlocks.EXPOSED_COPPER_BUTTON,
                     ModBlocks.WAXED_EXPOSED_COPPER_BUTTON, ModBlocks.WEATHERED_COPPER_BUTTON,
                     ModBlocks.WAXED_WEATHERED_COPPER_BUTTON, ModBlocks.OXIDIZED_COPPER_BUTTON,
-                    ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON);
+                    ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON,
+
+                    ModBlocks.CHARGED_COPPER, ModBlocks.WAXED_CHARGED_COPPER,
+                    ModBlocks.EXPOSED_CHARGED_COPPER, ModBlocks.WAXED_EXPOSED_CHARGED_COPPER,
+                    ModBlocks.WEATHERED_CHARGED_COPPER, ModBlocks.WAXED_WEATHERED_CHARGED_COPPER,
+                    ModBlocks.OXIDIZED_CHARGED_COPPER, ModBlocks.WAXED_OXIDIZED_CHARGED_COPPER,
+                    ModBlocks.CHARGED_REINFORCED_DUNGEON_BLOCK);
 
             content.addAfter(Blocks.STONE, ModBlocks.STONE_PILLAR, ModBlocks.STONE_PILASTER);
             content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_BRICKS_PILLAR, ModBlocks.STONE_BRICKS_PILASTER);
@@ -93,6 +109,8 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.AMETHYST_BLOCK, ModBlocks.REINFORCED_DUNGEON_BLOCK,
                     ModBlocks.REINFORCED_DUNGEON_GRATE, ModBlocks.REINFORCED_DUNGEON_TILES,
                     ModBlocks.REINFORCED_DUNGEON_TILE_STAIRS, ModBlocks.REINFORCED_DUNGEON_TILE_SLAB);
+
+
         });
     }
 }
