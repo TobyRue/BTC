@@ -105,18 +105,25 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
 
                     if (canApply) {
                         if (entity instanceof SuperHappyKillBallEntity shkbEntity) {
-                            double currentSpeed = currentVel.length();
+                            Vec3d entityCenter = entity.getBoundingBox().getCenter();
 
-                            double baseFallbackSpeed = 0.75;
-                            double finalSpeed = currentSpeed > 0.001 ? currentSpeed : baseFallbackSpeed;
+                            Vec3d toEntity = entityCenter.subtract(fanFaceCenter);
+                            double projectedDistance = toEntity.dotProduct(direction);
+                            Vec3d closestPointOnRay = fanFaceCenter.add(direction.multiply(projectedDistance));
+                            double distanceToCenterLine = entityCenter.distanceTo(closestPointOnRay);
 
-                            Vec3d blastDirection = direction.normalize();
-                            if (isPulling) {
-                                blastDirection = blastDirection.multiply(-1);
+                            if (distanceToCenterLine <= 0.35) {
+                                double currentSpeed = currentVel.length();
+                                double baseFallbackSpeed = 0.75;
+                                double finalSpeed = currentSpeed > 0.001 ? currentSpeed : baseFallbackSpeed;
+
+                                Vec3d blastDirection = direction;
+                                if (isPulling) {
+                                    blastDirection = blastDirection.multiply(-1);
+                                }
+
+                                entity.setVelocity(blastDirection.multiply(finalSpeed));
                             }
-
-                            entity.setVelocity(blastDirection.multiply(finalSpeed));
-                            entity.velocityModified = true;
                         } else {
                             entity.setVelocity(currentVel.add(forceVec));
                             entity.velocityModified = true;

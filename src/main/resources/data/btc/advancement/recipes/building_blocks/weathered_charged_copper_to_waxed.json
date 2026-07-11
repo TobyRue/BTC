@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:weathered_charged_copper_to_waxed"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_weathered_charged_copper": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:weathered_charged_copper"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_weathered_charged_copper"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:weathered_charged_copper_to_waxed"
+    ]
+  }
+}

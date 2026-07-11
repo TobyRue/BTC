@@ -14,6 +14,13 @@ public class ModBlockLootTableProvider extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-        addDrop(ModBlocks.SPY_GLASS_BLOCK);
+        addDrop(ModBlocks.CHARGED_COPPER);
+        addDrop(ModBlocks.EXPOSED_CHARGED_COPPER);
+        addDrop(ModBlocks.WEATHERED_CHARGED_COPPER);
+        addDrop(ModBlocks.OXIDIZED_CHARGED_COPPER);
+        addDrop(ModBlocks.WAXED_CHARGED_COPPER);
+        addDrop(ModBlocks.WAXED_EXPOSED_CHARGED_COPPER);
+        addDrop(ModBlocks.WAXED_WEATHERED_CHARGED_COPPER);
+        addDrop(ModBlocks.WAXED_OXIDIZED_CHARGED_COPPER);
     }
 }

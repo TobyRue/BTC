@@ -57,6 +57,15 @@
   "block.btc.fancy_green_pot": "Green Fancy Pot",
   "block.btc.fancy_blue_pot": "Blue Fancy Pot",
   "block.btc.spy_glass_block": "Telescope",
+  "block.btc.charged_copper_block": "Charged Copper Block",
+  "block.btc.waxed_charged_copper_block": "Waxed Charged Copper Block",
+  "block.btc.exposed_charged_copper": "Exposed Charged Copper",
+  "block.btc.waxed_exposed_charged_copper": "Waxed Exposed Charged Copper",
+  "block.btc.weathered_charged_copper": "Weathered Charged Copper",
+  "block.btc.waxed_weathered_charged_copper": "Waxed Weathered Charged Copper",
+  "block.btc.oxidized_charged_copper": "Oxidized Charged Copper",
+  "block.btc.waxed_oxidized_charged_copper": "Waxed Oxidized Charged Copper",
+  "block.btc.charged_reinforced_dungeon_block": "Charged Reinforced Dungeon Block",
 
   "block.btc.copper_fan": "Copper Trial Fan",
   "block.btc.exposed_copper_fan": "Exposed Copper Trial Fan",
@@ -103,6 +112,7 @@
   "item.btc.cooked_meat_club": "Cooked Meat Club",
   "item.btc.raw_meat_club": "Raw Meat Club",
   "item.btc.trial_jerky": "Trial Jerky",
+  "item.btc.toxic_sludge_bucket": "Toxic Sludge Bucket",
 
   "item.btc.pet_totem": "Pet Totem",
   "item.btc.pet_totem.action.bind": "Pet Bound",

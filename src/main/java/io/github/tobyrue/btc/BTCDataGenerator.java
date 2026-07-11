@@ -17,14 +17,14 @@ public class BTCDataGenerator implements DataGeneratorEntrypoint {
 //        pack.addProvider(ModRecipeProvider::new);
 //        pack.addProvider(ModBlockLootTableProvider::new);
 //        pack.addProvider(ModBlockTagProvider::new);
-//        pack.addProvider(ModModelProvider::new);
-        pack.addProvider(ModWorldGenProvider::new);
+        pack.addProvider(ModModelProvider::new);
+//        pack.addProvider(ModWorldGenProvider::new);
     }
 
-    @Override
-    public void buildRegistry(RegistryBuilder registryBuilder) {
-        registryBuilder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, ModConfiguredFeatures::configure);
-        registryBuilder.addRegistry(RegistryKeys.PLACED_FEATURE, ModWorldPlacedFeatures::configure);
+//    @Override
+//    public void buildRegistry(RegistryBuilder registryBuilder) {
+//        registryBuilder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, ModConfiguredFeatures::configure);
+//        registryBuilder.addRegistry(RegistryKeys.PLACED_FEATURE, ModWorldPlacedFeatures::configure);
 //        registryBuilder.addRegistry(RegistryKeys.TRIM_PATTERN, ModTrimPatterns::bootstrap);
-    }
+//    }
 }

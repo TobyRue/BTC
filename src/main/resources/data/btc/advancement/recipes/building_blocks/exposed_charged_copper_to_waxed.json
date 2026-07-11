@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_exposed_charged_copper": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:exposed_charged_copper"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:exposed_charged_copper_to_waxed"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_exposed_charged_copper"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:exposed_charged_copper_to_waxed"
+    ]
+  }
+}

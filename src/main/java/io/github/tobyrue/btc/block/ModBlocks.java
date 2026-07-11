@@ -150,6 +150,59 @@ public class ModBlocks {
             true
     );
 
+    public static final Block CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 8, Oxidizable.OxidationLevel.UNAFFECTED),
+            "charged_copper_block",
+            true
+    );
+
+    public static final Block EXPOSED_CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 4, Oxidizable.OxidationLevel.EXPOSED),
+            "exposed_charged_copper",
+            true
+    );
+
+    public static final Block WEATHERED_CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 2, Oxidizable.OxidationLevel.WEATHERED),
+            "weathered_charged_copper",
+            true
+    );
+
+    public static final Block OXIDIZED_CHARGED_COPPER = register(
+            new EncasedCopperRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 1, Oxidizable.OxidationLevel.OXIDIZED),
+            "oxidized_charged_copper",
+            true
+    );
+    public static final Block WAXED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 8),
+            "charged_copper_block",
+            true
+    );
+
+    public static final Block WAXED_EXPOSED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 4),
+            "exposed_charged_copper",
+            true
+    );
+
+    public static final Block WAXED_WEATHERED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 2),
+            "weathered_charged_copper",
+            true
+    );
+
+    public static final Block WAXED_OXIDIZED_CHARGED_COPPER = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_COPPER), 1),
+            "oxidized_charged_copper",
+            true
+    );
+
+    public static final Block CHARGED_REINFORCED_DUNGEON_BLOCK = register(
+            new EncasedRedstoneBlock(AbstractBlock.Settings.copy(ModBlocks.REINFORCED_DUNGEON_BLOCK), 15),
+            "charged_reinforced_dungeon_block",
+            true
+    );
+
     public static final Block TRIAL_CORE = register(
             new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.CHIME)),
             "trial_core",
