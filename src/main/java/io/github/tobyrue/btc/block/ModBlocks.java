@@ -467,7 +467,12 @@ public class ModBlocks {
             true
     );
 
-    // --- MINEABLE HAZARDS & DUNGEON GATES ---
+    public static final Block UNSTABLE_TUFF_BRICKS = register(
+            new UnstableBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS), Blocks.GRAVEL),
+            "unstable_tuff_bricks",
+            true
+    );
+
     public static final Block DUNGEON_FLAME = register(
             new DungeonFlameBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).requiresTool().strength(4.5F, 6.0F).sounds(BlockSoundGroup.POLISHED_DEEPSLATE).emissiveLighting((state, blockView, pos) -> DungeonFlameBlock.getLuminance(state) > 0).luminance(DungeonFlameBlock::getLuminance), new DungeonFlameBlock.Config() {
                 @Override public float getDamage(boolean powered) { return powered ? 1.0f : 0.0f; }

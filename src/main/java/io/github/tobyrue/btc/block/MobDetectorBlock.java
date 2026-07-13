@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.block.entities.*;
+import io.github.tobyrue.btc.entity.custom.TrialCubeEntity;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.regestries.ModComponents;
@@ -35,6 +36,12 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
     public static final EnumProperty<DetectorType> TYPE = EnumProperty.of("detector_type", DetectorType.class);
 
     public enum DetectorType implements StringIdentifiable {
+        TRIAL_CUBE("trial_cube") {
+            @Override
+            public boolean canSee(Entity entity) {
+                return entity instanceof TrialCubeEntity;
+            }
+        },
         HOSTILE("hostile") {
             @Override
             public boolean canSee(Entity entity) {

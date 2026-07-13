@@ -101,7 +101,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.STONE, ModBlocks.STONE_PILLAR, ModBlocks.STONE_PILASTER);
             content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_BRICKS_PILLAR, ModBlocks.STONE_BRICKS_PILASTER);
             content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_BRICKS_PILLAR, ModBlocks.CRACKED_STONE_BRICKS_PILASTER);
-            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_PILLAR, ModBlocks.TUFF_PILASTER);
+            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.UNSTABLE_TUFF_BRICKS, ModBlocks.TUFF_PILLAR, ModBlocks.TUFF_PILASTER);
             content.addAfter(Blocks.CHISELED_TUFF_BRICKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR, ModBlocks.CHISELED_TUFF_BRICKS_PILASTER);
             content.addAfter(Blocks.POLISHED_TUFF, ModBlocks.POLISHED_TUFF_PILLAR, ModBlocks.POLISHED_TUFF_PILASTER);
             content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR, ModBlocks.TUFF_BRICK_PILASTER);

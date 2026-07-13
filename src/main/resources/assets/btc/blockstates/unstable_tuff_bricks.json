@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "btc:block/unstable_tuff_bricks"
+    }
+  }
+}

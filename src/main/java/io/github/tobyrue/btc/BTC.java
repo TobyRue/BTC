@@ -69,6 +69,7 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
     public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
     public static final TagKey<EntityType<?>> PET_TOTEM_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "pet_totem_whitelist"));
+    public static final TagKey<EntityType<?>> UNSTABLE_BLOCK_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "unstable_block_whitelist"));
 
     public static final StructureProcessorType<BookshelfProcessor> BOOKSHELF_PROCESSOR =
             Registry.register(Registries.STRUCTURE_PROCESSOR, Identifier.of("btc", "bookshelf_processor"), () -> BookshelfProcessor.CODEC);
