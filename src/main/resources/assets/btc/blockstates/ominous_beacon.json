@@ -1,28 +1,80 @@
 {
   "variants": {
-    "facing=down": {
+    "facing=down,beacon_mode=decorative": {
       "model": "btc:block/ominous_beacon",
       "x": 180
     },
-    "facing=east": {
+    "facing=east,beacon_mode=decorative": {
       "model": "btc:block/ominous_beacon",
       "x": 90,
       "y": 90
     },
-    "facing=north": {
+    "facing=north,beacon_mode=decorative": {
       "model": "btc:block/ominous_beacon",
       "x": 90
     },
-    "facing=south": {
+    "facing=south,beacon_mode=decorative": {
       "model": "btc:block/ominous_beacon",
       "x": 90,
       "y": 180
     },
-    "facing=up": {
+    "facing=up,beacon_mode=decorative": {
       "model": "btc:block/ominous_beacon"
     },
-    "facing=west": {
+    "facing=west,beacon_mode=decorative": {
       "model": "btc:block/ominous_beacon",
+      "x": 90,
+      "y": 270
+    },
+    "facing=down,beacon_mode=receiver": {
+      "model": "btc:block/ominous_beacon_output",
+      "x": 180
+    },
+    "facing=east,beacon_mode=receiver": {
+      "model": "btc:block/ominous_beacon_output",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,beacon_mode=receiver": {
+      "model": "btc:block/ominous_beacon_output",
+      "x": 90
+    },
+    "facing=south,beacon_mode=receiver": {
+      "model": "btc:block/ominous_beacon_output",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,beacon_mode=receiver": {
+      "model": "btc:block/ominous_beacon_output"
+    },
+    "facing=west,beacon_mode=receiver": {
+      "model": "btc:block/ominous_beacon_output",
+      "x": 90,
+      "y": 270
+    },
+    "facing=down,beacon_mode=sender": {
+      "model": "btc:block/ominous_beacon_input",
+      "x": 180
+    },
+    "facing=east,beacon_mode=sender": {
+      "model": "btc:block/ominous_beacon_input",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,beacon_mode=sender": {
+      "model": "btc:block/ominous_beacon_input",
+      "x": 90
+    },
+    "facing=south,beacon_mode=sender": {
+      "model": "btc:block/ominous_beacon_input",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,beacon_mode=sender": {
+      "model": "btc:block/ominous_beacon_input"
+    },
+    "facing=west,beacon_mode=sender": {
+      "model": "btc:block/ominous_beacon_input",
       "x": 90,
       "y": 270
     }

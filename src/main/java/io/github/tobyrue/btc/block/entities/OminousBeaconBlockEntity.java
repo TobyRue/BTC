@@ -96,6 +96,8 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                 world.setBlockState(pos, state.with(OminousBeaconBlock.POWERED, shouldBePoweredBySender), 3);
                 world.updateNeighbors(pos, state.getBlock());
             }
+        } else if (myMode == BeaconMode.DECORATIVE && !myPower) {
+            world.setBlockState(pos, state.with(OminousBeaconBlock.POWERED, true), 3);
         }
 
         for (int l = 1; l < this.beamLength; l++) {
@@ -120,16 +122,22 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
     }
 
     private boolean canConnect(BeaconMode self, boolean selfPowered, BeaconMode target, boolean targetPowered) {
+        if (self == BeaconMode.DECORATIVE && target == BeaconMode.DECORATIVE) {
+            return true;
+        }
+        boolean effectiveSelfPowered = (self == BeaconMode.DECORATIVE) || selfPowered;
+        boolean effectiveTargetPowered = (target == BeaconMode.DECORATIVE) || targetPowered;
+
         if (self == BeaconMode.SENDER && target == BeaconMode.SENDER) {
-            return selfPowered || targetPowered;
+            return effectiveSelfPowered || effectiveTargetPowered;
         }
         if (self == BeaconMode.RECEIVER && target == BeaconMode.RECEIVER) {
             return true;
         }
         if (self == BeaconMode.SENDER) {
-            return selfPowered;
+            return effectiveSelfPowered;
         } else {
-            return targetPowered;
+            return effectiveTargetPowered;
         }
     }
 

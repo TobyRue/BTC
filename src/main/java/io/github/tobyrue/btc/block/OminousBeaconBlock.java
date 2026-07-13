@@ -30,10 +30,14 @@ public class OminousBeaconBlock extends BlockWithEntity implements ModBlockEntit
 
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        if (state.get(BEACON_MODE) == BeaconMode.DECORATIVE) {
+            return false;
+        }
         return state.get(POWERED) && state.get(BEACON_MODE) == BeaconMode.RECEIVER;
     }
 
     public enum BeaconMode implements StringIdentifiable {
+        DECORATIVE("decorative"),
         RECEIVER("receiver"),
         SENDER("sender");
 
@@ -47,7 +51,7 @@ public class OminousBeaconBlock extends BlockWithEntity implements ModBlockEntit
         this.setDefaultState(this.stateManager.getDefaultState()
                 .with(FACING, Direction.UP)
                 .with(POWERED, false)
-                .with(BEACON_MODE, BeaconMode.RECEIVER));
+                .with(BEACON_MODE, BeaconMode.DECORATIVE));
     }
 
     @Override
@@ -60,7 +64,7 @@ public class OminousBeaconBlock extends BlockWithEntity implements ModBlockEntit
         return this.getDefaultState()
                 .with(FACING, ctx.getPlayerLookDirection().getOpposite())
                 .with(POWERED, false)
-                .with(BEACON_MODE, BeaconMode.RECEIVER);
+                .with(BEACON_MODE, BeaconMode.DECORATIVE);
     }
 
     @Override
