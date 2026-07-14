@@ -12,6 +12,7 @@ import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -25,11 +26,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
 
-public class WireBlock extends Block implements ModBlockEntityProvider<WireBlockEntity>, IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper {
+public class WireBlock extends Block implements ModBlockEntityProvider<WireBlockEntity>, IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper, IOnBlockUpdate {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     /**
@@ -174,18 +176,18 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         builder.add(FACING);
         builder.add(MIRRORED);
     }
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        this.onUpdate(world, pos, state);
+    }
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (world.isClient) return;
+        this.onUpdate(world, pos, state);
 
         if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            if (wire.getDelay(world, state, pos) == 0) {
-                wire.updatePower();
-            } else if (!world.getBlockTickScheduler().isQueued(pos, this)) {
-                world.scheduleBlockTick(pos, this, wire.getDelay(world, state, pos));
-            }
-
             Direction currentFacing = state.get(FACING);
             BlockMirror currentMirror = state.get(MIRRORED);
 
@@ -242,58 +244,21 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         if (oldDir.getOpposite() == newDir) return BlockRotation.CLOCKWISE_180;
         return BlockRotation.COUNTERCLOCKWISE_90;
     }
-//    @Override
-//    public ActionResult onWrenchUse(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction hitSide) {
-//
-//        if (!(world.getBlockEntity(pos) instanceof WireBlockEntity wire) || !stack.isOf(ModItems.COPPER_WRENCH)) {
-//            return ActionResult.PASS;
-//        }
-//
-//        IWrenchType type = stack.getOrDefault(ModComponents.WRENCH_TYPE, WrenchType.ROTATE);
-//
-//        if (type == WrenchType.WIRE) {
-//            wire.cycleConnection(hitSide, world, state, pos);
-//            if (world.isClient) {
-//                player.sendMessage(Text.translatable("block.btc.wire.change_connection",
-//                        Text.translatable("block.btc.wire.face." + hitSide.asString()),
-//                        Text.translatable("block.btc.wire.connection." + wire.getConnection(hitSide, world, state, pos).asString())), true);
-//            }
-//            return ActionResult.SUCCESS;
-//        } else if (type == WrenchType.WIRE_OPERATOR) {
-//            wire.cycleOperator(world, state, pos);
-//            if (world.isClient) {
-//                player.sendMessage(Text.translatable("block.btc.wire.change_operator",
-//                        Text.translatable("block.btc.wire.operator." + wire.getOperator(world, state, pos).asString())), true);
-//            }
-//            return ActionResult.SUCCESS;
-//        } else if (type == WrenchType.WIRE_DELAY) {
-//            int newDelay;
-//            if (hand == Hand.MAIN_HAND) {
-//                newDelay = player.isSneaking() ? wire.getDelay(world, state, pos) - 1 % 8 : (wire.getDelay(world, state, pos) + 1) % 8;
-//            } else {
-//                newDelay = 0;
-//            }
-//            wire.setDelay(newDelay, world, state, pos);
-//            if (world.isClient) {
-//                player.sendMessage(Text.translatable("block.btc.wire.delay.change_delay", newDelay), true);
-//            }
-//            return ActionResult.SUCCESS;
-//        } else if (hand == Hand.MAIN_HAND && type == WrenchType.WIRE_COMPLEX) {
-//            Direction dir = stack.getOrDefault(ModComponents.WRENCH_DIRECTION, Direction.UP);
-//
-//            var next = wire.cycleConnection(dir, world, state, pos);
-//
-//            if (world.isClient) {
-//                player.sendMessage(Text.translatable("block.btc.wire.change_connection", Text.translatable("block.btc.wire.face." + dir), Text.translatable("block.btc.wire.connection." + next.name)), true);
-//            }
-//            return ActionResult.SUCCESS;
-//        }
-//
-//        return ActionResult.CONSUME;
-//    }
+
 
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
         return world.getBlockEntity(pos) instanceof WireBlockEntity wireBlock && wireBlock.isEmittingDungeonWirePower(state, world, pos, face);
+    }
+
+    @Override
+    public void onUpdate(World world, BlockPos pos, BlockState state) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
+            if (wire.getDelay(world, state, pos) == 0) {
+                wire.updatePower();
+            } else if (!world.getBlockTickScheduler().isQueued(pos, this)) {
+                world.scheduleBlockTick(pos, this, wire.getDelay(world, state, pos));
+            }
+        }
     }
 }

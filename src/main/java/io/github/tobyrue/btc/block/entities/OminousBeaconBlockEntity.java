@@ -7,9 +7,6 @@ import io.github.tobyrue.btc.entity.custom.TrialCubeEntity;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import io.github.tobyrue.btc.block.OminousBeaconBlock;
 import io.github.tobyrue.btc.block.OminousBeaconBlock.BeaconMode;
-import io.github.tobyrue.btc.wires.IDungeonWire;
-import io.github.tobyrue.btc.wires.WireBlockEntityRenderer;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -75,7 +72,7 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
                     boolean isMaster = false;
                     if (myMode == BeaconMode.SENDER && targetMode == BeaconMode.RECEIVER) {
                         isMaster = true;
-                    } else if (myMode == targetMode) {
+                    } else if (myMode == BeaconMode.DECORATIVE && targetMode == BeaconMode.DECORATIVE) {
                         isMaster = (pos.getX() < offsetPos.getX() || pos.getY() < offsetPos.getY() || pos.getZ() < offsetPos.getZ());
                     }
 
@@ -100,24 +97,25 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             world.setBlockState(pos, state.with(OminousBeaconBlock.POWERED, true), 3);
         }
 
-        for (int l = 1; l < this.beamLength; l++) {
-            var offsetPos = pos.offset(direction, l);
-            var offsetState = world.getBlockState(offsetPos);
-            if (offsetState.getOpacity(world, offsetPos) < 15 || offsetState.isIn(BTC.OMINOUS_BEACON_IGNORES)) {
-                continue;
-            } else if (!offsetState.isIn(BTC.STOPS_OMINOUS_BEACON)) {
-                world.breakBlock(offsetPos, true);
+        if (this.beamSegments.size() > 0 && this.beamLength > 0) {
+            for (int l = 1; l < this.beamLength; l++) {
+                var offsetPos = pos.offset(direction, l);
+                var offsetState = world.getBlockState(offsetPos);
+                if (offsetState.getOpacity(world, offsetPos) < 15 || offsetState.isIn(BTC.OMINOUS_BEACON_IGNORES)) {
+                    continue;
+                } else if (!offsetState.isIn(BTC.STOPS_OMINOUS_BEACON)) {
+                    world.breakBlock(offsetPos, true);
+                }
             }
-        }
 
-        if (this.beamLength > 0) {
             Box beamBox = new Box(pos.toCenterPos(), pos.offset(direction, this.beamLength).toCenterPos()).expand(0.5);
             world.getNonSpectatingEntities(TrialCubeEntity.class, beamBox).forEach(Entity::kill);
-            world.getNonSpectatingEntities(LivingEntity.class, beamBox)
-                    .forEach(entity -> entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f));
 
             world.getNonSpectatingEntities(LivingEntity.class, beamBox)
-                    .forEach(entity -> entity.setOnFireFor(3));
+                    .forEach(entity -> {
+                        entity.damage(ModDamageTypes.of(world, ModDamageTypes.BEACON_BURN), 2.0f);
+                        entity.setOnFireFor(3);
+                    });
         }
     }
 
@@ -125,20 +123,15 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
         if (self == BeaconMode.DECORATIVE && target == BeaconMode.DECORATIVE) {
             return true;
         }
-        boolean effectiveSelfPowered = (self == BeaconMode.DECORATIVE) || selfPowered;
-        boolean effectiveTargetPowered = (target == BeaconMode.DECORATIVE) || targetPowered;
 
-        if (self == BeaconMode.SENDER && target == BeaconMode.SENDER) {
-            return effectiveSelfPowered || effectiveTargetPowered;
+        if (self == BeaconMode.SENDER && target == BeaconMode.RECEIVER) {
+            return selfPowered;
         }
-        if (self == BeaconMode.RECEIVER && target == BeaconMode.RECEIVER) {
-            return true;
+        if (self == BeaconMode.RECEIVER && target == BeaconMode.SENDER) {
+            return targetPowered;
         }
-        if (self == BeaconMode.SENDER) {
-            return effectiveSelfPowered;
-        } else {
-            return effectiveTargetPowered;
-        }
+
+        return false;
     }
 
     public void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
