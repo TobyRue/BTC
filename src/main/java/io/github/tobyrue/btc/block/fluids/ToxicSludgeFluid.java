@@ -8,6 +8,9 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.state.StateManager;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 
 public abstract class ToxicSludgeFluid extends AbstractFluid {
@@ -27,6 +30,11 @@ public abstract class ToxicSludgeFluid extends AbstractFluid {
     }
 
     @Override
+    protected boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
+        return direction == Direction.DOWN && !fluid.matchesType(this);
+    }
+
+    @Override
     protected BlockState toBlockState(FluidState state) {
         return ModBlocks.TOXIC_SLUDGE.getDefaultState().with(FluidBlock.LEVEL, getBlockStateLevel(state));
     }
@@ -43,10 +51,8 @@ public abstract class ToxicSludgeFluid extends AbstractFluid {
 
     @Override
     public int getTickRate(WorldView world) {
-        return 5;
+        return 10;
     }
-
-
 
     public static class Flowing extends ToxicSludgeFluid {
         @Override

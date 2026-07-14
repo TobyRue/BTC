@@ -41,7 +41,7 @@ public class ModBlocks {
     public static final Block TOXIC_SLUDGE = Registry.register(
             Registries.BLOCK,
             BTC.identifierOf("toxic_sludge"),
-            new ToxicSludgeBlock(ModFluids.TOXIC_SLUDGE_SOURCE, Block.Settings.create())
+            new ToxicSludgeBlock(ModFluids.TOXIC_SLUDGE_SOURCE, Block.Settings.copy(Blocks.WATER))
     );
 
     public static final Block REINFORCED_DUNGEON_TILES = register(
