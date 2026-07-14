@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:waxed_charged_copper_from_redstone"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_waxed_copper_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:waxed_copper_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_waxed_copper_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:waxed_charged_copper_from_redstone"
+    ]
+  }
+}

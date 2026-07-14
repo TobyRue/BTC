@@ -53,7 +53,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.MACE, ModItems.STAFF, ModItems.WIND_STAFF, ModItems.FIRE_STAFF, ModItems.EARTH_STAFF, ModItems.WATER_STAFF, ModItems.DRAGON_STAFF, ModItems.SPELL_BOOK);
             content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST);
             content.addAfter(Items.CROSSBOW, ModItems.SCOPED_CROSSBOW);
-            content.addAfter(Items.TOTEM_OF_UNDYING, ModItems.PET_TOTEM);
+            content.addAfter(Items.TOTEM_OF_UNDYING, ModItems.PET_CHARM);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {

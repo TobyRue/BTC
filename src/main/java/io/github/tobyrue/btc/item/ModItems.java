@@ -59,9 +59,9 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1)),
             "unbreakable_upgrade_template"
     );
-    public static final Item PET_TOTEM = register(
-            new PetTotemItem(new Item.Settings().maxCount(1)),
-            "pet_totem"
+    public static final Item PET_CHARM = register(
+            new PetCharmItem(new Item.Settings().maxCount(1)),
+            "pet_charm"
     );
     public static final Item BLOCK_KEY = register(
             new BlockKeyItem(new Item.Settings().maxCount(1)),
@@ -166,6 +166,6 @@ public class ModItems {
 
 
     public static void initialize() {
-
+        Registries.ITEM.addAlias(BTC.identifierOf("pet_totem"), BTC.identifierOf("pet_charm"));
     }
 }

@@ -46,6 +46,8 @@ public abstract class ToxicSludgeFluid extends AbstractFluid {
         return 5;
     }
 
+
+
     public static class Flowing extends ToxicSludgeFluid {
         @Override
         protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {

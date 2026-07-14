@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "btc:item/pet_totem",
-    "layer1": "btc:item/pet_totem_eyes",
-    "layer2": "btc:item/pet_totem_overlay"
-  }
-}

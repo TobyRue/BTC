@@ -31,6 +31,14 @@
     "btc:dungeon_flame",
     "btc:deep_flame",
     "btc:fortress_flame",
-    "btc:dungeon_door"
+    "btc:dungeon_door",
+    "btc:charged_copper_block",
+    "btc:exposed_charged_copper",
+    "btc:weathered_charged_copper",
+    "btc:oxidized_charged_copper",
+    "btc:waxed_charged_copper_block",
+    "btc:waxed_exposed_charged_copper",
+    "btc:waxed_weathered_charged_copper",
+    "btc:waxed_oxidized_charged_copper"
   ]
 }

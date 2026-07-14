@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
@@ -42,8 +43,10 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.FluidRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
@@ -129,12 +132,17 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
         FluidRenderHandlerRegistry.INSTANCE.register(
                 ModFluids.TOXIC_SLUDGE_SOURCE,
                 ModFluids.FLOWING_TOXIC_SLUDGE,
-                SimpleFluidRenderHandler.coloredWater(0xFF553B0C)
+                new SimpleFluidRenderHandler(
+                        BTC.identifierOf("block/toxic_sludge_still"),
+                        BTC.identifierOf("block/toxic_sludge_flow"),
+                        BTC.identifierOf("block/toxic_sludge_overlay"),
+                        0xFF553B0C
+                )
         );
-
         BlockRenderLayerMap.INSTANCE.putFluids(
                 RenderLayer.getTranslucent(),
                 ModFluids.TOXIC_SLUDGE_SOURCE,
@@ -450,7 +458,7 @@ public class BTCClient implements ClientModInitializer {
 
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
-            if (tintIndex == 1 && stack.getItem() instanceof PetTotemItem) {
+            if (tintIndex == 1 && stack.getItem() instanceof PetCharmItem) {
                 if (stack.contains(ModComponents.STORED_MOB_UUID)) {
                     try {
                         return 0xFF000000 | Integer.parseInt(Objects.requireNonNull(stack.get(ModComponents.STORED_MOB_UUID)).toString(), 0, 6, 16) & 0xFFF0F0F0;
@@ -461,7 +469,7 @@ public class BTCClient implements ClientModInitializer {
                 }
             }
             return 0xFFFFFFFF;
-        }, ModItems.PET_TOTEM);
+        }, ModItems.PET_CHARM);
 
 
         ModelPredicateProviderRegistry.register(ModItems.SPELLSTONE, Identifier.ofVanilla("spelltype"),
