@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.client.BTCClient;
+import io.github.tobyrue.btc.entity.ModEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChainBlock;
@@ -71,6 +72,11 @@ public class MineEntity extends Entity {
 
     public MineEntity(EntityType<?> type, World world) {
         super(type, world);
+    }
+    public MineEntity(BlockPos pos, World world, CopperGolemEntity.Oxidation oxidation) {
+        this(ModEntities.MINE, world);
+        setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        setOxidation(oxidation);
     }
 
     @Override
@@ -231,8 +237,7 @@ public class MineEntity extends Entity {
 
     protected static boolean doesEntityTrigger(final Entity entity) {
         return !(entity instanceof FishingBobberEntity) && !(entity instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) && (
-                entity instanceof LivingEntity
-                || entity instanceof ProjectileEntity
+                entity instanceof ProjectileEntity
                 || entity instanceof ItemEntity
                 || entity instanceof VehicleEntity
                 || entity instanceof FallingBlockEntity

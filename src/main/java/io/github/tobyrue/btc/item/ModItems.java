@@ -163,7 +163,10 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(ModSounds.CRYSTAL_FOREST_KEY)),
             "crystal_forest_music_disc"
     );
-
+    public static final Item SEA_MINE = register(
+            new SeaMineItem(new Item.Settings()),
+            "sea_mine"
+    );
 
     public static void initialize() {
         Registries.ITEM.addAlias(BTC.identifierOf("pet_totem"), BTC.identifierOf("pet_charm"));

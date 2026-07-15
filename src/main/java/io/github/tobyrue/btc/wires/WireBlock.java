@@ -181,7 +181,7 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         super.onPlaced(world, pos, state, placer, itemStack);
         this.onUpdate(world, pos, state);
     }
-
+//TODO WORKS FOR UPDATE BUT CLOCK SHIT DOESNT
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (world.isClient) return;
@@ -208,6 +208,36 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
             }
         }
     }
+//TODO WORKS FOR CLOCK BUT WONT UPDATE CORRECTLY
+//    @Override
+//    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+//        if (world.isClient) return;
+//
+//        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
+//            Direction fromDir = Direction.getFacing(
+//                    sourcePos.getX() - pos.getX(),
+//                    sourcePos.getY() - pos.getY(),
+//                    sourcePos.getZ() - pos.getZ()
+//            );
+//
+//            WireBlock.ConnectionType connType = wire.getConnection(fromDir, world, state, pos);
+//            if (connType == ConnectionType.INPUT || connType == ConnectionType.REDSTONE_INPUT) {
+//
+//                Direction currentFacing = state.get(FACING);
+//                BlockMirror currentMirror = state.get(MIRRORED);
+//
+//                if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
+//                    if (currentMirror != BlockMirror.NONE) wire.mirrorConnections(currentMirror);
+//                    if (currentFacing != Direction.NORTH) wire.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
+//
+//                    BlockState newState = state.with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE);
+//                    world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
+//                }
+//
+//                this.onUpdate(world, pos, state);
+//            }
+//        }
+//    }
 
     @Override
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {

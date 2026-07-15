@@ -112,6 +112,9 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         this.operator = op;
         markDirty();
         updatePower();
+        if (!world.isClient()) {
+            world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
+        }
     }
 
     @Override
@@ -124,6 +127,9 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         this.delay = delay;
         markDirty();
         updatePower();
+        if (!world.isClient()) {
+            world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
+        }
     }
 
     @Override
@@ -150,6 +156,9 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         connections.put(face, connectionType);
         markDirty();
         updatePower();
+        if (!world.isClient()) {
+            world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
+        }
     }
 
     @Override

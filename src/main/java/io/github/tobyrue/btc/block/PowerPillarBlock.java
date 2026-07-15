@@ -207,7 +207,7 @@ public class PowerPillarBlock extends Block implements Waterloggable, IDungeonWi
         if (!world.isClient) {
             if (state.get(DELAY) == 0) {
                 this.updatePower(world, pos, state);
-            } else {
+            } else if (!world.getBlockTickScheduler().isQueued(pos, this)) {
                 world.scheduleBlockTick(pos, this, state.get(DELAY));
             }
         }
