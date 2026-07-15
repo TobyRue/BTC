@@ -42,6 +42,12 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(BonfireSyncPayload.ID, BonfireSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
 
 
         ServerPlayNetworking.registerGlobalReceiver(

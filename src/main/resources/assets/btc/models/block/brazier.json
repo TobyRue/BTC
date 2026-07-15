@@ -4,7 +4,7 @@
 	"textures": {
 		"0": "minecraft:block/magma",
 		"1": "minecraft:block/polished_deepslate",
-		"particle": "minecraft:block/polished_deepslate"
+		"particle": "minecraft:block/polished_tuff"
 	},
 	"elements": [
 		{

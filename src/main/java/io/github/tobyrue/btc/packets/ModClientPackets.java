@@ -36,12 +36,6 @@ import java.util.Objects;
 public class ModClientPackets {
 
     public static void initialize() {
-        PayloadTypeRegistry.playS2C().register(BonfireSyncPayload.ID, BonfireSyncPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
 
 
         ClientPlayNetworking.registerGlobalReceiver(
@@ -67,53 +61,41 @@ public class ModClientPackets {
                     var player = context.player();
                     var stack = player.getMainHandStack();
                     var item = stack.getItem();
-                    //TODO crashes on server not on single player
-                    var server = client.getServer().getOverworld().getServer();
-
-                    SpellPersistentState spellState = SpellPersistentState.get(server);
-                    PlayerSpellData playerData = spellState.getPlayerData(client.player);
 
                     if (item instanceof MinimalPredefinedSpellsItem minimal) {
-                        var spells = PredefinedSpellsItem.getKnownSpells(playerData);
+                        List<RadialNoHoverValues.PrefixValueNoHover> spellValues = new ArrayList<>();
 
-                        var spellValues = spells.stream()
-                                .map(inst -> {
+                        for (int i = 0; i < payload.spellNames().size(); i++) {
+                            String rawName = payload.spellNames().get(i);
+                            String spellId = payload.spellIds().get(i);
+                            String key = rawName.replaceAll(".*'([^']+)'.*", "$1");
 
-                                    String raw = inst.spell().getName(inst.args()).toString();
+                            String commandPrefix = "selectspell " + spellId + " {} ";
+                            List<RadialNoHoverValues.SuffixValueNoHover> suffixValues =
+                                    java.util.stream.IntStream.rangeClosed(0, 5)
+                                            .mapToObj(j -> new RadialNoHoverValues.SuffixValueNoHover(
+                                                    Text.literal(String.valueOf(j + 1)).formatted(Formatting.BLACK),
+                                                    String.valueOf(j)
+                                            )).toList();
 
-                                    String key = raw.replaceAll(".*'([^']+)'.*", "$1");
-
-                                    System.out.println("Spell: " + inst.spell() + " Args as NBT: " + GrabBag.toNBT(inst.args()));
-                                    String spellId = Spell.getId(inst.spell()).toString();
-                                    NbtCompound nbtArgs = GrabBag.toNBT(inst.args());
-                                    String commandPrefix = "selectspell " + spellId + " " + nbtArgs + " ";
-
-                                    List<RadialNoHoverValues.SuffixValueNoHover> suffixValues =
-                                            java.util.stream.IntStream.rangeClosed(0, 5)
-                                                    .mapToObj(i -> new RadialNoHoverValues.SuffixValueNoHover(
-                                                            Text.literal(String.valueOf(i + 1)).formatted(Formatting.BLACK),
-                                                            String.valueOf(i)  // suffixClick
-                                                    ))
-                                                    .toList();
-
-                                    return new RadialNoHoverValues.PrefixValueNoHover(
-                                            Text.translatable(key, inst.args()).formatted(Formatting.BLACK),
-                                            commandPrefix,
-                                            suffixValues
-                                    );
-                                })
-                                .toList();
+                            spellValues.add(new RadialNoHoverValues.PrefixValueNoHover(
+                                    Text.translatable(key).formatted(Formatting.BLACK),
+                                    commandPrefix,
+                                    suffixValues
+                            ));
+                        }
 
                         int maxSlots = spellValues.size();
-
-                        client.setScreen(new RadialMenuWithPrefixNoHover(
-                                Text.translatable("radial.btc.spell.select_spell"),
-                                new ArrayList<>(spellValues),
-                                0,
-                                Math.min(maxSlots, 6),
-                                new RadialValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f),
-                                Text.translatable("radial.btc.spell.select_slot")
-                        ));
+                        client.execute(() -> {
+                            client.setScreen(new RadialMenuWithPrefixNoHover(
+                                    Text.translatable("radial.btc.spell.select_spell"),
+                                    new ArrayList<>(spellValues),
+                                    0,
+                                    Math.min(maxSlots, 6),
+                                    new RadialValues.RadialIdentifiers(BTC.identifierOf("textures/gui/honeycomb_outline_book.png"), 255f, BTC.identifierOf("textures/gui/honeycomb_book.png"), 215f, BTC.identifierOf("textures/gui/honeycomb_book_sector_"), 180f, 60, 30, 40, 6, false, true, 582, 603, 0.3f),
+                                    Text.translatable("radial.btc.spell.select_slot")
+                            ));
+                        });
                     }
                 });
         ClientPlayNetworking.registerGlobalReceiver(

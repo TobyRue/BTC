@@ -262,24 +262,31 @@ public class BellowBlock extends HorizontalFacingBlock {
             searchBox = searchBox.expand(expandX, expandY, expandZ);
 
             Direction facing = getDirection(state).getOpposite();
-            Vec3d direction = Vec3d.of(facing.getVector()).normalize();
+            Vec3d blastDirection = Vec3d.of(facing.getVector()).normalize();
 
             double forceStrength = 0.8;
-            Vec3d forceVec = direction.multiply(forceStrength);
+            Vec3d forceVec = blastDirection.multiply(forceStrength);
 
             double baseFallbackSpeed = 0.75;
-            Vec3d fanFaceCenter = pos.toCenterPos().add(direction.multiply(0.5));
+            Vec3d fanFaceCenter = pos.toCenterPos().add(blastDirection.multiply(0.5));
 
             for (var entity : world.getEntitiesByClass(Entity.class, searchBox, entity -> true)) {
                 Vec3d currentVel = entity.getVelocity();
 
                 if (entity instanceof SuperHappyKillBallEntity shkbEntity) {
-                    double currentSpeed = currentVel.length();
+                    Vec3d entityCenter = entity.getBoundingBox().getCenter();
 
-                    double finalSpeed = currentSpeed > 0.001 ? currentSpeed : baseFallbackSpeed;
+                    Vec3d toEntity = entityCenter.subtract(fanFaceCenter);
+                    double projectedDistance = toEntity.dotProduct(blastDirection);
+                    Vec3d closestPointOnRay = fanFaceCenter.add(blastDirection.multiply(projectedDistance));
+                    double distanceToCenterLine = entityCenter.distanceTo(closestPointOnRay);
 
-                    entity.setVelocity(direction.multiply(finalSpeed));
-                    entity.velocityModified = true;
+                    if (distanceToCenterLine <= 0.35) {
+                        double currentSpeed = currentVel.length();
+                        double finalSpeed = currentSpeed > 0.001 ? currentSpeed : baseFallbackSpeed;
+
+                        entity.setVelocity(blastDirection.multiply(finalSpeed));
+                    }
                 } else {
                     entity.setVelocity(currentVel.add(forceVec));
                     entity.velocityModified = true;

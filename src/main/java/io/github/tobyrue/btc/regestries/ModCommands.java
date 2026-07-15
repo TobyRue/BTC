@@ -247,13 +247,29 @@ public class ModCommands {
                 literal("openfavoritingspells").executes(context -> {
                     var source = context.getSource();
                     if (source.isExecutedByPlayer()) {
-                        ServerPlayNetworking.send(source.getPlayer(), new OpenFavoritePayload(""));
+                        if (source.getEntity() instanceof ServerPlayerEntity serverPlayer) {
+                            MinecraftServer server = serverPlayer.getServer();
+                            SpellPersistentState spellState = SpellPersistentState.get(server);
+                            PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
+
+                            var spells = PredefinedSpellsItem.getKnownSpells(playerData);
+                            List<String> spellNames = new ArrayList<>();
+                            List<String> spellIds = new ArrayList<>();
+
+                            for (var inst : spells) {
+                                spellNames.add(inst.spell().getName(inst.args()).getString());
+                                spellIds.add(Spell.getId(inst.spell()).toString());
+                            }
+
+                            ServerPlayNetworking.send(serverPlayer, new OpenFavoritePayload(spellNames, spellIds));
+                        }
                     }
                     return 1;
                 })
         ));
         SetStatusEffectCommand.register();
     }
+
 
     private static int selectSpell(final ServerCommandSource source, final Spell spell, @Nullable final NbtElement nbt, @Nullable final Integer slot) throws CommandSyntaxException {
 //        System.out.println("[DEBUG] selectSpell called with: spell=" + (spell == null ? "null" : spell.getPureName()) + ", nbt=" + nbt + ", slot=" + slot);
