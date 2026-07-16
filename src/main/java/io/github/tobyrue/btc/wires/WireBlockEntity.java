@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.wires;
 
-import io.github.tobyrue.btc.block.PowerPillarBlock;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
@@ -23,10 +22,11 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper {
+public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper, IOnBlockUpdate {
     private WireBlock.Operator operator = WireBlock.Operator.OR;
     private int delay = 0;
     private final Map<Direction, WireBlock.ConnectionType> connections = new HashMap<>();
+    private boolean scheduledPower = false;
 
     public WireBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.WIRE_BLOCK_ENTITY, pos, state);
@@ -34,14 +34,33 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
             connections.put(dir, WireBlock.ConnectionType.INPUT);
         }
     }
-
-    public void updatePower() {
+    
+    public void setPower(boolean powered) {
         if (world == null || world.isClient) return;
         var state = this.getWorld().getBlockState(this.getPos());
 
-        final boolean currentlyPowered = state.get(WireBlock.POWERED);
+        final boolean currentlyPowered = isPowered(state);
 
-        final boolean shouldBePowered = operator.apply(
+
+        if (currentlyPowered != powered) {
+            world.setBlockState(pos, getCachedState().with(WireBlock.POWERED, powered), Block.NOTIFY_ALL);
+            for (Direction dir : Direction.values()) {
+                WireBlock.ConnectionType conn = connections.get(dir);
+                BlockPos neighborPos = pos.offset(dir);
+                BlockState neighborState = world.getBlockState(neighborPos);
+
+                if (conn == WireBlock.ConnectionType.OUTPUT || conn == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
+                    if (neighborState.getBlock() instanceof IOnBlockUpdate updater) {
+                        updater.onUpdate(world, neighborPos, neighborState);
+                    }
+                    world.updateNeighbor(neighborPos, world.getBlockState(neighborPos).getBlock(), pos);
+                }
+            }
+        }
+    }
+
+    public boolean compute(World world, BlockPos pos, BlockState state) {
+        return operator.apply(
                 connections.entrySet().stream()
                         .filter(e -> e.getValue() == WireBlock.ConnectionType.INPUT || e.getValue() == WireBlock.ConnectionType.REDSTONE_INPUT)
                         .map(e -> {
@@ -52,15 +71,6 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
                                     || (e.getValue() == WireBlock.ConnectionType.REDSTONE_INPUT && world.getEmittedRedstonePower(neighborPos, direction) > 0);
                         }).toArray(Boolean[]::new)
         );
-
-        if (currentlyPowered != shouldBePowered) {
-            world.setBlockState(pos, getCachedState().with(WireBlock.POWERED, shouldBePowered), Block.NOTIFY_ALL);
-            for (Direction dir : Direction.values()) {
-                if (connections.get(dir) == WireBlock.ConnectionType.OUTPUT || connections.get(dir) == WireBlock.ConnectionType.REDSTONE_OUTPUT) {
-                    world.updateNeighbor(pos.offset(dir), world.getBlockState(pos.offset(dir)).getBlock(), pos);
-                }
-            }
-        }
     }
 
     public void rotateConnections(BlockRotation rotation) {
@@ -90,6 +100,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         super.writeNbt(nbt, registryLookup);
         nbt.putString("operator", operator.asString());
         nbt.putInt("delay", delay);
+        nbt.putBoolean("scheduledPower", scheduledPower);
         for (Direction dir : Direction.values()) {
             nbt.putString("connection_" + dir.getName(), connections.get(dir).asString());
         }
@@ -100,6 +111,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         super.readNbt(nbt, registryLookup);
         this.operator = WireBlock.Operator.valueOf(nbt.getString("operator").toUpperCase());
         this.delay = nbt.getInt("delay");
+        this.scheduledPower = nbt.getBoolean("scheduledPower");
         for (Direction dir : Direction.values()) {
             if (nbt.contains("connection_" + dir.getName())) {
                 connections.put(dir, WireBlock.ConnectionType.valueOf(nbt.getString("connection_" + dir.getName()).toUpperCase()));
@@ -111,7 +123,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
     public void setOperator(WireBlock.Operator op, World world, BlockState state, BlockPos pos) {
         this.operator = op;
         markDirty();
-        updatePower();
+        setPower(compute(world, pos, state));
         if (!world.isClient()) {
             world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
         }
@@ -126,7 +138,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
     public void setDelay(int delay,World world, BlockState state, BlockPos pos) {
         this.delay = delay;
         markDirty();
-        updatePower();
+        setPower(compute(world, pos, state));
         if (!world.isClient()) {
             world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
         }
@@ -155,7 +167,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
     public void setConnection(Direction face, WireBlock.ConnectionType connectionType, World world, BlockState state, BlockPos pos) {
         connections.put(face, connectionType);
         markDirty();
-        updatePower();
+        setPower(compute(world, pos, state));
         if (!world.isClient()) {
             world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
         }
@@ -174,10 +186,31 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
 
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
-        return state.get(WireBlock.POWERED) && this.getConnection(face, world, state, pos) == WireBlock.ConnectionType.OUTPUT;
+        return isPowered(state) && this.getConnection(face, world, state, pos) == WireBlock.ConnectionType.OUTPUT;
     }
 
     public boolean isEmittingRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction face) {
-        return state.get(WireBlock.POWERED) && this.getConnection(face, (World) world, state, pos) == WireBlock.ConnectionType.REDSTONE_OUTPUT;
+        return isPowered(state) && this.getConnection(face, (World) world, state, pos) == WireBlock.ConnectionType.REDSTONE_OUTPUT;
+    }
+
+    @Override
+    public void onUpdate(World world, BlockPos pos, BlockState state) {
+        final boolean value = this.compute(world, pos, state);
+        if (delay == 0) {
+            this.setPower(value);
+        } else {
+            if (isPowered(state) != value && world != null && !world.getBlockTickScheduler().isQueued(pos, world.getBlockState(pos).getBlock())) {
+                world.scheduleBlockTick(pos, world.getBlockState(pos).getBlock(), delay);
+                this.scheduledPower = value;
+            }
+        }
+    }
+
+    public boolean isPowered(BlockState state) {
+        return state.get(WireBlock.POWERED);
+    }
+    
+    public boolean getScheduledPower() {
+        return scheduledPower;
     }
 }

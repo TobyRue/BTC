@@ -2,25 +2,18 @@ package io.github.tobyrue.btc.wires;
 
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
-import io.github.tobyrue.btc.enums.IWrenchType;
-import io.github.tobyrue.btc.enums.WrenchType;
-import io.github.tobyrue.btc.item.IHaveWrenchActions;
-import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -34,10 +27,6 @@ import java.util.Map;
 public class WireBlock extends Block implements ModBlockEntityProvider<WireBlockEntity>, IDungeonWire, IWireDelayHelper, IWireConnectionHelper, IWireOperatorHelper, IOnBlockUpdate {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-    /**
-     * Mirrored is only switched with the last state if for example it is mirrored along North to South while the block has a facing property of north, otherwise it will not change.
-     * This is used to detect if the BlockBox needs to be mirrored, this is done by returning a new distance array with the opposite axis it was mirrored on with the same numbers but negative.
-     */
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
 
     @Override
@@ -131,14 +120,14 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
     }
 
     public enum Operator implements StringIdentifiable, ApplyOperator {
-        TRUE("true", 0x28CC3B /* Green */,args -> true),
-        FALSE("false", 0xD733C4 /* Magenta */, args -> false),
-        OR("or", 0xCCCC28 /* Yellow */,args -> Arrays.stream(args).anyMatch(b -> b)),
-        AND("and", 0xCC4128 /* Red */,args -> Arrays.stream(args).allMatch(b -> b)),
-        NOR("nor", 0x3333D7 /* Blue */,args -> !OR.apply(args)),
-        NAND("nand", 0x33BED7 /* Cyan */,args ->  !AND.apply(args)),
-        XOR("xor", 0xCC9528 /* Orange */,args -> Arrays.stream(args).filter(b -> b).toList().size() == 1), // 1 and only 1
-        XNOR("xnor", 0x8A28CC /* Purple */,args -> !XOR.apply(args));
+        TRUE("true", 0x28CC3B, args -> true),
+        FALSE("false", 0xD733C4, args -> false),
+        OR("or", 0xCCCC28, args -> Arrays.stream(args).anyMatch(b -> b)),
+        AND("and", 0xCC4128, args -> Arrays.stream(args).allMatch(b -> b)),
+        NOR("nor", 0x3333D7, args -> !OR.apply(args)),
+        NAND("nand", 0x33BED7, args -> !AND.apply(args)),
+        XOR("xor", 0xCC9528, args -> Arrays.stream(args).filter(b -> b).toList().size() == 1),
+        XNOR("xnor", 0x8A28CC, args -> !XOR.apply(args));
 
         private final String name;
         private final ApplyOperator operator;
@@ -176,77 +165,60 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         builder.add(FACING);
         builder.add(MIRRORED);
     }
+
+
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
         this.onUpdate(world, pos, state);
     }
-//TODO WORKS FOR UPDATE BUT CLOCK SHIT DOESNT
+
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (world.isClient) return;
-        this.onUpdate(world, pos, state);
 
         if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
             Direction currentFacing = state.get(FACING);
             BlockMirror currentMirror = state.get(MIRRORED);
 
             if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
-                if (currentMirror != BlockMirror.NONE) {
-                    wire.mirrorConnections(currentMirror);
-                }
-
-                if (currentFacing != Direction.NORTH) {
-                    BlockRotation rot = getRotationBetween(Direction.NORTH, currentFacing);
-                    wire.rotateConnections(rot);
-                }
+                if (currentMirror != BlockMirror.NONE) wire.mirrorConnections(currentMirror);
+                if (currentFacing != Direction.NORTH) wire.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
 
                 BlockState newState = state.with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE);
                 world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
+            }
+        }
 
-                wire.updatePower();
+        this.onUpdate(world, pos, state);
+    }
+
+
+    @Override
+    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        super.onBlockAdded(state, world, pos, oldState, moved);
+
+        if (!world.isClient && moved) {
+            this.onUpdate(world, pos, state);
+
+            for (Direction direction : Direction.values()) {
+                BlockPos neighborPos = pos.offset(direction);
+                BlockState neighborState = world.getBlockState(neighborPos);
+
+                if (neighborState.getBlock() instanceof IOnBlockUpdate updater) {
+                    updater.onUpdate(world, neighborPos, neighborState);
+                }
+                world.updateNeighbor(neighborPos, this, pos);
             }
         }
     }
-//TODO WORKS FOR CLOCK BUT WONT UPDATE CORRECTLY
-//    @Override
-//    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-//        if (world.isClient) return;
-//
-//        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-//            Direction fromDir = Direction.getFacing(
-//                    sourcePos.getX() - pos.getX(),
-//                    sourcePos.getY() - pos.getY(),
-//                    sourcePos.getZ() - pos.getZ()
-//            );
-//
-//            WireBlock.ConnectionType connType = wire.getConnection(fromDir, world, state, pos);
-//            if (connType == ConnectionType.INPUT || connType == ConnectionType.REDSTONE_INPUT) {
-//
-//                Direction currentFacing = state.get(FACING);
-//                BlockMirror currentMirror = state.get(MIRRORED);
-//
-//                if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
-//                    if (currentMirror != BlockMirror.NONE) wire.mirrorConnections(currentMirror);
-//                    if (currentFacing != Direction.NORTH) wire.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
-//
-//                    BlockState newState = state.with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE);
-//                    world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
-//                }
-//
-//                this.onUpdate(world, pos, state);
-//            }
-//        }
-//    }
-
     @Override
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
         if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            wire.updatePower();
+            wire.setPower(wire.getScheduledPower());
         }
         super.scheduledTick(state, world, pos, random);
     }
-
 
     @Override
     protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
@@ -275,7 +247,6 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         return BlockRotation.COUNTERCLOCKWISE_90;
     }
 
-
     @Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
         return world.getBlockEntity(pos) instanceof WireBlockEntity wireBlock && wireBlock.isEmittingDungeonWirePower(state, world, pos, face);
@@ -283,12 +254,23 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
 
     @Override
     public void onUpdate(World world, BlockPos pos, BlockState state) {
-        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            if (wire.getDelay(world, state, pos) == 0) {
-                wire.updatePower();
-            } else if (!world.getBlockTickScheduler().isQueued(pos, this)) {
-                world.scheduleBlockTick(pos, this, wire.getDelay(world, state, pos));
-            }
+        if (world.getBlockEntity(pos) instanceof IOnBlockUpdate wire) {
+            wire.onUpdate(world, pos, state);
+
         }
     }
+
+//    private boolean newPower(World world, BlockPos pos, BlockState state) {
+//        return world.getBlockEntity(pos) instanceof WireBlockEntity wire && wire.getOperator(world, state, pos).apply(
+//                wire.getConnections(world, state, pos).entrySet().stream()
+//                        .filter(e -> e.getValue() == ConnectionType.INPUT || e.getValue() == ConnectionType.REDSTONE_INPUT)
+//                        .map(e -> {
+//                            Direction direction = e.getKey();
+//                            BlockPos neighborPos = pos.offset(direction);
+//                            BlockState neighborState = world.getBlockState(neighborPos);
+//                            return (e.getValue() == ConnectionType.INPUT && neighborState.getBlock() instanceof IDungeonWire w && w.isEmittingDungeonWirePower(neighborState, world, neighborPos, direction.getOpposite()))
+//                                    || (e.getValue() == ConnectionType.REDSTONE_INPUT && world.getEmittedRedstonePower(neighborPos, direction) > 0);
+//                        }).toArray(Boolean[]::new)
+//        );
+//    }
 }
