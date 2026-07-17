@@ -42,12 +42,8 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
                 .with(Y_AXIS, RedstoneBridgeType.ALIGNED)
                 .with(Z_AXIS, RedstoneBridgeType.ALIGNED));
     }
-
-    @Override
-    protected int getOpacity(BlockState state, BlockView world, BlockPos pos) {
-        return 0;
-    }
     
+
     @Override
     protected boolean emitsRedstonePower(BlockState state) {
         return true;
