@@ -4,21 +4,24 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.RedstoneBridgeBlockEntity;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider<RedstoneBridgeBlockEntity> {
     public static final EnumProperty<RedstoneBridgeType> X_AXIS = EnumProperty.of("x_axis", RedstoneBridgeType.class);
     public static final EnumProperty<RedstoneBridgeType> Y_AXIS = EnumProperty.of("y_axis", RedstoneBridgeType.class);
     public static final EnumProperty<RedstoneBridgeType> Z_AXIS = EnumProperty.of("z_axis", RedstoneBridgeType.class);
+
+    public static final BooleanProperty X_POWERED = BooleanProperty.of("x_powered");
+    public static final BooleanProperty Y_POWERED = BooleanProperty.of("y_powered");
+    public static final BooleanProperty Z_POWERED = BooleanProperty.of("z_powered");
 
     @Override
     public BlockEntityType<RedstoneBridgeBlockEntity> getBlockEntityType() {
@@ -26,8 +29,8 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
     }
 
     public enum RedstoneBridgeType implements StringIdentifiable {
-        ALIGNED("aligned"),
-        INVERTED("inverted"),
+        FORWARD("forward"),
+        BACKWARD("backward"),
         NONE("none");
 
         public final String name;
@@ -38,11 +41,13 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
     public RedstoneBridgeBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(X_AXIS, RedstoneBridgeType.ALIGNED)
-                .with(Y_AXIS, RedstoneBridgeType.ALIGNED)
-                .with(Z_AXIS, RedstoneBridgeType.ALIGNED));
+                .with(X_AXIS, RedstoneBridgeType.FORWARD)
+                .with(Y_AXIS, RedstoneBridgeType.FORWARD)
+                .with(Z_AXIS, RedstoneBridgeType.FORWARD)
+                .with(X_POWERED, false)
+                .with(Y_POWERED, false)
+                .with(Z_POWERED, false));
     }
-
 
     @Override
     protected boolean emitsRedstonePower(BlockState state) {
@@ -55,9 +60,7 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
         if (world.isClient) return;
 
         if (world.getBlockEntity(pos) instanceof RedstoneBridgeBlockEntity bridgeEntity) {
-            if (bridgeEntity.updateCachedPower(world, state)) {
-                world.updateNeighbors(pos, this);
-            }
+            bridgeEntity.updateCachedPower(world, state);
         }
     }
 
@@ -67,9 +70,7 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
         if (world.isClient) return;
 
         if (world.getBlockEntity(pos) instanceof RedstoneBridgeBlockEntity bridgeEntity) {
-            if (bridgeEntity.updateCachedPower(world, state)) {
-                world.updateNeighbors(pos, this);
-            }
+            bridgeEntity.updateCachedPower(world, state);
         }
     }
 
@@ -83,7 +84,7 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(X_AXIS, Y_AXIS, Z_AXIS);
+        builder.add(X_AXIS, Y_AXIS, Z_AXIS, X_POWERED, Y_POWERED, Z_POWERED);
         super.appendProperties(builder);
     }
 }

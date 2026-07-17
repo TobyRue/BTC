@@ -1,10 +1,10 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.RedstoneBridgeBlock;
-import io.github.tobyrue.btc.block.entities.ModBlockEntities;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -16,19 +16,11 @@ public class RedstoneBridgeBlockEntity extends BlockEntity {
         super(ModBlockEntities.REDSTONE_BRIDGE_BLOCK_ENTITY, pos, state);
     }
 
-    /**
-     * Instantly returns the cached value.
-     * No active world queries mean zero risk of NullPointerExceptions or thread-access desyncs!
-     */
     public int getWeakPower(Direction direction) {
         return cachedOutputs[direction.getOpposite().getId()];
     }
 
-    /**
-     * Recalculates and caches the bridge's redstone outputs.
-     * Returns true if any of the outputs changed, signaling that we need to update neighbors.
-     */
-    public boolean updateCachedPower(World world, BlockState state) {
+    public void updateCachedPower(World world, BlockState state) {
         boolean changed = false;
 
         for (Direction dir : Direction.values()) {
@@ -43,37 +35,48 @@ public class RedstoneBridgeBlockEntity extends BlockEntity {
 
         if (changed) {
             markDirty();
+
+            boolean hasXPower = cachedOutputs[Direction.EAST.getId()] > 0 || cachedOutputs[Direction.WEST.getId()] > 0;
+            boolean hasYPower = cachedOutputs[Direction.UP.getId()] > 0 || cachedOutputs[Direction.DOWN.getId()] > 0;
+            boolean hasZPower = cachedOutputs[Direction.NORTH.getId()] > 0 || cachedOutputs[Direction.SOUTH.getId()] > 0;
+
+            BlockState newState = state
+                    .with(RedstoneBridgeBlock.X_POWERED, hasXPower)
+                    .with(RedstoneBridgeBlock.Y_POWERED, hasYPower)
+                    .with(RedstoneBridgeBlock.Z_POWERED, hasZPower);
+
+            world.setBlockState(pos, newState, 3);
+            world.updateNeighbors(pos, newState.getBlock());
         }
-        return changed;
     }
 
     private int calculateOutputPowerForSide(World world, BlockState state, Direction direction) {
         return switch (direction) {
             case EAST -> switch (state.get(RedstoneBridgeBlock.X_AXIS)) {
-                case ALIGNED -> getPowerFromSide(world, Direction.WEST);
-                case INVERTED, NONE -> 0;
+                case FORWARD -> getPowerFromSide(world, Direction.WEST);
+                case BACKWARD, NONE -> 0;
             };
             case WEST -> switch (state.get(RedstoneBridgeBlock.X_AXIS)) {
-                case INVERTED -> getPowerFromSide(world, Direction.EAST);
-                case ALIGNED, NONE -> 0;
+                case BACKWARD -> getPowerFromSide(world, Direction.EAST);
+                case FORWARD, NONE -> 0;
             };
 
             case UP -> switch (state.get(RedstoneBridgeBlock.Y_AXIS)) {
-                case ALIGNED -> getPowerFromSide(world, Direction.DOWN);
-                case INVERTED, NONE -> 0;
+                case FORWARD -> getPowerFromSide(world, Direction.DOWN);
+                case BACKWARD, NONE -> 0;
             };
             case DOWN -> switch (state.get(RedstoneBridgeBlock.Y_AXIS)) {
-                case INVERTED -> getPowerFromSide(world, Direction.UP);
-                case ALIGNED, NONE -> 0;
+                case BACKWARD -> getPowerFromSide(world, Direction.UP);
+                case FORWARD, NONE -> 0;
             };
 
             case SOUTH -> switch (state.get(RedstoneBridgeBlock.Z_AXIS)) {
-                case ALIGNED -> getPowerFromSide(world, Direction.NORTH);
-                case INVERTED, NONE -> 0;
+                case FORWARD -> getPowerFromSide(world, Direction.NORTH);
+                case BACKWARD, NONE -> 0;
             };
             case NORTH -> switch (state.get(RedstoneBridgeBlock.Z_AXIS)) {
-                case INVERTED -> getPowerFromSide(world, Direction.SOUTH);
-                case ALIGNED, NONE -> 0;
+                case BACKWARD -> getPowerFromSide(world, Direction.SOUTH);
+                case FORWARD, NONE -> 0;
             };
         };
     }
@@ -81,11 +84,21 @@ public class RedstoneBridgeBlockEntity extends BlockEntity {
     private int getPowerFromSide(World world, Direction direction) {
         BlockPos neighborPos = this.pos.offset(direction);
 
-        int power = world.getEmittedRedstonePower(neighborPos, direction);
+        return world.getEmittedRedstonePower(neighborPos, direction);
+    }
 
-        System.out.printf("[Bridge Cache System] Pos %s read raw power: %d from %s%n",
-                this.pos.toShortString(), power, direction.name());
+    @Override
+    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        nbt.putIntArray("CachedOutputs", cachedOutputs);
+    }
 
-        return power;
+    @Override
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        if (nbt.contains("CachedOutputs")) {
+            int[] savedData = nbt.getIntArray("CachedOutputs");
+            System.arraycopy(savedData, 0, this.cachedOutputs, 0, Math.min(savedData.length, this.cachedOutputs.length));
+        }
     }
 }

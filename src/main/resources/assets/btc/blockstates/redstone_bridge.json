@@ -1,0 +1,79 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "btc:block/redstone_bridge_base" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_on", "y": 270 },
+      "when": { "x_powered": true, "x_axis" : "forward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_on", "x": 90 },
+      "when": { "y_powered": true, "y_axis" : "forward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_on", "y": 0 },
+      "when": { "z_powered": true, "z_axis" : "forward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_on", "y": 90 },
+      "when": { "x_powered": true, "x_axis" : "backward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_on", "x": 270 },
+      "when": { "y_powered": true, "y_axis" : "backward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_on", "y": 180 },
+      "when": { "z_powered": true, "z_axis" : "backward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_none", "y": 90 },
+      "when": { "x_powered": true, "x_axis" : "none" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_none", "x": 90 },
+      "when": { "y_powered": true, "y_axis" : "none" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_none", "y": 0 },
+      "when": { "z_powered": true, "z_axis" : "none" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_off", "y": 270 },
+      "when": { "x_powered": false, "x_axis" : "forward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_off", "x": 90 },
+      "when": { "y_powered": false, "y_axis" : "forward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_off", "y": 0 },
+      "when": { "z_powered": false, "z_axis" : "forward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_off", "y": 90 },
+      "when": { "x_powered": false, "x_axis" : "backward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_off", "x": 270 },
+      "when": { "y_powered": false, "y_axis" : "backward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_off", "y": 180 },
+      "when": { "z_powered": false, "z_axis" : "backward" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_none", "y": 90 },
+      "when": { "x_powered": false, "x_axis" : "none" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_none", "x": 90 },
+      "when": { "y_powered": false, "y_axis" : "none" }
+    },
+    {
+      "apply": { "model": "btc:block/redstone_bridge_none", "y": 0 },
+      "when": { "z_powered": false, "z_axis" : "none" }
+    }
+  ]
+}
