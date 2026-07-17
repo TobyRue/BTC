@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.ModBlocks;
+import io.github.tobyrue.btc.block.entities.RedstoneBridgeBlockEntity;
 import io.github.tobyrue.btc.wires.WireBlockEntity;
 import io.github.tobyrue.btc.wires.circuit.FPGABlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -33,6 +34,7 @@ public class ModBlockEntities {
     public static BlockEntityType<FancyPotBlockEntity> FANCY_GREEN_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_green_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_GREEN_POT).build());
     public static BlockEntityType<FancyPotBlockEntity> FANCY_BLUE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_blue_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_BLUE_POT).build());
     public static BlockEntityType<SpyGlassBlockEntity> SPY_GLASS_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("spy_glass_block"), BlockEntityType.Builder.create(SpyGlassBlockEntity::new, ModBlocks.SPY_GLASS_BLOCK).build());
+    public static BlockEntityType<RedstoneBridgeBlockEntity> REDSTONE_BRIDGE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("redstone_bridge"), BlockEntityType.Builder.create(RedstoneBridgeBlockEntity::new, ModBlocks.REDSTONE_BRIDGE).build());
     public static void initialize() {
     }
 }

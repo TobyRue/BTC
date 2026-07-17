@@ -198,8 +198,40 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
     protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
         super.onBlockAdded(state, world, pos, oldState, moved);
 
-        if (!world.isClient && moved) {
-            this.onUpdate(world, pos, state);
+        if (!world.isClient) {
+            if (moved) {
+                world.scheduleBlockTick(pos, this, 1);
+            } else {
+                this.onUpdate(world, pos, state);
+
+                for (Direction direction : Direction.values()) {
+                    BlockPos neighborPos = pos.offset(direction);
+                    BlockState neighborState = world.getBlockState(neighborPos);
+
+                    if (neighborState.getBlock() instanceof IOnBlockUpdate updater) {
+                        updater.onUpdate(world, neighborPos, neighborState);
+                    }
+                    world.updateNeighbor(neighborPos, this, pos);
+                }
+            }
+        }
+    }
+
+//    @Override
+//    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
+//        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
+//            wire.setPower(wire.getScheduledPower());
+//        }
+//        super.scheduledTick(state, world, pos, random);
+//    }
+
+
+    @Override
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
+        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
+            wire.onUpdate(world, pos, state);
+
+            wire.setPower(wire.getScheduledPower());
 
             for (Direction direction : Direction.values()) {
                 BlockPos neighborPos = pos.offset(direction);
@@ -210,12 +242,6 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
                 }
                 world.updateNeighbor(neighborPos, this, pos);
             }
-        }
-    }
-    @Override
-    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
-        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            wire.setPower(wire.getScheduledPower());
         }
         super.scheduledTick(state, world, pos, random);
     }

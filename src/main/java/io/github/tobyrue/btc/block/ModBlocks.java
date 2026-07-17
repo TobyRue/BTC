@@ -218,6 +218,12 @@ public class ModBlocks {
             true
     );
 
+    public static final Block REDSTONE_BRIDGE = register(
+            new RedstoneBridgeBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            "redstone_bridge",
+            true
+    );
+
     public static final Block TRIAL_CORE = register(
             new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.CHIME)),
             "trial_core",

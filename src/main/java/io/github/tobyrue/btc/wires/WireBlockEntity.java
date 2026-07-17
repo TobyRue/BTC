@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -31,10 +32,10 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
     public WireBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.WIRE_BLOCK_ENTITY, pos, state);
         for (Direction dir : Direction.values()) {
-            connections.put(dir, WireBlock.ConnectionType.INPUT);
+            connections.put(dir, WireBlock.ConnectionType.NONE);
         }
     }
-    
+
     public void setPower(boolean powered) {
         if (world == null || world.isClient) return;
         var state = this.getWorld().getBlockState(this.getPos());
@@ -209,7 +210,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
     public boolean isPowered(BlockState state) {
         return state.get(WireBlock.POWERED);
     }
-    
+
     public boolean getScheduledPower() {
         return scheduledPower;
     }
