@@ -219,7 +219,7 @@ public class ModBlocks {
     );
 
     public static final Block REDSTONE_BRIDGE = register(
-            new RedstoneBridgeBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            new RedstoneBridgeBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS).solidBlock(Blocks::never)),
             "redstone_bridge",
             true
     );

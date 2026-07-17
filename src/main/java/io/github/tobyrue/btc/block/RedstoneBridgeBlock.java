@@ -42,7 +42,7 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
                 .with(Y_AXIS, RedstoneBridgeType.ALIGNED)
                 .with(Z_AXIS, RedstoneBridgeType.ALIGNED));
     }
-    
+
 
     @Override
     protected boolean emitsRedstonePower(BlockState state) {
