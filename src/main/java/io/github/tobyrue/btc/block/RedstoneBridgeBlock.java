@@ -5,10 +5,17 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.RedstoneBridgeBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -36,6 +43,14 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
         public final String name;
         RedstoneBridgeType(String name) { this.name = name; }
         @Override public String asString() { return name; }
+
+        public RedstoneBridgeType invert() {
+            return switch (this) {
+                case FORWARD -> BACKWARD;
+                case BACKWARD -> FORWARD;
+                case NONE -> NONE;
+            };
+        }
     }
 
     public RedstoneBridgeBlock(Settings settings) {
@@ -73,6 +88,61 @@ public class RedstoneBridgeBlock extends Block implements ModBlockEntityProvider
             bridgeEntity.updateCachedPower(world, state);
         }
     }
+
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        switch (hit.getSide().getAxis()) {
+            case X -> world.setBlockState(pos, state.with(X_AXIS, cycleType(state.get(X_AXIS))));
+            case Y -> world.setBlockState(pos, state.with(Y_AXIS, cycleType(state.get(Y_AXIS))));
+            case Z -> world.setBlockState(pos, state.with(Z_AXIS, cycleType(state.get(Z_AXIS))));
+        }
+        world.playSound(player, pos, SoundEvents.BLOCK_CRAFTER_CRAFT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        return ActionResult.SUCCESS;
+    }
+
+    private RedstoneBridgeType cycleType(RedstoneBridgeType type) {
+        return switch (type) {
+            case FORWARD -> RedstoneBridgeType.BACKWARD;
+            case BACKWARD -> RedstoneBridgeType.NONE;
+            case NONE -> RedstoneBridgeType.FORWARD;
+        };
+    }
+
+
+    @Override
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        RedstoneBridgeType currentX = state.get(X_AXIS);
+        RedstoneBridgeType currentZ = state.get(Z_AXIS);
+        boolean currentXPowered = state.get(X_POWERED);
+        boolean currentZPowered = state.get(Z_POWERED);
+
+        return switch (rotation) {
+            case CLOCKWISE_90 -> state
+                    .with(X_AXIS, currentZ.invert())
+                    .with(Z_AXIS, currentX)
+                    .with(X_POWERED, currentZPowered)
+                    .with(Z_POWERED, currentXPowered);
+            case CLOCKWISE_180 -> state
+                    .with(X_AXIS, currentX.invert())
+                    .with(Z_AXIS, currentZ.invert());
+            case COUNTERCLOCKWISE_90 -> state
+                    .with(X_AXIS, currentZ)
+                    .with(Z_AXIS, currentX.invert())
+                    .with(X_POWERED, currentZPowered)
+                    .with(Z_POWERED, currentXPowered);
+            default -> state;
+        };
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+        return switch (mirror) {
+            case LEFT_RIGHT -> state.with(Z_AXIS, state.get(Z_AXIS).invert());
+            case FRONT_BACK -> state.with(X_AXIS, state.get(X_AXIS).invert());
+            default -> super.mirror(state, mirror);
+        };
+    }
+
 
     @Override
     protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
