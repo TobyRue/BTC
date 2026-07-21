@@ -27,7 +27,8 @@ import java.util.HashSet;
 
 
 public class ItemPedestalBlockEntity extends BlockEntity {
-
+    private float eyeYaw = 0f;
+    private float eyePitch = 0f;
     public final HashSet<String> HASH_SET = new HashSet<>();
     private ItemStack stack = ModItems.RUBY_TRIAL_KEY.getDefaultStack();
 
@@ -38,6 +39,22 @@ public class ItemPedestalBlockEntity extends BlockEntity {
     public ItemPedestalBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ITEM_PEDESTAL_BLOCK_ENTITY, pos, state);
     }
+    public float getEyeYaw() {
+        return eyeYaw;
+    }
+
+    public void setEyeYaw(float yaw) {
+        this.eyeYaw = yaw;
+    }
+
+    public float getEyePitch() {
+        return eyePitch;
+    }
+
+    public void setEyePitch(float pitch) {
+        this.eyePitch = pitch;
+    }
+
 
     public boolean canGiveTo(PlayerEntity player) {
         var state = world.getBlockState(pos);

@@ -67,6 +67,7 @@
   "block.btc.waxed_oxidized_charged_copper": "Waxed Oxidized Charged Copper",
   "block.btc.charged_reinforced_dungeon_block": "Charged Reinforced Dungeon Block",
   "block.btc.unstable_tuff_bricks": "Unstable Tuff Bricks",
+  "block.btc.toxic_sludge": "Toxic Sludge",
 
   "block.btc.copper_fan": "Copper Trial Fan",
   "block.btc.exposed_copper_fan": "Exposed Copper Trial Fan",
@@ -117,13 +118,13 @@
   "item.btc.trial_jerky": "Trial Jerky",
   "item.btc.sea_mine": "Sea Mine",
 
-  "item.btc.pet_totem": "Pet Charm",
-  "item.btc.pet_totem.action.bind": "Pet Bound",
-  "item.btc.pet_totem.action.revive": "Pet Revived",
-  "item.btc.pet_totem.action.teleport": "Pet Teleported",
-  "item.btc.pet_totem.tooltip.stored_mob": "Pet: %s (%s)",
-  "item.btc.pet_totem.tooltip.stored_uuid": "UUID: %s",
-  "item.btc.pet_totem.tooltip.stored_owner": "Owner: %s",
+  "item.btc.pet_charm": "Pet Charm",
+  "item.btc.pet_charm.action.bind": "Pet Bound",
+  "item.btc.pet_charm.action.revive": "Pet Revived",
+  "item.btc.pet_charm.action.teleport": "Pet Teleported",
+  "item.btc.pet_charm.tooltip.stored_mob": "Pet: %s (%s)",
+  "item.btc.pet_charm.tooltip.stored_uuid": "UUID: %s",
+  "item.btc.pet_charm.tooltip.stored_owner": "Owner: %s",
 
   "death.attack.beacon_burn": "%1$s discovered that lasers burn",
   "death.attack.wind_burst": "%1$s got blasted away",

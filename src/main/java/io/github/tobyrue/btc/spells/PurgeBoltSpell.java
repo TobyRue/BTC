@@ -83,6 +83,6 @@ public class PurgeBoltSpell extends Spell {
     }
     @Override
     public int getColor(final GrabBag args) {
-        return 0xFFAAAAAA; // soft gray
+        return 0xFFAAAAAA;
     }
 }

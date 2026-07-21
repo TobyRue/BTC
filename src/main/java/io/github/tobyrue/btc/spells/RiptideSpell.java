@@ -26,27 +26,25 @@ public class RiptideSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0x3FD0FF; // watery blue
+        return 0xFF3FD0FF;
     }
 
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
         LivingEntity user = ctx.user();
 
-        int duration = args.getInt("duration", 20); // ticks
+        int duration = args.getInt("duration", 20);
         float damage = args.getFloat("damage", 2.0f);
 
         Vec3d dir = ctx.direction().normalize();
-        double speed = args.getDouble("speed", 2.0d); // configurable speed
+        double speed = args.getDouble("speed", 2.0d);
         Vec3d velocity = dir.multiply(speed);
 
         user.addVelocity(velocity.x, velocity.y, velocity.z);
-        user.velocityModified = true; // makes sure velocity syncs with client
+        user.velocityModified = true;
 
-        // Trigger riptide animation/sound/etc.
         var sound = List.of(SoundEvents.ITEM_TRIDENT_RIPTIDE_1, SoundEvents.ITEM_TRIDENT_RIPTIDE_2, SoundEvents.ITEM_TRIDENT_RIPTIDE_3);
         var random = ctx.world().getRandom();
-        // If player, play trident riptide sound (optional flavor)
         if (user instanceof PlayerEntity player) {
             player.useRiptide(duration, damage, user.getMainHandStack());
 

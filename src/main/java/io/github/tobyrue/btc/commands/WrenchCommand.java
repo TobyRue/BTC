@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -83,16 +84,16 @@ public class WrenchCommand {
                 .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.SHOW_CONE, 0, 0, 0))
                 .then(literal("depth")
                         .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.DEPTH, -1.0, 0, 0))
-                        .then(argument("value", IntegerArgumentType.integer(1, 16))
-                                .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.DEPTH, (double) IntegerArgumentType.getInteger(ctx, "value"), -1.0, -1.0))))
+                        .then(argument("value", DoubleArgumentType.doubleArg(1, 16))
+                                .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.DEPTH, (double) DoubleArgumentType.getDouble(ctx, "value"), -1.0, -1.0))))
                 .then(literal("base_radius")
                         .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.BASE_RADIUS, 0, -1.0, 0))
-                        .then(argument("value", IntegerArgumentType.integer(0, 8))
-                                .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.BASE_RADIUS, -1.0, (double) IntegerArgumentType.getInteger(ctx, "value"), -1.0))))
+                        .then(argument("value", DoubleArgumentType.doubleArg(0, 8))
+                                .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.BASE_RADIUS, -1.0, (double) DoubleArgumentType.getDouble(ctx, "value"), -1.0))))
                 .then(literal("far_radius")
                         .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.FAR_RADIUS, 0, 0, -1.0))
-                        .then(argument("value", IntegerArgumentType.integer(1, 12))
-                                .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.FAR_RADIUS, -1.0, -1.0, (double) IntegerArgumentType.getInteger(ctx, "value")))))
+                        .then(argument("value", DoubleArgumentType.doubleArg(1, 12))
+                                .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.FAR_RADIUS, -1.0, -1.0, (double) DoubleArgumentType.getDouble(ctx, "value")))))
                 .then(literal("mode")
                         .executes(ctx -> setFan(ctx, WrenchType.FanSubtype.MODE, 0, 0, 0)))
                 .then(literal("toggle")

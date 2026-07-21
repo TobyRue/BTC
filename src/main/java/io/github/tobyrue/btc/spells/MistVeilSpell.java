@@ -21,8 +21,7 @@ public class MistVeilSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        // Light blue mist color
-        return 0x80C8FF;
+        return 0xFF80C8FF;
     }
 
     @Override
@@ -35,10 +34,8 @@ public class MistVeilSpell extends Spell {
 
         Vec3d center = caster.getPos();
 
-        // Schedule ticking effect for duration
         ((Ticker.TickerTarget) caster).bTC$add(Ticker.forTicks((tick) -> {
             if (world instanceof ServerWorld serverWorld) {
-                // Spawn mist particles around caster
                 for (int i = 0; i < 64; i++) {
                     double offsetX = (serverWorld.random.nextDouble() - 0.5) * radius * 2;
                     double offsetY = serverWorld.random.nextDouble() * 2;
@@ -50,18 +47,15 @@ public class MistVeilSpell extends Spell {
                             1, 0, 0, 0, 0);
                 }
 
-                // Find entities in textRadius
                 Box effectBox = new Box(center.x - radius, center.y - 2, center.z - radius,
                         center.x + radius, center.y + 3, center.z + radius);
 
                 for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, effectBox, LivingEntity::isAlive)) {
 
                     if (isAlly(caster, entity)) {
-                        // Apply regeneration buff to allies
                         entity.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
                                 net.minecraft.entity.effect.StatusEffects.REGENERATION, 40, 0, true, false, true));
                     } else {
-                        // Apply slowness and mining fatigue to enemies
                         entity.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
                                 net.minecraft.entity.effect.StatusEffects.SLOWNESS, 40, 1, true, false, true));
                         entity.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(
@@ -69,12 +63,11 @@ public class MistVeilSpell extends Spell {
                     }
                 }
             }
-            // Stop after duration
         }, durationTicks));
     }
 
     private boolean isAlly(LivingEntity caster, LivingEntity other) {
-        if (caster == other) return true; // Self is always ally
+        if (caster == other) return true;
 
         if (other instanceof Tameable tameable) {
             if (caster.getUuid().equals(tameable.getOwnerUuid())) return true;

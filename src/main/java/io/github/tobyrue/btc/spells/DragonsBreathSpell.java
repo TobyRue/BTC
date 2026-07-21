@@ -25,7 +25,7 @@ public class DragonsBreathSpell extends ChanneledSpell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
+        return 0xFFE88CFF;
     }
 
     @Override

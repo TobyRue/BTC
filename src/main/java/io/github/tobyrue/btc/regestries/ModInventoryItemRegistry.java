@@ -2,10 +2,17 @@ package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.util.UnlockScrollManager;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.world.World;
 
 public class ModInventoryItemRegistry {
 
@@ -15,6 +22,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER, ModItems.EMPTY_SCROLL, ModItems.UNLOCK_SCROLL);
             content.addAfter(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, ModItems.UNBREAKABLE_UPGRADE_TEMPLATE);
             content.addAfter(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ModItems.ELDRITCH_ARMOR_TRIM, ModItems.SUN_ARMOR_TRIM);
+            content.addAll(UnlockScrollManager.UNLOCK_SCROLLS);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
@@ -47,6 +55,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.DECORATED_POT, ModBlocks.FANCY_RED_POT, ModBlocks.FANCY_GREEN_POT, ModBlocks.FANCY_BLUE_POT);
 
             content.addAfter(Blocks.JUKEBOX, ModBlocks.TRIAL_CORE, ModBlocks.BONFIRE, ModBlocks.BELLOW, ModBlocks.GUNPOWDER_BARREL, ModBlocks.OBSIDIAN_CHEST);
+            content.addAfter(Blocks.MAGMA_BLOCK, ModBlocks.SALT_BLOCK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
@@ -69,6 +78,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.DECORATED_POT, ModBlocks.FANCY_RED_POT, ModBlocks.FANCY_GREEN_POT, ModBlocks.FANCY_BLUE_POT);
 
             content.addAfter(Blocks.TARGET, ModBlocks.KILL_BALL_RECEPTOR, ModBlocks.POLISHED_TUFF_PRESSURE_PLATE);
+            content.addAfter(Blocks.OBSERVER, ModBlocks.REDSTONE_BRIDGE);
             content.addAfter(ModBlocks.DUNGEON_PRESSURE_PLATE, ModBlocks.COPPER_TRIAL_FAN, ModBlocks.EXPOSED_COPPER_TRIAL_FAN, ModBlocks.WEATHERED_COPPER_TRIAL_FAN, ModBlocks.OXIDIZED_COPPER_TRIAL_FAN);
 
             content.addAfter(ModBlocks.WAXED_OXIDIZED_COPPER_BUTTON,

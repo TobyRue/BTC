@@ -198,12 +198,33 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
         Vec3d targetPoint = start.add(direction.multiply(DEPTH)).add(endOffset);
         Vec3d actualStart = start.add(startOffset);
 
-        BlockHitResult hit = world.raycast(new RaycastContext(
-                actualStart, targetPoint,
-                RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE,
-                ShapeContext.absent()
-        ));
+        Vec3d currentStart = actualStart;
+        BlockHitResult hit;
+        while (true) {
+            hit = world.raycast(new RaycastContext(
+                    currentStart, targetPoint,
+                    RaycastContext.ShapeType.COLLIDER,
+                    RaycastContext.FluidHandling.NONE,
+                    ShapeContext.absent()
+            ));
+
+            if (hit.getType() == HitResult.Type.MISS) {
+                break;
+            }
+
+            BlockState hitState = world.getBlockState(hit.getBlockPos());
+            if (hitState.isIn(io.github.tobyrue.btc.BTC.FAN_IGNORES)) {
+                Vec3d rayDir = targetPoint.subtract(currentStart).normalize();
+                currentStart = hit.getPos().add(rayDir.multiply(0.01));
+
+                if (actualStart.distanceTo(currentStart) >= actualStart.distanceTo(targetPoint)) {
+                    hit = BlockHitResult.createMissed(targetPoint, Direction.getFacing(rayDir.x, rayDir.y, rayDir.z), hit.getBlockPos());
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
 
         double fullPathLength = targetPoint.distanceTo(actualStart);
         double maxTravel = hit.getType() == HitResult.Type.MISS ? fullPathLength : hit.getPos().distanceTo(actualStart);

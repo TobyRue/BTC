@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.entities.*;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.*;
@@ -7,6 +8,8 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -14,6 +17,7 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -49,11 +53,11 @@ public class WaxedCopperFanBlock extends Block implements ModBlockEntityProvider
 
     @Override
     protected BlockState rotate(BlockState state, BlockRotation rotation) {
-        return (BlockState)state.with(FACING, rotation.rotate((Direction)state.get(FACING)));
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation((Direction)state.get(FACING)));
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     public static List<Entity> getEntitiesInCone(BlockState state, World world, BlockPos pos, double base_radius, double far_radius, double depth) {
@@ -64,21 +68,11 @@ public class WaxedCopperFanBlock extends Block implements ModBlockEntityProvider
         double maxR = Math.max(base_radius, far_radius);
         Box searchBox = new Box(start, start.add(direction.multiply(depth))).expand(maxR);
 
-//        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-//            drawDebugCone(world, start, direction, depth, base_radius, far_radius);
-//        }
-
         return world.getEntitiesByClass(Entity.class, searchBox, entity -> {
             Box entityBox = entity.getBoundingBox();
             Vec3d entityCenter = entityBox.getCenter();
 
-            BlockHitResult hit = world.raycast(new RaycastContext(
-                    start,
-                    entityCenter,
-                    RaycastContext.ShapeType.COLLIDER,
-                    RaycastContext.FluidHandling.NONE,
-                    entity
-            ));
+            BlockHitResult hit = raycastWithTagFilter(world, start, entityCenter, entity);
 
             if (hit.getType() != HitResult.Type.MISS) {
                 return false;
@@ -104,6 +98,38 @@ public class WaxedCopperFanBlock extends Block implements ModBlockEntityProvider
 
             return vecToAxis.lengthSquared() < (radiusAtDist * radiusAtDist);
         });
+    }
+
+
+    private static BlockHitResult raycastWithTagFilter(World world, Vec3d start, Vec3d end, Entity entity) {
+        Vec3d currentStart = start;
+
+        while (true) {
+            BlockHitResult hit = world.raycast(new RaycastContext(
+                    currentStart,
+                    end,
+                    RaycastContext.ShapeType.COLLIDER,
+                    RaycastContext.FluidHandling.NONE,
+                    entity
+            ));
+
+            if (hit.getType() == HitResult.Type.MISS) {
+                return hit;
+            }
+
+            BlockState hitState = world.getBlockState(hit.getBlockPos());
+
+            if (hitState.isIn(BTC.FAN_IGNORES)) {
+                Vec3d rayDir = end.subtract(currentStart).normalize();
+                currentStart = hit.getPos().add(rayDir.multiply(0.01));
+
+                if (start.distanceTo(currentStart) >= start.distanceTo(end)) {
+                    return BlockHitResult.createMissed(end, Direction.getFacing(rayDir.x, rayDir.y, rayDir.z), hit.getBlockPos());
+                }
+            } else {
+                return hit;
+            }
+        }
     }
 
     private static void drawDebugCone(World world, Vec3d start, Vec3d direction, double depth, double base_radius, double far_radius) {

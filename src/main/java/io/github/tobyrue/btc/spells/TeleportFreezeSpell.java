@@ -83,6 +83,6 @@ public class TeleportFreezeSpell extends TriggeredSpell {
     }
     @Override
     public int getColor(GrabBag args) {
-        return 0;
+        return 0xFFA17CFF;
     }
 }

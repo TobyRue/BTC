@@ -201,6 +201,6 @@ public class RaiseUndeadSpell extends ChanneledSpell {
     }
     @Override
     public int getColor(final GrabBag args) {
-        return 0x3CFF9B;
+        return 0xFF3CFF9B;
     }
 }

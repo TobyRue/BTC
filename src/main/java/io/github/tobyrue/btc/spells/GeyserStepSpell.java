@@ -23,8 +23,7 @@ public class GeyserStepSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFF4B60D8;
     }
 
     @Override

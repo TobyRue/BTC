@@ -38,9 +38,9 @@ public class PetCharmItem extends Item {
             var entity = serverWorld.getEntity(uuid);
 
             if (entity != null) {
-                if (entity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_TOTEM_WHITELIST)) {
+                if (entity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_CHARM_WHITELIST)) {
                     if (tryTeleportToOwner(mob, player)) {
-                        player.sendMessage(Text.translatable("item.btc.pet_totem.action.teleport"), true);
+                        player.sendMessage(Text.translatable("item.btc.pet_charm.action.teleport"), true);
                     }
 
                     String petName = mob.hasCustomName() ? mob.getCustomName().getString() : mob.getType().getName().getString();
@@ -62,7 +62,7 @@ public class PetCharmItem extends Item {
                 if (entityType != null && nbt != null) {
                     var newEntity = entityType.create(serverWorld);
 
-                    if (newEntity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_TOTEM_WHITELIST)) {
+                    if (newEntity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_CHARM_WHITELIST)) {
                         mob.readNbt(nbt);
 
                         mob.refreshPositionAndAngles(
@@ -78,7 +78,7 @@ public class PetCharmItem extends Item {
                         serverWorld.spawnEntity(mob);
 
                         stack.set(ModComponents.STORED_MOB_UUID, mob.getUuid());
-                        player.sendMessage(Text.translatable("item.btc.pet_totem.action.revive"), true);
+                        player.sendMessage(Text.translatable("item.btc.pet_charm.action.revive"), true);
                     }
                 }
             }
@@ -149,11 +149,11 @@ public class PetCharmItem extends Item {
                 entityTypeName = entityType.getName();
             }
 
-            tooltip.add(Text.translatable("item.btc.pet_totem.tooltip.stored_mob", petName, entityTypeName).formatted(Formatting.GRAY));
-            tooltip.add(Text.translatable("item.btc.pet_totem.tooltip.stored_owner", ownerName).formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("item.btc.pet_charm.tooltip.stored_mob", petName, entityTypeName).formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("item.btc.pet_charm.tooltip.stored_owner", ownerName).formatted(Formatting.GRAY));
 
             if (type.isAdvanced() && mobUuid != null) {
-                tooltip.add(Text.translatable("item.btc.pet_totem.tooltip.stored_uuid", mobUuid.toString()).formatted(Formatting.DARK_GRAY));
+                tooltip.add(Text.translatable("item.btc.pet_charm.tooltip.stored_uuid", mobUuid.toString()).formatted(Formatting.DARK_GRAY));
             }
         }
     }

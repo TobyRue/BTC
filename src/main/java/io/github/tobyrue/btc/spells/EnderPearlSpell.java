@@ -15,8 +15,7 @@ public class EnderPearlSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFF5F2FDD;
     }
 
     @Override

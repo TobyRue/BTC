@@ -33,6 +33,7 @@ import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
@@ -51,11 +52,15 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -132,7 +137,22 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> {
+            MinecraftClient client = MinecraftClient.getInstance();
 
+            if (client.world == null) return;
+
+            RecipeManager recipes = client.world.getRecipeManager();
+            RegistryWrapper.WrapperLookup registries = client.world.getRegistryManager();
+
+            for (RecipeEntry<?> recipe : recipes.values()) {
+                ItemStack result = recipe.value().getResult(registries);
+
+                if (result.isOf(ModItems.UNLOCK_SCROLL)) {
+                    entries.add(result);
+                }
+            }
+        });
         FluidRenderHandlerRegistry.INSTANCE.register(
                 ModFluids.TOXIC_SLUDGE_SOURCE,
                 ModFluids.FLOWING_TOXIC_SLUDGE,
@@ -769,6 +789,7 @@ public class BTCClient implements ClientModInitializer {
 
         List<io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue> fanBaseRadiusTypes = new ArrayList<>();
         fanBaseRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.translatable("item.btc.wrench.cycle"), (menu, type) -> menu.sendCommand("btcwrench fan base_radius")));
+        fanBaseRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.literal("0.5"), (menu, type) -> menu.sendCommand("btcwrench fan base_radius 0.5")));
         for (int i = 0; i <= 8; i++) {
             final int val = i;
             fanBaseRadiusTypes.add(new io.github.tobyrue.btc.client.radial_menus.RadialMenu.RadialValue(Text.literal(String.valueOf(val)), (menu, type) -> menu.sendCommand("btcwrench fan base_radius " + val)));

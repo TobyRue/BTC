@@ -19,7 +19,7 @@ public class EldritchIllusionSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
+        return 0xFF4C006D;
     }
 
     @Override

@@ -28,8 +28,7 @@ public class CreeperWallExplosiveTrapSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFF6CA56B;
     }
 
     @Override

@@ -17,7 +17,7 @@ public class KillBallSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0; //TODO
+        return 0xFFB998D3;
     }
 
 

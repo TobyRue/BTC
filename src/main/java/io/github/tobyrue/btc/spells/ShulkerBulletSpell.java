@@ -28,8 +28,7 @@ public class ShulkerBulletSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFFFFCCF8;
     }
 
     @Override
@@ -39,7 +38,7 @@ public class ShulkerBulletSpell extends Spell {
         double radius = args.getDouble("radius", 24d);
 
         if (ctx.user() != null) {
-            Vec3d look = ctx.user().getRotationVec(1.0F); // player's look direction
+            Vec3d look = ctx.user().getRotationVec(1.0F);
 
             Direction.Axis axis;
             if (Math.abs(look.x) > Math.abs(look.y) && Math.abs(look.x) > Math.abs(look.z)) {
@@ -79,7 +78,6 @@ public class ShulkerBulletSpell extends Spell {
                         .min(Comparator.comparingDouble(a -> a.squaredDistanceTo(ctx.pos().getX(), ctx.pos().getY(), ctx.pos().getZ())))
                         .orElse(null);
 
-                // Aim axis based on relative position to source
                 Vec3d dir = nearest.getPos().subtract(ctx.pos());
                 Direction.Axis axis;
                 if (Math.abs(dir.x) > Math.abs(dir.y) && Math.abs(dir.x) > Math.abs(dir.z)) {
@@ -108,10 +106,8 @@ public class ShulkerBulletSpell extends Spell {
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
 
-        // Create a box from the eye position to the reach vector
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
 
-        // Find the closest entity intersecting that line
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 

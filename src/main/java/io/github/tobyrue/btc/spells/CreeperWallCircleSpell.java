@@ -23,8 +23,7 @@ public class CreeperWallCircleSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFF8A9E32;
     }
 
     @Override

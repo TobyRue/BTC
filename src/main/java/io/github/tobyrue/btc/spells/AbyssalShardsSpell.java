@@ -70,6 +70,6 @@ public class AbyssalShardsSpell extends ChanneledSpell {
 
     @Override
     public int getColor(final GrabBag args) {
-        return 0x1a1a1a;
+        return 0xFF1a1a1a;
     }
 }

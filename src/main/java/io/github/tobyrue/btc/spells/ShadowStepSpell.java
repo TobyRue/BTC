@@ -21,29 +21,25 @@ public class ShadowStepSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        // Deep purple - fits teleport/invisibility theme
-        return 0x6B2BA3;
+        return 0xFF6B2BA3;
     }
 
     @Override
     protected void use(SpellContext ctx, GrabBag args) {
         double range = args.getDouble("range", 24d);
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
-        double teleportDistance = args.getDouble("teleportDistance", 2.5D); // distance behind target
-        int invisDuration = args.getInt("invisDuration", 140); // ticks (5s default)
+        double teleportDistance = args.getDouble("teleportDistance", 2.5D);
+        int invisDuration = args.getInt("invisDuration", 140);
 
         Entity target = isTargetInRange(ctx.user(), ctx.target(), range);
         if (target == null) return;
 
-        // Calculate position behind target
         Vec3d backward = target.getRotationVec(1.0F).normalize().negate();
         Vec3d targetPos = target.getPos();
         Vec3d newPos = targetPos.add(backward.multiply(teleportDistance));
 
-        // Teleport the user
         ctx.user().requestTeleport(newPos.x, newPos.y, newPos.z);
 
-        // Apply invisibility
         ctx.user().addStatusEffect(new StatusEffectInstance(
                 StatusEffects.INVISIBILITY, invisDuration, 0, false, false, true
         ));

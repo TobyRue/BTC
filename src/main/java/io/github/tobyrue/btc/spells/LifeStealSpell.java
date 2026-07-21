@@ -17,8 +17,7 @@ public class LifeStealSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFFDD40AB;
     }
 
     @Override

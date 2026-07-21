@@ -1,7 +1,6 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.wires.IDungeonWire;
-import io.github.tobyrue.btc.wires.IOnBlockUpdate;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,6 +8,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -18,6 +18,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -26,14 +27,10 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class DungeonDoorBlock extends Block {
     public static final EnumProperty<DoorType> TYPE = EnumProperty.of("door_type", DoorType.class);
     public static final BooleanProperty OPEN = BooleanProperty.of("open");
-
 
     public enum DoorType implements StringIdentifiable {
         NORMAL("normal"),
@@ -43,24 +40,13 @@ public class DungeonDoorBlock extends Block {
         GOLEM("golem");
 
         private final String name;
-
-        DoorType(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String asString() {
-            return name;
-        }
+        DoorType(String name) { this.name = name; }
+        @Override public String asString() { return name; }
     }
 
     private static final VoxelShape CUBE_SHAPE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
     private static final VoxelShape FULL_BLOCK_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-
     public static final int MAX_DISTANCE = 7;
-
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
 
     public DungeonDoorBlock(Settings settings) {
         super(settings);
@@ -79,44 +65,29 @@ public class DungeonDoorBlock extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(OPEN);
-        builder.add(TYPE);
+        builder.add(OPEN, TYPE);
     }
 
     @Override
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.get(TYPE) == DoorType.GOLEM && !state.get(OPEN)) {
             NbtCompound leftShoulder = player.getShoulderEntityLeft();
-            NbtCompound rightShoulder = player.getShoulderEntityLeft();
-            if (!leftShoulder.isEmpty()) {
-                String entityId = leftShoulder.getString("id");
-                if (entityId.equals("btc:key_golem")) {
-                    player.setShoulderEntityLeft(new NbtCompound());
-                    for (BlockPos offsetPos : findDoors(world, pos)) {
-                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
-                    }
-                    return ItemActionResult.SUCCESS;
-                }
-            } else if (!rightShoulder.isEmpty()) {
-                String entityId = rightShoulder.getString("id");
-                if (entityId.equals("btc:key_golem")) {
-                    player.setShoulderEntityRight(new NbtCompound());
-                    for (BlockPos offsetPos : findDoors(world, pos)) {
-                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
-                    }
-                    return ItemActionResult.SUCCESS;
-                }
+            NbtCompound rightShoulder = player.getShoulderEntityRight();
+            if (!leftShoulder.isEmpty() && leftShoulder.getString("id").equals("btc:key_golem")) {
+                player.setShoulderEntityLeft(new NbtCompound());
+                openConnectedDoors(world, pos, false, 0);
+                return ItemActionResult.SUCCESS;
+            } else if (!rightShoulder.isEmpty() && rightShoulder.getString("id").equals("btc:key_golem")) {
+                player.setShoulderEntityRight(new NbtCompound());
+                openConnectedDoors(world, pos, false, 0);
+                return ItemActionResult.SUCCESS;
             }
         } else if (stack.isOf(Items.TRIAL_KEY) && state.get(TYPE) == DoorType.KEYHOLE && !state.get(OPEN)) {
             stack.decrementUnlessCreative(1, player);
-            for (BlockPos offsetPos : findDoors(world, pos)) {
-                setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
-            }
+            openConnectedDoors(world, pos, false, 0);
             return ItemActionResult.SUCCESS;
         } else if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
-            for (BlockPos offsetPos : findDoors(world, pos)) {
-                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
-            }
+            openConnectedDoors(world, pos, true, 4000);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.FAIL;
@@ -126,35 +97,30 @@ public class DungeonDoorBlock extends Block {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (state.get(TYPE) == DoorType.GOLEM && !state.get(OPEN)) {
             NbtCompound leftShoulder = player.getShoulderEntityLeft();
-            NbtCompound rightShoulder = player.getShoulderEntityLeft();
-            if (!leftShoulder.isEmpty()) {
-                String entityId = leftShoulder.getString("id");
-                if (entityId.equals("btc:key_golem")) {
-                    player.setShoulderEntityLeft(new NbtCompound());
-                    for (BlockPos offsetPos : findDoors(world, pos)) {
-                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
-                    }
-                    return ActionResult.SUCCESS;
-                }
-            } else if (!rightShoulder.isEmpty()) {
-                String entityId = rightShoulder.getString("id");
-                if (entityId.equals("btc:key_golem")) {
-                    player.setShoulderEntityRight(new NbtCompound());
-                    for (BlockPos offsetPos : findDoors(world, pos)) {
-                        setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
-                    }
-                    return ActionResult.SUCCESS;
-                }
+            NbtCompound rightShoulder = player.getShoulderEntityRight();
+            if ((!leftShoulder.isEmpty() && leftShoulder.getString("id").equals("btc:key_golem")) ||
+                    (!rightShoulder.isEmpty() && rightShoulder.getString("id").equals("btc:key_golem"))) {
+                if (!leftShoulder.isEmpty()) player.setShoulderEntityLeft(new NbtCompound());
+                else player.setShoulderEntityRight(new NbtCompound());
+                openConnectedDoors(world, pos, false, 0);
+                return ActionResult.SUCCESS;
             }
         }
-
         if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
-            for (BlockPos offsetPos : findDoors(world, pos)) {
-                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, 4000);
-            }
+            openConnectedDoors(world, pos, true, 4000);
             return ActionResult.SUCCESS;
         }
         return super.onUse(state, world, pos, player, hit);
+    }
+
+    private void openConnectedDoors(World world, BlockPos pos, boolean autoClose, int delayMs) {
+        for (BlockPos offsetPos : findDoors(world, pos)) {
+            if (autoClose) {
+                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, delayMs);
+            } else {
+                setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+            }
+        }
     }
 
     private Set<BlockPos> findDoors(World world, BlockPos originPos) {
@@ -175,13 +141,15 @@ public class DungeonDoorBlock extends Block {
                     var neighborPos = pos.offset(direction);
                     var neighborState = world.getBlockState(neighborPos);
 
-                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock &&
-                            ((neighborState.get(TYPE) == originState.get(TYPE))
-                                    || (((neighborState.get(TYPE) == DoorType.KEYHOLE) || (neighborState.get(TYPE) == DoorType.GOLEM)) && (originState.get(TYPE) == DoorType.LOCKED))
-                                    || (((originState.get(TYPE) == DoorType.KEYHOLE) || (originState.get(TYPE) == DoorType.GOLEM)) && (neighborState.get(TYPE) == DoorType.LOCKED))
-                            )) {
-                        queue.add(new Pair<>(neighborPos, distance + 1));
-                        found.add(neighborPos);
+                    if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock) {
+                        boolean match = (neighborState.get(TYPE) == originState.get(TYPE))
+                                || (((neighborState.get(TYPE) == DoorType.KEYHOLE) || (neighborState.get(TYPE) == DoorType.GOLEM)) && (originState.get(TYPE) == DoorType.LOCKED))
+                                || (((originState.get(TYPE) == DoorType.KEYHOLE) || (originState.get(TYPE) == DoorType.GOLEM)) && (neighborState.get(TYPE) == DoorType.LOCKED));
+
+                        if (match) {
+                            queue.add(new Pair<>(neighborPos, distance + 1));
+                            found.add(neighborPos);
+                        }
                     }
                 }
             }
@@ -193,38 +161,40 @@ public class DungeonDoorBlock extends Block {
         return setOpen(state, world, pos, open, null);
     }
 
-    private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open, @Nullable Integer delay) {
+    private ActionResult setOpen(BlockState state, World world, BlockPos pos, boolean open, @Nullable Integer delayMs) {
         if(state.get(OPEN) != open) {
-            world.setBlockState(pos, state.with(OPEN, open));
+            world.setBlockState(pos, state.with(OPEN, open), Block.NOTIFY_ALL);
+            world.playSound(null, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f);
 
-            world.playSound(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f, true);
-
-            if(open && delay != null) {
+            if(open) {
                 world.emitGameEvent(GameEvent.BLOCK_OPEN, pos, GameEvent.Emitter.of(state));
-                // only executed on server so no sound played on client fix me
-                scheduler.schedule(() -> {
-                   // world.getServer().execute(() -> {
-                        BlockState currentState = world.getBlockState(pos);
-                        if (currentState.getBlock() == ModBlocks.DUNGEON_DOOR && currentState.get(OPEN)) {
-                            setOpen(currentState, world, pos, false);
-                        }
-                    //});
-                }, delay, TimeUnit.MILLISECONDS);
+                if (delayMs != null && !world.isClient()) {
+                    int ticks = delayMs / 50;
+                    world.scheduleBlockTick(pos, this, ticks);
+                }
+            } else {
+                world.emitGameEvent(GameEvent.BLOCK_CLOSE, pos, GameEvent.Emitter.of(state));
             }
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
+    @Override
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (state.get(OPEN)) {
+            setOpen(state, world, pos, false);
+        }
+    }
+
     private ActionResult setOpenNoClose(BlockState state, World world, BlockPos pos) {
         if(!state.get(OPEN)) {
-            world.setBlockState(pos, state.with(OPEN, true));
-            world.playSound(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f, true);
+            world.setBlockState(pos, state.with(OPEN, true), Block.NOTIFY_ALL);
+            world.playSound(null, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 1.0f, 1.0f);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
-
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -244,37 +214,6 @@ public class DungeonDoorBlock extends Block {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-        updateStateBasedOnNeighbors(state, world, pos);
-    }
-    private void updateStateBasedOnNeighbors(BlockState state, World world, BlockPos pos) {
-
-
-//        if (!state.get(WIRED)) {
-//            for (Direction direction : Direction.values()) {
-//                BlockPos neighborPos = pos.offset(direction);
-//                BlockState neighborState = world.getBlockState(neighborPos);
-//                if (neighborState.getBlock() instanceof DungeonWireBlock) {
-//                    if (neighborState.get(POWERED)) {
-//                        open = true;
-//                        break;
-//                    } else {
-//                        open = false;
-//                    }
-//                }
-//            }
-//        }
-//        if (state.get(WIRED)) {
-//
-//
-//
-//            for (Direction direction : Direction.values()) {
-//                BlockPos neighborPos = pos.offset(direction);
-//                BlockState neighborState = world.getBlockState(neighborPos);
-//
-//
-//
-//            }
-//        }
     }
 
     @Override
@@ -287,5 +226,13 @@ public class DungeonDoorBlock extends Block {
             }
         }
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+    }
+
+    private static class Pair<L, R> {
+        private final L left;
+        private final R right;
+        public Pair(L left, R right) { this.left = left; this.right = right; }
+        public L getLeft() { return left; }
+        public R getRight() { return right; }
     }
 }

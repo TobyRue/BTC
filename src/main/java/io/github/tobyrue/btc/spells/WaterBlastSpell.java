@@ -38,7 +38,6 @@ public class WaterBlastSpell extends Spell {
 
     @Override
     public int getColor(final GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFF5177FF;
     }
 }

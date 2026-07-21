@@ -17,6 +17,7 @@ import io.github.tobyrue.btc.recipes.UnbreakableSmithingRecipe;
 import io.github.tobyrue.btc.regestries.*;
 import io.github.tobyrue.btc.util.BTCSpawnQueue;
 import io.github.tobyrue.btc.util.BookshelfProcessor;
+import io.github.tobyrue.btc.util.UnlockScrollManager;
 import io.github.tobyrue.btc.worldgen.GenMaker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -65,7 +66,8 @@ public class BTC implements ModInitializer {
     public static final TagKey<Block> PANE = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pane"));
     public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
     public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
-    public static final TagKey<EntityType<?>> PET_TOTEM_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "pet_totem_whitelist"));
+    public static final TagKey<Block> FAN_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "fan_ignores"));
+    public static final TagKey<EntityType<?>> PET_CHARM_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "pet_charm_whitelist"));
     public static final TagKey<EntityType<?>> UNSTABLE_BLOCK_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "unstable_block_whitelist"));
 
     public static final StructureProcessorType<BookshelfProcessor> BOOKSHELF_PROCESSOR =
@@ -88,9 +90,6 @@ public class BTC implements ModInitializer {
 
     public static final TagKey<Structure> SURFACE_INDICATOR_TAG = TagKey.of(RegistryKeys.STRUCTURE, Identifier.of(MOD_ID, "surface_indicator"));
 
-
-    public static Block ACID;
-
     @Override
     public void onInitialize() {
 
@@ -107,6 +106,7 @@ public class BTC implements ModInitializer {
         ModSounds.initialize();
         ModWaxings.initialize();
         ModInventoryItemRegistry.initialize();
+        UnlockScrollManager.init();
         ModPackets.initialize();
         ModSpells.initialize();
         ModFluids.initialize();
@@ -157,7 +157,7 @@ public class BTC implements ModInitializer {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             var stack = player.getStackInHand(hand);
             if (stack.isOf(ModItems.PET_CHARM)) {
-                if (entity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_TOTEM_WHITELIST)) {
+                if (entity instanceof MobEntity mob && mob.getType().isIn(BTC.PET_CHARM_WHITELIST)) {
                     LivingEntity owner = null;
                     boolean ownable = false;
 

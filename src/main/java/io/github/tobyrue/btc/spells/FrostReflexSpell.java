@@ -71,7 +71,7 @@ public class FrostReflexSpell extends TriggeredSpell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
+        return 0xFF7A97DB;
     }
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {

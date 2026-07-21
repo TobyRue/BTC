@@ -26,7 +26,7 @@ public class FlameBurstSpell extends ChanneledSpell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0xFF4500; // fiery orange-red
+        return 0xFFFF4500; // fiery orange-red
     }
 
     @Override

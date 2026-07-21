@@ -86,7 +86,7 @@ public class MobDetectorBlockRenderer implements BlockEntityRenderer<MobDetector
         currentPitch += pitchDelta * TURN_SPEED;
         entity.setEyePitch(currentPitch);
 
-        float timeWrapped = (entity.getWorld().getTime() % 360) + tickDelta; // wrap every 360 ticks
+        float timeWrapped = (entity.getWorld().getTime() % 360) + tickDelta;
         float bob = MathHelper.sin(timeWrapped * 0.1F) * 0.025F;
 
         matrices.push();
@@ -105,7 +105,7 @@ public class MobDetectorBlockRenderer implements BlockEntityRenderer<MobDetector
                 OverlayTexture.DEFAULT_UV,
                 matrices,
                 vertexConsumers,
-                entity.getWorld(),
+                world,
                 0
         );
 

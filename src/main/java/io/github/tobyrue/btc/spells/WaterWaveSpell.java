@@ -23,7 +23,7 @@ public class WaterWaveSpell extends ChanneledSpell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
+        return 0xFF6168E2;
     }
 
     @Override

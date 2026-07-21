@@ -89,6 +89,6 @@ public class EldritchTetherSpell extends ChanneledSpell {
 
     @Override
     public int getColor(final GrabBag args) {
-        return 0x3e006e;
+        return 0xFF3e006e;
     }
 }

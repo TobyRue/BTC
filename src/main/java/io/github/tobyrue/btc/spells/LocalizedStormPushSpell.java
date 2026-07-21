@@ -23,8 +23,7 @@ public class LocalizedStormPushSpell extends Spell {
 
     @Override
     public int getColor(GrabBag args) {
-        return 0;
-        //TODO
+        return 0xFF02C1DB;
     }
 
     @Override
