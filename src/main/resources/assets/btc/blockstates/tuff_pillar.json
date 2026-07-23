@@ -3,6 +3,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar",
+        "uvlock": true,
         "x": 90,
         "y": 270
       },
@@ -13,6 +14,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar",
+        "uvlock": true,
         "y": 0,
         "x": 0
       },
@@ -23,6 +25,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar",
+        "uvlock": true,
         "y": 0,
         "x": 270
       },
@@ -36,6 +39,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment_other",
+        "uvlock": true,
         "x": 90,
         "y": 270
       },
@@ -46,7 +50,8 @@
     },
     {
       "apply": {
-        "model": "btc:block/tuff_pillar_attachment"
+        "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true
       },
       "when": {
         "axis": "y",
@@ -56,6 +61,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "y": 0,
         "x": 270
       },
@@ -69,6 +75,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "x": 270,
         "y": 90
       },
@@ -80,6 +87,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "y": 90,
         "x": 0
       },
@@ -91,6 +99,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment_other",
+        "uvlock": true,
         "x": 270
       },
       "when": {
@@ -103,6 +112,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment_other",
+        "uvlock": true,
         "x": 270,
         "y": 90
       },
@@ -114,6 +124,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "y": 180,
         "x": 0
       },
@@ -125,6 +136,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "y": 0,
         "x": 90
       },
@@ -138,6 +150,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "x": 90,
         "y": 90
       },
@@ -149,6 +162,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment",
+        "uvlock": true,
         "y": 270,
         "x": 0
       },
@@ -160,6 +174,7 @@
     {
       "apply": {
         "model": "btc:block/tuff_pillar_attachment_other",
+        "uvlock": true,
         "x": 90,
         "y": 180
       },

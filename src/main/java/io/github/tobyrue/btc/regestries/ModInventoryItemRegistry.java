@@ -113,12 +113,23 @@ public class ModInventoryItemRegistry {
                     ModBlocks.CHARGED_REINFORCED_DUNGEON_BLOCK);
 
             content.addAfter(Blocks.STONE, ModBlocks.STONE_PILLAR, ModBlocks.STONE_PILASTER);
+            content.addAfter(Blocks.COBBLESTONE, ModBlocks.COBBLESTONE_PILLAR, ModBlocks.COBBLESTONE_PILASTER);
+            content.addAfter(Blocks.MOSSY_COBBLESTONE, ModBlocks.MOSSY_COBBLESTONE_PILLAR, ModBlocks.MOSSY_COBBLESTONE_PILASTER);
             content.addAfter(Blocks.STONE_BRICKS, ModBlocks.STONE_BRICKS_PILLAR, ModBlocks.STONE_BRICKS_PILASTER);
+            content.addAfter(Blocks.MOSSY_STONE_BRICKS, ModBlocks.MOSSY_STONE_BRICKS_PILLAR, ModBlocks.MOSSY_STONE_BRICKS_PILASTER);
             content.addAfter(Blocks.CRACKED_STONE_BRICKS, ModBlocks.CRACKED_STONE_BRICKS_PILLAR, ModBlocks.CRACKED_STONE_BRICKS_PILASTER);
-            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.UNSTABLE_TUFF_BRICKS, ModBlocks.TUFF_PILLAR, ModBlocks.TUFF_PILASTER);
+            content.addAfter(Blocks.TUFF, ModBlocks.TUFF_PILLAR, ModBlocks.TUFF_PILASTER);
             content.addAfter(Blocks.CHISELED_TUFF_BRICKS, ModBlocks.CHISELED_TUFF_BRICKS_PILLAR, ModBlocks.CHISELED_TUFF_BRICKS_PILASTER);
             content.addAfter(Blocks.POLISHED_TUFF, ModBlocks.POLISHED_TUFF_PILLAR, ModBlocks.POLISHED_TUFF_PILASTER);
-            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR, ModBlocks.TUFF_BRICK_PILASTER);
+            content.addAfter(Blocks.TUFF_BRICKS, ModBlocks.UNSTABLE_TUFF_BRICKS, ModBlocks.TUFF_BRICKS_PILLAR, ModBlocks.TUFF_BRICK_PILASTER);
+            content.addAfter(Blocks.DEEPSLATE, ModBlocks.DEEPSLATE_PILLAR, ModBlocks.DEEPSLATE_PILASTER);
+            content.addAfter(Blocks.COBBLED_DEEPSLATE, ModBlocks.COBBLED_DEEPSLATE_PILLAR, ModBlocks.COBBLED_DEEPSLATE_PILASTER);
+            content.addAfter(Blocks.POLISHED_DEEPSLATE, ModBlocks.POLISHED_DEEPSLATE_PILLAR, ModBlocks.POLISHED_DEEPSLATE_PILASTER);
+            content.addAfter(Blocks.DEEPSLATE_BRICKS, ModBlocks.DEEPSLATE_BRICKS_PILLAR, ModBlocks.DEEPSLATE_BRICKS_PILASTER);
+            content.addAfter(Blocks.CRACKED_DEEPSLATE_BRICKS, ModBlocks.CRACKED_DEEPSLATE_BRICKS_PILLAR, ModBlocks.CRACKED_DEEPSLATE_BRICKS_PILASTER);
+            content.addAfter(Blocks.DEEPSLATE_TILES, ModBlocks.DEEPSLATE_TILES_PILLAR, ModBlocks.DEEPSLATE_TILES_PILASTER);
+            content.addAfter(Blocks.CRACKED_DEEPSLATE_TILES, ModBlocks.CRACKED_DEEPSLATE_TILES_PILLAR, ModBlocks.CRACKED_DEEPSLATE_TILES_PILASTER);
+            content.addAfter(Blocks.CHISELED_DEEPSLATE, ModBlocks.CHISELED_DEEPSLATE_PILLAR, ModBlocks.CHISELED_DEEPSLATE_PILASTER);
 
             content.addAfter(Blocks.AMETHYST_BLOCK, ModBlocks.REINFORCED_DUNGEON_BLOCK,
                     ModBlocks.REINFORCED_DUNGEON_GRATE, ModBlocks.REINFORCED_DUNGEON_TILES,

@@ -1,11 +1,22 @@
 {
   "values": [
     "btc:stone_pilaster",
+    "btc:cobblestone_pilaster",
+    "btc:mossy_cobblestone_pilaster",
     "btc:stone_bricks_pilaster",
+    "btc:mossy_stone_bricks_pilaster",
     "btc:cracked_stone_bricks_pilaster",
     "btc:tuff_pilaster",
     "btc:polished_tuff_pilaster",
     "btc:tuff_brick_pilaster",
-    "btc:chiseled_tuff_bricks_pilaster"
+    "btc:chiseled_tuff_bricks_pilaster",
+    "btc:deepslate_pilaster",
+    "btc:cobbled_deepslate_pilaster",
+    "btc:polished_deepslate_pilaster",
+    "btc:deepslate_bricks_pilaster",
+    "btc:cracked_deepslate_bricks_pilaster",
+    "btc:deepslate_tiles_pilaster",
+    "btc:cracked_deepslate_tiles_pilaster",
+    "btc:chiseled_deepslate_pilaster"
   ]
 }

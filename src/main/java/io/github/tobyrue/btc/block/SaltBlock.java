@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -40,28 +42,11 @@ public class SaltBlock extends Block {
     }
 
     @Override
-    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        super.onBlockAdded(state, world, pos, oldState, notify);
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos. offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-
-            if (neighborState.getLuminance() > state.get(ABSORBED_LIGHT)) {
-                world.setBlockState(pos, state.with(ABSORBED_LIGHT, neighborState.getLuminance()));
-            }
-        }
-    }
-
-    @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
-        for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos. offset(direction);
-            BlockState neighborState = world.getBlockState(neighborPos);
-
-            if (neighborState.getLuminance() > state.get(ABSORBED_LIGHT)) {
-                world.setBlockState(pos, state.with(ABSORBED_LIGHT, neighborState.getLuminance()));
-            }
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.onPlaced(world, pos, state, placer, itemStack);
+        if (state.get(ABSORBED_LIGHT) == 0) {
+            int lightLevel = world.getLightLevel(LightType.BLOCK, pos);
+            world.setBlockState(pos, state.with(ABSORBED_LIGHT, lightLevel));
         }
     }
 }

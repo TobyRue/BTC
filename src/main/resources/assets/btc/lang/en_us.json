@@ -22,20 +22,6 @@
   "block.btc.copper_button_oxidized": "Oxidized Copper Button",
   "block.btc.waxed_copper_button_oxidized": "Waxed Oxidized Copper Button",
   "block.btc.melting_ice": "Melting Ice",
-  "block.btc.tuff_brick_pilaster": "Tuff Brick Pilaster",
-  "block.btc.chiseled_tuff_bricks_pilaster": "Chiseled Tuff Bricks Pilaster",
-  "block.btc.tuff_pilaster": "Tuff Pilaster",
-  "block.btc.polished_tuff_pilaster": "Polished Tuff Pilaster",
-  "block.btc.stone_pilaster": "Stone Pilaster",
-  "block.btc.stone_bricks_pilaster": "Stone Bricks Pilaster",
-  "block.btc.cracked_stone_bricks_pilaster": "Cracked Stone Bricks Pilaster",
-  "block.btc.tuff_pillar": "Tuff Pillar",
-  "block.btc.tuff_bricks_pillar": "Tuff Pillar",
-  "block.btc.stone_pillar": "Stone Pillar",
-  "block.btc.polished_tuff_pillar": "Polished Tuff Pillar",
-  "block.btc.cracked_stone_bricks_pillar": "Cracked Stone Bricks Pillar",
-  "block.btc.stone_bricks_pillar": "Stone Bricks Pillar",
-  "block.btc.chiseled_tuff_bricks_pillar": "Chiseled Tuff Bricks Pillar",
   "block.btc.mob_detector": "Mob Detector",
   "block.btc.polished_tuff_pressure_plate": "Polished Tuff Pressure Plate",
   "block.btc.obsidian_chest": "Obsidian Chest",
@@ -79,6 +65,61 @@
   "block.btc.bellow": "Bellow",
   "block.btc.redstone_bridge": "Redstone Bridge",
   "block.btc.salt_block": "Salt Block",
+
+  "block.btc.tuff_pilaster": "Tuff Pilaster",
+  "block.btc.tuff_pillar": "Tuff Pillar",
+
+  "block.btc.tuff_brick_pilaster": "Tuff Brick Pilaster",
+  "block.btc.tuff_bricks_pillar": "Tuff Brick Pillar",
+
+  "block.btc.polished_tuff_pilaster": "Polished Tuff Pilaster",
+  "block.btc.polished_tuff_pillar": "Polished Tuff Pillar",
+
+  "block.btc.chiseled_tuff_bricks_pilaster": "Chiseled Tuff Brick Pilaster",
+  "block.btc.chiseled_tuff_bricks_pillar": "Chiseled Tuff Brick Pillar",
+
+  "block.btc.stone_pilaster": "Stone Pilaster",
+  "block.btc.stone_pillar": "Stone Pillar",
+
+  "block.btc.cobblestone_pilaster": "Cobblestone Stone Pilaster",
+  "block.btc.cobblestone_pillar": "Cobblestone Stone Pillar",
+
+  "block.btc.mossy_cobblestone_pilaster": "Mossy Cobblestone Stone Pilaster",
+  "block.btc.mossy_cobblestone_pillar": "Mossy Cobblestone Stone Pillar",
+
+  "block.btc.stone_bricks_pilaster": "Stone Brick Pilaster",
+  "block.btc.stone_bricks_pillar": "Stone Brick Pillar",
+
+  "block.btc.mossy_stone_bricks_pilaster": "Mossy Stone Brick Pilaster",
+  "block.btc.mossy_stone_bricks_pillar": "Mossy Stone Brick Pillar",
+
+  "block.btc.cracked_stone_bricks_pilaster": "Cracked Stone Brick Pilaster",
+  "block.btc.cracked_stone_bricks_pillar": "Cracked Stone Brick Pillar",
+
+  "block.btc.deepslate_pilaster": "Deepslate Pilaster",
+  "block.btc.deepslate_pillar": "Deepslate Pillar",
+
+  "block.btc.cobbled_deepslate_pilaster": "Cobbled Deepslate Pilaster",
+  "block.btc.cobbled_deepslate_pillar": "Cobbled Deepslate Pillar",
+
+  "block.btc.polished_deepslate_pilaster": "Polished Deepslate Pilaster",
+  "block.btc.polished_deepslate_pillar": "Polished Deepslate Pillar",
+
+  "block.btc.deepslate_bricks_pilaster": "Deepslate Brick Pilaster",
+  "block.btc.deepslate_bricks_pillar": "Deepslate Brick Pillar",
+
+  "block.btc.cracked_deepslate_bricks_pilaster": "Cracked Deepslate Brick Pilaster",
+  "block.btc.cracked_deepslate_bricks_pillar": "Cracked Deepslate Brick Pillar",
+
+  "block.btc.deepslate_tiles_pilaster": "Deepslate Tile Pilaster",
+  "block.btc.deepslate_tiles_pillar": "Deepslate Tile Pillar",
+
+  "block.btc.cracked_deepslate_tiles_pilaster": "Cracked Deepslate Tile Pilaster",
+  "block.btc.cracked_deepslate_tiles_pillar": "Cracked Deepslate Tile Pillar",
+
+  "block.btc.chiseled_deepslate_pilaster": "Chiseled Deepslate Pilaster",
+  "block.btc.chiseled_deepslate_pillar": "Chiseled Deepslate Pillar",
+
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",

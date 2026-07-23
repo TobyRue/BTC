@@ -266,90 +266,6 @@ public class ModBlocks {
             true
     );
 
-    public static final Block CHISELED_TUFF_BRICKS_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
-            "chiseled_tuff_bricks_pillar",
-            true
-    );
-
-    public static final Block TUFF_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
-            "tuff_pillar",
-            true
-    );
-
-    public static final Block STONE_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
-            "stone_pillar",
-            true
-    );
-
-    public static final Block CRACKED_STONE_BRICKS_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
-            "cracked_stone_bricks_pillar",
-            true
-    );
-
-    public static final Block STONE_BRICKS_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
-            "stone_bricks_pillar",
-            true
-    );
-
-    public static final Block POLISHED_TUFF_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
-            "polished_tuff_pillar",
-            true
-    );
-
-    public static final Block TUFF_BRICKS_PILLAR = register(
-            new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
-            "tuff_bricks_pillar",
-            true
-    );
-
-    public static final Block STONE_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
-            "stone_pilaster",
-            true
-    );
-
-    public static final Block STONE_BRICKS_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
-            "stone_bricks_pilaster",
-            true
-    );
-
-    public static final Block CRACKED_STONE_BRICKS_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
-            "cracked_stone_bricks_pilaster",
-            true
-    );
-
-    public static final Block TUFF_BRICK_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
-            "tuff_brick_pilaster",
-            true
-    );
-
-    public static final Block CHISELED_TUFF_BRICKS_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
-            "chiseled_tuff_bricks_pilaster",
-            true
-    );
-
-    public static final Block POLISHED_TUFF_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
-            "polished_tuff_pilaster",
-            true
-    );
-
-    public static final Block TUFF_PILASTER = register(
-            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
-            "tuff_pilaster",
-            true
-    );
-
     public static final Block SPY_GLASS_BLOCK = register(
             new SpyGlassBlock(AbstractBlock.Settings.copy(Blocks.DARK_OAK_FENCE).nonOpaque()),
             "spy_glass_block",
@@ -515,6 +431,251 @@ public class ModBlocks {
             true
     );
 
+
+
+
+    public static final Block TUFF_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
+            "tuff_pilaster",
+            true
+    );
+    public static final Block TUFF_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF)),
+            "tuff_pillar",
+            true
+    );
+
+
+
+    public static final Block TUFF_BRICK_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            "tuff_brick_pilaster",
+            true
+    );
+    public static final Block TUFF_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.TUFF_BRICKS)),
+            "tuff_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block CHISELED_TUFF_BRICKS_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
+            "chiseled_tuff_bricks_pilaster",
+            true
+    );
+    public static final Block CHISELED_TUFF_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
+            "chiseled_tuff_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block POLISHED_TUFF_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
+            "polished_tuff_pilaster",
+            true
+    );
+    public static final Block POLISHED_TUFF_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_TUFF)),
+            "polished_tuff_pillar",
+            true
+    );
+
+
+
+    public static final Block STONE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "stone_pilaster",
+            true
+    );
+    public static final Block STONE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "stone_pillar",
+            true
+    );
+
+
+
+    public static final Block COBBLESTONE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "cobblestone_pilaster",
+            true
+    );
+    public static final Block COBBLESTONE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "cobblestone_pillar",
+            true
+    );
+
+
+    public static final Block MOSSY_COBBLESTONE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "mossy_cobblestone_pilaster",
+            true
+    );
+    public static final Block MOSSY_COBBLESTONE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE)),
+            "mossy_cobblestone_pillar",
+            true
+    );
+
+
+    public static final Block STONE_BRICKS_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
+            "stone_bricks_pilaster",
+            true
+    );
+    public static final Block STONE_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)),
+            "stone_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block MOSSY_STONE_BRICKS_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.MOSSY_STONE_BRICKS)),
+            "mossy_stone_bricks_pilaster",
+            true
+    );
+    public static final Block MOSSY_STONE_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.MOSSY_STONE_BRICKS)),
+            "mossy_stone_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block CRACKED_STONE_BRICKS_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
+            "cracked_stone_bricks_pilaster",
+            true
+    );
+    public static final Block CRACKED_STONE_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_STONE_BRICKS)),
+            "cracked_stone_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block DEEPSLATE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.DEEPSLATE)),
+            "deepslate_pilaster",
+            true
+    );
+    public static final Block DEEPSLATE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.DEEPSLATE)),
+            "deepslate_pillar",
+            true
+    );
+
+
+
+    public static final Block COBBLED_DEEPSLATE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.COBBLED_DEEPSLATE)),
+            "cobbled_deepslate_pilaster",
+            true
+    );
+    public static final Block COBBLED_DEEPSLATE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.COBBLED_DEEPSLATE)),
+            "cobbled_deepslate_pillar",
+            true
+    );
+
+
+
+    public static final Block POLISHED_DEEPSLATE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_DEEPSLATE)),
+            "polished_deepslate_pilaster",
+            true
+    );
+    public static final Block POLISHED_DEEPSLATE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.POLISHED_DEEPSLATE)),
+            "polished_deepslate_pillar",
+            true
+    );
+
+
+
+    public static final Block DEEPSLATE_BRICKS_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_BRICKS)),
+            "deepslate_bricks_pilaster",
+            true
+    );
+    public static final Block DEEPSLATE_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_BRICKS)),
+            "deepslate_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block CRACKED_DEEPSLATE_BRICKS_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_DEEPSLATE_BRICKS)),
+            "cracked_deepslate_bricks_pilaster",
+            true
+    );
+    public static final Block CRACKED_DEEPSLATE_BRICKS_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_DEEPSLATE_BRICKS)),
+            "cracked_deepslate_bricks_pillar",
+            true
+    );
+
+
+
+    public static final Block DEEPSLATE_TILES_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_TILES)),
+            "deepslate_tiles_pilaster",
+            true
+    );
+    public static final Block DEEPSLATE_TILES_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_TILES)),
+            "deepslate_tiles_pillar",
+            true
+    );
+
+
+
+    public static final Block CRACKED_DEEPSLATE_TILES_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_DEEPSLATE_TILES)),
+            "cracked_deepslate_tiles_pilaster",
+            true
+    );
+    public static final Block CRACKED_DEEPSLATE_TILES_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CRACKED_DEEPSLATE_TILES)),
+            "cracked_deepslate_tiles_pillar",
+            true
+    );
+
+
+
+    public static final Block CHISELED_DEEPSLATE_PILASTER = register(
+            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_DEEPSLATE)),
+            "chiseled_deepslate_pilaster",
+            true
+    );
+    public static final Block CHISELED_DEEPSLATE_PILLAR = register(
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_DEEPSLATE)),
+            "chiseled_deepslate_pillar",
+            true
+    );
+
+
+
+//    public static final Block _PILASTER = register(
+//            new PilasterBlock(AbstractBlock.Settings.copy(Blocks.)),
+//            "_pilaster",
+//            true
+//    );
+//    public static final Block _PILLAR = register(
+//            new PillarBlock(AbstractBlock.Settings.copy(Blocks.)),
+//            "_pillar",
+//            true
+//    );
 
     public static void initialize() {
         Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));

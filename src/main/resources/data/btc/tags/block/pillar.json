@@ -1,11 +1,22 @@
 {
   "values": [
     "btc:stone_pillar",
+    "btc:cobblestone_pillar",
+    "btc:mossy_cobblestone_pillar",
     "btc:stone_bricks_pillar",
+    "btc:mossy_stone_bricks_pillar",
     "btc:cracked_stone_bricks_pillar",
     "btc:tuff_pillar",
     "btc:polished_tuff_pillar",
     "btc:tuff_bricks_pillar",
-    "btc:chiseled_tuff_bricks_pillar"
+    "btc:chiseled_tuff_bricks_pillar",
+    "btc:deepslate_pillar",
+    "btc:cobbled_deepslate_pillar",
+    "btc:polished_deepslate_pillar",
+    "btc:deepslate_bricks_pillar",
+    "btc:cracked_deepslate_bricks_pillar",
+    "btc:deepslate_tiles_pillar",
+    "btc:cracked_deepslate_tiles_pillar",
+    "btc:chiseled_deepslate_pillar"
   ]
 }
