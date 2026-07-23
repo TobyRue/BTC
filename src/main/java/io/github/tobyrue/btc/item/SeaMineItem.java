@@ -20,9 +20,9 @@ public class SeaMineItem extends Item {
         var hitSide = context.getSide();
         var world = context.getWorld();
 
-        var spawnPos = BlockPos.ofFloored(hitPos.offset(hitSide, 1));
+        var spawnPos = BlockPos.ofFloored(hitPos);
         MineEntity mineEntity = new MineEntity(spawnPos, world, CopperGolemEntity.Oxidation.UNOXIDIZED);
-        mineEntity.setPos(spawnPos.getX() + 0.5, spawnPos.getY() + 0.5, spawnPos.getZ() + 0.5);
+        mineEntity.setPos(spawnPos.getX() + 0.5, spawnPos.getY() + 0.1, spawnPos.getZ() + 0.5);
         world.spawnEntity(mineEntity);
 
         return ActionResult.PASS;

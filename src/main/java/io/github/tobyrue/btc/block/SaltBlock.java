@@ -40,56 +40,28 @@ public class SaltBlock extends Block {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.scheduleBlockTick(pos, this, 10);
-    }
-
-    @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        world.scheduleBlockTick(pos, this, 10);
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
-    }
-
-    @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        int currentStored = state.get(ABSORBED_LIGHT);
-
-        int maxSurroundingLight = 0;
+    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        super.onBlockAdded(state, world, pos, oldState, notify);
         for (Direction direction : Direction.values()) {
-            BlockPos neighborPos = pos.offset(direction);
-            if (!world.getBlockState(neighborPos).isOpaqueFullCube(world, neighborPos)) {
-                int blockLight = world.getLightLevel(LightType.BLOCK, neighborPos);
+            BlockPos neighborPos = pos. offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
 
-                maxSurroundingLight = Math.max(maxSurroundingLight, blockLight);
+            if (neighborState.getLuminance() > state.get(ABSORBED_LIGHT)) {
+                world.setBlockState(pos, state.with(ABSORBED_LIGHT, neighborState.getLuminance()));
             }
-        }
-        if (maxSurroundingLight > currentStored) {
-            world.setBlockState(pos, state.with(ABSORBED_LIGHT, currentStored + 1), 3);
-        } else if (maxSurroundingLight <= currentStored && currentStored > 0) {
-            if (random.nextInt(3) == 0) {
-                world.setBlockState(pos, state.with(ABSORBED_LIGHT, currentStored - 1), 3);
-            }
-        }
-
-        world.scheduleBlockTick(pos, this, 20);
-    }
-
-    @Override
-    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        super.randomTick(state, world, pos, random);
-        //TODO
-        if (!world.getBlockTickScheduler().isQueued(pos, this)) {
-            world.scheduleBlockTick(pos, this, 20);
         }
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (moved && !world.isClient && state.get(ABSORBED_LIGHT) > 0) {
-            for (Direction dir : Direction.values()) {
-                world.updateNeighborsAlways(pos.offset(dir), this);
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+        for (Direction direction : Direction.values()) {
+            BlockPos neighborPos = pos. offset(direction);
+            BlockState neighborState = world.getBlockState(neighborPos);
+
+            if (neighborState.getLuminance() > state.get(ABSORBED_LIGHT)) {
+                world.setBlockState(pos, state.with(ABSORBED_LIGHT, neighborState.getLuminance()));
             }
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
     }
 }

@@ -23,6 +23,10 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, ModItems.UNBREAKABLE_UPGRADE_TEMPLATE);
             content.addAfter(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ModItems.ELDRITCH_ARMOR_TRIM, ModItems.SUN_ARMOR_TRIM);
             content.addAll(UnlockScrollManager.UNLOCK_SCROLLS);
+            content.addAfter(Items.SUGAR, ModItems.SALT);
+        });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.NATURAL).register(content -> {
+            content.addAfter(Items.TUFF, ModBlocks.SALT_BLOCK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
@@ -60,7 +64,7 @@ public class ModInventoryItemRegistry {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.MACE, ModItems.STAFF, ModItems.WIND_STAFF, ModItems.FIRE_STAFF, ModItems.EARTH_STAFF, ModItems.WATER_STAFF, ModItems.DRAGON_STAFF, ModItems.SPELL_BOOK);
-            content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST);
+            content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST, ModItems.SEA_MINE);
             content.addAfter(Items.CROSSBOW, ModItems.SCOPED_CROSSBOW);
             content.addAfter(Items.TOTEM_OF_UNDYING, ModItems.PET_CHARM);
         });

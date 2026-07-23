@@ -68,7 +68,6 @@
   "block.btc.charged_reinforced_dungeon_block": "Charged Reinforced Dungeon Block",
   "block.btc.unstable_tuff_bricks": "Unstable Tuff Bricks",
   "block.btc.toxic_sludge": "Toxic Sludge",
-
   "block.btc.copper_fan": "Copper Trial Fan",
   "block.btc.exposed_copper_fan": "Exposed Copper Trial Fan",
   "block.btc.weathered_copper_fan": "Weathered Copper Trial Fan",
@@ -79,6 +78,7 @@
   "block.btc.waxed_oxidized_copper_fan": "Waxed Oxidized Copper Trial Fan",
   "block.btc.bellow": "Bellow",
   "block.btc.redstone_bridge": "Redstone Bridge",
+  "block.btc.salt_block": "Salt Block",
 
   "item.btc.copper_wrench": "Copper Wrench",
   "item.btc.iron_wrench": "Iron Wrench",
@@ -117,6 +117,7 @@
   "item.btc.raw_meat_club": "Raw Meat Club",
   "item.btc.trial_jerky": "Trial Jerky",
   "item.btc.sea_mine": "Sea Mine",
+  "item.btc.salt": "Salt",
 
   "item.btc.pet_charm": "Pet Charm",
   "item.btc.pet_charm.action.bind": "Pet Bound",
