@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "group": "cracked_stone_bricks_pillar",
+  "ingredient": {
+    "item": "btc:stone_bricks_pillar"
+  },
+  "result": {
+    "id": "btc:cracked_stone_bricks_pillar"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:mossy_stone_bricks"
+    }
+  },
+  "pattern": [
+    " B ",
+    "BBB"
+  ],
+  "result": {
+    "count": 6,
+    "id": "btc:mossy_stone_bricks_pilaster"
+  }
+}

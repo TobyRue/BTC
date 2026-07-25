@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_moss_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:moss_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_stone_bricks_pilaster": {
+      "conditions": {
+        "items": [
+          {
+            "items": "btc:stone_bricks_pilaster"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "btc:mossy_stone_bricks_pilaster_from_mossing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_vine": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:vine"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stone_bricks_pilaster",
+      "has_vine",
+      "has_moss_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "btc:mossy_stone_bricks_pilaster_from_mossing"
+    ]
+  }
+}

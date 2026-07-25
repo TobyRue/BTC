@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "group": "cracked_deepslate_bricks_pillar",
+  "ingredient": {
+    "item": "btc:deepslate_bricks_pillar"
+  },
+  "result": {
+    "id": "btc:cracked_deepslate_bricks_pillar"
+  }
+}

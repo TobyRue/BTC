@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:cracked_deepslate_bricks"
+    }
+  },
+  "pattern": [
+    " B ",
+    "BBB"
+  ],
+  "result": {
+    "count": 6,
+    "id": "btc:cracked_deepslate_bricks_pilaster"
+  }
+}

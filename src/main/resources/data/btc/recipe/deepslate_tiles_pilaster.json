@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": {
+      "item": "minecraft:deepslate_tiles"
+    }
+  },
+  "pattern": [
+    " B ",
+    "BBB"
+  ],
+  "result": {
+    "count": 6,
+    "id": "btc:deepslate_tiles_pilaster"
+  }
+}

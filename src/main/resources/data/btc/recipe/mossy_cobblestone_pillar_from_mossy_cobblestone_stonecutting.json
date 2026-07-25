@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:mossy_cobblestone"
+  },
+  "result": {
+    "count": 4,
+    "id": "btc:mossy_cobblestone_pillar"
+  }
+}

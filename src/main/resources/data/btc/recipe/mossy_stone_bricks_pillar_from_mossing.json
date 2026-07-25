@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "btc:stone_bricks_pillar"
+    },
+    [
+      {
+        "item": "minecraft:vine"
+      },
+      {
+        "item": "minecraft:moss_block"
+      }
+    ]
+  ],
+  "result": {
+    "count": 1,
+    "id": "btc:mossy_stone_bricks_pillar"
+  }
+}
