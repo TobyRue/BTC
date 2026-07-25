@@ -73,6 +73,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.REDSTONE_ORE, ModBlocks.ITEM_PEDESTAL,
                     ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_WIRE,
                     ModBlocks.POWER_PILASTER, ModBlocks.POWER_PILLAR,
+                    ModBlocks.ANCIENT_POWER_PILASTER, ModBlocks.ANCIENT_POWER_PILLAR,
                     ModBlocks.DUNGEON_BUTTON, ModBlocks.DUNGEON_PRESSURE_PLATE,
                     ModBlocks.WAXED_COPPER_TRIAL_FAN, ModBlocks.WAXED_EXPOSED_COPPER_TRIAL_FAN,
                     ModBlocks.WAXED_WEATHERED_COPPER_TRIAL_FAN, ModBlocks.WAXED_OXIDIZED_COPPER_TRIAL_FAN);

@@ -684,7 +684,8 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POTION_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POWER_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POWER_PILASTER, RenderLayer.getCutoutMipped());
-
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANCIENT_POWER_PILLAR, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANCIENT_POWER_PILASTER, RenderLayer.getCutoutMipped());
 
 
         BlockEntityRendererFactories.register(ModBlockEntities.PEDESTAL_BLOCK_ENTITY, PedestalBlockRenderer::new);

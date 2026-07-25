@@ -247,6 +247,17 @@ public class ModBlocks {
             "power_pillar",
             true
     );
+    public static final Block ANCIENT_POWER_PILASTER = register(
+            new PowerPilasterBlock(AbstractBlock.Settings.create().mapColor(MapColor.DARK_RED).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.DEEPSLATE_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
+            "ancient_power_pilaster",
+            true
+    );
+
+    public static final Block ANCIENT_POWER_PILLAR = register(
+            new PowerPillarBlock(AbstractBlock.Settings.create().mapColor(MapColor.DARK_RED).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.DEEPSLATE_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
+            "ancient_power_pillar",
+            true
+    );
 
     public static final Block DUNGEON_WIRE = register(
             new WireBlock(AbstractBlock.Settings.create().mapColor(MapColor.ORANGE).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS).instrument(NoteBlockInstrument.BASEDRUM)),
