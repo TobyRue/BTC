@@ -46,7 +46,7 @@ public class DungeonDoorBlock extends Block {
 
     private static final VoxelShape CUBE_SHAPE = Block.createCuboidShape(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
     private static final VoxelShape FULL_BLOCK_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-    public static final int MAX_DISTANCE = 7;
+    public static final int MAX_DISTANCE = 9;
 
     public DungeonDoorBlock(Settings settings) {
         super(settings);
@@ -75,19 +75,19 @@ public class DungeonDoorBlock extends Block {
             NbtCompound rightShoulder = player.getShoulderEntityRight();
             if (!leftShoulder.isEmpty() && leftShoulder.getString("id").equals("btc:key_golem")) {
                 player.setShoulderEntityLeft(new NbtCompound());
-                openConnectedDoors(world, pos, false, 0);
+                openConnectedDoors(world, pos, true, 4000);
                 return ItemActionResult.SUCCESS;
             } else if (!rightShoulder.isEmpty() && rightShoulder.getString("id").equals("btc:key_golem")) {
                 player.setShoulderEntityRight(new NbtCompound());
-                openConnectedDoors(world, pos, false, 0);
+                openConnectedDoors(world, pos, true, 4000);
                 return ItemActionResult.SUCCESS;
             }
         } else if (stack.isOf(Items.TRIAL_KEY) && state.get(TYPE) == DoorType.KEYHOLE && !state.get(OPEN)) {
             stack.decrementUnlessCreative(1, player);
-            openConnectedDoors(world, pos, false, 0);
+            openConnectedDoors(world, pos, true, 4000);
             return ItemActionResult.SUCCESS;
         } else if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
-            openConnectedDoors(world, pos, true, 4000);
+            openConnectedDoors(world, pos, false, 4000);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.FAIL;
@@ -102,23 +102,35 @@ public class DungeonDoorBlock extends Block {
                     (!rightShoulder.isEmpty() && rightShoulder.getString("id").equals("btc:key_golem"))) {
                 if (!leftShoulder.isEmpty()) player.setShoulderEntityLeft(new NbtCompound());
                 else player.setShoulderEntityRight(new NbtCompound());
-                openConnectedDoors(world, pos, false, 0);
+                openConnectedDoors(world, pos, true, 4000);
                 return ActionResult.SUCCESS;
             }
         }
         if (state.get(TYPE) == DoorType.NORMAL && !state.get(OPEN)) {
-            openConnectedDoors(world, pos, true, 4000);
+            openConnectedDoors(world, pos, false, 4000);
             return ActionResult.SUCCESS;
         }
         return super.onUse(state, world, pos, player, hit);
     }
 
-    private void openConnectedDoors(World world, BlockPos pos, boolean autoClose, int delayMs) {
-        for (BlockPos offsetPos : findDoors(world, pos)) {
-            if (autoClose) {
-                setOpen(world.getBlockState(offsetPos), world, offsetPos, true, delayMs);
+    private void openConnectedDoors(World world, BlockPos pos, boolean isKey, int delayMs) {
+        int staysLocked = 0;
+        Set<BlockPos> doors = findDoors(world, pos);
+        for (BlockPos offsetPos : doors) {
+            if (world.getBlockState(offsetPos).getBlock() instanceof DungeonDoorBlock && (world.getBlockState(offsetPos).get(TYPE) == DoorType.GOLEM || world.getBlockState(offsetPos).get(TYPE) == DoorType.KEYHOLE)) {
+                staysLocked += 1;
+            }
+        }
+        System.out.println("Key:" + isKey + " Stays Locked: " + staysLocked);
+        for (BlockPos offsetPos : doors) {
+            if (staysLocked <= 1) {
+                if (isKey) {
+                    setOpen(world.getBlockState(offsetPos).with(TYPE, DoorType.NORMAL), world, offsetPos, true, delayMs);
+                } else {
+                    setOpen(world.getBlockState(offsetPos), world, offsetPos, true, delayMs);
+                }
             } else {
-                setOpenNoClose(world.getBlockState(offsetPos), world, offsetPos);
+                world.setBlockState(pos, world.getBlockState(pos).with(TYPE, DoorType.LOCKED));
             }
         }
     }
@@ -143,8 +155,12 @@ public class DungeonDoorBlock extends Block {
 
                     if(!found.contains(neighborPos) && neighborState.getBlock() instanceof DungeonDoorBlock) {
                         boolean match = (neighborState.get(TYPE) == originState.get(TYPE))
-                                || (((neighborState.get(TYPE) == DoorType.KEYHOLE) || (neighborState.get(TYPE) == DoorType.GOLEM)) && (originState.get(TYPE) == DoorType.LOCKED))
-                                || (((originState.get(TYPE) == DoorType.KEYHOLE) || (originState.get(TYPE) == DoorType.GOLEM)) && (neighborState.get(TYPE) == DoorType.LOCKED));
+                                || (((neighborState.get(TYPE) == DoorType.KEYHOLE) ||
+                                (neighborState.get(TYPE) == DoorType.GOLEM)) && (originState.get(TYPE) == DoorType.LOCKED))
+                                || (((originState.get(TYPE) == DoorType.KEYHOLE) ||
+                                (originState.get(TYPE) == DoorType.GOLEM)) && (neighborState.get(TYPE) == DoorType.LOCKED))
+                                || ((neighborState.get(TYPE) == DoorType.KEYHOLE) && (originState.get(TYPE) == DoorType.GOLEM))
+                                || ((neighborState.get(TYPE) == DoorType.GOLEM) && (originState.get(TYPE) == DoorType.KEYHOLE));
 
                         if (match) {
                             queue.add(new Pair<>(neighborPos, distance + 1));
