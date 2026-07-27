@@ -1,0 +1,8 @@
+{
+  "parent": "btc:block/pillar",
+  "textures": {
+    "bottom": "btc:block/ancient_base",
+    "side": "btc:block/ancient_potion_pillar",
+    "top": "btc:block/ancient_base"
+  }
+}

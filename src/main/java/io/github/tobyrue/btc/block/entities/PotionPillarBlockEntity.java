@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block.entities;
 
+import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.PotionPillar;
 import io.github.tobyrue.btc.client.RuneTextLoader;
 import io.github.tobyrue.btc.misc.CornerStorage;
@@ -48,7 +49,11 @@ public class PotionPillarBlockEntity extends BlockEntity implements BlockEntityT
     private int duration = 160;
 
     public PotionPillarBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, pos, state);
+        super(switch (state.getBlock()) {
+            case Block block when state.isOf(ModBlocks.ANCIENT_POTION_PILLAR) -> ModBlockEntities.ANCIENT_POTION_PILLAR_BLOCK_ENTITY;
+            case Block block when state.isOf(ModBlocks.POTION_PILLAR) -> ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY;
+            default -> throw new IllegalStateException("Unexpected value: " + state.getBlock());
+        }, pos, state);
     }
     private int tickCounter = 0;
 

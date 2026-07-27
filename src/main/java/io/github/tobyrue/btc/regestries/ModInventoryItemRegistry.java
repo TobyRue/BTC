@@ -51,7 +51,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);
             content.addAfter(Blocks.ENCHANTING_TABLE, ModBlocks.DUNGEON_WIRE,
                     ModBlocks.PEDESTAL, ModBlocks.ITEM_PEDESTAL,
-                    ModBlocks.KEY_ACCEPTOR, ModBlocks.POTION_PILLAR,
+                    ModBlocks.KEY_ACCEPTOR, ModBlocks.POTION_PILLAR, ModBlocks.ANCIENT_POTION_PILLAR,
                     ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_FLAME,
                     ModBlocks.DEEP_FLAME, ModBlocks.FORTRESS_FLAME,
                     ModBlocks.BRAZIER, ModBlocks.SPY_GLASS_BLOCK);

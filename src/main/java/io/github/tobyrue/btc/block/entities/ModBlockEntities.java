@@ -14,6 +14,7 @@ public class ModBlockEntities {
     public static BlockEntityType<PedestalBlockEntity> PEDESTAL_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("staff_pedestal"), BlockEntityType.Builder.create(PedestalBlockEntity::new, ModBlocks.PEDESTAL).build());
     public static BlockEntityType<OminousBeaconBlockEntity> OMINOUS_BEACON_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("ominous_beacon"), BlockEntityType.Builder.create(OminousBeaconBlockEntity::new, ModBlocks.OMINOUS_BEACON).build());
     public static BlockEntityType<PotionPillarBlockEntity> POTION_PILLAR_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("potion_pillar"), BlockEntityType.Builder.create(PotionPillarBlockEntity::new, ModBlocks.POTION_PILLAR).build());
+    public static BlockEntityType<PotionPillarBlockEntity> ANCIENT_POTION_PILLAR_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("ancient_potion_pillar"), BlockEntityType.Builder.create(PotionPillarBlockEntity::new, ModBlocks.ANCIENT_POTION_PILLAR).build());
     public static BlockEntityType<ItemPedestalBlockEntity> ITEM_PEDESTAL_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("key_dispenser"), BlockEntityType.Builder.create(ItemPedestalBlockEntity::new, ModBlocks.ITEM_PEDESTAL).build());
     public static BlockEntityType<KeyAcceptorBlockEntity> KEY_ACCEPTOR_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("key_acceptor"), BlockEntityType.Builder.create(KeyAcceptorBlockEntity::new, ModBlocks.KEY_ACCEPTOR).build());
     public static BlockEntityType<MobDetectorBlockEntity> MOB_DETECTOR_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("mob_detector"), BlockEntityType.Builder.create(MobDetectorBlockEntity::new, ModBlocks.MOB_DETECTOR).build());
@@ -35,6 +36,7 @@ public class ModBlockEntities {
     public static BlockEntityType<FancyPotBlockEntity> FANCY_BLUE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_blue_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_BLUE_POT).build());
     public static BlockEntityType<SpyGlassBlockEntity> SPY_GLASS_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("spy_glass_block"), BlockEntityType.Builder.create(SpyGlassBlockEntity::new, ModBlocks.SPY_GLASS_BLOCK).build());
     public static BlockEntityType<RedstoneBridgeBlockEntity> REDSTONE_BRIDGE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("redstone_bridge"), BlockEntityType.Builder.create(RedstoneBridgeBlockEntity::new, ModBlocks.REDSTONE_BRIDGE).build());
+    public static BlockEntityType<ScrollTableBlockEntity> SCROLL_TABLE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("scroll_table"), BlockEntityType.Builder.create(ScrollTableBlockEntity::new, ModBlocks.SCROLL_TABLE).build());
     public static void initialize() {
     }
 }

@@ -27,14 +27,12 @@ public class KeyAcceptorBlockEntity extends BlockEntity implements BlockEntityTi
     }
 
     public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        // Condition checking if it is already active
         if (state.get(KeyAcceptorBlock.POWERED)) {
             return ItemActionResult.FAIL;
         }
 
         boolean isOminous = state.get(KeyAcceptorBlock.IS_OMINOUS);
 
-        // Checks match requirements: Normal block accepts Normal Key, Ominous block accepts Ominous Key
         if ((isOminous && stack.isOf(Items.OMINOUS_TRIAL_KEY)) || (!isOminous && stack.isOf(Items.TRIAL_KEY))) {
             if (!world.isClient) {
                 world.setBlockState(pos, state.with(KeyAcceptorBlock.POWERED, true), Block.NOTIFY_ALL);

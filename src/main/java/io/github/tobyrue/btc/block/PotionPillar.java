@@ -224,4 +224,42 @@ public class PotionPillar extends Block implements ModBlockEntityProvider<Potion
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.with(MIRRORED, mirror);
     }
+
+    public static class AncientPotionPillar extends PotionPillar implements ModBlockEntityProvider<PotionPillarBlockEntity>, Waterloggable  {
+
+        @Override
+        public BlockEntityType<PotionPillarBlockEntity> getBlockEntityType() {
+            return ModBlockEntities.ANCIENT_POTION_PILLAR_BLOCK_ENTITY;
+        }
+
+        public AncientPotionPillar(Settings settings) {
+            super(settings);
+            this.setDefaultState(this.stateManager.getDefaultState()
+                    .with(FACING, Direction.NORTH)
+                    .with(MIRRORED, BlockMirror.NONE).with(AXIS, Direction.Axis.Y)
+                    .with(Properties.WATERLOGGED, false));
+        }
+
+        @Nullable
+        @Override
+        public BlockState getPlacementState(ItemPlacementContext ctx) {
+            Direction direction = ctx.getSide();
+            BlockPos blockPos = ctx.getBlockPos();
+            FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
+
+            return this.getDefaultState()
+                    .with(AXIS, direction.getAxis())
+                    .with(FACING, Direction.NORTH)
+                    .with(MIRRORED, BlockMirror.NONE)
+                    .with(Properties.WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        }
+
+        @Override
+        protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+            builder.add(FACING);
+            builder.add(MIRRORED);
+            builder.add(AXIS);
+            builder.add(Properties.WATERLOGGED);
+        }
+    }
 }

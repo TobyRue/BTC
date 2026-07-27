@@ -7,6 +7,7 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
+import io.github.tobyrue.btc.client.screen.ScrollTableScreen;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.*;
@@ -15,6 +16,7 @@ import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
+import io.github.tobyrue.btc.regestries.ModScreens;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
@@ -38,6 +40,7 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.KeyBinding;
@@ -137,6 +140,9 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        HandledScreens.register(ModScreens.SCROLL_TABLE_SCREEN_HANDLER, ScrollTableScreen::new);
+
+
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> {
             MinecraftClient client = MinecraftClient.getInstance();
 
@@ -684,6 +690,7 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POTION_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POWER_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POWER_PILASTER, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANCIENT_POTION_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANCIENT_POWER_PILLAR, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ANCIENT_POWER_PILASTER, RenderLayer.getCutoutMipped());
 
@@ -693,6 +700,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.ITEM_PEDESTAL_BLOCK_ENTITY, ItemPedestalBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.KEY_ACCEPTOR_ENTITY, KeyAcceptorBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.MOB_DETECTOR_BLOCK_ENTITY, MobDetectorBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.ANCIENT_POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.WIRE_BLOCK_ENTITY, WireBlockEntityRenderer::new);

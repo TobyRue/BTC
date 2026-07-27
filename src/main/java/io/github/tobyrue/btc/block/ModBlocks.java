@@ -283,6 +283,12 @@ public class ModBlocks {
             true
     );
 
+    public static final Block SCROLL_TABLE = register(
+            new ScrollTableBlock(AbstractBlock.Settings.copy(Blocks.CRAFTING_TABLE).nonOpaque()),
+            "scroll_table",
+            true
+    );
+
     public static final Block SALT_BLOCK = register(
             new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF).nonOpaque()),
             "salt_block",
@@ -368,8 +374,14 @@ public class ModBlocks {
     );
 
     public static final Block POTION_PILLAR = register(
-            new PotionPillar(AbstractBlock.Settings.create().mapColor(MapColor.DIAMOND_BLUE).nonOpaque().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.GLASS)),
+            new PotionPillar(AbstractBlock.Settings.create().mapColor(MapColor.GRAY).nonOpaque().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.TUFF_BRICKS)),
             "potion_pillar",
+            true
+    );
+
+    public static final Block ANCIENT_POTION_PILLAR = register(
+            new PotionPillar.AncientPotionPillar(AbstractBlock.Settings.create().mapColor(MapColor.BLACK).nonOpaque().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.DEEPSLATE_BRICKS)),
+            "ancient_potion_pillar",
             true
     );
 
