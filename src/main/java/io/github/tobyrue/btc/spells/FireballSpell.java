@@ -2,16 +2,24 @@ package io.github.tobyrue.btc.spells;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.mixin.FireballEntityAccessor;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 
-public class FireballSpell extends Spell {
+import java.util.HashMap;
+import java.util.function.Function;
+
+public class FireballSpell extends Spell implements UpgradableSpell {
 
     public FireballSpell() {
         super(SpellTypes.FIRE);
@@ -44,5 +52,13 @@ public class FireballSpell extends Spell {
     @Override
     public int getColor(final GrabBag args) {
         return 0xFFFF5400;
+    }
+
+    @Override
+    public HashMap<ItemStack, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<ItemStack, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "level", 1, 5, 1, Items.AMETHYST_SHARD.getDefaultStack());
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 80, 1000, -60, ModItems.SALT.getDefaultStack());
+        return upgrades;
     }
 }

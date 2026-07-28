@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.client.screen.recipe_book.ScrollTableRecipeBookWidget;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ingame.CraftingScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
@@ -122,11 +123,12 @@ public class ScrollTableScreen extends HandledScreen<ScrollTableScreenHandler> i
             return this.narrow && this.recipeBook.isOpen() ? true : super.mouseClicked(mouseX, mouseY, button);
         }
     }
-
     @Override
     protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
         super.onMouseClick(slot, slotId, button, actionType);
-        this.recipeBook.slotClicked(slot);
+        if (slot != null && slot.getIndex() < 11) {
+            this.recipeBook.slotClicked(slot);
+        }
     }
 
     @Override

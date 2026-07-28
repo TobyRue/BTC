@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tobyrue.btc.client.screen.recipe_book.ScrollTableRecipeInput;
 import io.github.tobyrue.btc.regestries.ModRecipes;
-import net.minecraft.client.gui.screen.recipebook.RecipeDisplayListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -16,12 +15,12 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
-    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final RawShapedRecipe rawPattern;
     private final ItemStack result;
@@ -31,6 +30,7 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
         this.result = result;
     }
 
+
     public RawShapedRecipe getRawPattern() {
         return this.rawPattern;
     }
@@ -38,7 +38,6 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
     @Override
     public boolean matches(ScrollTableRecipeInput input, World world) {
         boolean match = this.rawPattern.matches(input.asCraftingInput());
-        LOGGER.info("[ScrollTableRecipe] Matches check for {}: {}", this.result.getItem(), match);
         return match;
     }
 
@@ -62,11 +61,8 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
         DefaultedList<Ingredient> patternIngredients = this.rawPattern.getIngredients();
         DefaultedList<Ingredient> circleIngredients = DefaultedList.ofSize(9, Ingredient.EMPTY);
 
-        int[] gridToCircleMap = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-
         for (int i = 0; i < patternIngredients.size() && i < 9; i++) {
-            int targetSlot = gridToCircleMap[i];
-            circleIngredients.set(targetSlot, patternIngredients.get(i));
+            circleIngredients.set(i, patternIngredients.get(i));
         }
         return circleIngredients;
     }
@@ -89,8 +85,6 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
     public RecipeType<?> getType() {
         return ModRecipes.SCROLL_TABLE_RECIPE_TYPE;
     }
-
-
 
     public static class Serializer implements RecipeSerializer<ScrollTableRecipe> {
         public static final MapCodec<ScrollTableRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->

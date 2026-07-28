@@ -17,8 +17,11 @@ import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<ScrollTableRecipeInput, ScrollTableRecipe> {
     private final Inventory inventory;
@@ -35,38 +38,47 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         blockInventory.onOpen(playerInventory.player);
         this.world = playerInventory.player.getWorld();
 
-
-        this.addSlot(new Slot(blockInventory, 0, 54, 18));  // 7
-        this.addSlot(new Slot(blockInventory, 1, 79, 11));  // 0
-        this.addSlot(new Slot(blockInventory, 2, 104, 18)); // 1
-        this.addSlot(new Slot(blockInventory, 3, 47, 43));  // 6
-        this.addSlot(new Slot(blockInventory, 4, 148, 46) {  // 9
+        this.addSlot(new Slot(blockInventory, 0, 54, 18));
+        this.addSlot(new Slot(blockInventory, 1, 79, 11));
+        this.addSlot(new Slot(blockInventory, 2, 104, 18));
+        this.addSlot(new Slot(blockInventory, 3, 47, 43));
+        this.addSlot(new Slot(blockInventory, 4, 148, 46) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.isOf(ModItems.EMPTY_SCROLL) || stack.isOf(ModItems.UNLOCK_SCROLL);
             }
         });
-        this.addSlot(new Slot(blockInventory, 5, 111, 43)); // 2
-        this.addSlot(new Slot(blockInventory, 6, 54, 68));  // 5
-        this.addSlot(new Slot(blockInventory, 7, 80, 75));  // 4
-        this.addSlot(new Slot(blockInventory, 8, 104, 68)); // 3
+        this.addSlot(new Slot(blockInventory, 5, 111, 43));
+        this.addSlot(new Slot(blockInventory, 6, 54, 68));
+        this.addSlot(new Slot(blockInventory, 7, 80, 75));
+        this.addSlot(new Slot(blockInventory, 8, 104, 68));
 
-        this.addSlot(new Slot(blockInventory, 9, 79, 43) {  // 8
+        this.addSlot(new Slot(blockInventory, 9, 79, 43) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return false;
             }
+
+            @Override
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
+                for (int i = 0; i < 9; i++) {
+                    ItemStack ingredient = blockInventory.getStack(i);
+                    if (!ingredient.isEmpty()) {
+                        ingredient.decrement(1);
+                        blockInventory.setStack(i, ingredient);
+                    }
+                }
+                ScrollTableScreenHandler.this.updateResult();
+                super.onTakeItem(player, stack);
+            }
         });
 
-
-
-        this.addSlot(new Slot(blockInventory, 10, 148, 69) { // 10
+        this.addSlot(new Slot(blockInventory, 10, 148, 69) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.isOf(Items.LAPIS_LAZULI);
             }
         });
-
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
@@ -78,6 +90,33 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         }
     }
 
+    private void updateResult() {
+        if (this.world.isClient) return;
+
+        ItemStack[] inputs = new ItemStack[9];
+        for (int i = 0; i < 9; i++) {
+            inputs[i] = this.inventory.getStack(i);
+        }
+        ScrollTableRecipeInput input = new ScrollTableRecipeInput(inputs);
+
+        Optional<RecipeEntry<ScrollTableRecipe>> match =
+                this.world.getRecipeManager().getFirstMatch(ModRecipes.SCROLL_TABLE_RECIPE_TYPE, input, this.world);
+
+        if (match.isPresent()) {
+            this.inventory.setStack(9, match.get().value().craft(input, this.world.getRegistryManager()));
+        } else {
+            this.inventory.setStack(9, ItemStack.EMPTY);
+        }
+        this.inventory.markDirty();
+        this.sendContentUpdates();
+    }
+
+    @Override
+    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+        super.onSlotClick(slotIndex, button, actionType, player);
+        this.updateResult();
+    }
+
     @Override
     public boolean matches(RecipeEntry<ScrollTableRecipe> entry) {
         if (entry.value().getType() != ModRecipes.SCROLL_TABLE_RECIPE_TYPE) {
@@ -85,8 +124,8 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         }
         ScrollTableRecipe scrollRecipe = entry.value();
 
-        ItemStack[] inputs = new ItemStack[8];
-        for (int i = 0; i < 8; i++) {
+        ItemStack[] inputs = new ItemStack[9];
+        for (int i = 0; i < 9; i++) {
             inputs[i] = this.inventory.getStack(i);
         }
         return scrollRecipe.matches(new ScrollTableRecipeInput(inputs), this.world);
@@ -101,25 +140,25 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
 
     @Override
     public void clearCraftingSlots() {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 9; i++) {
             this.inventory.setStack(i, ItemStack.EMPTY);
         }
     }
+
     public void dropOrMoveIngredients(PlayerEntity player) {
         for (int i = 0; i < 9; i++) {
             ItemStack stack = this.inventory.getStack(i);
             if (!stack.isEmpty()) {
                 boolean inserted = player.getInventory().insertStack(stack);
-
                 if (!inserted || !stack.isEmpty()) {
                     player.dropItem(stack, false);
                 }
-
                 this.inventory.setStack(i, ItemStack.EMPTY);
             }
         }
         this.sendContentUpdates();
     }
+
     @Override
     public int getCraftingResultSlotIndex() {
         return 9;
@@ -147,7 +186,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
 
     @Override
     public boolean canInsertIntoSlot(int index) {
-        return index != 9;
+        return index != getCraftingResultSlotIndex();
     }
 
     @Override
@@ -166,7 +205,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
                 slot.onQuickTransfer(originalStack, newStack);
             } else {
                 if (originalStack.isOf(ModItems.UNLOCK_SCROLL) || originalStack.isOf(ModItems.EMPTY_SCROLL)) {
-                    if (!this.insertItem(originalStack, 9, 10, false)) {
+                    if (!this.insertItem(originalStack, 4, 5, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (originalStack.isOf(Items.LAPIS_LAZULI)) {
@@ -174,7 +213,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
                         return ItemStack.EMPTY;
                     }
                 } else {
-                    if (!this.insertItem(originalStack, 0, 8, false)) {
+                    if (!this.insertItem(originalStack, 0, 9, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
@@ -192,6 +231,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
 
             slot.onTakeItem(player, originalStack);
         }
+        this.updateResult();
         return newStack;
     }
 
@@ -204,8 +244,14 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
     public void fillInputSlots(boolean syncId, RecipeEntry<?> recipe, ServerPlayerEntity player) {
         if (recipe.value() instanceof ScrollTableRecipe scrollRecipe) {
             this.dropOrMoveIngredients(player);
-
             new InputSlotFiller<>(this).fillInputSlots(player, (RecipeEntry<ScrollTableRecipe>) recipe, syncId);
+            this.updateResult();
         }
+    }
+
+    @Override
+    public void onContentChanged(Inventory inventory) {
+        super.onContentChanged(inventory);
+        this.updateResult();
     }
 }
