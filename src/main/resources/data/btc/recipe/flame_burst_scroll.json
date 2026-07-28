@@ -1,6 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "type": "btc:scroll_crafting",
   "key": {
     "a": { "item": "minecraft:fire_charge" },
     "b": { "item": "btc:empty_scroll" },

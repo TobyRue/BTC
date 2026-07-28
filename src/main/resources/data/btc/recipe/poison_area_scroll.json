@@ -1,6 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "type": "btc:scroll_crafting",
   "key": {
     "a": {
       "item": "minecraft:fermented_spider_eye"
@@ -25,7 +24,7 @@
         "advancement": "btc:adventure/get_poison_area_scroll",
         "texture_int": 0,
         "id": "btc:potion_area_effect",
-        "args": "{amplifier:3, cooldown:800, cooldown_name:\"btc:poison_area_effect\", duration:80, effect:\"minecraft:poison\", name:\"poison\", onlyHostile:false, includeUser:false}"
+        "args": "{amplifier:3, cooldown:800, cooldown_name:'btc:poison_area_effect', duration:80, effect:'minecraft:poison', name:'poison', onlyHostile:false, includeUser:false}"
       }
     }
   }

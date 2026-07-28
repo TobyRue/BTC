@@ -1,6 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "type": "btc:scroll_crafting",
   "key": {
     "e": { "item": "minecraft:ender_eye" },
     "o": { "item": "minecraft:ender_chest" },

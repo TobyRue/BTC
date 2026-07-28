@@ -1,6 +1,6 @@
 {
   "type": "btc:scroll_crafting",
-  "category": "equipment",
+  "category": "btc_scroll_table",
   "key": {
     "a": {
       "item": "minecraft:end_crystal"
@@ -21,7 +21,7 @@
     "dad"
   ],
   "result": {
-    "count": 0,
+    "count": 1,
     "id": "btc:unlock_scroll",
     "components": {
       "btc:unlock_spell": {

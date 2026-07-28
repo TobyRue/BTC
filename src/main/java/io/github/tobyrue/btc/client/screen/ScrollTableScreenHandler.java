@@ -35,6 +35,39 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         blockInventory.onOpen(playerInventory.player);
         this.world = playerInventory.player.getWorld();
 
+
+        this.addSlot(new Slot(blockInventory, 0, 54, 18));  // 7
+        this.addSlot(new Slot(blockInventory, 1, 79, 11));  // 0
+        this.addSlot(new Slot(blockInventory, 2, 104, 18)); // 1
+        this.addSlot(new Slot(blockInventory, 3, 47, 43));  // 6
+        this.addSlot(new Slot(blockInventory, 4, 148, 46) {  // 9
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.isOf(ModItems.EMPTY_SCROLL) || stack.isOf(ModItems.UNLOCK_SCROLL);
+            }
+        });
+        this.addSlot(new Slot(blockInventory, 5, 111, 43)); // 2
+        this.addSlot(new Slot(blockInventory, 6, 54, 68));  // 5
+        this.addSlot(new Slot(blockInventory, 7, 80, 75));  // 4
+        this.addSlot(new Slot(blockInventory, 8, 104, 68)); // 3
+
+        this.addSlot(new Slot(blockInventory, 9, 79, 43) {  // 8
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return false;
+            }
+        });
+
+
+
+        this.addSlot(new Slot(blockInventory, 10, 148, 69) { // 10
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.isOf(Items.LAPIS_LAZULI);
+            }
+        });
+
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
                 this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 118 + i * 18));
@@ -43,46 +76,13 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 176));
         }
-
-        this.addSlot(new Slot(blockInventory, 0, 79, 11));  // 36
-        this.addSlot(new Slot(blockInventory, 1, 104, 18)); // 37
-        this.addSlot(new Slot(blockInventory, 2, 111, 43)); // 38
-        this.addSlot(new Slot(blockInventory, 3, 104, 68)); // 39
-        this.addSlot(new Slot(blockInventory, 4, 80, 75));  // 40
-        this.addSlot(new Slot(blockInventory, 5, 54, 68));  // 41
-        this.addSlot(new Slot(blockInventory, 6, 47, 43));  // 42
-        this.addSlot(new Slot(blockInventory, 7, 54, 18));  // 43
-
-        this.addSlot(new Slot(blockInventory, 8, 79, 43) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return false;
-            }
-        });
-
-        this.addSlot(new Slot(blockInventory, 9, 148, 46) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.isOf(ModItems.EMPTY_SCROLL) || stack.isOf(ModItems.UNLOCK_SCROLL);
-            }
-        });
-
-        this.addSlot(new Slot(blockInventory, 10, 148, 69) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.isOf(Items.LAPIS_LAZULI);
-            }
-        });
     }
-
-
 
     @Override
     public boolean matches(RecipeEntry<ScrollTableRecipe> entry) {
         if (entry.value().getType() != ModRecipes.SCROLL_TABLE_RECIPE_TYPE) {
             return false;
         }
-        System.out.println("Entry:" + entry);
         ScrollTableRecipe scrollRecipe = entry.value();
 
         ItemStack[] inputs = new ItemStack[8];
@@ -92,15 +92,12 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         return scrollRecipe.matches(new ScrollTableRecipeInput(inputs), this.world);
     }
 
-
     @Override
     public void populateRecipeFinder(RecipeMatcher finder) {
-        for (int i = 0; i < 36; i++) {
+        for (int i = 11; i < 47; i++) {
             finder.addInput(this.getSlot(i).getStack());
         }
     }
-
-
 
     @Override
     public void clearCraftingSlots() {
@@ -108,10 +105,24 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
             this.inventory.setStack(i, ItemStack.EMPTY);
         }
     }
+    public void dropOrMoveIngredients(PlayerEntity player) {
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = this.inventory.getStack(i);
+            if (!stack.isEmpty()) {
+                boolean inserted = player.getInventory().insertStack(stack);
 
+                if (!inserted || !stack.isEmpty()) {
+                    player.dropItem(stack, false);
+                }
+
+                this.inventory.setStack(i, ItemStack.EMPTY);
+            }
+        }
+        this.sendContentUpdates();
+    }
     @Override
     public int getCraftingResultSlotIndex() {
-        return 44;
+        return 9;
     }
 
     @Override
@@ -131,52 +142,54 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
 
     @Override
     public RecipeBookCategory getCategory() {
-        return RecipeBookCategory.CRAFTING;
+        return RecipeBookCategory.BTC_SCROLL_TABLE;
     }
 
     @Override
     public boolean canInsertIntoSlot(int index) {
-        return index != 44;
+        return index != 9;
     }
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int slotIndex) {
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
+
         if (slot != null && slot.hasStack()) {
             ItemStack originalStack = slot.getStack();
             newStack = originalStack.copy();
-            if (slotIndex >= 36) {
-                if (!this.insertItem(originalStack, 0, 36, true)) {
+
+            if (slotIndex < 11) {
+                if (!this.insertItem(originalStack, 11, 47, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickTransfer(originalStack, newStack);
-            }
-            else {
+            } else {
                 if (originalStack.isOf(ModItems.UNLOCK_SCROLL) || originalStack.isOf(ModItems.EMPTY_SCROLL)) {
-                    if (!this.insertItem(originalStack, 45, 46, false)) {
+                    if (!this.insertItem(originalStack, 9, 10, false)) {
                         return ItemStack.EMPTY;
                     }
-                }
-                else if (originalStack.isOf(Items.LAPIS_LAZULI)) {
-                    if (!this.insertItem(originalStack, 46, 47, false)) {
+                } else if (originalStack.isOf(Items.LAPIS_LAZULI)) {
+                    if (!this.insertItem(originalStack, 10, 11, false)) {
                         return ItemStack.EMPTY;
                     }
-                }
-                else {
-                    if (!this.insertItem(originalStack, 36, 44, false)) {
+                } else {
+                    if (!this.insertItem(originalStack, 0, 8, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
             }
+
             if (originalStack.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
             } else {
                 slot.markDirty();
             }
+
             if (originalStack.getCount() == newStack.getCount()) {
                 return ItemStack.EMPTY;
             }
+
             slot.onTakeItem(player, originalStack);
         }
         return newStack;
@@ -190,9 +203,9 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
     @Override
     public void fillInputSlots(boolean syncId, RecipeEntry<?> recipe, ServerPlayerEntity player) {
         if (recipe.value() instanceof ScrollTableRecipe scrollRecipe) {
-            this.clearCraftingSlots();
+            this.dropOrMoveIngredients(player);
+
             new InputSlotFiller<>(this).fillInputSlots(player, (RecipeEntry<ScrollTableRecipe>) recipe, syncId);
         }
     }
 }
-

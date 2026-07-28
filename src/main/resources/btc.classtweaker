@@ -1,4 +1,4 @@
-accessWidener v1 named
+classTweaker v2 named
 
 accessible method net/minecraft/entity/player/PlayerEntity setShoulderEntityLeft (Lnet/minecraft/nbt/NbtCompound;)V
 accessible method net/minecraft/entity/player/PlayerEntity setShoulderEntityRight (Lnet/minecraft/nbt/NbtCompound;)V
@@ -6,3 +6,8 @@ accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntity (L
 accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntities ()V
 accessible method net/minecraft/block/entity/BlockEntity readNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
 accessible method net/minecraft/block/entity/BlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
+accessible class net/minecraft/recipe/book/RecipeBookOptions$CategoryOption
+accessible method net/minecraft/recipe/book/RecipeBookOptions$CategoryOption <init> (ZZ)V
+
+extend-enum net/minecraft/recipe/book/RecipeBookCategory BTC_SCROLL_TABLE
+extend-enum net/minecraft/client/recipebook/RecipeBookGroup BTC_SCROLL_TABLE_SEARCH

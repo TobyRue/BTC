@@ -29,11 +29,14 @@
     "PlayerShoulderedEntityMixin",
     "PlayerSpyglassMixin",
     "RangedWeaponMixin",
+    "RecipeBookCategoryMixin",
+    "RecipeBookOptionsMixin",
     "ServerPlayerEntityMixin",
     "TuffGolemSpawnMixin"
   ],
   "client": [
     "CameraMixin",
+    "ClientRecipeBookMixin",
     "FovMixin",
     "GameRendererMixin",
     "ItemRendererMixin",
@@ -43,7 +46,10 @@
     "ModelLoaderMixin",
     "MouseMixin",
     "PlayerArmPoseMixin",
-    "PlayerRendererMixin"
+    "PlayerRendererMixin",
+    "RecipeBookGroupGroupingsMixin",
+    "RecipeBookGroupMixin",
+    "RecipeBookWidgetTabMixin"
   ],
   "injectors": {
     "defaultRequire": 1

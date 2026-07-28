@@ -1,6 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "type": "btc:scroll_crafting",
   "key": {
     "M": { "item": "minecraft:soul_sand" },
     "K": { "item": "minecraft:kelp" },

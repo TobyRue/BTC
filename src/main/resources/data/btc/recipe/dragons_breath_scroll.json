@@ -1,6 +1,5 @@
 {
   "type": "btc:scroll_crafting",
-  "category": "equipment",
   "key": {
     "d": { "item": "minecraft:dragon_breath" },
     "g": { "item": "btc:dragon_rod" },

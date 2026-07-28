@@ -22,14 +22,12 @@
     ],
     "client": [
       "io.github.tobyrue.btc.client.BTCClient"
-    ],
-    "mm:early_risers": [
-      "io.github.tobyrue.btc.regestries.EarlyRiser"
     ]
   },
   "mixins": [
     "btc.mixins.json"
   ],
+  "accessWidener": "btc.classtweaker",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",

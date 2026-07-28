@@ -1,6 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "type": "btc:scroll_crafting",
   "key": {
     "C": { "item": "minecraft:conduit" },
     "S": { "item": "minecraft:nautilus_shell" },

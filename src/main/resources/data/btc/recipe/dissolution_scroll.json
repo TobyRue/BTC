@@ -1,6 +1,5 @@
 {
   "type": "btc:scroll_crafting",
-  "category": "equipment",
   "key": {
     "a": {
       "item": "minecraft:quartz"

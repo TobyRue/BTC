@@ -1,6 +1,5 @@
 {
   "type": "btc:scroll_crafting",
-  "category": "equipment",
   "key": {
     "a": {
       "item": "btc:dragon_rod"
