@@ -31,7 +31,10 @@ public class ModItems {
             new Item(new Item.Settings()),
             "salt"
     );
-
+    public static final Item RAGE_PEPPER = register(
+            new RagePepperItem(new Item.Settings().food(ModComponents.RAGE_PEPPER)),
+            "rage_pepper"
+    );
     public static final Item COOKED_MEAT_CLUB = register(
             new Item(new Item.Settings().maxCount(1).food(ModComponents.COOKED_MEAT_CLUB).attributeModifiers(AxeItem.createAttributeModifiers(ToolMaterials.STONE, 7.0F, -3.2F))),
             "cooked_meat_club"

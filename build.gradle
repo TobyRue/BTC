@@ -3,7 +3,11 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
+def getCommitHash = { ->
+    return "git rev-parse --short HEAD".execute().text.trim()
+}
+
+version = project.mod_version + "-" + getCommitHash()
 group = project.maven_group
 
 base {
@@ -76,7 +80,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${project.archives_base_name}"}
     }
 }
 

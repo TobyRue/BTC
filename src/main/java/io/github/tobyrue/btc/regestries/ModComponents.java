@@ -200,6 +200,8 @@ public class ModComponents {
 
     public static final FoodComponent TRIAL_JERKY =
             (new FoodComponent(2, 0.3f, true, 0.4f, Optional.empty(), List.of()));
+    public static final FoodComponent RAGE_PEPPER =
+            (new FoodComponent(4, 0.5f, true, 1.2f, Optional.empty(), List.of(new FoodComponent.StatusEffectEntry(new StatusEffectInstance(StatusEffects.HASTE, 300, 1), 1), new FoodComponent.StatusEffectEntry(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 1), 1))));
 
     public static final FoodComponent COOKED_MEAT_CLUB =
             (new FoodComponent.Builder()).nutrition(8).saturationModifier(0.8F).usingConvertsTo(Items.BONE).build();

@@ -34,7 +34,7 @@ public class ModInventoryItemRegistry {
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
             content.addAfter(Items.DRIED_KELP, ModItems.RAW_MEAT_CLUB, ModItems.COOKED_MEAT_CLUB);
-            content.addAfter(Items.ROTTEN_FLESH, ModItems.TRIAL_JERKY);
+            content.addAfter(Items.ROTTEN_FLESH, ModItems.TRIAL_JERKY, ModItems.RAGE_PEPPER);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
             content.addAfter(Items.MUSIC_DISC_PIGSTEP, ModItems.CRYSTAL_FOREST_MUSIC_DISC);
