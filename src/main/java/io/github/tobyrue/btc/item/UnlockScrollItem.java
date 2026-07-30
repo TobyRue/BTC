@@ -1,6 +1,5 @@
 package io.github.tobyrue.btc.item;
 
-import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
@@ -23,11 +22,14 @@ import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 public class UnlockScrollItem extends Item {
     public UnlockScrollItem() {
-        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(ModComponents.UNLOCK_SPELL_COMPONENT, new UnlockSpellComponent(BTC.identifierOf("err"),  0, Identifier.of("empty"), "{}")));
+        super(new Item.Settings().maxCount(1).rarity(Rarity.RARE).component(
+                ModComponents.UNLOCK_SPELL_COMPONENT,
+                new UnlockSpellComponent(Optional.empty(), 0, Identifier.of("empty"), "{}")
+        ));
     }
 
     @Override
@@ -60,39 +62,46 @@ public class UnlockScrollItem extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        if (!world.isClient() && user instanceof ServerPlayerEntity player) {
+            UnlockSpellComponent component = stack.get(ModComponents.UNLOCK_SPELL_COMPONENT);
 
-        if ((user instanceof ServerPlayerEntity player)
-                && Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av
-                && player.server.getAdvancementLoader().get(av) instanceof AdvancementEntry advancement) {
-            if (!player.getAdvancementTracker().getProgress(advancement).isDone()) {
+            if (component != null && component.id() instanceof Identifier id) {
+                NbtCompound argsNbt = component.argsAsNbt();
+                Spell registeredSpell = ModRegistries.SPELL.get(id);
 
-                player.getAdvancementTracker().grantCriterion(
-                        advancement,
-                        "unlock"
-                );
-                stack.decrementUnlessCreative(1, user);
-            }
-            if (Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).id() instanceof Identifier id && Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).argsAsNbt() instanceof NbtCompound args) {
+                if (registeredSpell != null) {
+                    GrabBag currentArgs = GrabBag.fromNBT(argsNbt);
+                    Spell.InstancedSpell spellToUnlock = new Spell.InstancedSpell(registeredSpell, currentArgs);
 
-                Spell.InstancedSpell spell = new Spell.InstancedSpell(ModRegistries.SPELL.get(id), GrabBag.fromNBT(args));
-                MinecraftServer server = player.getServer();
-                SpellPersistentState spellState = SpellPersistentState.get(server);
-                PlayerSpellData playerData = spellState.getPlayerData(player);
-                boolean found = playerData.knownSpells.stream()
-                        .anyMatch(inst -> inst.spell() == spell.spell() && inst.args().equalsOther(GrabBag.fromNBT(args)));
+                    MinecraftServer server = player.getServer();
+                    if (server != null) {
+                        SpellPersistentState spellState = SpellPersistentState.get(server);
+                        PlayerSpellData playerData = spellState.getPlayerData(player);
 
-                if (!found) {
-                    System.out.println("Known Spells 1: " + playerData.knownSpells);
-                    playerData.knownSpells.add(spell);
-                    System.out.println("Known Spells: " + playerData.knownSpells.getLast());
-                    System.out.println("Known Spells 2: " + playerData.knownSpells);
+                        boolean alreadyKnown = playerData.knownSpells.stream()
+                                .anyMatch(inst -> inst.spell() == spellToUnlock.spell()
+                                        && inst.args().equalsOther(currentArgs));
+
+                        if (!alreadyKnown) {
+                            // Optionally grant advancement if present
+                            component.advancement().ifPresent(av -> {
+                                AdvancementEntry advancement = player.server.getAdvancementLoader().get(av);
+                                if (advancement != null) {
+                                    player.getAdvancementTracker().grantCriterion(advancement, "unlock");
+                                }
+                            });
+
+                            playerData.knownSpells.add(spellToUnlock);
+                            spellState.markDirty();
+
+                            stack.decrementUnlessCreative(1, user);
+                        }
+                    }
                 }
             }
         }
         return super.finishUsing(stack, world, user);
     }
-
-
 
     @Override
     public Text getName(ItemStack stack) {
@@ -113,11 +122,14 @@ public class UnlockScrollItem extends Item {
         if (inst != null && inst.args() != null) {
             var c = inst.args().getInt("cooldown");
             tooltip.add(Text.translatable("item.btc.spell.type." + inst.spell().getSpellType()));
-            tooltip.add(Text.translatable("item.btc.spell.cooldown", c/20));
+            tooltip.add(Text.translatable("item.btc.spell.cooldown", c / 20));
             tooltip.add(inst.spell().getDescription(inst.args()));
             if (type.isAdvanced()) {
-                if (Objects.requireNonNull(stack.get(ModComponents.UNLOCK_SPELL_COMPONENT)).advancement() instanceof Identifier av) {
-                    tooltip.add(Text.literal("Adv: " + av.toTranslationKey()).formatted(Formatting.DARK_GRAY));
+                UnlockSpellComponent comp = stack.get(ModComponents.UNLOCK_SPELL_COMPONENT);
+                if (comp != null) {
+                    comp.advancement().ifPresent(av ->
+                            tooltip.add(Text.literal("Adv: " + av.toTranslationKey()).formatted(Formatting.DARK_GRAY))
+                    );
                 }
                 tooltip.add(Text.literal("NBT: " + GrabBag.toNBT(inst.args())).formatted(Formatting.DARK_GRAY));
             }

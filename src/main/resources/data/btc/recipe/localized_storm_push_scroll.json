@@ -19,7 +19,7 @@
         "advancement": "btc:adventure/get_localized_storm_push_scroll",
         "texture_int": 0,
         "id": "btc:localized_storm_push",
-        "args": "{shootStrength:7d, 2.2d, aimingForgiveness:0.3d, range:24.0d, cooldown:400}"
+        "args": "{shootStrength:7d, verticalMultiplier:2.2d, aimingForgiveness:0.3d, range:24.0d, cooldown:400}"
       }
     }
   }

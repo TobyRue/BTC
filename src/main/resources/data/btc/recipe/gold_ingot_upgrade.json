@@ -1,0 +1,17 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:gold_ingot_upgrade",
+  "pattern": [
+    "gsg",
+    "s s",
+    "gsg"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "s": {
+      "item": "btc:salt"
+    }
+  }
+}

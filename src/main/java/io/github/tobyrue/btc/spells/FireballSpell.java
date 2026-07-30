@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.spells;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.item.UnlockScrollItem;
 import io.github.tobyrue.btc.mixin.FireballEntityAccessor;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
@@ -14,6 +15,7 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 import java.util.HashMap;
@@ -55,10 +57,10 @@ public class FireballSpell extends Spell implements UpgradableSpell {
     }
 
     @Override
-    public HashMap<ItemStack, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
-        final HashMap<ItemStack, Pair<String, ?>> upgrades = new HashMap<>();
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "level", 1, 5, 1, Items.AMETHYST_SHARD.getDefaultStack());
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 80, 1000, -60, ModItems.SALT.getDefaultStack());
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "level", 1, 1, 5, 1, BTC.identifierOf("amethyst_shard_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", Math.max(80, 60 * args.getInt("level", 1)),80, 1000, -20, BTC.identifierOf("gold_ingot_upgrade"));
         return upgrades;
     }
 }

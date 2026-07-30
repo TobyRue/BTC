@@ -1,5 +1,7 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.client.screen.SpellScreenInventoryHandler;
+import io.github.tobyrue.btc.util.SpellScrollHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,11 +12,15 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -44,6 +50,12 @@ public class SaltBlock extends Block {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
+//        if (placer instanceof ServerPlayerEntity player) {
+//            for (var dropStack : SpellScrollHelper.exportAndRemoveAllSpells(player)) {
+//                player.getInventory().offerOrDrop(dropStack);
+//            }
+//        }
+
         if (state.get(ABSORBED_LIGHT) == 0) {
             int lightLevel = world.getLightLevel(LightType.BLOCK, pos);
             world.setBlockState(pos, state.with(ABSORBED_LIGHT, lightLevel));

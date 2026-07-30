@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:unlock_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_gold": { "conditions": { "items": [ { "items": "minecraft:gold_ingot" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_salt": { "conditions": { "items": [ { "items": "btc:salt" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:gold_ingot_upgrade" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_gold","has_salt","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:gold_ingot_upgrade"] }
+}

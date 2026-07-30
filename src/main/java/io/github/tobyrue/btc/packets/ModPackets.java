@@ -1,17 +1,10 @@
 package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.entities.MobDetectorBlockEntity;
-import io.github.tobyrue.btc.block.entities.ObsidianChestBlockEntity;
-import io.github.tobyrue.btc.client.screen.RadialMenuWithPrefixNoHover;
-import io.github.tobyrue.btc.client.screen.RadialValues;
-import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.GrabBag;
-import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
 import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
-import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.util.AdvancementUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -23,14 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import io.github.tobyrue.btc.client.screen.RadialNoHoverValues.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class ModPackets {
 
@@ -44,11 +30,26 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BonfireSyncPayload.ID, BonfireSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(OpenFavoritePayload.ID, OpenFavoritePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
 
+
+        PayloadTypeRegistry.playS2C().register(S2CPacketBus.ID, S2CPacketBus.CODEC);
+        PayloadTypeRegistry.playC2S().register(C2SPacketBus.ID, C2SPacketBus.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(
+                C2SPacketBus.ID, (payload, context) -> {
+                    var server = context.server();
+                    var player = context.player();
+                    var stack = player.getMainHandStack();
+                    var item = stack.getItem();
+
+                    switch (payload.value()) {
+                        case "" -> {}
+                        default -> {}
+                    }
+                });
 
         ServerPlayNetworking.registerGlobalReceiver(
                 SetElementPayload.ID,

@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.client.screen;
 
 import io.github.tobyrue.btc.client.screen.recipe_book.ScrollTableRecipeInput;
 import io.github.tobyrue.btc.item.ModItems;
-import io.github.tobyrue.btc.recipes.ScrollTableRecipe;
 import io.github.tobyrue.btc.regestries.ModRecipes;
 import io.github.tobyrue.btc.regestries.ModScreens;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,6 +11,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.InputSlotFiller;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<ScrollTableRecipeInput, ScrollTableRecipe> {
+public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<ScrollTableRecipeInput, Recipe<ScrollTableRecipeInput>> {
     private final Inventory inventory;
     protected final World world;
 
@@ -99,7 +99,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         }
         ScrollTableRecipeInput input = new ScrollTableRecipeInput(inputs);
 
-        Optional<RecipeEntry<ScrollTableRecipe>> match =
+        Optional<RecipeEntry<Recipe<ScrollTableRecipeInput>>> match =
                 this.world.getRecipeManager().getFirstMatch(ModRecipes.SCROLL_TABLE_RECIPE_TYPE, input, this.world);
 
         if (match.isPresent()) {
@@ -118,17 +118,16 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
     }
 
     @Override
-    public boolean matches(RecipeEntry<ScrollTableRecipe> entry) {
+    public boolean matches(RecipeEntry<Recipe<ScrollTableRecipeInput>> entry) {
         if (entry.value().getType() != ModRecipes.SCROLL_TABLE_RECIPE_TYPE) {
             return false;
         }
-        ScrollTableRecipe scrollRecipe = entry.value();
 
         ItemStack[] inputs = new ItemStack[9];
         for (int i = 0; i < 9; i++) {
             inputs[i] = this.inventory.getStack(i);
         }
-        return scrollRecipe.matches(new ScrollTableRecipeInput(inputs), this.world);
+        return entry.value().matches(new ScrollTableRecipeInput(inputs), this.world);
     }
 
     @Override
@@ -241,10 +240,11 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void fillInputSlots(boolean syncId, RecipeEntry<?> recipe, ServerPlayerEntity player) {
-        if (recipe.value() instanceof ScrollTableRecipe scrollRecipe) {
+        if (recipe.value().getType() == ModRecipes.SCROLL_TABLE_RECIPE_TYPE) {
             this.dropOrMoveIngredients(player);
-            new InputSlotFiller<>(this).fillInputSlots(player, (RecipeEntry<ScrollTableRecipe>) recipe, syncId);
+            new InputSlotFiller<>(this).fillInputSlots(player, (RecipeEntry<Recipe<ScrollTableRecipeInput>>) recipe, syncId);
             this.updateResult();
         }
     }

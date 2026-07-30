@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.mixin;
 
 import io.github.tobyrue.btc.recipes.ScrollTableRecipe;
+import io.github.tobyrue.btc.recipes.SpellUpgradeRecipe;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.recipe.RecipeEntry;
@@ -14,7 +15,7 @@ public class ClientRecipeBookMixin {
 
     @Inject(method = "getGroupForRecipe", at = @At("HEAD"), cancellable = true)
     private static void onGetGroupForRecipe(RecipeEntry<?> recipe, CallbackInfoReturnable<RecipeBookGroup> cir) {
-        if (recipe.value() instanceof ScrollTableRecipe) {
+        if (recipe.value() instanceof ScrollTableRecipe || recipe.value() instanceof SpellUpgradeRecipe) {
             System.out.println("Recipe: " + recipe);
             cir.setReturnValue(RecipeBookGroup.BTC_SCROLL_TABLE_SEARCH);
         }

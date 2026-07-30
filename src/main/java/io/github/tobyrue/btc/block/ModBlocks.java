@@ -289,6 +289,12 @@ public class ModBlocks {
             true
     );
 
+    public static final Block FANCY_CHISELED_TUFF_BRICKS = register(
+            new Block(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
+            "fancy_chiseled_tuff_bricks",
+            true
+    );
+
     public static final Block SALT_BLOCK = register(
             new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF).nonOpaque()),
             "salt_block",

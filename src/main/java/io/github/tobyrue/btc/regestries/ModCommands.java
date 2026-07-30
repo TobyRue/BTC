@@ -5,40 +5,35 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.screen.SpellScreenInventoryHandler;
 import io.github.tobyrue.btc.commands.ApplyRandomNameCommand;
 import io.github.tobyrue.btc.commands.SetStatusEffectCommand;
 import io.github.tobyrue.btc.commands.TellTranslatedCommand;
 import io.github.tobyrue.btc.commands.WrenchCommand;
-import io.github.tobyrue.btc.packets.OpenFavoritePayload;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.spell.*;
+import io.github.tobyrue.btc.spells.LocalizedStormPushSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.NbtElementArgumentType;
-import net.minecraft.command.argument.RegistryEntryArgumentType;
-import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.EffectCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -244,29 +239,21 @@ public class ModCommands {
                         )
         ));
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
-                literal("openfavoritingspells").executes(context -> {
+                literal("spellinventory").executes(context -> {
                     var source = context.getSource();
                     if (source.isExecutedByPlayer()) {
                         if (source.getEntity() instanceof ServerPlayerEntity serverPlayer) {
-                            MinecraftServer server = serverPlayer.getServer();
-                            SpellPersistentState spellState = SpellPersistentState.get(server);
-                            PlayerSpellData playerData = spellState.getPlayerData(serverPlayer);
-
-                            var spells = PredefinedSpellsItem.getKnownSpells(playerData);
-                            List<String> spellNames = new ArrayList<>();
-                            List<String> spellIds = new ArrayList<>();
-
-                            for (var inst : spells) {
-                                spellNames.add(inst.spell().getName(inst.args()).getString());
-                                spellIds.add(Spell.getId(inst.spell()).toString());
-                            }
-
-                            ServerPlayNetworking.send(serverPlayer, new OpenFavoritePayload(spellNames, spellIds));
+                            NamedScreenHandlerFactory factory = new SimpleNamedScreenHandlerFactory(
+                                    (syncId, inv, player) -> new SpellScreenInventoryHandler(syncId, inv),
+                                    Text.translatable("container.btc.spell_inventory")
+                            );
+                            serverPlayer.openHandledScreen(factory);
                         }
                     }
                     return 1;
                 })
         ));
+
         SetStatusEffectCommand.register();
     }
 
