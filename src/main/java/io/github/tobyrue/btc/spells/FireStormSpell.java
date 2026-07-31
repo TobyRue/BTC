@@ -19,7 +19,16 @@ import java.util.WeakHashMap;
 public class FireStormSpell extends ChanneledSpell {
 
     public FireStormSpell() {
-        super(SpellTypes.FIRE, 40, 1, new Disturb(DistributionLevels.CLICK, -1, -1, 20), true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 0, false);
+        super(
+                SpellTypes.FIRE, 40, 1,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.CLICK)
+                        .disturbableTill((spell, args) -> args.getInt("castTime", 40))
+                        .moveableDistance(-1)
+                        .hold(20)
+                        .build(),
+                true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 0, false
+        );
     }
 
     @Override

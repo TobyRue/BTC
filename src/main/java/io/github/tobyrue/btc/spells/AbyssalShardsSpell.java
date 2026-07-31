@@ -25,7 +25,17 @@ public class AbyssalShardsSpell extends ChanneledSpell {
     private final WeakHashMap<LivingEntity, Entity> activeTargets = new WeakHashMap<>();
 
     public AbyssalShardsSpell() {
-        super(SpellTypes.ENDER, 60, 10, new Disturb(DistributionLevels.NONE, -1, -1, 15), true, ParticleTypes.SOUL, ParticleAnimation.SPIRAL, 0, false);
+
+        super(
+                SpellTypes.ENDER, 60, 10,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.CLICK)
+                        .disturbableTill(ChanneledSpell::getCastTime)
+                        .moveableDistance(-1)
+                        .hold(15)
+                        .build(),
+                true, ParticleTypes.SOUL, ParticleAnimation.SPIRAL, 0, false
+        );
     }
 
     @Override

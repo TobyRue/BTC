@@ -60,7 +60,16 @@ public class RaiseUndeadSpell extends ChanneledSpell {
     );
 
     public RaiseUndeadSpell() {
-        super(SpellTypes.EARTH, 35 * 20, 1, new Disturb(DistributionLevels.DAMAGE_CROUCH_MOVE_AND_CLICK,5 * 20, 3, 20), true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true);
+        super(
+                SpellTypes.EARTH, 35 * 20, 1,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.MOVE_DAMAGE_AND_CLICK)
+                        .disturbableTill(5 * 20)
+                        .moveableDistance(3)
+                        .hold(20)
+                        .build(),
+                true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 5 * 20, true
+        );
     }
 
     @Override
@@ -73,7 +82,6 @@ public class RaiseUndeadSpell extends ChanneledSpell {
         Random random = world.random;
         int count = args.getInt("count", 10);
 
-        // ---- Get or Create Temporary Team ----
         ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
 
         var et = scoreboard.getTeams().stream().filter(t -> t.getName().endsWith("_undead_team_BTC_RAISE_UNDEAD_SPELL")).toList();
@@ -101,7 +109,6 @@ public class RaiseUndeadSpell extends ChanneledSpell {
             STORED_TEAM.put(ctx.user(), false);
         }
 
-        // Add summoner to the team (ensures allies)
         scoreboard.addScoreHolderToTeam(user.getNameForScoreboard(), knownTeam);
         world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.2F);
         List<LivingEntity> summoned = new ArrayList<>();
@@ -118,7 +125,6 @@ public class RaiseUndeadSpell extends ChanneledSpell {
             );
             undead.refreshPositionAndAngles(pos.x, findSpawnableGround(world, user.getBlockPos(), 24) == null ? pos.getY() : findSpawnableGround(world, user.getBlockPos(), 24).getY() + 2, pos.z, random.nextFloat() * 360F, 0);
 
-            // Join the team to prevent friendly fire
             scoreboard.addScoreHolderToTeam(undead.getNameForScoreboard(), knownTeam);
 
             if (undead instanceof SkeletonEntity || undead instanceof StrayEntity) {
@@ -164,6 +170,7 @@ public class RaiseUndeadSpell extends ChanneledSpell {
                 }
             }
         }
+        super.runEnd(ctx, args, tick);
     }
 
     public void killAllEntitiesOnTeam(ServerWorld serverWorld, Team knownTeam) {

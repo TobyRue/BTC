@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.packets;
 
 import io.github.tobyrue.btc.block.entities.MobDetectorBlockEntity;
 import io.github.tobyrue.btc.block.entities.ObsidianChestBlockEntity;
+import io.github.tobyrue.btc.client.screen.ChannelHudState;
 import io.github.tobyrue.btc.misc.StatusEffectHolderBlockEntity;
 import io.github.tobyrue.btc.util.AdvancementUtils;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
@@ -30,6 +31,23 @@ public class ModClientPackets {
                         default -> {}
                     }
                 });
+
+        ClientPlayNetworking.registerGlobalReceiver(ChannelHudPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                ChannelHudState.update(
+                        payload.active(),
+                        payload.spellNameKey(),
+                        payload.currentTick(),
+                        payload.maxTicks(),
+                        payload.activeCancelReasonsMask(),
+                        payload.spellColor(),
+                        payload.currentHoldTicks(),
+                        payload.requiredHoldTicks(),
+                        payload.sourceItemId(),
+                        payload.spellIndex()
+                );
+            });
+        });
 
         ClientPlayNetworking.registerGlobalReceiver(
                 BonfireSyncPayload.ID, (payload, context) -> {

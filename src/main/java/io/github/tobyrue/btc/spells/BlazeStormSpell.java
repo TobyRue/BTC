@@ -6,20 +6,34 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class BlazeStormSpell extends ChanneledSpell {
+import java.util.HashMap;
+
+public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
 
     public BlazeStormSpell() {
-        super(SpellTypes.FIRE, 100, 1, new Disturb(DistributionLevels.CLICK, 200, 0, 20));
+        super(
+                SpellTypes.FIRE,
+                100,
+                1,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.CLICK)
+                        .disturbableTill(200)
+                        .moveableDistance(0)
+                        .hold(20)
+                        .build()
+        );
     }
-
     @Override
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         double deviation = args.getDouble("deviation", 0.2d);
@@ -60,5 +74,16 @@ public class BlazeStormSpell extends ChanneledSpell {
     @Override
     public int getColor(final GrabBag args) {
         return 0xFFFF5400;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600,200, 600, -40, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5,0.1, 1, -0.1, BTC.identifierOf("quartz_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5,0.1, 1, 0.1, BTC.identifierOf("ghast_tear_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, 2, BTC.identifierOf("ghast_tear_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, -2, BTC.identifierOf("redstone_upgrade"));
+        return upgrades;
     }
 }

@@ -18,7 +18,16 @@ import net.minecraft.util.math.Vec3d;
 
 public class WaterWaveSpell extends ChanneledSpell {
     public WaterWaveSpell() {
-        super(SpellTypes.WATER, 40, 1, new ChanneledSpell.Disturb(ChanneledSpell.DistributionLevels.CLICK, -1, -1, 20), true, ParticleTypes.ENCHANTED_HIT, ChanneledSpell.ParticleAnimation.SPIRAL, 0, false);
+        super(
+                SpellTypes.WATER, 40, 1,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.CLICK)
+                        .disturbableTill((spell, args) -> args.getInt("castTime", 40))
+                        .moveableDistance(-1)
+                        .hold(20)
+                        .build(),
+                true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 0, false
+        );
     }
 
     @Override

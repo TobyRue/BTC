@@ -3,7 +3,6 @@ package io.github.tobyrue.btc.spells;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
-import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.TriggeredSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
@@ -19,16 +18,22 @@ public class FrostReflexSpell extends TriggeredSpell {
     private float healthAtStart;
 
     public FrostReflexSpell() {
-        super(SpellTypes.WATER);
-        this.activeTicks = 1200;
+        super(SpellTypes.GENERIC, 1200, DisturbConfig.builder().hold(40).level(DistributionLevels.CLICK).build());
     }
 
     @Override
     protected void onStart(SpellContext ctx) {
+        if (ctx.user() == null) return;
         this.healthAtStart = ctx.user().getHealth();
 
-        ctx.user().getWorld().playSound(null, ctx.user().getBlockPos(),
-                SoundEvents.BLOCK_POWDER_SNOW_PLACE, SoundCategory.PLAYERS, 1.0f, 1.5f);
+        ctx.user().getWorld().playSound(
+                null,
+                ctx.user().getBlockPos(),
+                SoundEvents.BLOCK_POWDER_SNOW_PLACE,
+                SoundCategory.PLAYERS,
+                1.0f,
+                1.5f
+        );
     }
 
     @Override
@@ -38,19 +43,28 @@ public class FrostReflexSpell extends TriggeredSpell {
 
     @Override
     protected void onTrigger(SpellContext ctx, ServerWorld world, int tick, LivingEntity current) {
-        var attacker = ctx.user().getAttacker();
+        if (ctx.user() == null) return;
+        LivingEntity attacker = ctx.user().getAttacker();
 
         if (attacker != null) {
             attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 300, 4));
             attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300, 1));
             attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 300, 3));
 
-            world.spawnParticles(ParticleTypes.SNOWFLAKE,
+            world.spawnParticles(
+                    ParticleTypes.SNOWFLAKE,
                     attacker.getX(), attacker.getY() + 1, attacker.getZ(),
-                    25, 0.5, 0.5, 0.5, 0.05);
+                    25, 0.5, 0.5, 0.5, 0.05
+            );
 
-            world.playSound(null, attacker.getBlockPos(),
-                    SoundEvents.ENTITY_PLAYER_HURT_FREEZE, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            world.playSound(
+                    null,
+                    attacker.getBlockPos(),
+                    SoundEvents.ENTITY_PLAYER_HURT_FREEZE,
+                    SoundCategory.PLAYERS,
+                    1.0f,
+                    1.0f
+            );
         }
     }
 
@@ -60,23 +74,28 @@ public class FrostReflexSpell extends TriggeredSpell {
     }
 
     @Override
-    protected void spawnArmedParticles(SpellContext ctx, int tick, int duration, LivingEntity current) {
-        double angle = tick * 0.2;
-        double x = current.getX() + Math.cos(angle) * 0.8;
-        double z = current.getZ() + Math.sin(angle) * 0.8;
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, Start start) {
+        super.useChanneled(ctx, args, tick, start);
 
-        current.getWorld().addParticle(ParticleTypes.INSTANT_EFFECT,
-                x, current.getY() + 0.5, z, 0.0, 0.0, 0.0);
+        LivingEntity current = ctx.user();
+        if (current != null && current.getWorld() instanceof ServerWorld serverWorld) {
+            double angle = tick * 0.2;
+            double x = current.getX() + Math.cos(angle) * 0.8;
+            double z = current.getZ() + Math.sin(angle) * 0.8;
+
+            serverWorld.spawnParticles(
+                    ParticleTypes.INSTANT_EFFECT,
+                    x, current.getY() + 0.5, z,
+                    1, 0.0, 0.0, 0.0, 0.0
+            );
+        }
     }
 
     @Override
     public int getColor(GrabBag args) {
         return 0xFF7A97DB;
     }
-    @Override
-    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
-        return ctx.user() != null && super.canUse(ctx, args);
-    }
+
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 3000), BTC.identifierOf("frost_reflex"));

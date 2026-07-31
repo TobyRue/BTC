@@ -2,8 +2,10 @@ package io.github.tobyrue.btc.spells;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
+import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.TriggeredSpell;
+import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -11,18 +13,19 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.Nullable;
 
 public class TeleportFreezeSpell extends TriggeredSpell {
+
     private LivingEntity lockedTarget;
 
     public TeleportFreezeSpell() {
-        super(SpellTypes.GENERIC);
+        super(SpellTypes.GENERIC, 1200, DisturbConfig.builder().hold(40).disturbableTill(ChanneledSpell::getCastTime).level(DistributionLevels.CLICK).build());
     }
 
     @Override
     protected void onStart(SpellContext ctx) {
-        Entity target = isTargetInRange(ctx.user(), ctx.target(), ctx.data().getArgs().getDouble("range", 32d));
+        if (ctx.user() == null) return;
+        Entity target = isTargetInRange(ctx.user(), ctx.target(), ctx.data().getArgs().getDouble("range", 32.0D));
         if (target instanceof LivingEntity living) {
             this.lockedTarget = living;
         }
@@ -37,7 +40,7 @@ public class TeleportFreezeSpell extends TriggeredSpell {
     protected boolean shouldTrigger(SpellContext ctx, int tick, LivingEntity current) {
         if (lockedTarget == null || !lockedTarget.isAlive()) return false;
 
-        double maxDist = ctx.data().getArgs().getDouble("max_distance", 12.0);
+        double maxDist = ctx.data().getArgs().getDouble("max_distance", 12.0D);
         return current.getPos().distanceTo(lockedTarget.getPos()) > maxDist;
     }
 
@@ -45,7 +48,7 @@ public class TeleportFreezeSpell extends TriggeredSpell {
     protected void onTrigger(SpellContext ctx, ServerWorld world, int tick, LivingEntity current) {
         if (lockedTarget == null) return;
 
-        double offset = ctx.data().getArgs().getDouble("offset", 6.0);
+        double offset = ctx.data().getArgs().getDouble("offset", 6.0D);
 
         Vec3d destination = current.getPos().add(current.getRotationVec(1.0F).multiply(offset));
         lockedTarget.requestTeleport(destination.x, destination.y, destination.z);
@@ -68,19 +71,10 @@ public class TeleportFreezeSpell extends TriggeredSpell {
     }
 
     @Override
-    protected void tick(SpellContext ctx, LivingEntity current) {
-        super.tick(ctx, current);
-    }
-
-    @Override
-    protected void spawnArmedParticles(SpellContext ctx, int tick, int duration, LivingEntity current) {
-        if (lockedTarget != null && tick % 5 == 0) {
-        }
-    }
-    @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 600), BTC.identifierOf("teleport_freeze"));
     }
+
     @Override
     public int getColor(GrabBag args) {
         return 0xFFA17CFF;

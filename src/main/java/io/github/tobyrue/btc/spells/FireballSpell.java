@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.item.UnlockScrollItem;
 import io.github.tobyrue.btc.mixin.FireballEntityAccessor;
+import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.UpgradableSpell;
@@ -60,7 +61,8 @@ public class FireballSpell extends Spell implements UpgradableSpell {
     public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
         final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
         UpgradableSpell.withIntegerUpgrade(args, upgrades, "level", 1, 1, 5, 1, BTC.identifierOf("amethyst_shard_upgrade"));
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", Math.max(80, 60 * args.getInt("level", 1)),80, 1000, -20, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", Math.max(200, 60 * args.getInt("level", 1)),60, 200, -20, BTC.identifierOf("gold_ingot_upgrade"));
         return upgrades;
     }
+
 }

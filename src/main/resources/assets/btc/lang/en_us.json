@@ -70,7 +70,12 @@
   "block.btc.salt_block": "Salt Block",
   "block.btc.scroll_table": "Scroll Table",
   "block.btc.fancy_chiseled_tuff_bricks": "Fancy Chiseled Tuff Bricks",
+
   "container.btc.spell_inventory": "Spell Inventory",
+  "hud.btc.cancel.crouch": "Crouch",
+  "hud.btc.cancel.click": "Hold Click",
+  "hud.btc.cancel.separator": "%s or %s",
+  "hud.btc.cancel.prompt": "%s [%s to Cancel]",
 
   "block.btc.tuff_pilaster": "Tuff Pilaster",
   "block.btc.tuff_pillar": "Tuff Pillar",

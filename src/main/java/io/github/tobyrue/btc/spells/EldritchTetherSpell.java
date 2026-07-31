@@ -23,7 +23,16 @@ public class EldritchTetherSpell extends ChanneledSpell {
     private final WeakHashMap<LivingEntity, Entity> activeTargets = new WeakHashMap<>();
 
     public EldritchTetherSpell() {
-        super(SpellTypes.ENDER, 100, 1, new Disturb(DistributionLevels.NONE, -1, -1, 10), true, ParticleTypes.WITCH, ParticleAnimation.SPIRAL, 0, false);
+        super(
+                SpellTypes.ENDER, 100, 1,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.CLICK)
+                        .disturbableTill((spell, args) -> spell.getCastTime(args))
+                        .moveableDistance(-1)
+                        .hold(10)
+                        .build(),
+                true, ParticleTypes.WITCH, ParticleAnimation.SPIRAL, 0, false
+        );
     }
 
     @Override

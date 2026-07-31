@@ -33,6 +33,7 @@ public class ModPackets {
         PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(SetStatusEffectPayload.ID, SetStatusEffectPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MarkPlayerLootedS2CPayload.ID, MarkPlayerLootedS2CPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(ChannelHudPayload.ID, ChannelHudPayload.CODEC);
 
 
         PayloadTypeRegistry.playS2C().register(S2CPacketBus.ID, S2CPacketBus.CODEC);

@@ -19,4 +19,22 @@ public interface UpgradableSpell {
             upgrades.put(id, new Pair<>(name, newVal));
         }
     }
+
+    static void withDoubleUpgrade(final GrabBag args, final HashMap<Identifier, Pair<String, ?>> upgrades, final String name, final double defaultVal, final double min, final double max, final double delta, final Identifier id) {
+        double currentVal = args.getDouble(name, defaultVal);
+        double newVal = currentVal + delta;
+
+        if (newVal >= min && newVal <= max) {
+            upgrades.put(id, new Pair<>(name, newVal));
+        }
+    }
+
+    static void withFloatUpgrade(final GrabBag args, final HashMap<Identifier, Pair<String, ?>> upgrades, final String name, final float defaultVal, final float min, final float max, final float delta, final Identifier id) {
+        float currentVal = args.getFloat(name, defaultVal);
+        float newVal = currentVal + delta;
+
+        if (newVal >= min && newVal <= max) {
+            upgrades.put(id, new Pair<>(name, newVal));
+        }
+    }
 }

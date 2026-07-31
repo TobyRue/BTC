@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.block.GunpowderDustBlock;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
+import io.github.tobyrue.btc.client.screen.ChannelingHudOverlay;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.client.screen.ScrollTableScreen;
 import io.github.tobyrue.btc.client.screen.SpellScreenInventoryScreen;
@@ -146,6 +147,7 @@ public class BTCClient implements ClientModInitializer {
                 ModScreens.SPELL_SCREEN_INVENTORY_HANDLER,
                 SpellScreenInventoryScreen::new
         );
+        HudRenderCallback.EVENT.register(new ChannelingHudOverlay());
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> {
             MinecraftClient client = MinecraftClient.getInstance();

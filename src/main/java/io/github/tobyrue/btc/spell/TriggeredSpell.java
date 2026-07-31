@@ -1,86 +1,93 @@
 package io.github.tobyrue.btc.spell;
 
-import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.SpellTypes;
-import io.github.tobyrue.btc.regestries.ModComponents;
-import io.github.tobyrue.btc.regestries.ModRegistries;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
+
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class TriggeredSpell extends Spell {
+public abstract class TriggeredSpell extends ChanneledSpell {
 
     protected int activeTicks = 1200;
-    protected boolean showParticles = true;
 
-    public TriggeredSpell(SpellTypes id) {
-        super(id);
+    public TriggeredSpell(SpellTypes type, int activeTicks, int intervalTicks, DisturbConfig disturbConfig,
+                          boolean showParticles, net.minecraft.particle.ParticleEffect particleType, ParticleAnimation animation) {
+        super(type, activeTicks, intervalTicks, disturbConfig, showParticles, particleType, animation);
+        this.activeTicks = activeTicks;
+    }
+
+    public TriggeredSpell(SpellTypes id, int activeTicks, DisturbConfig disturbConfig) {
+        this(id, activeTicks, 1, disturbConfig, true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.AURA);
+    }
+
+    public TriggeredSpell(SpellTypes id, DisturbConfig disturbConfig) {
+        this(id, 1200, disturbConfig);
     }
 
     @Override
-    protected void onDisspelled(SpellContext ctx, int tick, LivingEntity user) {
-        super.onDisspelled(ctx, tick, user);
-        onEnd(ctx, tick, user);
-    }
-
-    @Override
-    protected final void use(SpellContext ctx, GrabBag args) {
-        var user = ctx.user();
-        var startHealth = user.getHealth();
-        var startPos = user.getPos();
-        int silenceDuration = args.getInt("silenceDuration", 160);
-        int duration = args.getInt("activeTicks", this.activeTicks);
-
-        AtomicBoolean triggered = new AtomicBoolean(false);
-
+    protected void onChannelStart(SpellContext ctx, GrabBag args, Start start) {
         onStart(ctx);
-        ((Ticker.TickerTarget) (user)).bTC$add(
-                Ticker.forTicks(tick -> {
+    }
 
-                    if (isDisturbed(ctx, tick, user)) {
-                        return true;
-                    }
+    @Override
+    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, Start start) {
+        LivingEntity user = ctx.user();
+        if (user == null) return;
 
-                    if (!triggered.get() && shouldTrigger(ctx, tick, user)) {
-                        triggered.set(true);
+        if (isDisturbed(ctx, tick, user)) {
+            onChannelInterrupt(ctx, args, tick, InterruptReason.DISSPELLED);
+            return;
+        }
 
-                        if (user.getWorld() instanceof ServerWorld serverWorld) {
-                            onTrigger(ctx, serverWorld, tick, user);
-                        }
+        if (shouldTrigger(ctx, tick, user)) {
+            if (user.getWorld() instanceof ServerWorld serverWorld) {
+                onTrigger(ctx, serverWorld, tick, user);
+            }
+            runEnd(ctx, args, tick);
+            return;
+        }
 
-                        onEnd(ctx, tick, user);
-                        return true;
-                    }
+        tick(ctx, user);
+    }
 
-                    if (showParticles) {
-                        spawnArmedParticles(ctx, tick, duration, user);
-                    }
+    @Override
+    protected void runEnd(SpellContext ctx, GrabBag args, int tick) {
+        LivingEntity user = ctx.user();
+        if (user != null) {
+            if (tick >= getCastTime(args)) {
+                onTimeout(ctx, tick, user);
+            } else {
+                onEnd(ctx, tick, user);
+            }
+        }
+        super.runEnd(ctx, args, tick);
+    }
 
-                    if (tick >= duration) {
-                        onTimeout(ctx, tick, user);
-                        return true;
-                    }
-                    tick(ctx, user);
-                    return isDisspelled(ctx, tick, user);
-                }, duration + 1)
-        );
+    @Override
+    protected void onPurposefulCancel(SpellContext ctx, GrabBag args, int tick, InterruptReason reason) {
+        if (ctx.user() != null) {
+            onEnd(ctx.user() != null ? ctx : null, tick, ctx.user());
+        }
+        super.onPurposefulCancel(ctx, args, tick, reason);
+    }
 
+    @Override
+    protected boolean canInterrupt(SpellContext ctx, InterruptReason reason, int currentTick) {
+        if (reason.isPurposeful()) {
+            return true;
+        }
+        return super.canInterrupt(ctx, reason, currentTick);
     }
 
     /**
-     * Override this to define the Ready condition (e.g. searching for entities in range)
+     * Define the ready condition for triggering (e.g., entity entering range)
      */
     protected abstract boolean shouldTrigger(SpellContext ctx, int tick, LivingEntity current);
 
-
     protected abstract void onTrigger(SpellContext ctx, ServerWorld world, int tick, LivingEntity current);
-
 
     protected void onStart(SpellContext ctx) {}
 
@@ -93,7 +100,4 @@ public abstract class TriggeredSpell extends Spell {
     protected void tick(SpellContext ctx, LivingEntity current) {}
 
     protected abstract boolean isDisturbed(SpellContext ctx, int tick, LivingEntity current);
-
-    protected void spawnArmedParticles(SpellContext ctx, int tick, int duration, LivingEntity current ) {
-    }
 }

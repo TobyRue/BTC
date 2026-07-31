@@ -18,11 +18,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.Optional;
 import java.util.WeakHashMap;
 
 public class IceBlockSpell extends ChanneledSpell {
@@ -30,7 +27,20 @@ public class IceBlockSpell extends ChanneledSpell {
     private static final WeakHashMap<LivingEntity, BlockPos> STORED_BLOCK = new WeakHashMap<>();
 
     public IceBlockSpell() {
-        super(SpellTypes.WATER, 800, 1, new Disturb(DistributionLevels.CROUCH, 0, 1, 100), true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL, 0, true);
+        super(
+                SpellTypes.WATER,
+                800,
+                1,
+                DisturbConfig.builder()
+                        .level(DistributionLevels.CLICK)
+                        .disturbableTill(80)
+                        .moveableDistance(1)
+                        .hold(20)
+                        .build(),
+                true, ParticleTypes.ENCHANTED_HIT, ParticleAnimation.SPIRAL,
+                80,
+                true
+        );
     }
 
     @Override
@@ -50,11 +60,10 @@ public class IceBlockSpell extends ChanneledSpell {
         var target = STORED_TARGET.get(user);
         var targetPos = STORED_BLOCK.get(user);
 
-        if (target != null) {
+        if (target != null && targetPos != null) {
             double entityWidth = target.getWidth();
             double entityHeight = target.getHeight();
             double entityLength = target.getWidth();
-
 
             int rangeX = (int) Math.ceil(entityWidth / 2.0);
             int rangeY = (int) Math.ceil(entityHeight / 2.0);
@@ -79,8 +88,6 @@ public class IceBlockSpell extends ChanneledSpell {
     }
 
     public void freezeTargetArea(SpellContext ctx, GrabBag args, LivingEntity player, World world) {
-        double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
-        double range = args.getDouble("range", 24d);
         int duration = args.getInt("duration", 200);
         int amplifier = args.getInt("amplifier", 4);
         int durationM = args.getInt("durationM", 200);
@@ -89,7 +96,7 @@ public class IceBlockSpell extends ChanneledSpell {
         if (!world.isClient) {
             LivingEntity target = isTargetInRange(ctx.user(), ctx.target(), args.getDouble("range", 32d));
 
-            if (target instanceof LivingEntity) {
+            if (target != null) {
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, duration, amplifier));
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, durationM, amplifierM));
                 STORED_TARGET.put(player, target);
