@@ -33,7 +33,6 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
@@ -49,10 +48,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.FluidRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ChargedProjectilesComponent;
@@ -148,7 +145,7 @@ public class BTCClient implements ClientModInitializer {
                 SpellScreenInventoryScreen::new
         );
         HudRenderCallback.EVENT.register(new ChannelingHudOverlay());
-
+        BTCChatTuner.register();
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> {
             MinecraftClient client = MinecraftClient.getInstance();
 

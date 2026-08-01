@@ -67,14 +67,14 @@ public class EarthStaffModelRenderer implements BuiltinItemRendererRegistry.Dyna
         this.root.render(matrices, vertices, light, overlay);
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
     }
-    public void renderFire(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void renderEarth(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
         long time = System.currentTimeMillis() % 3600L;
         float angle = (time / 10.0f) % 360;
 
-        matrices.translate(0.5, 1.4, 0.2);
+        matrices.translate(0.5, 1.1, 0.35);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
 
         minecraft.getItemRenderer().renderItem(DIRT, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
@@ -85,7 +85,7 @@ public class EarthStaffModelRenderer implements BuiltinItemRendererRegistry.Dyna
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
-        renderFire(stack, mode, matrices, vertexConsumers, light, overlay);
+        renderEarth(stack, mode, matrices, vertexConsumers, light, overlay);
 
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
 
@@ -95,7 +95,12 @@ public class EarthStaffModelRenderer implements BuiltinItemRendererRegistry.Dyna
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
         VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
 
-        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+
+
+//        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+
+
+
         matrices.pop();
     }
 }

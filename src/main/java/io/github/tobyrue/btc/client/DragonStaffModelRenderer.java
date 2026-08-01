@@ -77,7 +77,7 @@ public class DragonStaffModelRenderer implements BuiltinItemRendererRegistry.Dyn
         long time = System.currentTimeMillis() % 3600L;
         float angle = (time / 10.0f) % 360;
 
-        matrices.translate(0.5, 1.4, 0.2);
+        matrices.translate(0.5, 1.1, 0.35);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
 
         minecraft.getItemRenderer().renderItem(ENDER_PEARL, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
@@ -100,7 +100,13 @@ public class DragonStaffModelRenderer implements BuiltinItemRendererRegistry.Dyn
         this.root.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
         VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
-        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+
+
+
+//        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+
+
+
         matrices.pop();
     }
 }

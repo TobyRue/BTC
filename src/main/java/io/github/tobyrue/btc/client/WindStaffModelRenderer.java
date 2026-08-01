@@ -83,7 +83,7 @@ public static TexturedModelData getTexturedModelData() {
         var tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
         EntityRendererFactory.Context context = new EntityRendererFactory.Context(minecraft.getEntityRenderDispatcher(), minecraft.getItemRenderer(), minecraft.getBlockRenderManager(), null, minecraft.getResourceManager(), minecraft.getEntityModelLoader(), minecraft.textRenderer
         );
-        matrices.translate(0.5, 1.5, 0.2);
+        matrices.translate(0.5, 1.1, 0.35);
 
         updateDummy();
         new WindChargeEntityRenderer(context).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
@@ -106,7 +106,12 @@ public static TexturedModelData getTexturedModelData() {
         MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
         VertexConsumer vertices = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
 
-        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+
+
+//        renderModel(stack, matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+
+
+
         matrices.pop();
     }
 }
