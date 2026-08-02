@@ -16,23 +16,23 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.DynamicItemRenderer {
-    public static final ItemStack HANDLE_FIRE = new ItemStack(ModItems.STAFF, 1);
+    public static final ItemStack HANDLE = new ItemStack(ModItems.STAFF, 1);
     public static final ItemStack FIRE_CHARGE = new ItemStack(Items.FIRE_CHARGE, 1);
     public static final Identifier TEXTURE = Identifier.of("btc", "textures/item/blaze_rods.png");
 
     // Static values modified by the chat tuner or defaults
-    public static float fireTransX = 0.5f;
-    public static float fireTransY = 1.1f;
-    public static float fireTransZ = 0.35f;
-
-    public static float rotX = 27.0f;
-    public static float rotY = 0.0f;
-    public static float rotZ = 0.0f;
-    public static float transX = 0.5f;
-    public static float transY = 0.67f;
-    public static float transZ = 0.20f;
-    public static float fireScale = 1f;
-    public static float scale = 1f;
+//    public static float fireTransX = 0.5f;
+//    public static float fireTransY = 1.1f;
+//    public static float fireTransZ = 0.35f;
+//
+//    public static float rotX = 27.0f;
+//    public static float rotY = 0.0f;
+//    public static float rotZ = 0.0f;
+//    public static float transX = 0.5f;
+//    public static float transY = 0.67f;
+//    public static float transZ = 0.20f;
+//    public static float fireScale = 1f;
+//    public static float scale = 1f;
 
     private final ModelPart element1;
     private final ModelPart element2;
@@ -66,17 +66,17 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         return TexturedModelData.of(modelData, 16, 16);
     }
 
-    public void renderFire(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float currentFireX, float currentFireY, float currentFireZ, float currentRotX, float currentRotZ, float currentFireScale) {
+    public void renderItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float currentItemX, float currentItemY, float currentItemZ, float currentRotX, float currentRotZ, float currentItemScale) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
         long time = System.currentTimeMillis() % 3600L;
         float angle = (time / 10.0f) % 360;
-        matrices.translate(currentFireX, currentFireY, currentFireZ);
+        matrices.translate(currentItemX, currentItemY, currentItemZ);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(currentRotX));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(currentRotZ));
-        matrices.scale(currentFireScale, currentFireScale, currentFireScale);
+        matrices.scale(currentItemScale, currentItemScale, currentItemScale);
 
         minecraft.getItemRenderer().renderItem(FIRE_CHARGE, ModelTransformationMode.GROUND, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         matrices.pop();
@@ -84,36 +84,37 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
 
     @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        float currentRotX = rotX;
-        float currentRotY = rotY;
-        float currentRotZ = rotZ;
+        float currentRotX = 0;
+        float currentRotY = 0;
+        float currentRotZ = 0;
 
-        float currentTransX = transX;
-        float currentTransY = transY;
-        float currentTransZ = transZ;
+        float currentTransX = 0;
+        float currentTransY = 0;
+        float currentTransZ = 0;
 
-        float currentFireX = fireTransX;
-        float currentFireY = fireTransY;
-        float currentFireZ = fireTransZ;
+        float currentItemX = 0;
+        float currentItemY = 0;
+        float currentItemZ = 0;
 
-        float currentFireScale = fireScale;
-        float currentScale = scale;
+        float currentItemScale = 0;
+        float currentScale = 0;
+
 
         switch (mode) {
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND -> {
                 currentRotX = 27;
-                currentRotY = 0;    
+                currentRotY = 0;
                 currentRotZ = 0;
 
                 currentTransX = 0.5f;
                 currentTransY = 0.67f;
                 currentTransZ = 0.2f;
 
-                currentFireX = 0.5f;
-                currentFireY = 1.1f;
-                currentFireZ = 0.77f;
+                currentItemX = 0.5f;
+                currentItemY = 1.1f;
+                currentItemZ = 0.77f;
 
-                currentFireScale = 1;
+                currentItemScale = 1;
                 currentScale = 1;
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND -> {
@@ -125,27 +126,27 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
                 currentTransY = 0.12f;
                 currentTransZ = 0.59f;
 
-                currentFireX = 0.5f;
-                currentFireY = 0.5f;
-                currentFireZ = 1.02f;
+                currentItemX = 0.5f;
+                currentItemY = 0.5f;
+                currentItemZ = 1.02f;
 
-                currentFireScale = 1;
+                currentItemScale = 1;
                 currentScale = 1;
             }
             case GUI -> {
                 currentRotX = 45;
                 currentRotY = 45;
-                currentRotZ = rotZ;
+                currentRotZ = 0;
 
                 currentTransX = 0.75f;
                 currentTransY = 1;
                 currentTransZ = 0.2f;
 
-                currentFireX = 0.3f;
-                currentFireY = 1.7f;
-                currentFireZ = 0;
+                currentItemX = 0.3f;
+                currentItemY = 1.7f;
+                currentItemZ = 0;
 
-                currentFireScale = 1;
+                currentItemScale = 1;
                 currentScale = 2;
             }
             case GROUND -> {
@@ -157,12 +158,12 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
                 currentTransY = 0.67f;
                 currentTransZ = 0.2f;
 
-                currentFireX = 0.5f;
-                currentFireY = 1.05f;
-                currentFireZ = 0.59f;
+                currentItemX = 0.5f;
+                currentItemY = 1.65f;
+                currentItemZ = 0.80f;
 
-                currentFireScale = 0.5f;
-                currentScale = 1;
+                currentItemScale = 0.9f;
+                currentScale = 2;
             }
             case FIXED -> {
                 currentRotX = 0;
@@ -173,23 +174,28 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
                 currentTransY = 0.67f;
                 currentTransZ = 0.5f;
 
-                currentFireX = 0.5f;
-                currentFireY = 1.3f;
-                currentFireZ = 0.5f;
+                currentItemX = 0.5f;
+                currentItemY = 1.3f;
+                currentItemZ = 0.5f;
+
+                currentItemScale = 1;
+                currentScale = 1.3f;
             }
             case HEAD -> {
-                // TODO
-                currentRotX = rotX;     // 27.0f
-                currentRotY = rotY;     // 0.0f
-                currentRotZ = rotZ;     // 0.0f
+                currentRotX = 0f;
+                currentRotY = 0f;
+                currentRotZ = 0f;
 
-                currentTransX = transX; // 0.50f
-                currentTransY = transY; // 0.67f
-                currentTransZ = transZ; // 0.20f
+                currentTransX = 0.5f;
+                currentTransY = 1f;
+                currentTransZ = 0.2f;
 
-                currentFireX = fireTransX; // 0.50f
-                currentFireY = fireTransY; // 1.10f
-                currentFireZ = fireTransZ; // 0.35f
+                currentItemX = 0.5f;
+                currentItemY = 1.5f;
+                currentItemZ = 0.35f;
+
+                currentItemScale = 1;
+                currentScale = 1;
             }
             default -> {}
         }
@@ -197,7 +203,7 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
-        renderFire(stack, mode, matrices, vertexConsumers, light, overlay, currentFireX, currentFireY, currentFireZ, currentRotX, currentRotZ, currentFireScale);
+        renderItem(stack, mode, matrices, vertexConsumers, light, overlay, currentItemX, currentItemY, currentItemZ, currentRotX, currentRotZ, currentItemScale);
 
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(currentRotX));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(currentRotY));
@@ -206,7 +212,7 @@ public class FireStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         matrices.translate(currentTransX, currentTransY, currentTransZ);
         matrices.scale(currentScale, currentScale, currentScale);
 
-        minecraft.getItemRenderer().renderItem(HANDLE_FIRE, mode, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
+        minecraft.getItemRenderer().renderItem(HANDLE, mode, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
 
         matrices.pop();
     }

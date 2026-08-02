@@ -36,10 +36,10 @@ public class BTCChatTuner {
         String sub = parts[0].toLowerCase();
 
         if (sub.equals("print")) {
-            sendFeedback(String.format("Current Offsets:\nHandle Rot: (%.2f, %.2f, %.2f)\nHandle Trans: (%.2f, %.2f, %.2f)\nFire Trans: (%.2f, %.2f, %.2f)",
-                    FireStaffModelRenderer.rotX, FireStaffModelRenderer.rotY, FireStaffModelRenderer.rotZ,
-                    FireStaffModelRenderer.transX, FireStaffModelRenderer.transY, FireStaffModelRenderer.transZ,
-                    FireStaffModelRenderer.fireTransX, FireStaffModelRenderer.fireTransY, FireStaffModelRenderer.fireTransZ));
+            sendFeedback(String.format("Current Offsets:\nHandle Rot: (%.2f, %.2f, %.2f)\nHandle Trans: (%.2f, %.2f, %.2f)\nItem Trans: (%.2f, %.2f, %.2f)",
+                    DragonStaffModelRenderer.rotX, DragonStaffModelRenderer.rotY, DragonStaffModelRenderer.rotZ,
+                    DragonStaffModelRenderer.transX, DragonStaffModelRenderer.transY, DragonStaffModelRenderer.transZ,
+                    DragonStaffModelRenderer.itemTransX, DragonStaffModelRenderer.itemTransY, DragonStaffModelRenderer.itemTransZ));
             return;
         }
 
@@ -51,21 +51,21 @@ public class BTCChatTuner {
         try {
             float val = Float.parseFloat(parts[1]);
             switch (sub) {
-                case "rx" -> FireStaffModelRenderer.rotX = val;
-                case "ry" -> FireStaffModelRenderer.rotY = val;
-                case "rz" -> FireStaffModelRenderer.rotZ = val;
+                case "rx" -> DragonStaffModelRenderer.rotX = val;
+                case "ry" -> DragonStaffModelRenderer.rotY = val;
+                case "rz" -> DragonStaffModelRenderer.rotZ = val;
 
-                case "tx" -> FireStaffModelRenderer.transX = val;
-                case "ty" -> FireStaffModelRenderer.transY = val;
-                case "tz" -> FireStaffModelRenderer.transZ = val;
+                case "tx" -> DragonStaffModelRenderer.transX = val;
+                case "ty" -> DragonStaffModelRenderer.transY = val;
+                case "tz" -> DragonStaffModelRenderer.transZ = val;
 
-                case "fx" -> FireStaffModelRenderer.fireTransX = val;
-                case "fy" -> FireStaffModelRenderer.fireTransY = val;
-                case "fz" -> FireStaffModelRenderer.fireTransZ = val;
+                case "fx" -> DragonStaffModelRenderer.itemTransX = val;
+                case "fy" -> DragonStaffModelRenderer.itemTransY = val;
+                case "fz" -> DragonStaffModelRenderer.itemTransZ = val;
 
 
-                case "fs" -> FireStaffModelRenderer.fireScale = val;
-                case "s" -> FireStaffModelRenderer.scale = val;
+                case "fs" -> DragonStaffModelRenderer.itemScale = val;
+                case "s" -> DragonStaffModelRenderer.scale = val;
 
                 default -> {
                     sendFeedback("Unknown key: " + sub);
