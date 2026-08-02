@@ -187,7 +187,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
             }
             case HEAD -> {
                 currentOverlayRotX = 180f; currentOverlayRotY = 0f; currentOverlayRotZ = 0f;
-                currentOverlayTransX = 0; currentOverlayTransY = 0.25f; currentOverlayTransZ = 0;
+                currentOverlayTransX = 0; currentOverlayTransY = 0.725f; currentOverlayTransZ = 0;
                 currentOverlayScale = 1;
             }
             default -> {}
