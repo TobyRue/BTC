@@ -37,7 +37,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     public static float itemScale = 1f;
     public static float scale = 1f;
 
-
     private final ModelPart root;
 
     public WindStaffModelRenderer(ModelPart root) {
@@ -47,18 +46,27 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData root = modelPartData.addChild("root", ModelPartBuilder.create().uv(0, 6).cuboid(-1.5F, -16.5F, -1.5F, 3.0F, 14.0F, 3.0F, new Dilation(-0.3F)), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+        ModelPartData root = modelPartData.addChild("root",
+                ModelPartBuilder.create().uv(0, 6).cuboid(-1.5F, -16.5F, -1.5F, 3.0F, 14.0F, 3.0F, new Dilation(-0.3F)),
+                ModelTransform.pivot(0.0F, 24.0F, 0.0F)
+        );
 
-        ModelPartData arm_overlay_r1 = root.addChild("arm_overlay_r1", ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -1.0F, -1.0F, 8.0F, 3.0F, 3.0F, new Dilation(-0.3F)), ModelTransform.of(0.5F, -17.6F, -0.5F, 0.0F, 0.0F, -0.7854F));
+        root.addChild("arm_overlay_r1",
+                ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -1.0F, -1.0F, 8.0F, 3.0F, 3.0F, new Dilation(-0.3F)),
+                ModelTransform.of(0.5F, -17.6F, -0.5F, 0.0F, 0.0F, -0.7854F)
+        );
 
-        ModelPartData arm_overlay_r2 = root.addChild("arm_overlay_r2", ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4.0F, -1.5F, -1.5F, 8.0F, 3.0F, 3.0F, new Dilation(-0.3F)).mirrored(false), ModelTransform.of(-2.9749F, -19.3678F, 0.0F, 0.0F, 0.0F, 0.7854F));
+        root.addChild("arm_overlay_r2",
+                ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4.0F, -1.5F, -1.5F, 8.0F, 3.0F, 3.0F, new Dilation(-0.3F)).mirrored(false),
+                ModelTransform.of(-2.9749F, -19.3678F, 0.0F, 0.0F, 0.0F, 0.7854F)
+        );
+
         return TexturedModelData.of(modelData, 32, 32);
     }
 
     public void renderModel(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         VertexConsumer vertexConsumer = AnimatedTextureHelper.getBuffer(vertices, SPRITE_ID);
         this.root.render(matrices, vertexConsumer, light, overlay);
-        MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
     }
 
     private void updateDummyAge() {
@@ -70,20 +78,35 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         }
     }
 
+    /**
+     * Standardized transform application: Translate -> Rotate -> Scale
+     */
+    private void applyTransformations(MatrixStack matrices, float transX, float transY, float transZ, float rotX, float rotY, float rotZ, float scale) {
+        matrices.translate(transX, transY, transZ);
+        if (rotX != 0) matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotX));
+        if (rotY != 0) matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotY));
+        if (rotZ != 0) matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotZ));
+        if (scale != 1.0f) matrices.scale(scale, scale, scale);
+    }
+
     public void renderItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float currentItemX, float currentItemY, float currentItemZ, float currentRotX, float currentRotZ, float currentItemScale) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
-        var tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        var tickDelta = minecraft.getRenderTickCounter().getTickDelta(false);
 
-        long time = System.currentTimeMillis() % 3600L;
-        float angle = (time / 10.0f) % 360;
-        matrices.translate(currentItemX, currentItemY, currentItemZ);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(currentRotX));
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(currentRotZ));
-        matrices.scale(currentItemScale, currentItemScale, currentItemScale);
+        // 1. Position & Rotate the Wind Charge
+        applyTransformations(matrices, currentItemX, currentItemY, currentItemZ, currentRotX, 0, currentRotZ, currentItemScale);
 
-        EntityRendererFactory.Context context = new EntityRendererFactory.Context(minecraft.getEntityRenderDispatcher(), minecraft.getItemRenderer(), minecraft.getBlockRenderManager(), null, minecraft.getResourceManager(), minecraft.getEntityModelLoader(), minecraft.textRenderer);
+        // 2. Render Entity
+        EntityRendererFactory.Context context = new EntityRendererFactory.Context(
+                minecraft.getEntityRenderDispatcher(),
+                minecraft.getItemRenderer(),
+                minecraft.getBlockRenderManager(),
+                null,
+                minecraft.getResourceManager(),
+                minecraft.getEntityModelLoader(),
+                minecraft.textRenderer
+        );
         updateDummyAge();
         new WindChargeEntityRenderer(context).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
 
@@ -92,34 +115,22 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
 
     @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        float currentRotX = 0;
-        float currentRotY = 0;
-        float currentRotZ = 0;
-
-        float currentTransX = 0;
-        float currentTransY = 0;
-        float currentTransZ = 0;
-
-        float currentItemX = 0;
-        float currentItemY = 0;
-        float currentItemZ = 0;
-
-        float currentItemScale = 0;
-        float currentScale = 0;
-
-
+        float currentRotX = 0, currentRotY = 0, currentRotZ = 0;
+        float currentTransX = 0, currentTransY = 0, currentTransZ = 0;
+        float currentItemX = 0, currentItemY = 0, currentItemZ = 0;
+        float currentItemScale = 1, currentScale = 1;
 
         switch (mode) {
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND -> {
                 currentRotX = 27; currentRotY = 0; currentRotZ = 0;
                 currentTransX = 0.5f; currentTransY = 0.67f; currentTransZ = 0.2f;
-                currentItemX = 0.5f; currentItemY = 1.2f; currentItemZ = 0.85f;
+                currentItemX = 0.5f; currentItemY = 1.4f; currentItemZ = 0.6f; //0.5f 1.2f 0.85f
                 currentItemScale = 0.8f; currentScale = 1;
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND -> {
                 currentRotX = 32; currentRotY = 0; currentRotZ = 0;
                 currentTransX = 0.5f; currentTransY = 0.12f; currentTransZ = 0.59f;
-                currentItemX = 0.5f; currentItemY = 0.75f; currentItemZ = 1.15f;
+                currentItemX = 0.5f; currentItemY = 1; currentItemZ = 1.1f; //  0.5f 0.75f 1.15f
                 currentItemScale = 1; currentScale = 1;
             }
             case GUI -> {
@@ -157,7 +168,7 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         float currentOverlayTransY = DragonStaffModelRenderer.transY;
         float currentOverlayTransZ = DragonStaffModelRenderer.transZ;
 
-        float currentOverlayScale = 0;
+        float currentOverlayScale = 1.0f;
 
         switch (mode) {
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND -> {
@@ -193,41 +204,20 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
             default -> {}
         }
 
-
-        matrices.push();
         var minecraft = MinecraftClient.getInstance();
 
         renderItem(stack, mode, matrices, vertexConsumers, light, overlay, currentItemX, currentItemY, currentItemZ, currentRotX, currentRotZ, currentItemScale);
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(currentRotX));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(currentRotY));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(currentRotZ));
-
-        matrices.translate(currentTransX, currentTransY, currentTransZ);
-        matrices.scale(currentScale, currentScale, currentScale);
-
+        matrices.push();
+        applyTransformations(matrices, currentTransX, currentTransY, currentTransZ, currentRotX, currentRotY, currentRotZ, currentScale);
         minecraft.getItemRenderer().renderItem(HANDLE, mode, light, overlay, matrices, vertexConsumers, minecraft.world, 0);
         matrices.pop();
 
-
         matrices.push();
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-//        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+        applyTransformations(matrices, currentTransX, currentTransY, currentTransZ, currentRotX, currentRotY, currentRotZ, currentScale);
+        applyTransformations(matrices, currentOverlayTransX, currentOverlayTransY, currentOverlayTransZ, currentOverlayRotX, currentOverlayRotY, currentOverlayRotZ, currentOverlayScale);
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(currentRotX));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(currentRotY));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(currentRotZ));
-
-        matrices.translate(currentTransX, currentTransY, currentTransZ);
-        matrices.scale(currentScale, currentScale, currentScale);
-
-        matrices.translate(currentOverlayTransX, currentOverlayTransY, currentOverlayTransZ);
-        matrices.scale(currentOverlayScale, currentOverlayScale, currentOverlayScale);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(currentOverlayRotX));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(currentOverlayRotY));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(currentOverlayRotZ));
         renderModel(stack, matrices, vertexConsumers, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
         matrices.pop();
-
     }
 }
