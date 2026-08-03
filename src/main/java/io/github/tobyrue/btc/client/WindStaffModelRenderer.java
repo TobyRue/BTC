@@ -23,20 +23,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     private final DummyWindCharge dummy = new DummyWindCharge();
     public static final Identifier TEXTURE = BTC.identifierOf("textures/item/wind_staff_overlay.png");
     public static final SpriteIdentifier SPRITE_ID = AnimatedTextureHelper.createItemSpriteId(TEXTURE);
-
-    public static float itemTransX = 0.5f;
-    public static float itemTransY = 1.1f;
-    public static float itemTransZ = 0.35f;
-
-    public static float rotX = 27.0f;
-    public static float rotY = 0.0f;
-    public static float rotZ = 0.0f;
-    public static float transX = 0.5f;
-    public static float transY = 0.67f;
-    public static float transZ = 0.20f;
-    public static float itemScale = 1f;
-    public static float scale = 1f;
-
     private final ModelPart root;
 
     public WindStaffModelRenderer(ModelPart root) {
@@ -46,21 +32,11 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData root = modelPartData.addChild("root",
-                ModelPartBuilder.create().uv(0, 6).cuboid(-1.5F, -16.5F, -1.5F, 3.0F, 14.0F, 3.0F, new Dilation(-0.3F)),
-                ModelTransform.pivot(0.0F, 24.0F, 0.0F)
-        );
+        ModelPartData root = modelPartData.addChild("root", ModelPartBuilder.create().uv(0, 0).cuboid(-1.5F, -16.5F, -1.5F, 3.0F, 14.0F, 3.0F, new Dilation(-0.3F)), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
 
-        root.addChild("arm_overlay_r1",
-                ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, -1.0F, -1.0F, 8.0F, 3.0F, 3.0F, new Dilation(-0.3F)),
-                ModelTransform.of(0.5F, -17.6F, -0.5F, 0.0F, 0.0F, -0.7854F)
-        );
+        ModelPartData cube_r1 = root.addChild("cube_r1", ModelPartBuilder.create().uv(0, 17).mirrored().cuboid(8.8636F, -5.7062F, -9.5F, 3.0F, 8.0F, 3.0F, new Dilation(-0.3F)).mirrored(false), ModelTransform.of(-5.6F, -25.4F, 8.0F, 0.0F, 0.0F, 0.7854F));
 
-        root.addChild("arm_overlay_r2",
-                ModelPartBuilder.create().uv(0, 0).mirrored().cuboid(-4.0F, -1.5F, -1.5F, 8.0F, 3.0F, 3.0F, new Dilation(-0.3F)).mirrored(false),
-                ModelTransform.of(-2.9749F, -19.3678F, 0.0F, 0.0F, 0.0F, 0.7854F)
-        );
-
+        ModelPartData cube_r2 = root.addChild("cube_r2", ModelPartBuilder.create().uv(0, 17).cuboid(-11.8636F, -5.7062F, -9.5F, 3.0F, 8.0F, 3.0F, new Dilation(-0.3F)), ModelTransform.of(5.6F, -25.4F, 8.0F, 0.0F, 0.0F, -0.7854F));
         return TexturedModelData.of(modelData, 32, 32);
     }
 
@@ -94,10 +70,8 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         var minecraft = MinecraftClient.getInstance();
         var tickDelta = minecraft.getRenderTickCounter().getTickDelta(false);
 
-        // 1. Position & Rotate the Wind Charge
         applyTransformations(matrices, currentItemX, currentItemY, currentItemZ, currentRotX, 0, currentRotZ, currentItemScale);
 
-        // 2. Render Entity
         EntityRendererFactory.Context context = new EntityRendererFactory.Context(
                 minecraft.getEntityRenderDispatcher(),
                 minecraft.getItemRenderer(),
@@ -115,35 +89,35 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
 
     @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        float currentRotX = 0, currentRotY = 0, currentRotZ = 0;
-        float currentTransX = 0, currentTransY = 0, currentTransZ = 0;
-        float currentItemX = 0, currentItemY = 0, currentItemZ = 0;
-        float currentItemScale = 1, currentScale = 1;
+        float currentRotX = DragonStaffModelRenderer.rotX, currentRotY = DragonStaffModelRenderer.rotY, currentRotZ = DragonStaffModelRenderer.rotZ;
+        float currentTransX = DragonStaffModelRenderer.transX, currentTransY = DragonStaffModelRenderer.transY, currentTransZ = DragonStaffModelRenderer.transZ;
+        float currentItemX = DragonStaffModelRenderer.itemTransX, currentItemY = DragonStaffModelRenderer.itemTransY, currentItemZ = DragonStaffModelRenderer.itemTransZ;
+        float currentItemScale = DragonStaffModelRenderer.itemScale, currentScale = DragonStaffModelRenderer.scale;
 
         switch (mode) {
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND -> {
                 currentRotX = 27; currentRotY = 0; currentRotZ = 0;
-                currentTransX = 0.5f; currentTransY = 0.67f; currentTransZ = 0.2f;
-                currentItemX = 0.5f; currentItemY = 1.4f; currentItemZ = 0.6f; //0.5f 1.2f 0.85f
-                currentItemScale = 0.8f; currentScale = 1;
+                currentTransX = 0.5f; currentTransY = 0.5f; currentTransZ = 0.5f;
+                currentItemX = 0.5f; currentItemY = 1.2f; currentItemZ = 0.85f;
+                currentItemScale = 0.75f; currentScale = 1;
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND -> {
                 currentRotX = 32; currentRotY = 0; currentRotZ = 0;
-                currentTransX = 0.5f; currentTransY = 0.12f; currentTransZ = 0.59f;
-                currentItemX = 0.5f; currentItemY = 1; currentItemZ = 1.1f; //  0.5f 0.75f 1.15f
+                currentTransX = 0.5f; currentTransY = -0.2f; currentTransZ = 0.55f;
+                currentItemX = 0.5f; currentItemY = 0.7f; currentItemZ = 1.1f;
                 currentItemScale = 1; currentScale = 1;
             }
             case GUI -> {
                 currentRotX = 45; currentRotY = 45; currentRotZ = 0;
-                currentTransX = 0.75f; currentTransY = 1; currentTransZ = 0.2f;
+                currentTransX = 0.4f; currentTransY = 1; currentTransZ = 0.2f;
                 currentItemX = 0.3f; currentItemY = 1.8f; currentItemZ = 0;
                 currentItemScale = 1; currentScale = 2;
             }
             case GROUND -> {
                 currentRotX = 20; currentRotY = 0; currentRotZ = 0;
-                currentTransX = 0.5f; currentTransY = 0.67f; currentTransZ = 0.2f;
-                currentItemX = 0.5f; currentItemY = 1.7f; currentItemZ = 0.80f;
-                currentItemScale = 0.9f; currentScale = 2;
+                currentTransX = 0.5f; currentTransY = 0.15f; currentTransZ = 0.55f;
+                currentItemX = 0.5f; currentItemY = 1.3f; currentItemZ = 1;
+                currentItemScale = 1; currentScale = 2;
             }
             case FIXED -> {
                 currentRotX = 0; currentRotY = 0; currentRotZ = 0;
@@ -152,10 +126,10 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
                 currentItemScale = 1; currentScale = 1.3f;
             }
             case HEAD -> {
-                currentRotX = 0f; currentRotY = 0f; currentRotZ = 0f;
-                currentTransX = 0.5f; currentTransY = 1f; currentTransZ = 0.2f;
-                currentItemX = 0.5f; currentItemY = 1.7f; currentItemZ = 0.2f;
-                currentItemScale = 1; currentScale = 1;
+                currentRotX = 0; currentRotY = 0; currentRotZ = 0;
+                currentTransX = 0.5f; currentTransY = 0.9f; currentTransZ = 0.25f;
+                currentItemX = 0.5f; currentItemY = 1.7f; currentItemZ = 0.25f;
+                currentItemScale = 1; currentScale = 1.3f;
             }
             default -> {}
         }

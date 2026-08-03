@@ -42,6 +42,6 @@ public class AnimatedTextureHelper {
      * Gets a VertexConsumer for rendering the atlas texture with translucency support.
      */
     public static VertexConsumer getBuffer(VertexConsumerProvider vertexConsumers, SpriteIdentifier spriteId) {
-        return spriteId.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent);
+        return spriteId.getVertexConsumer(vertexConsumers, RenderLayer::getItemEntityTranslucentCull);
     }
 }
