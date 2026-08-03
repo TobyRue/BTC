@@ -13,6 +13,14 @@
         }
       },
       {
+        "state": { "Name": "btc:salty_calcite" },
+        "target": {
+          "predicate_type": "minecraft:random_block_match",
+          "block": "minecraft:stone",
+          "probability": 0.25
+        }
+      },
+      {
         "state": { "Name": "btc:salt_block", "Properties": { "absorbed_light": "0" } },
         "target": {
           "predicate_type": "minecraft:tag_match",

@@ -1,0 +1,9 @@
+// 1.21.1	2026-08-03T13:09:23.9762653	BTC/Recipes
+c1623421e723cf0496d024c5dfb1cf67328be95b data\btc\recipe\salt_block.json
+5d2c6c4abe7c7a491a4dfad96b138c4a42670727 data\btc\recipe\charcoal_from_charcoal_block.json
+ed8ca4f89b46487ec4ef9e6bc9400a49d026c845 data\btc\recipe\salt_from_salt_block.json
+63282078f44c3de591ee9110466dd9d772f3102d data\btc\recipe\charcoal_block.json
+5b4a7ae6edfbf26b601cf1bbded5e0567cfd5419 data\btc\advancement\recipes\building_blocks\charcoal_block.json
+c733fd407017c395a4c917c3bb438fc822d051dc data\btc\advancement\recipes\misc\salt_from_salt_block.json
+13db9fcd7db571e7f1a75962c8a72605aa5b8527 data\btc\advancement\recipes\building_blocks\salt_block.json
+b11a3e29a2bebb7ab15ab828a84b6844d2016768 data\btc\advancement\recipes\misc\charcoal_from_charcoal_block.json

@@ -18,9 +18,7 @@ public class RecipeBookGroupGroupingsMixin {
 
     @Inject(method = "getGroups", at = @At("HEAD"), cancellable = true)
     private static void onGetGroups(RecipeBookCategory category, CallbackInfoReturnable<List<RecipeBookGroup>> cir) {
-        System.out.println("Category: " + category.name());
         if (category == RecipeBookCategory.BTC_SCROLL_TABLE) {
-            System.out.println("Category");
             cir.setReturnValue(ImmutableList.of(
                     RecipeBookGroup.BTC_SCROLL_TABLE_SEARCH
             ));

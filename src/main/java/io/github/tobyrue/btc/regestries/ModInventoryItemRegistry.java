@@ -26,7 +26,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.SUGAR, ModItems.SALT);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.NATURAL).register(content -> {
-            content.addAfter(Items.TUFF, ModBlocks.SALT_BLOCK);
+            content.addAfter(Items.CALCITE, ModBlocks.SALTY_CALCITE, ModBlocks.SALT_BLOCK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
@@ -135,6 +135,8 @@ public class ModInventoryItemRegistry {
             content.addAfter(Blocks.AMETHYST_BLOCK, ModBlocks.REINFORCED_DUNGEON_BLOCK,
                     ModBlocks.REINFORCED_DUNGEON_GRATE, ModBlocks.REINFORCED_DUNGEON_TILES,
                     ModBlocks.REINFORCED_DUNGEON_TILE_STAIRS, ModBlocks.REINFORCED_DUNGEON_TILE_SLAB);
+
+            content.addAfter(Blocks.COAL_BLOCK, ModBlocks.CHARCOAL_BLOCK);
 
 
         });

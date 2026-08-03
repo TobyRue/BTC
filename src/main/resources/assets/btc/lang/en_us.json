@@ -70,6 +70,8 @@
   "block.btc.salt_block": "Salt Block",
   "block.btc.scroll_table": "Scroll Table",
   "block.btc.fancy_chiseled_tuff_bricks": "Fancy Chiseled Tuff Bricks",
+  "block.btc.charcoal_block": "Charcoal Block",
+  "block.btc.salty_calcite": "Salty Calcite",
 
   "container.btc.spell_inventory": "Spell Inventory",
   "hud.btc.cancel.crouch": "Crouch",

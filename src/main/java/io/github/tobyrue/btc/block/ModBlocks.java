@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.block.fluids.ToxicSludgeBlock;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.circuit.FPGABlock;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
@@ -292,6 +293,19 @@ public class ModBlocks {
     public static final Block FANCY_CHISELED_TUFF_BRICKS = register(
             new Block(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
             "fancy_chiseled_tuff_bricks",
+            true
+    );
+
+
+    public static final Block CHARCOAL_BLOCK = register(
+            new Block(AbstractBlock.Settings.copy(Blocks.COAL_BLOCK)),
+            "charcoal_block",
+            true
+    );
+
+    public static final Block SALTY_CALCITE = register(
+            new Block(AbstractBlock.Settings.copy(Blocks.CALCITE)),
+            "salty_calcite",
             true
     );
 
@@ -707,6 +721,10 @@ public class ModBlocks {
 //    );
 
     public static void initialize() {
+        FuelRegistry.INSTANCE.add(ModBlocks.CHARCOAL_BLOCK, 800 * 20);
+
+
+
         Registries.BLOCK.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
         Registries.ITEM.addAlias(BTC.identifierOf("dungeon_wire_v2"), BTC.identifierOf("dungeon_wire"));
         Registries.BLOCK.addAlias(BTC.identifierOf("test_wire"), BTC.identifierOf("dungeon_wire"));
