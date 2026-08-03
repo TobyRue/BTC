@@ -54,17 +54,6 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         }
     }
 
-    /**
-     * Standardized transform application: Translate -> Rotate -> Scale
-     */
-    private void applyTransformations(MatrixStack matrices, float transX, float transY, float transZ, float rotX, float rotY, float rotZ, float scale) {
-        matrices.translate(transX, transY, transZ);
-        if (rotX != 0) matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotX));
-        if (rotY != 0) matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotY));
-        if (rotZ != 0) matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotZ));
-        if (scale != 1.0f) matrices.scale(scale, scale, scale);
-    }
-
     public void renderItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float currentItemX, float currentItemY, float currentItemZ, float currentRotX, float currentRotZ, float currentItemScale) {
         matrices.push();
         var minecraft = MinecraftClient.getInstance();
@@ -85,6 +74,14 @@ public class WindStaffModelRenderer implements BuiltinItemRendererRegistry.Dynam
         new WindChargeEntityRenderer(context).render(dummy, 0, tickDelta, matrices, vertexConsumers, light);
 
         matrices.pop();
+    }
+
+    private void applyTransformations(MatrixStack matrices, float transX, float transY, float transZ, float rotX, float rotY, float rotZ, float scale) {
+        matrices.translate(transX, transY, transZ);
+        if (rotX != 0) matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotX));
+        if (rotY != 0) matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotY));
+        if (rotZ != 0) matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotZ));
+        if (scale != 1.0f) matrices.scale(scale, scale, scale);
     }
 
     @Override
