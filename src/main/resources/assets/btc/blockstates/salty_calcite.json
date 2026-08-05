@@ -1,5 +1,21 @@
 {
   "variants": {
-    "": { "model": "btc:block/salty_calcite" }
+    "": [
+      {
+        "model": "btc:block/salty_calcite_1"
+      },
+      {
+        "model": "btc:block/salty_calcite_2"
+      },
+      {
+        "model": "btc:block/salty_calcite_3"
+      },
+      {
+        "model": "btc:block/salty_calcite_4"
+      },
+      {
+        "model": "btc:block/salty_calcite_5"
+      }
+    ]
   }
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "btc:block/salty_calcite"
+    "all": "btc:block/salty_calcite_5"
   }
 }

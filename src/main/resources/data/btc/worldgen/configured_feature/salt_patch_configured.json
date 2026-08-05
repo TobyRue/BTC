@@ -1,0 +1,21 @@
+{
+  "type": "btc:salt_patch",
+  "config": {
+    "tuff_state": {
+      "Name": "minecraft:tuff"
+    },
+    "calcite_state": {
+      "Name": "minecraft:calcite"
+    },
+    "salty_calcite_state": {
+      "Name": "btc:salty_calcite"
+    },
+    "salt_state": {
+      "Name": "btc:salt_block"
+    },
+    "radius_x": 9,
+    "radius_y": 5,
+    "radius_z": 12,
+    "salty_calcite_thickness": 1.5
+  }
+}

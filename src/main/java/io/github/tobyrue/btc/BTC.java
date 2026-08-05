@@ -117,6 +117,8 @@ public class BTC implements ModInitializer {
         GenMaker.ModWorldGeneration.generateModWorldGen();
         ModScreens.register();
         ModRecipes.registerRecipes();
+        ModFeatures.registerFeatures();
+        ModCarvers.registerCarvers();
 
         FabricDefaultAttributeRegistry.register(ModEntities.ELDRITCH_LUMINARY, EldritchLuminaryEntity.createEldritchLuminaryAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());

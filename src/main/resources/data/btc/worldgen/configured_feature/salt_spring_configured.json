@@ -1,0 +1,26 @@
+{
+  "type": "btc:salt_spring",
+  "config": {
+    "fluid_state": {
+      "Name": "minecraft:water"
+    },
+    "rim_state": {
+      "Name": "btc:salty_calcite"
+    },
+    "crystal_states": [
+      {
+        "Name": "minecraft:medium_amethyst_bud"
+      },
+      {
+        "Name": "minecraft:small_amethyst_bud"
+      },
+      {
+        "Name": "minecraft:large_amethyst_bud"
+      },
+      {
+        "Name": "minecraft:air"
+      }
+    ],
+    "radius": 5
+  }
+}

@@ -23,11 +23,14 @@
   },
   "features": [
     [],
-    [],
+    [
+      "btc:salt_spring_placed"
+    ],
     [],
     [
       "minecraft:ore_dirt",
       "minecraft:ore_gravel",
+      "minecraft:ore_tuff",
       "minecraft:ore_coal_upper",
       "minecraft:ore_coal_lower",
       "minecraft:ore_iron_upper",
@@ -44,7 +47,7 @@
     [],
     [],
     [
-      "btc:salt_cave_cavern_blend_placed",
+      "btc:salt_patch_placed"
     ],
     [],
     [],
