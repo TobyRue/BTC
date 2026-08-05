@@ -1,21 +1,23 @@
 package io.github.tobyrue.btc.worldgen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FreezeTopLayerFeature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
 
@@ -30,94 +32,126 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
         Random random = context.getRandom();
         SaltSpringFeatureConfig config = context.getConfig();
 
-        BlockPos.Mutable mutablePos = origin.mutableCopy();
-        boolean foundGround = false;
+        BlockPos startPos = findGroundLevel(world, origin);
+        if (startPos == null) return false;
+        BlockPos groundPos = startPos.down(3);
 
-        for (int i = 0; i < 40; i++) {
-            BlockState current = world.getBlockState(mutablePos);
-            BlockState below = world.getBlockState(mutablePos.down());
+        double baseRadius = config.radius() * 1.3D;
+        double rx = baseRadius + (random.nextDouble() * 2.0 - 1.0);
+        double rz = baseRadius + (random.nextDouble() * 2.0 - 1.0);
 
-            if (below.isOf(Blocks.LAVA) || current.isOf(Blocks.LAVA)) {
-                return false;
-            }
-
-            if ((current.isAir() || current.isOf(Blocks.WATER)) && below.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
-                foundGround = true;
-                break;
-            }
-            mutablePos.move(0, -1, 0);
-        }
-
-        if (!foundGround) return false;
-
-        BlockPos groundPos = mutablePos.toImmutable();
-
-        double baseRadius = config.radius() * 1.2D;
-        double rx = baseRadius + (random.nextDouble() * 2.5 - 1.25);
-        double rz = baseRadius + (random.nextDouble() * 2.5 - 1.25);
-
-        int maxSearchX = MathHelper.ceil(rx + 3.0);
-        int maxSearchZ = MathHelper.ceil(rz + 3.0);
-
-        if (!hasBasicGroundSupport(world, groundPos, rx, rz, maxSearchX, maxSearchZ)) {
-            return false;
-        }
-
-        if (!isBasinFullyContained(world, groundPos, rx, rz, maxSearchX, maxSearchZ)) {
-            return false;
-        }
-
-        int layers = 2 + random.nextInt(2);
+        int tiers = 2 + random.nextInt(2);
         boolean placed = false;
-        List<BlockState> crystals = config.crystalStates();
 
-        for (int layer = 0; layer < layers; layer++) {
-            double layerRx = rx * (1.0 - (layer * 0.22));
-            double layerRz = rz * (1.0 - (layer * 0.22));
+        int offsetX = 0;
+        int offsetZ = 0;
 
-            int maxDepth = 1 + layer;
+        for (int tier = 0; tier < tiers; tier++) {
+            if (tier > 0) {
+                offsetX += (random.nextBoolean() ? 1 : -1) * (2 + random.nextInt(2));
+                offsetZ += (random.nextBoolean() ? 1 : -1) * (2 + random.nextInt(2));
+            }
+
+            int tierYOffset = -(tier * 2);
+            BlockPos tierCenter = groundPos.add(offsetX, tierYOffset, offsetZ);
+
+            double tierRx = rx * (1.0 - (tier * 0.15));
+            double tierRz = rz * (1.0 - (tier * 0.15));
+
+            Map<BlockPos, Integer> bowlDepths = new HashMap<>();
+            Set<BlockPos> rimShellPositions = new HashSet<>();
+
+            int maxSearchX = MathHelper.ceil(tierRx + 3.0);
+            int maxSearchZ = MathHelper.ceil(tierRz + 3.0);
 
             for (int x = -maxSearchX; x <= maxSearchX; x++) {
                 for (int z = -maxSearchZ; z <= maxSearchZ; z++) {
-                    double normX = x / layerRx;
-                    double normZ = z / layerRz;
+                    double normX = x / tierRx;
+                    double normZ = z / tierRz;
 
-                    double noise = (Math.sin(x * 0.35) + Math.cos(z * 0.35)) * 0.18;
+                    double noise = (Math.sin((x + offsetX) * 0.4D) + Math.cos((z + offsetZ) * 0.4D)) * 0.15D;
                     double distSq = (normX * normX + normZ * normZ) + noise;
 
-                    if (distSq > 1.15) continue;
+                    if (distSq > 1.25D) continue;
 
-                    BlockPos localGround = getLocalFloor(world, groundPos.add(x, layer, z));
-                    if (localGround == null) continue;
+                    BlockPos targetPos = tierCenter.add(x, 0, z);
 
-                    BlockPos poolSurface = localGround.up();
+                    if (distSq <= 0.60D) {
+                        int depth = distSq < 0.25D ? 3 : 2;
+                        bowlDepths.put(targetPos, depth);
+                    } else if (distSq <= 1.10D) {
+                        rimShellPositions.add(targetPos);
+                    }
+                }
+            }
 
-                    if (!world.isValidForSetBlock(poolSurface)) continue;
+            if (bowlDepths.isEmpty()) continue;
 
-                    if (distSq <= 0.50) {
-                        for (int d = 0; d < maxDepth; d++) {
-                            BlockPos depthPos = poolSurface.down(d);
-                            world.setBlockState(depthPos, config.fluidState(), 2);
-                            world.scheduleFluidTick(depthPos, config.fluidState().getFluidState().getFluid(), 1);
+            for (Map.Entry<BlockPos, Integer> entry : bowlDepths.entrySet()) {
+                BlockPos pos = entry.getKey();
+                int depth = entry.getValue();
 
-                            sealBasinAndBuildWalls(world, depthPos, config.rimState());
+                for (int h = 1; h <= 3; h++) {
+                    world.setBlockState(pos.up(h), Blocks.AIR.getDefaultState(), 2);
+                }
+
+                for (int d = 0; d < depth; d++) {
+                    world.setBlockState(pos.down(d), Blocks.AIR.getDefaultState(), 2);
+                }
+            }
+
+            for (BlockPos rimPos : rimShellPositions) {
+                buildThickRimShell(world, rimPos, config.rimState());
+            }
+
+            for (BlockPos bowlPos : bowlDepths.keySet()) {
+                for (Direction dir : Direction.Type.HORIZONTAL) {
+                    BlockPos neighbor = bowlPos.offset(dir);
+                    if (!bowlDepths.containsKey(neighbor)) {
+                        buildThickRimShell(world, neighbor, config.rimState());
+                    }
+                }
+            }
+
+            for (BlockPos rimPos : rimShellPositions) {
+                for (Direction dir : Direction.Type.HORIZONTAL) {
+                    BlockPos outerNeighbor = rimPos.offset(dir);
+                    if (!rimShellPositions.contains(outerNeighbor) && !bowlDepths.containsKey(outerNeighbor)) {
+                        BlockState current = world.getBlockState(outerNeighbor);
+                        if (current.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
+                            world.setBlockState(outerNeighbor, config.rimState(), 2);
                         }
+                    }
+                }
+            }
 
-                        world.setBlockState(poolSurface.down(maxDepth), config.rimState(), 2);
-                        placed = true;
+            for (Map.Entry<BlockPos, Integer> entry : bowlDepths.entrySet()) {
+                BlockPos corePos = entry.getKey();
+                int depth = entry.getValue();
 
-                    } else if (distSq <= 1.0) {
-                        world.setBlockState(poolSurface, config.rimState(), 2);
-                        world.setBlockState(poolSurface.down(), config.rimState(), 2);
+                for (int d = 1; d < depth; d++) {
+                    BlockPos fluidPos = corePos.down(d);
+                    world.setBlockState(fluidPos, config.fluidState(), 2);
+                    world.scheduleFluidTick(fluidPos, config.fluidState().getFluidState().getFluid(), 1);
+                }
 
-                        buildFoundationDownSlope(world, poolSurface, config.rimState());
+                world.setBlockState(corePos.down(depth), config.rimState(), 2);
+                placed = true;
+            }
 
-                        BlockPos abovePos = poolSurface.up();
-                        if (world.getBlockState(abovePos).isAir() && !crystals.isEmpty() && random.nextFloat() < 0.40f) {
+            for (BlockPos rimPos : rimShellPositions) {
+                growSupportPillarIfNeeded(world, rimPos.down(3), config.rimState());
+            }
+
+            List<BlockState> crystals = config.crystalStates();
+            if (!crystals.isEmpty()) {
+                for (BlockPos bowlPos : bowlDepths.keySet()) {
+                    for (Direction dir : Direction.Type.HORIZONTAL) {
+                        BlockPos wallPos = bowlPos.offset(dir);
+                        if (!bowlDepths.containsKey(wallPos) && random.nextFloat() < 0.35f) {
                             BlockState chosenCrystal = crystals.get(random.nextInt(crystals.size()));
-                            world.setBlockState(abovePos, chosenCrystal, 2);
+                            placeOrientedWallCrystal(world, bowlPos, dir, chosenCrystal);
                         }
-                        placed = true;
                     }
                 }
             }
@@ -126,99 +160,80 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
         return placed;
     }
 
-    /**
-     * Pre-generation containment test: Verifies that no fluid block will sit next to an unsealed air gap or cliff edge.
-     */
-    private boolean isBasinFullyContained(StructureWorldAccess world, BlockPos origin, double rx, double rz, int maxX, int maxZ) {
-        for (int x = -maxX; x <= maxX; x++) {
-            for (int z = -maxZ; z <= maxZ; z++) {
-                double normX = x / rx;
-                double normZ = z / rz;
-                double distSq = normX * normX + normZ * normZ;
-
-                if (distSq <= 0.50) {
-                    BlockPos localFloor = getLocalFloor(world, origin.add(x, 0, z));
-                    if (localFloor == null) return false;
-
-                    BlockPos fluidPos = localFloor.up();
-
-                    for (Direction dir : Direction.Type.HORIZONTAL) {
-                        BlockPos checkPos = fluidPos.offset(dir);
-                        BlockState state = world.getBlockState(checkPos);
-                        BlockState stateBelow = world.getBlockState(checkPos.down());
-
-                        if (state.isAir() && stateBelow.isAir()) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean hasBasicGroundSupport(StructureWorldAccess world, BlockPos origin, double rx, double rz, int maxX, int maxZ) {
-        int solidFloorCount = 0;
-        int totalChecked = 0;
-
-        for (int x = -maxX; x <= maxX; x += 2) {
-            for (int z = -maxZ; z <= maxZ; z += 2) {
-                if ((x / rx) * (x / rx) + (z / rz) * (z / rz) <= 1.0) {
-                    totalChecked++;
-                    BlockPos floor = getLocalFloor(world, origin.add(x, 0, z));
-                    if (floor != null) {
-                        solidFloorCount++;
-                    }
-                }
-            }
-        }
-        return totalChecked > 0 && ((double) solidFloorCount / totalChecked) >= 0.80D;
-    }
-
-    private BlockPos getLocalFloor(StructureWorldAccess world, BlockPos start) {
-        BlockPos.Mutable mutable = start.mutableCopy();
-        for (int i = 0; i < 4; i++) {
-            BlockState state = world.getBlockState(mutable);
+    private BlockPos findGroundLevel(StructureWorldAccess world, BlockPos origin) {
+        BlockPos.Mutable mutable = origin.mutableCopy();
+        for (int i = 0; i < 40; i++) {
+            BlockState current = world.getBlockState(mutable);
             BlockState below = world.getBlockState(mutable.down());
-            if (below.isIn(BlockTags.BASE_STONE_OVERWORLD) || below.isOf(Blocks.TUFF) || below.isOf(Blocks.DEEPSLATE)) {
-                return mutable.down().toImmutable();
+
+            if (below.isOf(Blocks.LAVA) || current.isOf(Blocks.LAVA)) return null;
+
+            if ((current.isAir() || current.isOf(Blocks.WATER)) && below.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
+                return mutable.toImmutable();
             }
-            if (state.isOf(Blocks.LAVA) || below.isOf(Blocks.LAVA)) {
-                return null;
-            }
-            mutable.move(0, -1, 0);
+            mutable.move(Direction.DOWN);
         }
         return null;
     }
 
     /**
-     * Builds retaining stone walls directly around any placed fluid block if a neighbor is empty/air.
+     * Constructs a multi-block thick shell (raising the lip and sealing bottom gaps).
      */
-    private void sealBasinAndBuildWalls(StructureWorldAccess world, BlockPos fluidPos, BlockState rimState) {
-        for (Direction dir : Direction.Type.HORIZONTAL) {
-            BlockPos neighborPos = fluidPos.offset(dir);
-            BlockState neighborState = world.getBlockState(neighborPos);
+    private void buildThickRimShell(StructureWorldAccess world, BlockPos pos, BlockState rimState) {
+        // Raised Dam Lip (+1 Y)
+        world.setBlockState(pos.up(), rimState, 2);
+        world.setBlockState(pos, rimState, 2);
 
-            if (neighborState.isAir()) {
-                world.setBlockState(neighborPos, rimState, 2);
+        // Deep foundation backfill to prevent bottom leaks
+        BlockPos.Mutable mutable = pos.down().mutableCopy();
+        for (int i = 0; i < 4; i++) {
+            BlockState state = world.getBlockState(mutable);
+            if (state.isIn(BlockTags.BASE_STONE_OVERWORLD) || state.isOf(Blocks.TUFF) || state.isOf(Blocks.DEEPSLATE)) {
+                world.setBlockState(mutable, rimState, 2);
+                break;
             }
+            world.setBlockState(mutable, rimState, 2);
+            mutable.move(Direction.DOWN);
         }
     }
 
     /**
-     * Fills down into open air beneath rim blocks to create solid retaining foundations.
+     * Grows a structural stone support column downward if the spring overhangs a cave void.
      */
-    private void buildFoundationDownSlope(StructureWorldAccess world, BlockPos rimPos, BlockState rimState) {
-        BlockPos.Mutable downCheck = rimPos.down().mutableCopy();
-        for (int drop = 0; drop < 4; drop++) {
-            if (world.getBlockState(downCheck).isAir()) {
-                world.setBlockState(downCheck, rimState, 2);
-                downCheck.move(Direction.DOWN);
-            } else {
+    private void growSupportPillarIfNeeded(StructureWorldAccess world, BlockPos startPos, BlockState rimState) {
+        BlockPos.Mutable mutable = startPos.mutableCopy();
+        for (int i = 0; i < 6; i++) {
+            BlockState state = world.getBlockState(mutable);
+            if (state.isAir()) {
+                world.setBlockState(mutable, rimState, 2);
+            } else if (state.isIn(BlockTags.BASE_STONE_OVERWORLD) || state.isOf(Blocks.TUFF) || state.isOf(Blocks.DEEPSLATE)) {
                 break;
             }
+            mutable.move(Direction.DOWN);
         }
     }
 
-    //TODO Fix terracing
+    /**
+     * Places crystals directly onto vertical rim walls with exact FACING directions.
+     */
+    private void placeOrientedWallCrystal(StructureWorldAccess world, BlockPos targetAirPos, Direction wallDir, BlockState crystalState) {
+        BlockState current = world.getBlockState(targetAirPos);
+        if (!current.isAir() && !current.isOf(Blocks.WATER)) return;
+
+        BlockPos wallPos = targetAirPos.offset(wallDir);
+        BlockState wallState = world.getBlockState(wallPos);
+
+        if (wallState.isOpaqueFullCube(world, wallPos)) {
+            Direction facing = wallDir.getOpposite();
+
+            BlockState orientedState = crystalState;
+            if (crystalState.contains(Properties.FACING)) {
+                orientedState = crystalState.with(Properties.FACING, facing);
+            } else if (crystalState.contains(Properties.HORIZONTAL_FACING) && facing.getAxis().isHorizontal()) {
+                orientedState = crystalState.with(Properties.HORIZONTAL_FACING, facing);
+            }
+
+            world.setBlockState(targetAirPos, orientedState, 2);
+        }
+    }
 }
