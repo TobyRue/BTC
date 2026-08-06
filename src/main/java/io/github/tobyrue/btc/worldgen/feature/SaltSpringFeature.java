@@ -32,13 +32,16 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
         Random random = context.getRandom();
         SaltSpringFeatureConfig config = context.getConfig();
 
-        BlockPos startPos = findGroundLevel(world, origin);
-        if (startPos == null) return false;
-        BlockPos groundPos = startPos.down(3);
+        BlockPos groundPos = findGroundLevel(world, origin, 24);
+        if (groundPos == null) return false;
 
-        double baseRadius = config.radius() * 1.3D;
-        double rx = baseRadius + (random.nextDouble() * 2.0 - 1.0);
-        double rz = baseRadius + (random.nextDouble() * 2.0 - 1.0);
+        double baseRadius = config.radius() * 1.2D;
+        double rx = baseRadius + (random.nextDouble() * 1.5 - 0.75);
+        double rz = baseRadius + (random.nextDouble() * 1.5 - 0.75);
+
+        if (!isLocationValid(world, groundPos)) {
+            return false;
+        }
 
         int tiers = 2 + random.nextInt(2);
         boolean placed = false;
@@ -52,46 +55,76 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
                 offsetZ += (random.nextBoolean() ? 1 : -1) * (2 + random.nextInt(2));
             }
 
-            int tierYOffset = -(tier * 2);
-            BlockPos tierCenter = groundPos.add(offsetX, tierYOffset, offsetZ);
-
             double tierRx = rx * (1.0 - (tier * 0.15));
             double tierRz = rz * (1.0 - (tier * 0.15));
 
-            Map<BlockPos, Integer> bowlDepths = new HashMap<>();
-            Set<BlockPos> rimShellPositions = new HashSet<>();
+            int maxSearchX = MathHelper.ceil(tierRx + 2.0);
+            int maxSearchZ = MathHelper.ceil(tierRz + 2.0);
 
-            int maxSearchX = MathHelper.ceil(tierRx + 3.0);
-            int maxSearchZ = MathHelper.ceil(tierRz + 3.0);
+            Map<BlockPos, Integer> bowlDepths = new HashMap<>();
+            Set<BlockPos> rimPositions = new HashSet<>();
+            Set<BlockPos> blendPositions = new HashSet<>();
+
+            BlockPos unshiftedCenter = groundPos.add(offsetX, -(tier * 2), offsetZ);
 
             for (int x = -maxSearchX; x <= maxSearchX; x++) {
                 for (int z = -maxSearchZ; z <= maxSearchZ; z++) {
                     double normX = x / tierRx;
                     double normZ = z / tierRz;
 
-                    double noise = (Math.sin((x + offsetX) * 0.4D) + Math.cos((z + offsetZ) * 0.4D)) * 0.15D;
+                    double noise = (Math.sin((x + offsetX) * 0.3D) + Math.cos((z + offsetZ) * 0.3D)) * 0.1D;
                     double distSq = (normX * normX + normZ * normZ) + noise;
 
-                    if (distSq > 1.25D) continue;
+                    if (distSq > 1.35D) continue;
 
-                    BlockPos targetPos = tierCenter.add(x, 0, z);
+                    BlockPos targetPos = unshiftedCenter.add(x, 0, z);
 
-                    if (distSq <= 0.60D) {
-                        int depth = distSq < 0.25D ? 3 : 2;
+                    if (distSq <= 0.55D) {
+                        int depth = distSq < 0.2D ? 3 : 2;
                         bowlDepths.put(targetPos, depth);
-                    } else if (distSq <= 1.10D) {
-                        rimShellPositions.add(targetPos);
+                    } else if (distSq <= 1.0D) {
+                        rimPositions.add(targetPos);
+                    } else {
+                        blendPositions.add(targetPos);
                     }
                 }
             }
 
             if (bowlDepths.isEmpty()) continue;
 
+            int maxRimYAboveGround = 0;
+            for (BlockPos rimPos : rimPositions) {
+                BlockPos floor = findGroundLevel(world, rimPos, 4);
+                int floorY = (floor != null) ? floor.getY() : unshiftedCenter.getY();
+
+                int heightAboveGround = rimPos.getY() - floorY;
+                if (heightAboveGround > maxRimYAboveGround) {
+                    maxRimYAboveGround = heightAboveGround;
+                }
+            }
+
+            int sinkY = Math.min(2, Math.max(1, maxRimYAboveGround));
+
+            Map<BlockPos, Integer> sunkBowlDepths = new HashMap<>();
             for (Map.Entry<BlockPos, Integer> entry : bowlDepths.entrySet()) {
+                sunkBowlDepths.put(entry.getKey().down(sinkY), entry.getValue());
+            }
+
+            Set<BlockPos> sunkRimPositions = new HashSet<>();
+            for (BlockPos pos : rimPositions) {
+                sunkRimPositions.add(pos.down(sinkY));
+            }
+
+            Set<BlockPos> sunkBlendPositions = new HashSet<>();
+            for (BlockPos pos : blendPositions) {
+                sunkBlendPositions.add(pos.down(sinkY));
+            }
+
+            for (Map.Entry<BlockPos, Integer> entry : sunkBowlDepths.entrySet()) {
                 BlockPos pos = entry.getKey();
                 int depth = entry.getValue();
 
-                for (int h = 1; h <= 3; h++) {
+                for (int h = 1; h <= sinkY + 2; h++) {
                     world.setBlockState(pos.up(h), Blocks.AIR.getDefaultState(), 2);
                 }
 
@@ -100,32 +133,38 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
                 }
             }
 
-            for (BlockPos rimPos : rimShellPositions) {
-                buildThickRimShell(world, rimPos, config.rimState());
+            for (BlockPos rimPos : sunkRimPositions) {
+                buildSolidRimWall(world, rimPos, config, random);
             }
 
-            for (BlockPos bowlPos : bowlDepths.keySet()) {
+            for (BlockPos bowlPos : sunkBowlDepths.keySet()) {
                 for (Direction dir : Direction.Type.HORIZONTAL) {
                     BlockPos neighbor = bowlPos.offset(dir);
-                    if (!bowlDepths.containsKey(neighbor)) {
-                        buildThickRimShell(world, neighbor, config.rimState());
+                    if (!sunkBowlDepths.containsKey(neighbor)) {
+                        buildSolidRimWall(world, neighbor, config, random);
                     }
                 }
             }
 
-            for (BlockPos rimPos : rimShellPositions) {
-                for (Direction dir : Direction.Type.HORIZONTAL) {
-                    BlockPos outerNeighbor = rimPos.offset(dir);
-                    if (!rimShellPositions.contains(outerNeighbor) && !bowlDepths.containsKey(outerNeighbor)) {
-                        BlockState current = world.getBlockState(outerNeighbor);
-                        if (current.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
-                            world.setBlockState(outerNeighbor, config.rimState(), 2);
-                        }
-                    }
+            for (Map.Entry<BlockPos, Integer> entry : sunkBowlDepths.entrySet()) {
+                BlockPos corePos = entry.getKey();
+                int depth = entry.getValue();
+
+                BlockPos floorPos = corePos.down(depth);
+                BlockState floorState = SaltSpringFeatureConfig.getRandomState(config.rimStates(), random, Blocks.CALCITE.getDefaultState());
+                world.setBlockState(floorPos, floorState, 2);
+                world.setBlockState(floorPos.down(), floorState, 2);
+            }
+
+            for (BlockPos blendPos : sunkBlendPositions) {
+                BlockPos floor = findGroundLevel(world, blendPos, 3);
+                if (floor != null) {
+                    BlockState blendState = SaltSpringFeatureConfig.getRandomState(config.rimStates(), random, Blocks.CALCITE.getDefaultState());
+                    world.setBlockState(floor, blendState, 2);
                 }
             }
 
-            for (Map.Entry<BlockPos, Integer> entry : bowlDepths.entrySet()) {
+            for (Map.Entry<BlockPos, Integer> entry : sunkBowlDepths.entrySet()) {
                 BlockPos corePos = entry.getKey();
                 int depth = entry.getValue();
 
@@ -135,21 +174,16 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
                     world.scheduleFluidTick(fluidPos, config.fluidState().getFluidState().getFluid(), 1);
                 }
 
-                world.setBlockState(corePos.down(depth), config.rimState(), 2);
                 placed = true;
             }
 
-            for (BlockPos rimPos : rimShellPositions) {
-                growSupportPillarIfNeeded(world, rimPos.down(3), config.rimState());
-            }
-
-            List<BlockState> crystals = config.crystalStates();
+            List<SaltSpringFeatureConfig.WeightedBlockState> crystals = config.crystalStates();
             if (!crystals.isEmpty()) {
-                for (BlockPos bowlPos : bowlDepths.keySet()) {
+                for (BlockPos bowlPos : sunkBowlDepths.keySet()) {
                     for (Direction dir : Direction.Type.HORIZONTAL) {
                         BlockPos wallPos = bowlPos.offset(dir);
-                        if (!bowlDepths.containsKey(wallPos) && random.nextFloat() < 0.35f) {
-                            BlockState chosenCrystal = crystals.get(random.nextInt(crystals.size()));
+                        if (!sunkBowlDepths.containsKey(wallPos) && random.nextFloat() < 0.35f) {
+                            BlockState chosenCrystal = SaltSpringFeatureConfig.getRandomState(crystals, random, Blocks.AMETHYST_CLUSTER.getDefaultState());
                             placeOrientedWallCrystal(world, bowlPos, dir, chosenCrystal);
                         }
                     }
@@ -160,15 +194,33 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
         return placed;
     }
 
-    private BlockPos findGroundLevel(StructureWorldAccess world, BlockPos origin) {
+    private boolean isLocationValid(StructureWorldAccess world, BlockPos center) {
+        BlockState current = world.getBlockState(center);
+        BlockState below = world.getBlockState(center.down());
+
+        if (below.isOf(Blocks.LAVA) || current.isOf(Blocks.LAVA)) return false;
+        return !below.isAir();
+    }
+
+    private BlockPos findGroundLevel(StructureWorldAccess world, BlockPos origin, int maxSearchDepth) {
         BlockPos.Mutable mutable = origin.mutableCopy();
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < maxSearchDepth; i++) {
             BlockState current = world.getBlockState(mutable);
             BlockState below = world.getBlockState(mutable.down());
 
             if (below.isOf(Blocks.LAVA) || current.isOf(Blocks.LAVA)) return null;
 
-            if ((current.isAir() || current.isOf(Blocks.WATER)) && below.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
+            boolean isSolidGround = below.isIn(BlockTags.BASE_STONE_OVERWORLD)
+                    || below.isOf(Blocks.TUFF)
+                    || below.isOf(Blocks.DEEPSLATE)
+                    || below.isOf(Blocks.CALCITE)
+                    || below.isOf(Blocks.DIRT)
+                    || below.isOf(Blocks.GRAVEL)
+                    || below.isOf(Blocks.GRANITE)
+                    || below.isOf(Blocks.DIORITE)
+                    || below.isOf(Blocks.ANDESITE);
+
+            if ((current.isAir() || current.isOf(Blocks.WATER)) && isSolidGround) {
                 return mutable.toImmutable();
             }
             mutable.move(Direction.DOWN);
@@ -176,46 +228,19 @@ public class SaltSpringFeature extends Feature<SaltSpringFeatureConfig> {
         return null;
     }
 
-    /**
-     * Constructs a multi-block thick shell (raising the lip and sealing bottom gaps).
-     */
-    private void buildThickRimShell(StructureWorldAccess world, BlockPos pos, BlockState rimState) {
-        // Raised Dam Lip (+1 Y)
+    private void buildSolidRimWall(StructureWorldAccess world, BlockPos pos, SaltSpringFeatureConfig config, Random random) {
+        BlockState rimState = SaltSpringFeatureConfig.getRandomState(config.rimStates(), random, Blocks.CALCITE.getDefaultState());
+
         world.setBlockState(pos.up(), rimState, 2);
         world.setBlockState(pos, rimState, 2);
 
-        // Deep foundation backfill to prevent bottom leaks
         BlockPos.Mutable mutable = pos.down().mutableCopy();
-        for (int i = 0; i < 4; i++) {
-            BlockState state = world.getBlockState(mutable);
-            if (state.isIn(BlockTags.BASE_STONE_OVERWORLD) || state.isOf(Blocks.TUFF) || state.isOf(Blocks.DEEPSLATE)) {
-                world.setBlockState(mutable, rimState, 2);
-                break;
-            }
+        for (int i = 0; i < 2; i++) {
             world.setBlockState(mutable, rimState, 2);
             mutable.move(Direction.DOWN);
         }
     }
 
-    /**
-     * Grows a structural stone support column downward if the spring overhangs a cave void.
-     */
-    private void growSupportPillarIfNeeded(StructureWorldAccess world, BlockPos startPos, BlockState rimState) {
-        BlockPos.Mutable mutable = startPos.mutableCopy();
-        for (int i = 0; i < 6; i++) {
-            BlockState state = world.getBlockState(mutable);
-            if (state.isAir()) {
-                world.setBlockState(mutable, rimState, 2);
-            } else if (state.isIn(BlockTags.BASE_STONE_OVERWORLD) || state.isOf(Blocks.TUFF) || state.isOf(Blocks.DEEPSLATE)) {
-                break;
-            }
-            mutable.move(Direction.DOWN);
-        }
-    }
-
-    /**
-     * Places crystals directly onto vertical rim walls with exact FACING directions.
-     */
     private void placeOrientedWallCrystal(StructureWorldAccess world, BlockPos targetAirPos, Direction wallDir, BlockState crystalState) {
         BlockState current = world.getBlockState(targetAirPos);
         if (!current.isAir() && !current.isOf(Blocks.WATER)) return;
