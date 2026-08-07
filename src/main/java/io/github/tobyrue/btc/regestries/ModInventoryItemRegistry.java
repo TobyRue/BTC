@@ -26,7 +26,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.SUGAR, ModItems.SALT);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.NATURAL).register(content -> {
-            content.addAfter(Items.CALCITE, ModBlocks.SALTY_CALCITE, ModBlocks.SALT_BLOCK);
+            content.addAfter(Items.CALCITE, ModBlocks.SALTY_CALCITE, ModBlocks.SALT_BLOCK, ModBlocks.SALT_BUD, ModBlocks.SALT_CRYSTAL, ModBlocks.SALT_CLUSTER);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {

@@ -64,6 +64,9 @@
     "btc:chiseled_deepslate_pilaster",
     "btc:charcoal_block",
     "btc:salty_calcite",
-    "btc:salt_block"
+    "btc:salt_block",
+    "btc:salt_bud",
+    "btc:salt_crystal",
+    "btc:salt_cluster"
   ]
 }

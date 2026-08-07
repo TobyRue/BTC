@@ -16,6 +16,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 
 import java.util.HashSet;
@@ -303,15 +304,30 @@ public class ModBlocks {
             true
     );
 
+    public static final Block SALT_BLOCK = register(
+            new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF).nonOpaque()),
+            "salt_block",
+            true
+    );
+
     public static final Block SALTY_CALCITE = register(
             new Block(AbstractBlock.Settings.copy(Blocks.CALCITE)),
             "salty_calcite",
             true
     );
-
-    public static final Block SALT_BLOCK = register(
-            new SaltBlock(AbstractBlock.Settings.copy(Blocks.TUFF).nonOpaque()),
-            "salt_block",
+    public static final Block SALT_BUD = register(
+            new SaltCrystalBlock(AbstractBlock.Settings.copy(ModBlocks.SALTY_CALCITE).requiresTool().luminance((state) -> state.get(Properties.LIT) ? 4 : 0), 1),
+            "salt_bud",
+            true
+    );
+    public static final Block SALT_CRYSTAL = register(
+            new SaltCrystalBlock(AbstractBlock.Settings.copy(ModBlocks.SALTY_CALCITE).requiresTool().luminance((state) -> state.get(Properties.LIT) ? 8 : 0), 2),
+            "salt_crystal",
+            true
+    );
+    public static final Block SALT_CLUSTER = register(
+            new SaltCrystalBlock(AbstractBlock.Settings.copy(ModBlocks.SALTY_CALCITE).requiresTool().luminance((state) -> state.get(Properties.LIT) ? 12 : 0), 3),
+            "salt_cluster",
             true
     );
 

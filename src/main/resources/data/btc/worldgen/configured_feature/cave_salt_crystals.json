@@ -1,0 +1,21 @@
+{
+  "type": "btc:cave_wall_crystal",
+  "config": {
+    "lit_chance": 0.15,
+    "placement_attempts": 64,
+    "crystal_states": [
+      {
+        "state": { "Name": "btc:salt_bud" },
+        "weight": 30
+      },
+      {
+        "state": { "Name": "btc:salt_crystal" },
+        "weight": 35
+      },
+      {
+        "state": { "Name": "btc:salt_cluster" },
+        "weight": 25
+      }
+    ]
+  }
+}

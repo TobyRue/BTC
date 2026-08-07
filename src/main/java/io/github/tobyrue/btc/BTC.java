@@ -19,6 +19,7 @@ import io.github.tobyrue.btc.util.BTCSpawnQueue;
 import io.github.tobyrue.btc.util.BookshelfProcessor;
 import io.github.tobyrue.btc.util.UnlockScrollManager;
 import io.github.tobyrue.btc.worldgen.GenMaker;
+import io.github.tobyrue.btc.worldgen.biome.ModOverworldRegion;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -49,11 +50,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
+import terrablender.api.Regions;
+import terrablender.api.TerraBlenderApi;
 
 import java.util.Arrays;
 import java.util.UUID;
 
-public class BTC implements ModInitializer {
+public class BTC implements ModInitializer, TerraBlenderApi {
 
     public static String MOD_ID = "btc";
 
@@ -283,5 +286,11 @@ public class BTC implements ModInitializer {
 
     static {
         PISTONS_CAN_MOVE_BLOCK_ENTITY = TagKey.of(RegistryKeys.BLOCK, identifierOf("pistons_can_move_block_entity"));
+    }
+
+
+    @Override
+    public void onTerraBlenderInitialized() {
+        Regions.register(new ModOverworldRegion(BTC.identifierOf("overworld"), 10));
     }
 }

@@ -8,9 +8,9 @@ import net.minecraft.world.gen.carver.CaveCarverConfig;
 import net.minecraft.world.gen.carver.Carver;
 
 public class ModCarvers {
-    public static final Carver<CaveCarverConfig> SALT_CAVERN = new SaltCavernCarver(CaveCarverConfig.CAVE_CODEC);
+//    public static final Carver<CaveCarverConfig> SALT_CAVERN = new SaltCavernCarver(CaveCarverConfig.CAVE_CODEC);
 
     public static void registerCarvers() {
-        Registry.register(Registries.CARVER, Identifier.of("btc", "salt_cavern"), SALT_CAVERN);
+//        Registry.register(Registries.CARVER, Identifier.of("btc", "salt_cavern"), SALT_CAVERN);
     }
 }

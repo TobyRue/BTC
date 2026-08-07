@@ -605,6 +605,9 @@ public class BTCClient implements ClientModInitializer {
         DrowningEffectOverlay.register();
 //        ModelLoadingPlugin.register(new BTCModelLoadingPlugin());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SALT_BLOCK, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SALT_BUD, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SALT_CRYSTAL, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SALT_CLUSTER, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_BEACON, RenderLayer.getTranslucent());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PEDESTAL, RenderLayer.getCutoutMipped());

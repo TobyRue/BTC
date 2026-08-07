@@ -4,6 +4,7 @@ public class GenMaker {
     public static class ModWorldGeneration {
         public static void generateModWorldGen() {
             OreMaker.generateOres();
+            FeatureMaker.generateFeaturesAndCarvers();
         }
     }
 }

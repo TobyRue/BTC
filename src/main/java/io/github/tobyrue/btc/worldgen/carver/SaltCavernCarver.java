@@ -34,7 +34,7 @@ public class SaltCavernCarver extends CaveCarver {
                          Function<BlockPos, RegistryEntry<Biome>> posToBiome, Random random,
                          AquiferSampler aquiferSampler, ChunkPos chunkPos, CarvingMask carvingMask) {
 
-        int branchLengthFactor = ChunkSectionPos.getBlockCoord(this.getBranchFactor() * 4);
+        int branchLengthFactor = ChunkSectionPos.getBlockCoord(this.getBranchFactor());
         int caveCount = random.nextInt(2) + 1;
 
         for (int k = 0; k < caveCount; ++k) {
@@ -42,9 +42,12 @@ public class SaltCavernCarver extends CaveCarver {
             double y = (double) caveCarverConfig.y.get(random, carverContext);
             double z = (double) chunkPos.getOffsetZ(random.nextInt(16));
 
-            double hScale = caveCarverConfig.horizontalRadiusMultiplier.get(random) * 4.0D;
-            double vScale = caveCarverConfig.verticalRadiusMultiplier.get(random) * 3.5D;
+            double hScale = caveCarverConfig.horizontalRadiusMultiplier.get(random);
+            double vScale = caveCarverConfig.verticalRadiusMultiplier.get(random);
             double floorLvl = caveCarverConfig.floorLevel.get(random);
+
+            double noiseOffsetX = random.nextDouble() * 1000.0;
+            double noiseOffsetZ = random.nextDouble() * 1000.0;
 
             Carver.SkipPredicate skipPredicate = (context, scaledX, scaledY, scaledZ, absoluteY) -> {
                 double canyonDist = scaledX * scaledX + scaledZ * scaledZ;
@@ -52,13 +55,14 @@ public class SaltCavernCarver extends CaveCarver {
                     return true;
                 }
 
-                double worldX = x + scaledX * hScale;
-                double worldZ = z + scaledZ * hScale;
+                double worldX = x + scaledX * hScale + noiseOffsetX;
+                double worldZ = z + scaledZ * hScale + noiseOffsetZ;
 
-                double pillarNoise = Math.sin(worldX * 0.25D) * Math.cos(worldZ * 0.25D)
-                        + Math.sin(worldX * 0.1D + worldZ * 0.1D) * 0.4D;
+                // tighter frequency + lower threshold = more, closer-together columns
+                double pillarNoise = Math.sin(worldX * 0.35D) * Math.cos(worldZ * 0.35D)
+                        + Math.sin(worldX * 0.15D + worldZ * 0.15D) * 0.4D;
 
-                if (pillarNoise > 0.20D) {
+                if (pillarNoise > 0.0D) {
                     return true;
                 }
 
@@ -71,9 +75,18 @@ public class SaltCavernCarver extends CaveCarver {
                 return false;
             };
 
-            double yScale = caveCarverConfig.yScale.get(random) * 3.0D;
-            float caveWidth = 7.0F + random.nextFloat() * 11.0F;
-            this.carveCave(carverContext, caveCarverConfig, chunk, posToBiome, aquiferSampler, x, y, z, caveWidth, yScale, carvingMask, skipPredicate);
+            double yScale = caveCarverConfig.yScale.get(random);
+
+            // big chambers: was a guaranteed-but-small chamber before; now there's a
+            // chance per cave of a noticeably larger chamber, so large caves show up
+            // more often and read as more distinct in size from the tunnels
+            if (random.nextInt(3) != 0) {
+                float caveWidth = 6.0F + random.nextFloat() * 10.0F;
+                this.carveCave(carverContext, caveCarverConfig, chunk, posToBiome, aquiferSampler, x, y, z, caveWidth, yScale, carvingMask, skipPredicate);
+            } else {
+                float caveWidth = 12.0F + random.nextFloat() * 14.0F;
+                this.carveCave(carverContext, caveCarverConfig, chunk, posToBiome, aquiferSampler, x, y, z, caveWidth, yScale, carvingMask, skipPredicate);
+            }
 
             int branches = 3 + random.nextInt(3);
             for (int p = 0; p < branches; ++p) {
@@ -103,7 +116,7 @@ public class SaltCavernCarver extends CaveCarver {
 
     @Override
     protected double getTunnelSystemHeightWidthRatio() {
-        return 1.8D;
+        return 3.2D;
     }
 
     @Override
@@ -124,7 +137,12 @@ public class SaltCavernCarver extends CaveCarver {
                                 int branchStartIndex, int branchCount, double yawPitchRatio,
                                 CarvingMask mask, Carver.SkipPredicate skipPredicate) {
         Random random = Random.create(seed);
-        int splitPoint = random.nextInt(branchCount / 2) + branchCount / 4;
+
+        if (branchCount <= 0 || branchStartIndex >= branchCount) {
+            return;
+        }
+
+        int splitPoint = random.nextInt(Math.max(1, branchCount / 2)) + branchCount / 4;
         float yawChange = 0.0F;
         float pitchChange = 0.0F;
 
@@ -147,12 +165,13 @@ public class SaltCavernCarver extends CaveCarver {
             yawChange += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 3.0F;
 
             if (j == splitPoint && width > 1.5F) {
+                float splitWidth = width * 0.5F;
                 this.carveTunnels(context, config, chunk, posToBiome, random.nextLong(), aquiferSampler, x, y, z,
-                        horizontalScale, verticalScale, random.nextFloat() * 0.5F + 0.5F, yaw - ((float) Math.PI / 2F),
-                        pitch / 3.0F, j, branchCount, 1.0D, mask, skipPredicate);
+                        horizontalScale, verticalScale, splitWidth, yaw - ((float) Math.PI / 2F),
+                        pitch / 3.0F, j + 1, branchCount, 1.0D, mask, skipPredicate);
                 this.carveTunnels(context, config, chunk, posToBiome, random.nextLong(), aquiferSampler, x, y, z,
-                        horizontalScale, verticalScale, random.nextFloat() * 0.5F + 0.5F, yaw + ((float) Math.PI / 2F),
-                        pitch / 3.0F, j, branchCount, 1.0D, mask, skipPredicate);
+                        horizontalScale, verticalScale, splitWidth, yaw + ((float) Math.PI / 2F),
+                        pitch / 3.0F, j + 1, branchCount, 1.0D, mask, skipPredicate);
                 return;
             }
 

@@ -16,9 +16,6 @@ public class ModBlockLootTableProvider extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-        addDrop(
-                ModBlocks.CHARCOAL_BLOCK
-        );
     }
 
     public void addDrop(Block... blocks) {

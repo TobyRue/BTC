@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "btc:block/salt_bud",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "btc:block/salt_bud",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "btc:block/salt_bud",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "btc:block/salt_bud",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "btc:block/salt_bud"
+    },
+    "facing=west": {
+      "model": "btc:block/salt_bud",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

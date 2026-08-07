@@ -16,18 +16,18 @@
     "crystal_states": [
       {
         "state": { "Name": "minecraft:air"},
-        "weight": 30
+        "weight": 50
       },
       {
-        "state": { "Name": "minecraft:large_amethyst_bud"},
+        "state": { "Name": "btc:salt_cluster"},
         "weight": 40
       },
       {
-        "state": { "Name": "minecraft:medium_amethyst_bud"},
+        "state": { "Name": "btc:salt_crystal"},
         "weight": 60
       },
       {
-        "state": { "Name": "minecraft:small_amethyst_bud"},
+        "state": { "Name": "btc:salt_bud"},
         "weight": 30
       }
     ]

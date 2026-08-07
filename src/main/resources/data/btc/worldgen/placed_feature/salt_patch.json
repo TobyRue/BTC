@@ -1,9 +1,9 @@
 {
-  "feature": "btc:salt_spring_configured",
+  "feature": "btc:salt_patch",
   "placement": [
     {
-      "type": "minecraft:rarity_filter",
-      "chance": 1
+      "type": "minecraft:count",
+      "count": 16
     },
     {
       "type": "minecraft:in_square"
@@ -13,7 +13,7 @@
       "height": {
         "type": "minecraft:uniform",
         "max_inclusive": {
-          "absolute": 50
+          "absolute": 80
         },
         "min_inclusive": {
           "absolute": -64

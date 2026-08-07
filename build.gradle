@@ -24,6 +24,9 @@ repositories {
         name = "JitPack"
         url = 'https://jitpack.io/'
     }
+
+    maven { url = "https://maven.minecraftforge.net/" }
+
 }
 
 loom {
@@ -41,6 +44,9 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    modImplementation 'com.github.glitchfiend:TerraBlender-fabric:1.21.1-4.1.0.8'
+    include "com.github.glitchfiend:TerraBlender-fabric:1.21.1-4.1.0.8"
 }
 processResources {
     inputs.property "version", project.version

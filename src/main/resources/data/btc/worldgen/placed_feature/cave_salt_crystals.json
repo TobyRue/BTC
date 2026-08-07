@@ -1,9 +1,9 @@
 {
-  "feature": "btc:salt_patch_configured",
+  "feature": "btc:cave_salt_crystals",
   "placement": [
     {
       "type": "minecraft:count",
-      "count": 16
+      "count": 12
     },
     {
       "type": "minecraft:in_square"
@@ -12,12 +12,8 @@
       "type": "minecraft:height_range",
       "height": {
         "type": "minecraft:uniform",
-        "max_inclusive": {
-          "absolute": 80
-        },
-        "min_inclusive": {
-          "absolute": -64
-        }
+        "min_inclusive": { "absolute": -64 },
+        "max_inclusive": { "absolute": 60 }
       }
     },
     {

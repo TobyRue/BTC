@@ -22,6 +22,9 @@
     ],
     "client": [
       "io.github.tobyrue.btc.client.BTCClient"
+    ],
+    "terrablender": [
+      "io.github.tobyrue.btc.BTC"
     ]
   },
   "mixins": [
