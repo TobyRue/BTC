@@ -24,11 +24,25 @@ public class ModOverworldRegion extends Region {
 
         new ParameterUtils.ParameterPointListBuilder()
                 .temperature(ParameterUtils.Temperature.WARM, ParameterUtils.Temperature.HOT)
-                .humidity(ParameterUtils.Humidity.ARID)
-                .continentalness(ParameterUtils.Continentalness.FAR_INLAND, ParameterUtils.Continentalness.MID_INLAND)
-                .erosion(ParameterUtils.Erosion.EROSION_4)
+                .humidity(ParameterUtils.Humidity.ARID, ParameterUtils.Humidity.DRY)
+                .continentalness(
+                        ParameterUtils.Continentalness.NEAR_INLAND,
+                        ParameterUtils.Continentalness.MID_INLAND,
+                        ParameterUtils.Continentalness.FAR_INLAND
+                )
+                .erosion(
+                        ParameterUtils.Erosion.EROSION_3,
+                        ParameterUtils.Erosion.EROSION_4,
+                        ParameterUtils.Erosion.EROSION_5,
+                        ParameterUtils.Erosion.EROSION_6
+                )
                 .depth(ParameterUtils.Depth.UNDERGROUND)
-                .weirdness(ParameterUtils.Weirdness.MID_SLICE_VARIANT_DESCENDING, ParameterUtils.Weirdness.HIGH_SLICE_VARIANT_DESCENDING)
+                .weirdness(
+                        ParameterUtils.Weirdness.MID_SLICE_VARIANT_ASCENDING,
+                        ParameterUtils.Weirdness.MID_SLICE_VARIANT_DESCENDING,
+                        ParameterUtils.Weirdness.HIGH_SLICE_VARIANT_ASCENDING,
+                        ParameterUtils.Weirdness.HIGH_SLICE_VARIANT_DESCENDING
+                )
                 .build().forEach(point ->
                         builder.add(point, Biomes.SALT_CAVE)
                 );
