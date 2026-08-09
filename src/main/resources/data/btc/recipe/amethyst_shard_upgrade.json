@@ -1,6 +1,16 @@
 {
   "type": "btc:scroll_upgrade",
   "upgrade": "btc:amethyst_shard_upgrade",
+  "result":  {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:amethyst_shard_upgrade",
+        "color": 4287457996
+      }
+    }
+  },
   "pattern": [
     "ada",
     "d d",

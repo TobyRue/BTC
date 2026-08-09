@@ -291,6 +291,6 @@ public class BTC implements ModInitializer, TerraBlenderApi {
 
     @Override
     public void onTerraBlenderInitialized() {
-        Regions.register(new ModOverworldRegion(BTC.identifierOf("overworld"), 16));
+        Regions.register(new ModOverworldRegion(BTC.identifierOf("overworld"), 12));
     }
 }

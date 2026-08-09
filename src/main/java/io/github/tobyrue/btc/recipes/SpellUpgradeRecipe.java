@@ -40,10 +40,12 @@ public class SpellUpgradeRecipe implements Recipe<ScrollTableRecipeInput> {
 
     private final RawShapedRecipe rawPattern;
     private final Identifier upgradeId;
+    private final ItemStack result;
 
-    public SpellUpgradeRecipe(RawShapedRecipe rawPattern, Identifier upgradeId) {
+    public SpellUpgradeRecipe(RawShapedRecipe rawPattern, Identifier upgradeId, ItemStack result) {
         this.rawPattern = rawPattern;
         this.upgradeId = upgradeId;
+        this.result = result;
     }
 
     public RawShapedRecipe getRawPattern() {
@@ -161,7 +163,7 @@ public class SpellUpgradeRecipe implements Recipe<ScrollTableRecipeInput> {
 
     @Override
     public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-        return ItemStack.EMPTY;
+        return this.result;
     }
 
     @Override
@@ -198,7 +200,8 @@ public class SpellUpgradeRecipe implements Recipe<ScrollTableRecipeInput> {
         public static final MapCodec<SpellUpgradeRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
                 instance.group(
                         RawShapedRecipe.CODEC.forGetter(SpellUpgradeRecipe::getRawPattern),
-                        Identifier.CODEC.fieldOf("upgrade").forGetter(SpellUpgradeRecipe::getUpgradeId)
+                        Identifier.CODEC.fieldOf("upgrade").forGetter(SpellUpgradeRecipe::getUpgradeId),
+                        ItemStack.VALIDATED_UNCOUNTED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
                 ).apply(instance, SpellUpgradeRecipe::new)
         );
 
@@ -206,10 +209,12 @@ public class SpellUpgradeRecipe implements Recipe<ScrollTableRecipeInput> {
                 (buf, recipe) -> {
                     RawShapedRecipe.PACKET_CODEC.encode(buf, recipe.rawPattern);
                     Identifier.PACKET_CODEC.encode(buf, recipe.upgradeId);
+                    ItemStack.PACKET_CODEC.encode(buf, recipe.result);
                 },
                 buf -> new SpellUpgradeRecipe(
                         RawShapedRecipe.PACKET_CODEC.decode(buf),
-                        Identifier.PACKET_CODEC.decode(buf)
+                        Identifier.PACKET_CODEC.decode(buf),
+                        ItemStack.PACKET_CODEC.decode(buf)
                 )
         );
 

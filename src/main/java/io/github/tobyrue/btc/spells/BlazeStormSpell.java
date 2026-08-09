@@ -12,12 +12,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
 
@@ -74,6 +77,12 @@ public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
     @Override
     public int getColor(final GrabBag args) {
         return 0xFFFF5400;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        return upgrades;
     }
 
     @Override

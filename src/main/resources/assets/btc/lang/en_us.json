@@ -579,6 +579,17 @@
   "item.btc.unlock_scroll.empty": "Empty Unlock Scroll",
   "item.btc.unlock_scroll": "Unlock %s",
 
+  "scroll_upgrade.btc.amethyst_shard_upgrade": "Amethyst Upgrade",
+  "scroll_upgrade.btc.gold_ingot_upgrade": "Gold Upgrade",
+
+
+  "scroll_upgrade.btc.description.level": "Upgrades the '\u00A7lLevel\u00A7r' of the Spell",
+  "scroll_upgrade.btc.description.cooldown": "Decreases the '\u00A7lCooldown\u00A7r' of the Spell",
+
+
+
+
+
   "command.btc.common.no_such_spell": "No such spell!",
   "command.btc.common.bad_nbt": "Invalid NBT data!",
   "command.btc.common.failed": "Unable to cast spell",

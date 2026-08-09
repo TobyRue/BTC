@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.regestries;
 import com.mojang.serialization.Codec;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.component.BlockPosComponent;
+import io.github.tobyrue.btc.component.ScrollDefinitionComponent;
 import io.github.tobyrue.btc.component.UnlockSpellComponent;
 import io.github.tobyrue.btc.enums.IWrenchType;
 import io.github.tobyrue.btc.enums.WrenchType;
@@ -126,6 +127,11 @@ public class ModComponents {
 //            ComponentType.<Identifier>builder().codec(Identifier.CODEC).build()
 //    );
 //
+    public static final ComponentType<ScrollDefinitionComponent> SCROLL_DEFINITION_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("scroll_definition"),
+            ComponentType.<ScrollDefinitionComponent>builder().codec(ScrollDefinitionComponent.CODEC).build()
+    );
     public static final ComponentType<UnlockSpellComponent> UNLOCK_SPELL_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("unlock_spell"),

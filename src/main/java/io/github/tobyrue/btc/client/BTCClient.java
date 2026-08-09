@@ -477,10 +477,13 @@ public class BTCClient implements ClientModInitializer {
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
             if (tintIndex != 1) return 0xFFFFFFFF;
             if (!(stack.getItem() instanceof UnlockScrollItem)) return 0xFFFFFFFF;
-            if (!stack.contains(ModComponents.UNLOCK_SPELL_COMPONENT)) return 0xFFFFFFFF;
 
+            if (stack.contains(ModComponents.SCROLL_DEFINITION_COMPONENT)) return stack.get(ModComponents.SCROLL_DEFINITION_COMPONENT).color();
+
+            if (!stack.contains(ModComponents.UNLOCK_SPELL_COMPONENT)) return 0xFFFFFFFF;
             Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
             if (inst == null || inst.spell() == null) return 0xFFFFFFFF;
+
 
             return inst.spell().getColor(inst.args());
         }, ModItems.UNLOCK_SCROLL);

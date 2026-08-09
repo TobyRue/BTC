@@ -7,8 +7,10 @@ import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
 import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -22,6 +24,7 @@ import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class UnlockScrollItem extends Item {
@@ -83,7 +86,6 @@ public class UnlockScrollItem extends Item {
                                         && inst.args().equalsOther(currentArgs));
 
                         if (!alreadyKnown) {
-                            // Optionally grant advancement if present
                             component.advancement().ifPresent(av -> {
                                 AdvancementEntry advancement = player.server.getAdvancementLoader().get(av);
                                 if (advancement != null) {
@@ -106,6 +108,11 @@ public class UnlockScrollItem extends Item {
     @Override
     public Text getName(ItemStack stack) {
         Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
+        if (stack.contains(ModComponents.SCROLL_DEFINITION_COMPONENT)) {
+            Identifier name = stack.get(ModComponents.SCROLL_DEFINITION_COMPONENT).name();
+            int color = stack.get(ModComponents.SCROLL_DEFINITION_COMPONENT).color();
+            return Text.translatable("scroll_upgrade." + name.getNamespace().toLowerCase(Locale.ROOT) + "." + name.getPath().toLowerCase(Locale.ROOT));
+        }
         if (inst != null && inst.spell() != null) {
             try {
                 return Text.translatable(this.getTranslationKey(stack), inst.spell().getName(inst.args()));
@@ -120,6 +127,16 @@ public class UnlockScrollItem extends Item {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
         if (inst != null && inst.args() != null) {
+            if (inst.spell() instanceof UpgradableSpell upgradableSpell) {
+                if (Screen.hasShiftDown() && upgradableSpell.getUpgradeDescriptions() != null) {
+                    for (Pair<Identifier, Text> description : upgradableSpell.getUpgradeDescriptions()) {
+                        var name = description.getLeft();
+                        tooltip.add(Text.translatable("scroll_upgrade." + name.getNamespace().toLowerCase(Locale.ROOT) + "." + name.getPath().toLowerCase(Locale.ROOT)).append(" - ").append(description.getRight()));
+                    }
+                } else {
+                    tooltip.add(Text.literal("Hold Shift to see Upgrades"));
+                }
+            }
             var c = inst.args().getInt("cooldown");
             tooltip.add(Text.translatable("item.btc.spell.type." + inst.spell().getSpellType()));
             tooltip.add(Text.translatable("item.btc.spell.cooldown", c / 20));

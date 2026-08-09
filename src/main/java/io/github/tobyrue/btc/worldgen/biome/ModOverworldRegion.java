@@ -11,6 +11,7 @@ import terrablender.api.Region;
 import terrablender.api.RegionType;
 import terrablender.api.VanillaParameterOverlayBuilder;
 
+import java.lang.reflect.Parameter;
 import java.util.function.Consumer;
 
 public class ModOverworldRegion extends Region {
@@ -33,14 +34,11 @@ public class ModOverworldRegion extends Region {
                 .erosion(
                         ParameterUtils.Erosion.EROSION_3,
                         ParameterUtils.Erosion.EROSION_4,
-                        ParameterUtils.Erosion.EROSION_5,
-                        ParameterUtils.Erosion.EROSION_6
+                        ParameterUtils.Erosion.EROSION_5
                 )
-                .depth(ParameterUtils.Depth.UNDERGROUND)
+                .depth(MultiNoiseUtil.ParameterRange.of(0.6f, 0.95f))
                 .weirdness(
-                        ParameterUtils.Weirdness.MID_SLICE_VARIANT_ASCENDING,
                         ParameterUtils.Weirdness.MID_SLICE_VARIANT_DESCENDING,
-                        ParameterUtils.Weirdness.HIGH_SLICE_VARIANT_ASCENDING,
                         ParameterUtils.Weirdness.HIGH_SLICE_VARIANT_DESCENDING
                 )
                 .build().forEach(point ->
