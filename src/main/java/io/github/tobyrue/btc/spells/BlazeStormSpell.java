@@ -82,6 +82,11 @@ public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
     @Override
     public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
         final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_deviation")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ghast_tear_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_deviation")));
+        upgrades.add(new Pair<>(BTC.identifierOf("netherite_scrap_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_amount")));
+        upgrades.add(new Pair<>(BTC.identifierOf("redstone_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_amount")));
         return upgrades;
     }
 
@@ -91,7 +96,7 @@ public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
         UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600,200, 600, -40, BTC.identifierOf("gold_ingot_upgrade"));
         UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5,0.1, 1, -0.1, BTC.identifierOf("quartz_upgrade"));
         UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5,0.1, 1, 0.1, BTC.identifierOf("ghast_tear_upgrade"));
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, 2, BTC.identifierOf("ghast_tear_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, 2, BTC.identifierOf("netherite_scrap_upgrade"));
         UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, -2, BTC.identifierOf("redstone_upgrade"));
         return upgrades;
     }

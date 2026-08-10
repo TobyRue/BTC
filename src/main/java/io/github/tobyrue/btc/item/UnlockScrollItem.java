@@ -8,6 +8,7 @@ import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.UpgradableSpell;
+import io.github.tobyrue.btc.tooltip.UpgradeTreeTooltipData;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,6 +16,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
@@ -124,17 +126,23 @@ public class UnlockScrollItem extends Item {
     }
 
     @Override
+    public Optional<TooltipData> getTooltipData(ItemStack stack) {
+        Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
+        if (inst != null && inst.args() != null && inst.spell() instanceof UpgradableSpell upgradableSpell) {
+            if (Screen.hasShiftDown() && upgradableSpell.getUpgradeDescriptions() != null) {
+                return Optional.of(new UpgradeTreeTooltipData(upgradableSpell.getUpgradeDescriptions()));
+            }
+        }
+        return super.getTooltipData(stack);
+    }
+
+    @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         Spell.InstancedSpell inst = UnlockScrollCache.getCachedSpell(stack);
         if (inst != null && inst.args() != null) {
             if (inst.spell() instanceof UpgradableSpell upgradableSpell) {
-                if (Screen.hasShiftDown() && upgradableSpell.getUpgradeDescriptions() != null) {
-                    for (Pair<Identifier, Text> description : upgradableSpell.getUpgradeDescriptions()) {
-                        var name = description.getLeft();
-                        tooltip.add(Text.translatable("scroll_upgrade." + name.getNamespace().toLowerCase(Locale.ROOT) + "." + name.getPath().toLowerCase(Locale.ROOT)).append(" - ").append(description.getRight()));
-                    }
-                } else {
-                    tooltip.add(Text.literal("Hold Shift to see Upgrades"));
+                if (!Screen.hasShiftDown()) {
+                    tooltip.add(Text.translatable("scroll_upgrade.btc.description.see_upgrades"));
                 }
             }
             var c = inst.args().getInt("cooldown");

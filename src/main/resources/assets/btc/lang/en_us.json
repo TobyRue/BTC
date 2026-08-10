@@ -579,12 +579,22 @@
   "item.btc.unlock_scroll.empty": "Empty Unlock Scroll",
   "item.btc.unlock_scroll": "Unlock %s",
 
-  "scroll_upgrade.btc.amethyst_shard_upgrade": "Amethyst Upgrade",
-  "scroll_upgrade.btc.gold_ingot_upgrade": "Gold Upgrade",
+  "scroll_upgrade.btc.amethyst_shard_upgrade": "\u00A75Amethyst Upgrade",
+  "scroll_upgrade.btc.gold_ingot_upgrade": "\u00A76Gold Upgrade",
+  "scroll_upgrade.btc.quartz_upgrade": "\u00A77Quartz Upgrade",
+  "scroll_upgrade.btc.ghast_tear_upgrade": "\u00A77Ghast Tear Upgrade",
+  "scroll_upgrade.btc.netherite_scrap_upgrade": "\u00A78Netherite Scrap Upgrade",
+  "scroll_upgrade.btc.redstone_upgrade": "\u00A74Redstone Upgrade",
 
 
-  "scroll_upgrade.btc.description.level": "Upgrades the '\u00A7lLevel\u00A7r' of the Spell",
-  "scroll_upgrade.btc.description.cooldown": "Decreases the '\u00A7lCooldown\u00A7r' of the Spell",
+  "scroll_upgrade.btc.description.see_upgrades": "Hold Shift to see Upgrades",
+  "scroll_upgrade.btc.description.available_upgrades": "Available Upgrades: ",
+  "scroll_upgrade.btc.description.level": "Upgrades the '\u00A77\u00A7lLevel\u00A7r' of the Spell",
+  "scroll_upgrade.btc.description.cooldown": "Decreases the '\u00A77\u00A7lCooldown\u00A7r' of the Spell",
+  "scroll_upgrade.btc.description.increase_deviation": "Increases the '\u00A77\u00A7lDeviation\u00A7r' of the Spell",
+  "scroll_upgrade.btc.description.decrease_deviation": "Decreases the '\u00A77\u00A7lDeviation\u00A7r' of the Spell",
+  "scroll_upgrade.btc.description.increase_amount": "Increases the '\u00A77\u00A7lAmount\u00A7r' casted by the Spell",
+  "scroll_upgrade.btc.description.decrease_amount": "Decreases the '\u00A77\u00A7lAmount\u00A7r' casted by the Spell",
 
 
 

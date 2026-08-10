@@ -10,6 +10,8 @@ import io.github.tobyrue.btc.client.screen.ChannelingHudOverlay;
 import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.client.screen.ScrollTableScreen;
 import io.github.tobyrue.btc.client.screen.SpellScreenInventoryScreen;
+import io.github.tobyrue.btc.spell.*;
+import io.github.tobyrue.btc.tooltip.UpgradeTreeTooltipComponent;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.*;
@@ -19,10 +21,7 @@ import io.github.tobyrue.btc.player_data.SpellPersistentState;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModModelLayers;
 import io.github.tobyrue.btc.regestries.ModScreens;
-import io.github.tobyrue.btc.spell.GrabBag;
-import io.github.tobyrue.btc.spell.MinimalPredefinedSpellsItem;
-import io.github.tobyrue.btc.spell.PredefinedSpellsItem;
-import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.tooltip.UpgradeTreeTooltipData;
 import io.github.tobyrue.btc.util.ClientOreRadar;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
 import io.github.tobyrue.btc.wires.WireBlock;
@@ -31,6 +30,7 @@ import io.github.tobyrue.rtc.RTC;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
@@ -41,6 +41,7 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
@@ -139,6 +140,15 @@ public class BTCClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+
+        TooltipComponentCallback.EVENT.register(data -> {
+            if (data instanceof UpgradeTreeTooltipData treeData) {
+                return new UpgradeTreeTooltipComponent(treeData);
+            }
+            return null;
+        });
+
+
         HandledScreens.register(ModScreens.SCROLL_TABLE_SCREEN_HANDLER, ScrollTableScreen::new);
         HandledScreens.register(
                 ModScreens.SPELL_SCREEN_INVENTORY_HANDLER,
