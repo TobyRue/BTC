@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:lapis_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:lapis_upgrade",
+        "color": 4280242145
+      }
+    }
+  },
+  "pattern": [
+    "ldl",
+    "d d",
+    "ldl"
+  ],
+  "key": {
+    "l": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    }
+  }
+}

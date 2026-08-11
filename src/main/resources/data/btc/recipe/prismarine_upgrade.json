@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:prismarine_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:prismarine_upgrade",
+        "color": 4283151523
+      }
+    }
+  },
+  "pattern": [
+    "pcp",
+    "c c",
+    "pcp"
+  ],
+  "key": {
+    "p": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "c": {
+      "item": "minecraft:prismarine_crystals"
+    }
+  }
+}

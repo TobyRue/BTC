@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:phantom_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:phantom_upgrade",
+        "color": 4291878844
+      }
+    }
+  },
+  "pattern": [
+    "mcm",
+    "c c",
+    "mcm"
+  ],
+  "key": {
+    "m": {
+      "item": "minecraft:phantom_membrane"
+    },
+    "c": {
+      "item": "minecraft:amethyst_shard"
+    }
+  }
+}

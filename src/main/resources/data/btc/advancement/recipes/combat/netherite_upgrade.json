@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:unlock_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_netherite_scrap": { "conditions": { "items": [ { "items": "minecraft:netherite_scrap" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_diamond": { "conditions": { "items": [ { "items": "minecraft:diamond" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:netherite_scrap_upgrade" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_netherite_scrap","has_diamond","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:netherite_upgrade"] }
+}

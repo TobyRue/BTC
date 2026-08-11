@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:unlock_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_echo_shard": { "conditions": { "items": [ { "items": "minecraft:echo_shard" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_amethyst_shard": { "conditions": { "items": [ { "items": "minecraft:amethyst_shard" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:echo_shard_upgrade" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_echo_shard","has_amethyst_shard","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:echo_shard_upgrade"] }
+}

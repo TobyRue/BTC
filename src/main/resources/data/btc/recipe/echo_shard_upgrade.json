@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:echo_shard_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:echo_shard_upgrade",
+        "color": 4279326294
+      }
+    }
+  },
+  "pattern": [
+    "eae",
+    "a a",
+    "eae"
+  ],
+  "key": {
+    "e": {
+      "item": "minecraft:echo_shard"
+    },
+    "a": {
+      "item": "minecraft:amethyst_shard"
+    }
+  }
+}

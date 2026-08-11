@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:quartz_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:quartz_upgrade",
+        "color": 4290434003
+      }
+    }
+  },
+  "pattern": [
+    "qgq",
+    "g g",
+    "qgq"
+  ],
+  "key": {
+    "q": {
+      "item": "minecraft:quartz"
+    },
+    "g": {
+      "item": "minecraft:glowstone_dust"
+    }
+  }
+}

@@ -582,11 +582,16 @@
   "scroll_upgrade.btc.amethyst_shard_upgrade": "\u00A75Amethyst Upgrade",
   "scroll_upgrade.btc.gold_ingot_upgrade": "\u00A76Gold Upgrade",
   "scroll_upgrade.btc.quartz_upgrade": "\u00A77Quartz Upgrade",
-  "scroll_upgrade.btc.ghast_tear_upgrade": "\u00A77Ghast Tear Upgrade",
-  "scroll_upgrade.btc.netherite_scrap_upgrade": "\u00A78Netherite Scrap Upgrade",
-  "scroll_upgrade.btc.redstone_upgrade": "\u00A74Redstone Upgrade",
-
-
+  "scroll_upgrade.btc.ghast_tear_upgrade": "\u00A7fGhast Tear Upgrade",
+  "scroll_upgrade.btc.netherite_upgrade": "\u00A78Netherite Upgrade",
+  "scroll_upgrade.btc.echo_shard_upgrade": "\u00A73Echo Upgrade",
+  "scroll_upgrade.btc.prismarine_upgrade": "\u00A7bPrismarine Upgrade",
+  "scroll_upgrade.btc.emerald_upgrade": "\u00A7aEmerald Upgrade",
+  "scroll_upgrade.btc.blaze_upgrade": "\u00A7cBlaze Upgrade",
+  "scroll_upgrade.btc.lapis_upgrade": "\u00A79Lapis Upgrade",
+  "scroll_upgrade.btc.ender_pearl_upgrade": "\u00A71Ender Pearl Upgrade",
+  "scroll_upgrade.btc.copper_upgrade": "\u00A76Copper Upgrade",
+  "scroll_upgrade.btc.phantom_upgrade": "\u00A7ePhantom Upgrade",
   "scroll_upgrade.btc.description.see_upgrades": "Hold Shift to see Upgrades",
   "scroll_upgrade.btc.description.available_upgrades": "Available Upgrades: ",
   "scroll_upgrade.btc.description.level": "Upgrades the '\u00A77\u00A7lLevel\u00A7r' of the Spell",
@@ -595,7 +600,7 @@
   "scroll_upgrade.btc.description.decrease_deviation": "Decreases the '\u00A77\u00A7lDeviation\u00A7r' of the Spell",
   "scroll_upgrade.btc.description.increase_amount": "Increases the '\u00A77\u00A7lAmount\u00A7r' casted by the Spell",
   "scroll_upgrade.btc.description.decrease_amount": "Decreases the '\u00A77\u00A7lAmount\u00A7r' casted by the Spell",
-
+  "scroll_upgrade.btc.description.decrease_cast_time": "Decreases the '\u00A77\u00A7lCast Time\u00A7r' of the Spell",
 
 
 

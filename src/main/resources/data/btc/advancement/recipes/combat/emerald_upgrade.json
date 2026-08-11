@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:unlock_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_emerald": { "conditions": { "items": [ { "items": "minecraft:emerald" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_gold": { "conditions": { "items": [ { "items": "minecraft:gold_ingot" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:emerald_upgrade" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_emerald","has_gold","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:emerald_upgrade"] }
+}

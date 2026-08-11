@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:ghast_tear_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:ghast_tear_upgrade",
+        "color": 4294957523
+      }
+    }
+  },
+  "pattern": [
+    "tqt",
+    "q q",
+    "tqt"
+  ],
+  "key": {
+    "t": {
+      "item": "minecraft:ghast_tear"
+    },
+    "q": {
+      "item": "minecraft:quartz"
+    }
+  }
+}

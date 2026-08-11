@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:emerald_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:emerald_upgrade",
+        "color": 4283549265
+      }
+    }
+  },
+  "pattern": [
+    "ege",
+    "g g",
+    "ege"
+  ],
+  "key": {
+    "e": {
+      "item": "minecraft:emerald"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    }
+  }
+}

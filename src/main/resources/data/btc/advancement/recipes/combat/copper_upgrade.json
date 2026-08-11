@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_empty_scroll": { "conditions": { "items": [ { "items": "btc:unlock_scroll" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_copper": { "conditions": { "items": [ { "items": "minecraft:copper_ingot" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_salt": { "conditions": { "items": [ { "items": "btc:salt" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_diamond": { "conditions": { "items": [ { "items": "minecraft:diamond" } ] }, "trigger": "minecraft:inventory_changed" },
+    "has_the_recipe": { "conditions": { "recipe": "btc:copper_upgrade" }, "trigger": "minecraft:recipe_unlocked" }
+  },
+  "requirements": [ ["has_the_recipe","has_copper","has_salt","has_diamond","has_empty_scroll"] ],
+  "rewards": { "recipes": ["btc:copper_upgrade"] }
+}

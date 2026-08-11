@@ -1,0 +1,27 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:netherite_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:netherite_upgrade",
+        "color": 4283121213
+      }
+    }
+  },
+  "pattern": [
+    "dnd",
+    "n n",
+    "dnd"
+  ],
+  "key": {
+    "n": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    }
+  }
+}

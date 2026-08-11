@@ -31,7 +31,7 @@ public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
                 1,
                 DisturbConfig.builder()
                         .level(DistributionLevels.CLICK)
-                        .disturbableTill(200)
+                        .disturbableTill(ChanneledSpell::getCastTime)
                         .moveableDistance(0)
                         .hold(20)
                         .build()
@@ -39,7 +39,7 @@ public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
     }
     @Override
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
-        double deviation = args.getDouble("deviation", 0.2d);
+        double deviation = args.getDouble("deviation", 0.5d);
         int amount = args.getInt("amount", 20);
 
         World world = ctx.world();
@@ -83,21 +83,23 @@ public class BlazeStormSpell extends ChanneledSpell implements UpgradableSpell {
     public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
         final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
         upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
-        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_deviation")));
-        upgrades.add(new Pair<>(BTC.identifierOf("ghast_tear_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_deviation")));
-        upgrades.add(new Pair<>(BTC.identifierOf("netherite_scrap_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_amount")));
-        upgrades.add(new Pair<>(BTC.identifierOf("redstone_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_amount")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ghast_tear_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_deviation")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_deviation")));
+        upgrades.add(new Pair<>(BTC.identifierOf("lapis_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_amount")));
+        upgrades.add(new Pair<>(BTC.identifierOf("blaze_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_amount")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_cast_time")));
         return upgrades;
     }
 
     @Override
     public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
         final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600,200, 600, -40, BTC.identifierOf("gold_ingot_upgrade"));
-        UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5,0.1, 1, -0.1, BTC.identifierOf("quartz_upgrade"));
-        UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5,0.1, 1, 0.1, BTC.identifierOf("ghast_tear_upgrade"));
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, 2, BTC.identifierOf("netherite_scrap_upgrade"));
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10,10, 30, -2, BTC.identifierOf("redstone_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600, 200, 600, -40, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5, 0.1, 1, -0.1, BTC.identifierOf("ghast_tear_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "deviation", 0.5, 0.1, 1, 0.1, BTC.identifierOf("quartz_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10, 10, 30, -2, BTC.identifierOf("lapis_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amount", 10, 10, 30, 2, BTC.identifierOf("blaze_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cast_time", 100, 100, 300, 20, BTC.identifierOf("echo_shard_upgrade"));
         return upgrades;
     }
 }

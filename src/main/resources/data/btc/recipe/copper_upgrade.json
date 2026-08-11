@@ -1,0 +1,30 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:copper_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:copper_upgrade",
+        "color": 4292837482
+      }
+    }
+  },
+  "pattern": [
+    "csc",
+    "s s",
+    "cdc"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:copper_ingot"
+    },
+    "s": {
+      "item": "btc:salt"
+    },
+    "d": {
+      "item": "minecraft:diamond"
+    }
+  }
+}

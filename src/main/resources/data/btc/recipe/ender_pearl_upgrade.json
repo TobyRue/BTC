@@ -1,0 +1,30 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:ender_pearl_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:ender_pearl_upgrade",
+        "color": 4279658319
+      }
+    }
+  },
+  "pattern": [
+    "pcp",
+    "e e",
+    "pcp"
+  ],
+  "key": {
+    "p": {
+      "item": "minecraft:ender_pearl"
+    },
+    "e": {
+      "item": "minecraft:emerald"
+    },
+    "c": {
+      "item": "minecraft:chorus_fruit"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "btc:scroll_upgrade",
+  "upgrade": "btc:blaze_upgrade",
+  "result": {
+    "count": 1,
+    "id": "btc:unlock_scroll",
+    "components": {
+      "btc:scroll_definition": {
+        "name": "btc:blaze_upgrade",
+        "color": 4294935040
+      }
+    }
+  },
+  "pattern": [
+    "bgb",
+    "p p",
+    "bpb"
+  ],
+  "key": {
+    "b": {
+      "item": "minecraft:blaze_rod"
+    },
+    "g": {
+      "item": "minecraft:ghast_tear"
+    },
+    "p": {
+      "item": "minecraft:gunpowder"
+    }
+  }
+}
