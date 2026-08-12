@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.enums.CreeperPillarType;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -14,6 +15,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -23,9 +27,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
-public class CreeperWallBlockSpell extends Spell {
+public class CreeperWallBlockSpell extends Spell implements UpgradableSpell {
     public CreeperWallBlockSpell() {
         super(SpellTypes.EARTH);
     }
@@ -41,7 +48,7 @@ public class CreeperWallBlockSpell extends Spell {
         var world = ctx.world();
         int count = args.getInt("count", 5);
         double aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
-        double range = args.getDouble("range", 24);
+        double range = args.getDouble("range", 24.0D);
         double offsetTowardsPlayer = args.getDouble("offsetTowardsPlayer", 2.0D);
         boolean includeFluids = args.getBoolean("includeFluids", true);
 
@@ -88,7 +95,6 @@ public class CreeperWallBlockSpell extends Spell {
         int topY = Math.min(centerPos.getY() + yRange, world.getTopY());
         int bottomY = Math.max(centerPos.getY() - yRange, world.getBottomY());
 
-
         // Start from top and go downwards
         for (int y = topY; y >= bottomY; y--) {
             BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
@@ -101,6 +107,7 @@ public class CreeperWallBlockSpell extends Spell {
         // Fallback if no valid ground is found
         return null;
     }
+
     public static @org.jetbrains.annotations.Nullable Vec3d getBlockLookedAt(LivingEntity player, double range, float tickDelta, boolean includeFluids) {
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult hitLong = client.cameraEntity.raycast(range, tickDelta, includeFluids);
@@ -131,7 +138,7 @@ public class CreeperWallBlockSpell extends Spell {
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
             Box entityBox = entity.getBoundingBox().expand(aimingForgiveness); // slightly expanded hitbox
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
@@ -154,5 +161,29 @@ public class CreeperWallBlockSpell extends Spell {
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 200), BTC.identifierOf("creeper_wall_block"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("blaze_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_count")));
+        upgrades.add(new Pair<>(BTC.identifierOf("lapis_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_count")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("copper_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_offset")));
+        upgrades.add(new Pair<>(BTC.identifierOf("amethyst_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_offset")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 200, 80, 400, -20, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "count", 5, 3, 11, 2, BTC.identifierOf("blaze_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "count", 5, 3, 11, -2, BTC.identifierOf("lapis_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 24.0, 12.0, 48.0, 4.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "offsetTowardsPlayer", 2.0, 0.0, 6.0, 0.5, BTC.identifierOf("copper_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "offsetTowardsPlayer", 2.0, 0.0, 6.0, -0.5, BTC.identifierOf("amethyst_shard_upgrade"));
+        return upgrades;
     }
 }

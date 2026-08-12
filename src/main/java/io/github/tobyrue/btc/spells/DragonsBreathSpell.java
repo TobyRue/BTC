@@ -6,18 +6,24 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class DragonsBreathSpell extends ChanneledSpell {
+public class DragonsBreathSpell extends ChanneledSpell implements UpgradableSpell {
 
     public DragonsBreathSpell() {
         super(
@@ -49,7 +55,6 @@ public class DragonsBreathSpell extends ChanneledSpell {
 
         Vec3d look = user.getRotationVec(1).normalize();
 
-        // spawn flame particles in a cone
         for (int i = 0; i < 12; i++) {
             Vec3d offset = look.add(
                     (world.getRandom().nextDouble() - 0.5) * 0.3,
@@ -62,9 +67,9 @@ public class DragonsBreathSpell extends ChanneledSpell {
                 ((ServerWorld) world).spawnParticles(
                         ParticleTypes.DRAGON_BREATH,
                         particlePos.x, particlePos.y, particlePos.z,
-                        1,    // count
-                        0, 0, 0, // delta for random offset
-                        0     // speed
+                        1,
+                        0, 0, 0,
+                        0
                 );
             } else {
                 world.addParticle(
@@ -87,7 +92,7 @@ public class DragonsBreathSpell extends ChanneledSpell {
                 double dot = look.dotProduct(toTarget);
                 double cos = Math.cos(Math.toRadians(angle));
 
-                if (dot > cos) { // inside cone
+                if (dot > cos) {
                     target.damage(world.getDamageSources().magic(), (float) damage);
                 }
             }
@@ -98,8 +103,35 @@ public class DragonsBreathSpell extends ChanneledSpell {
     protected boolean canUse(SpellContext ctx, final GrabBag args) {
         return ctx.user() != null && super.canUse(ctx, args);
     }
+
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 800), BTC.identifierOf("flame_burst"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("amethyst_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_damage")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_angle")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ghast_tear_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_angle")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_cast_time")));
+        upgrades.add(new Pair<>(BTC.identifierOf("copper_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_moveable_distance")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 800, 400, 1200, -50, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "damage", 1.0, 0.5, 4.0, 0.5, BTC.identifierOf("amethyst_shard_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 8.0, 4.0, 16.0, 1.5, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "angle", 20.0, 10.0, 45.0, 5.0, BTC.identifierOf("quartz_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "angle", 20.0, 10.0, 45.0, -5.0, BTC.identifierOf("ghast_tear_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cast_time", 200, 100, 400, 40, BTC.identifierOf("echo_shard_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "moveableDistance", 0, 0, 10, 2, BTC.identifierOf("copper_upgrade"));
+        return upgrades;
     }
 }

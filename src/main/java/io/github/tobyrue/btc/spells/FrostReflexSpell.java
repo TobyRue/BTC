@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.TriggeredSpell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -12,8 +13,15 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
-public class FrostReflexSpell extends TriggeredSpell {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class FrostReflexSpell extends TriggeredSpell implements UpgradableSpell {
 
     private float healthAtStart;
 
@@ -46,10 +54,15 @@ public class FrostReflexSpell extends TriggeredSpell {
         if (ctx.user() == null) return;
         LivingEntity attacker = ctx.user().getAttacker();
 
+        int duration = ctx.data().getArgs().getInt("debuffDuration", 300);
+        int slownessAmp = ctx.data().getArgs().getInt("slownessAmp", 4);
+        int weaknessAmp = ctx.data().getArgs().getInt("weaknessAmp", 1);
+        int fatigueAmp = ctx.data().getArgs().getInt("fatigueAmp", 3);
+
         if (attacker != null) {
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 300, 4));
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300, 1));
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 300, 3));
+            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, duration, slownessAmp));
+            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, duration, weaknessAmp));
+            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, duration, fatigueAmp));
 
             world.spawnParticles(
                     ParticleTypes.SNOWFLAKE,
@@ -99,5 +112,23 @@ public class FrostReflexSpell extends TriggeredSpell {
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 3000), BTC.identifierOf("frost_reflex"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_duration")));
+        upgrades.add(new Pair<>(BTC.identifierOf("netherite_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_slowness_potency")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 3000, 1500, 4500, -200, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "debuffDuration", 300, 100, 600, 50, BTC.identifierOf("quartz_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "slownessAmp", 4, 1, 6, 1, BTC.identifierOf("netherite_upgrade"));
+        return upgrades;
     }
 }

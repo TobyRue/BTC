@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.entity.custom.EarthSpikeEntity;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.Blocks;
@@ -14,12 +15,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class EarthSpikeLineSpell extends Spell {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class EarthSpikeLineSpell extends Spell implements UpgradableSpell {
     public EarthSpikeLineSpell() {
         super(SpellTypes.EARTH);
     }
@@ -33,30 +41,27 @@ public class EarthSpikeLineSpell extends Spell {
     protected void use(SpellContext ctx, GrabBag args) {
         int spikeCount = args.getInt("spikeCount", 8);
         int yRange = args.getInt("yRange", 12);
-
+        double stepMultiplier = args.getDouble("stepMultiplier", 1.5d);
 
         var user = ctx.user();
         float yaw = user.getYaw();
         double rad = Math.toRadians(yaw);
 
-        double stepX = -Math.sin(rad) * 1.5;
-        double stepZ = Math.cos(rad) * 1.5;
+        double stepX = -Math.sin(rad) * stepMultiplier;
+        double stepZ = Math.cos(rad) * stepMultiplier;
 
         double startX = user.getX();
         double startZ = user.getZ();
         double startY = user.getY();
-
 
         for (int i = 0; i < spikeCount; i++) {
             double x = startX + stepX * i;
             double z = startZ + stepZ * i;
             BlockPos searchPos = new BlockPos((int) x, (int) startY, (int) z);
 
-
             BlockPos groundPos = findSpawnableGround(ctx.world(), searchPos, yRange);
 
             if (groundPos != null) {
-
                 EarthSpikeEntity spike = new EarthSpikeEntity(ctx.world(), groundPos.getX(), groundPos.getY(), groundPos.getZ(), yaw, user);
                 user.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, new Vec3d(x, groundPos.getY(), z), GameEvent.Emitter.of(user));
                 ctx.world().spawnEntity(spike);
@@ -75,7 +80,6 @@ public class EarthSpikeLineSpell extends Spell {
             }
         }
 
-        // Fallback if no valid ground is found
         return null;
     }
 
@@ -87,5 +91,27 @@ public class EarthSpikeLineSpell extends Spell {
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 200), BTC.identifierOf("earth_spike_line"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("blaze_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_spikes")));
+        upgrades.add(new Pair<>(BTC.identifierOf("lapis_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_spikes")));
+        upgrades.add(new Pair<>(BTC.identifierOf("phantom_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_yrange")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_step_distance")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 200, 80, 400, -20, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "spikeCount", 8, 4, 20, 2, BTC.identifierOf("blaze_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "spikeCount", 8, 4, 20, -2, BTC.identifierOf("lapis_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "yRange", 12, 6, 24, 3, BTC.identifierOf("phantom_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "stepMultiplier", 1.5, 1.0, 3.0, 0.3, BTC.identifierOf("ender_pearl_upgrade"));
+        return upgrades;
     }
 }

@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.regestries.ModMaps;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -13,10 +14,15 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class SpellOfDissolution extends ChanneledSpell {
+public class SpellOfDissolution extends ChanneledSpell implements UpgradableSpell {
 
     public SpellOfDissolution() {
         super(
@@ -68,6 +74,7 @@ public class SpellOfDissolution extends ChanneledSpell {
             ));
         }
     }
+
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 1800), BTC.identifierOf("dissolution"));
@@ -76,5 +83,21 @@ public class SpellOfDissolution extends ChanneledSpell {
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
         return ctx.user() != null && super.canUse(ctx, args);
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_cast_time")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 1800, 600, 2400, -100, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "castTime", 200, 60, 400, -20, BTC.identifierOf("echo_shard_upgrade"));
+        return upgrades;
     }
 }

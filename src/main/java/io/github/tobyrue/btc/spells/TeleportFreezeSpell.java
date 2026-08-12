@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.TriggeredSpell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,9 +13,16 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 
-public class TeleportFreezeSpell extends TriggeredSpell {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class TeleportFreezeSpell extends TriggeredSpell implements UpgradableSpell {
 
     private LivingEntity lockedTarget;
 
@@ -78,5 +86,23 @@ public class TeleportFreezeSpell extends TriggeredSpell {
     @Override
     public int getColor(GrabBag args) {
         return 0xFFA17CFF;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_freeze_duration")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600, 200, 900, -40, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 32.0, 16.0, 64.0, 4.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "freeze_duration", 60, 20, 160, 15, BTC.identifierOf("echo_shard_upgrade"));
+        return upgrades;
     }
 }

@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -13,12 +14,16 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.WeakHashMap;
 
-public class EldritchTetherSpell extends ChanneledSpell {
+public class EldritchTetherSpell extends ChanneledSpell implements UpgradableSpell {
 
     private final WeakHashMap<LivingEntity, Entity> activeTargets = new WeakHashMap<>();
 
@@ -40,8 +45,12 @@ public class EldritchTetherSpell extends ChanneledSpell {
         LivingEntity user = ctx.user();
         if (user == null) return;
 
+        double range = args.getDouble("range", 32.0d);
+        double maxAllowedDist = args.getDouble("tetherRadius", 5.5d);
+        float damage = (float) args.getDouble("damage", 2.0d);
+
         if (tick == 0) {
-            Entity found = isTargetInRange(user, ctx.target(), args.getDouble("range", 32d));
+            Entity found = isTargetInRange(user, ctx.target(), range);
             if (found != null) {
                 activeTargets.put(user, found);
             }
@@ -51,7 +60,6 @@ public class EldritchTetherSpell extends ChanneledSpell {
 
         if (target == null || !target.isAlive()) return;
 
-        double maxAllowedDist = args.getDouble("tetherRadius", 5.5d);
         Vec3d anchor = user.getPos();
 
         if (ctx.world() instanceof ServerWorld serverWorld) {
@@ -64,7 +72,7 @@ public class EldritchTetherSpell extends ChanneledSpell {
                 target.requestTeleport(anchor.x, anchor.y, anchor.z);
 
                 if (target instanceof LivingEntity livingTarget) {
-                    livingTarget.damage(user.getDamageSources().magic(), 2.0f);
+                    livingTarget.damage(user.getDamageSources().magic(), damage);
                 }
 
                 serverWorld.playSound(null, anchor.x, anchor.y, anchor.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 1.0f, 0.5f);
@@ -98,6 +106,30 @@ public class EldritchTetherSpell extends ChanneledSpell {
 
     @Override
     public int getColor(final GrabBag args) {
-        return 0xFF3e006e;
+        return 0xFF3E006E;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("amethyst_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_damage")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_tether_radius")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ghast_tear_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_tether_radius")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_cast_time")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 300, 150, 600, -30, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 32.0, 16.0, 64.0, 4.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "damage", 2.0, 1.0, 6.0, 0.5, BTC.identifierOf("amethyst_shard_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "tetherRadius", 5.5, 2.5, 10.0, 0.5, BTC.identifierOf("quartz_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "tetherRadius", 5.5, 2.5, 10.0, -0.5, BTC.identifierOf("ghast_tear_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cast_time", 100, 40, 200, 20, BTC.identifierOf("echo_shard_upgrade"));
+        return upgrades;
     }
 }

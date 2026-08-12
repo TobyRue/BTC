@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,8 +13,14 @@ import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
-public class EnderChestSpell extends Spell {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class EnderChestSpell extends Spell implements UpgradableSpell {
 
     public EnderChestSpell() {
         super(SpellTypes.ENDER);
@@ -45,5 +52,19 @@ public class EnderChestSpell extends Spell {
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
         return ctx.user() != null && super.canUse(ctx, args);
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 160, 40, 320, -20, BTC.identifierOf("gold_ingot_upgrade"));
+        return upgrades;
     }
 }

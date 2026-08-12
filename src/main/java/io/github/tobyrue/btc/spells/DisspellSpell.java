@@ -14,14 +14,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
-public class DisspellSpell extends Spell {
+public class DisspellSpell extends Spell implements UpgradableSpell {
 
     public DisspellSpell() {
         super(SpellTypes.GENERIC);
@@ -74,7 +80,6 @@ public class DisspellSpell extends Spell {
         );
     }
 
-
     @Override
     public SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new SpellCooldown(args.getInt("cooldown", 600), BTC.identifierOf("disspell"));
@@ -83,5 +88,29 @@ public class DisspellSpell extends Spell {
     @Override
     public int getColor(final GrabBag args) {
         return 0xFF00FFFF;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("phantom_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_speed")));
+        upgrades.add(new Pair<>(BTC.identifierOf("netherite_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_silence_duration")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_global_silence_duration")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_forgiveness")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600, 300, 900, -30, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 20.0, 10.0, 40.0, 3.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "speed", 1.2, 0.6, 2.5, 0.2, BTC.identifierOf("phantom_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "silenceDuration", 160, 80, 400, 20, BTC.identifierOf("netherite_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "globalSilenceDuration", 60, 20, 200, 15, BTC.identifierOf("echo_shard_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "forgiveness", 0.6, 0.2, 1.5, 0.1, BTC.identifierOf("quartz_upgrade"));
+        return upgrades;
     }
 }

@@ -7,6 +7,7 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,12 +18,18 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.WeakHashMap;
 
-public class IceBlockSpell extends ChanneledSpell {
+public class IceBlockSpell extends ChanneledSpell implements UpgradableSpell {
     private static final WeakHashMap<LivingEntity, LivingEntity> STORED_TARGET = new WeakHashMap<>();
     private static final WeakHashMap<LivingEntity, BlockPos> STORED_BLOCK = new WeakHashMap<>();
 
@@ -141,5 +148,27 @@ public class IceBlockSpell extends ChanneledSpell {
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 600), BTC.identifierOf("ice_block"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_duration")));
+        upgrades.add(new Pair<>(BTC.identifierOf("netherite_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_slowness_potency")));
+        upgrades.add(new Pair<>(BTC.identifierOf("copper_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_moveable_distance")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 600, 300, 900, -30, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 24.0, 12.0, 48.0, 3.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "duration", 200, 80, 400, 20, BTC.identifierOf("quartz_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amplifier", 4, 1, 6, 1, BTC.identifierOf("netherite_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "moveableDistance", 1, 0, 10, 2, BTC.identifierOf("copper_upgrade"));
+        return upgrades;
     }
 }

@@ -6,17 +6,22 @@ import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
 
-public class FireStormSpell extends ChanneledSpell {
+public class FireStormSpell extends ChanneledSpell implements UpgradableSpell {
 
     public FireStormSpell() {
         super(
@@ -35,6 +40,7 @@ public class FireStormSpell extends ChanneledSpell {
     protected void useChanneled(SpellContext ctx, GrabBag args, int tick, final Start start) {
         double maxRadius = args.getDouble("maxRadius", 8d);
         int duration = args.getInt("castTime", this.castTime);
+        float maxDamage = (float) args.getDouble("maxDamage", 8.0d);
         var storedPos = start.pos();
 
         if (ctx.world() instanceof ServerWorld serverWorld) {
@@ -64,7 +70,7 @@ public class FireStormSpell extends ChanneledSpell {
                 double stepSize = maxRadius / duration;
                 if (dist <= radius && dist > (radius - stepSize)) {
                     target.setOnFireFor((float) ((radius * -1) + maxRadius));
-                    target.damage(ctx.user().getDamageSources().inFire(), Math.min(8, (float) ((radius * -1) + maxRadius)));
+                    target.damage(ctx.user().getDamageSources().inFire(), Math.min(maxDamage, (float) ((radius * -1) + maxRadius)));
                 }
             }
         }
@@ -93,5 +99,27 @@ public class FireStormSpell extends ChanneledSpell {
     @Override
     public int getColor(final GrabBag args) {
         return 0xFFFF9400;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("blaze_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_radius")));
+        upgrades.add(new Pair<>(BTC.identifierOf("lapis_upgrade"), Text.translatable("scroll_upgrade.btc.description.decrease_radius")));
+        upgrades.add(new Pair<>(BTC.identifierOf("amethyst_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_max_damage")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_cast_time")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 400, 200, 800, -30, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "maxRadius", 8.0, 4.0, 16.0, 1.0, BTC.identifierOf("blaze_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "maxRadius", 8.0, 4.0, 16.0, -1.0, BTC.identifierOf("lapis_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "maxDamage", 8.0, 4.0, 20.0, 2.0, BTC.identifierOf("amethyst_shard_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cast_time", 40, 20, 120, 10, BTC.identifierOf("echo_shard_upgrade"));
+        return upgrades;
     }
 }

@@ -6,12 +6,18 @@ import io.github.tobyrue.btc.entity.custom.WindTornadoEntity;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
-import net.minecraft.client.render.entity.GuardianEntityRenderer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
-public class WindTornadoSpell extends Spell {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class WindTornadoSpell extends Spell implements UpgradableSpell {
     public WindTornadoSpell() {
         super(SpellTypes.WIND);
     }
@@ -34,5 +40,19 @@ public class WindTornadoSpell extends Spell {
     @Override
     public int getColor(final GrabBag args) {
         return 0xFFBFFFFA;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 400, 150, 800, -30, BTC.identifierOf("gold_ingot_upgrade"));
+        return upgrades;
     }
 }

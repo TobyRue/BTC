@@ -4,23 +4,26 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class ShulkerBulletSpell extends Spell {
+public class ShulkerBulletSpell extends Spell implements UpgradableSpell {
 
     public ShulkerBulletSpell() {
         super(SpellTypes.ENDER);
@@ -96,11 +99,12 @@ public class ShulkerBulletSpell extends Spell {
                 bullet.refreshPositionAndAngles(ctx.pos().x + ctx.direction().x * 1.5, ctx.pos().y + ctx.direction().y * 1.5, ctx.pos().z + ctx.direction().z * 1.5, 0, 0);
 
                 ctx.world().spawnEntity(
-                    bullet
+                        bullet
                 );
             }
         }
     }
+
     public static @org.jetbrains.annotations.Nullable Entity getEntityLookedAt(LivingEntity player, double range, double aimingForgiveness) {
         Vec3d eyePos = player.getCameraPosVec(1.0F);
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
@@ -111,8 +115,8 @@ public class ShulkerBulletSpell extends Spell {
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness); // slightly expanded hitbox
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -125,8 +129,27 @@ public class ShulkerBulletSpell extends Spell {
         }
         return hitEntity;
     }
+
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 200), BTC.identifierOf("shulker_bullet"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("blaze_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_radius")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 200, 80, 400, -20, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 24.0, 12.0, 48.0, 3.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "radius", 24.0, 12.0, 48.0, 3.0, BTC.identifierOf("blaze_upgrade"));
+        return upgrades;
     }
 }

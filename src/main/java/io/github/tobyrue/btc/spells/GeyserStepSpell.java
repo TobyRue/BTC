@@ -5,18 +5,25 @@ import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
-public class GeyserStepSpell extends Spell {
+public class GeyserStepSpell extends Spell implements UpgradableSpell {
     public GeyserStepSpell() {
         super(SpellTypes.WATER);
     }
@@ -34,8 +41,11 @@ public class GeyserStepSpell extends Spell {
         var range = args.getDouble("range", 24.0d);
         var canTarget = args.getBoolean("canTarget", true);
 
-        var target = isTargetInRange(ctx.user(), ctx.target(), args.getDouble("range", 24d));
-        var launchVelocity = (target != null && canTarget) ? 1.7 : 2.2;
+        double targetLaunchVelocity = args.getDouble("targetLaunchVelocity", 1.7d);
+        double selfLaunchVelocity = args.getDouble("selfLaunchVelocity", 2.2d);
+
+        var target = isTargetInRange(ctx.user(), ctx.target(), range);
+        var launchVelocity = (target != null && canTarget) ? targetLaunchVelocity : selfLaunchVelocity;
 
         var launchedEntity = (target != null && canTarget) ? target : user;
 
@@ -89,6 +99,7 @@ public class GeyserStepSpell extends Spell {
             return launchedEntity.getVelocity().y <= 0;
         }));
     }
+
     @org.jetbrains.annotations.Nullable
     public static BlockPos findGroundBelowEntity(World world, Entity entity, int maxSearchDistance) {
         BlockPos entityPos = entity.getBlockPos();
@@ -112,15 +123,13 @@ public class GeyserStepSpell extends Spell {
         Vec3d lookVec = player.getRotationVec(1.0F).normalize();
         Vec3d reachVec = eyePos.add(lookVec.multiply(range));
 
-        // Create a box from the eye position to the reach vector
         Box searchBox = player.getBoundingBox().stretch(lookVec.multiply(range)).expand(1.0D, 1.0D, 1.0D);
 
-        // Find the closest entity intersecting that line
         Entity hitEntity = null;
         double closestDistanceSq = range * range;
 
-        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit()) /*Replace isAttackable() and canHit() in the predicate with any condition you like (e.g., specific entity types or tags)*/) {
-            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness); // slightly expanded hitbox
+        for (Entity entity : player.getWorld().getOtherEntities(player, searchBox, e -> e.isAttackable() && e.canHit())) {
+            Box entityBox = entity.getBoundingBox().expand(aimingForgiveness);
             Optional<Vec3d> optionalHit = entityBox.raycast(eyePos, reachVec);
 
             if (optionalHit.isPresent()) {
@@ -133,12 +142,7 @@ public class GeyserStepSpell extends Spell {
         }
         return hitEntity;
     }
-//    @Override
-//    protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
-//        assert ctx.user() != null;
-//        Entity target = getEntityLookedAt(ctx.user(), args.getDouble("range", 24), args.getDouble("aimingForgiveness", 0.3D));
-//        return target != null && super.canUse(ctx, args);
-//    }
+
     @Override
     protected boolean canUse(Spell.SpellContext ctx, final GrabBag args) {
         var aimingForgiveness = args.getDouble("aimingForgiveness", 0.3D);
@@ -154,8 +158,29 @@ public class GeyserStepSpell extends Spell {
         }
         return ctx.user() != null && super.canUse(ctx, args);
     }
+
     @Override
     public Spell.SpellCooldown getCooldown(final GrabBag args, @Nullable final LivingEntity user) {
         return new Spell.SpellCooldown(args.getInt("cooldown", 100), BTC.identifierOf("geyser_step"));
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("ender_pearl_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_range")));
+        upgrades.add(new Pair<>(BTC.identifierOf("prismarine_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_launch_velocity")));
+        upgrades.add(new Pair<>(BTC.identifierOf("quartz_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_forgiveness")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", 100, 40, 200, -10, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "range", 24.0, 12.0, 48.0, 3.0, BTC.identifierOf("ender_pearl_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "selfLaunchVelocity", 2.2, 1.0, 4.0, 0.3, BTC.identifierOf("prismarine_upgrade"));
+        UpgradableSpell.withDoubleUpgrade(args, upgrades, "aimingForgiveness", 0.3, 0.1, 1.0, 0.1, BTC.identifierOf("quartz_upgrade"));
+        return upgrades;
     }
 }

@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.TriggeredSpell;
+import io.github.tobyrue.btc.spell.UpgradableSpell;
 import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -13,11 +14,16 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
-public class TriggeredPotionSpell extends TriggeredSpell {
+public class TriggeredPotionSpell extends TriggeredSpell implements UpgradableSpell {
 
     private float healthAtStart;
 
@@ -84,5 +90,23 @@ public class TriggeredPotionSpell extends TriggeredSpell {
 
         StatusEffect effect = Registries.STATUS_EFFECT.get(id);
         return effect != null ? (0xFF000000 | effect.getColor()) : 0xFFFFFFFF;
+    }
+
+    @Override
+    public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
+        final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
+        upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("echo_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_duration")));
+        upgrades.add(new Pair<>(BTC.identifierOf("netherite_upgrade"), Text.translatable("scroll_upgrade.btc.description.increase_potency")));
+        return upgrades;
+    }
+
+    @Override
+    public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
+        final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", args.getInt("cooldown", 600), 200, 1200, -30, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "duration", 200, 60, 600, 30, BTC.identifierOf("echo_shard_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "amplifier", 0, 0, 5, 1, BTC.identifierOf("netherite_upgrade"));
+        return upgrades;
     }
 }

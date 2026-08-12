@@ -62,16 +62,16 @@ public class FireballSpell extends Spell implements UpgradableSpell {
     @Override
     public List<Pair<Identifier, Text>> getUpgradeDescriptions() {
         final List<Pair<Identifier, Text>> upgrades = new ArrayList<>();
-        upgrades.add(new Pair<>(BTC.identifierOf("amethyst_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.level")));
         upgrades.add(new Pair<>(BTC.identifierOf("gold_ingot_upgrade"), Text.translatable("scroll_upgrade.btc.description.cooldown")));
+        upgrades.add(new Pair<>(BTC.identifierOf("amethyst_shard_upgrade"), Text.translatable("scroll_upgrade.btc.description.level")));
         return upgrades;
     }
 
     @Override
     public HashMap<Identifier, Pair<String, ?>> getUpgradeOptions(GrabBag args) {
         final HashMap<Identifier, Pair<String, ?>> upgrades = new HashMap<>();
-        UpgradableSpell.withIntegerUpgrade(args, upgrades, "level", 1, 1, 5, 1, BTC.identifierOf("amethyst_shard_upgrade"));
         UpgradableSpell.withIntegerUpgrade(args, upgrades, "cooldown", Math.max(200, 60 * args.getInt("level", 1)),60, 200, -20, BTC.identifierOf("gold_ingot_upgrade"));
+        UpgradableSpell.withIntegerUpgrade(args, upgrades, "level", 1, 1, 5, 1, BTC.identifierOf("amethyst_shard_upgrade"));
         return upgrades;
     }
 
