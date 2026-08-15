@@ -106,6 +106,10 @@ public class ModItems {
             new Item(new Item.Settings()),
             "ruby_trial_key"
     );
+    public static final Item BOSS_KEY = register(
+            new Item(new Item.Settings()),
+            "boss_key"
+    );
     public static final Item COPPER_WRENCH = register(new WrenchItem(new Item.Settings().maxCount(1).rarity(Rarity.COMMON).component(ModComponents.WRENCH_TYPE, WrenchType.ROTATE).component(ModComponents.WRENCH_SUBTYPE, WrenchType.WireSubtype.CONNECTION).component(ModComponents.WRENCH_CONNECTION, "null").component(ModComponents.WRENCH_OPERATOR, "null").component(ModComponents.WRENCH_DELAY, -1)),
             "copper_wrench"
     );

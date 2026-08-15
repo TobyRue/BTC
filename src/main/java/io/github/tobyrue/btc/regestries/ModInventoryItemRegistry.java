@@ -18,7 +18,7 @@ public class ModInventoryItemRegistry {
 
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
-            content.addAfter(Items.OMINOUS_TRIAL_KEY, ModItems.RUBY_TRIAL_KEY, ModItems.STAFF, ModItems.DRAGON_ROD);
+            content.addAfter(Items.OMINOUS_TRIAL_KEY, ModItems.RUBY_TRIAL_KEY, ModItems.BOSS_KEY, ModItems.STAFF, ModItems.DRAGON_ROD);
             content.addAfter(Items.PAPER, ModItems.ENCHANTED_PAPER, ModItems.EMPTY_SCROLL, ModItems.UNLOCK_SCROLL);
             content.addAfter(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, ModItems.UNBREAKABLE_UPGRADE_TEMPLATE);
             content.addAfter(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ModItems.ELDRITCH_ARMOR_TRIM, ModItems.SUN_ARMOR_TRIM);

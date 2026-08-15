@@ -4,7 +4,9 @@ import io.github.tobyrue.btc.BTC;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Oxidizable;
+import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.sound.SoundCategory;
@@ -33,10 +35,21 @@ public class UnstableBlock extends Block {
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         super.onSteppedOn(world, pos, state, entity);
+        if (entity instanceof PlayerEntity player && player.isCreative()) return;
         if (entity.getType().isIn(BTC.UNSTABLE_BLOCK_WHITELIST)) {
             breakBlock(world, pos, state);
         }
     }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if (!world.isClient) {
+            if (world.isReceivingRedstonePower(pos)) {
+                breakBlock(world, pos, state);
+            }
+        }
+    }
+
 
     private void breakBlock(World world, BlockPos pos, BlockState state) {
         if (!world.isClient()) {

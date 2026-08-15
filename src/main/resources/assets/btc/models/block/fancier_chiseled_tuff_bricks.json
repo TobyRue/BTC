@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/cube_column",
   "textures": {
-    "end": "btc:block/wire_base",
+    "end": "minecraft:block/chiseled_tuff_bricks_top",
     "side": "btc:block/fancier_chiseled_tuff_bricks_side"
   }
 }
