@@ -297,6 +297,11 @@ public class ModBlocks {
             true
     );
 
+    public static final Block FANCIER_CHISELED_TUFF_BRICKS = register(
+            new net.minecraft.block.PillarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_TUFF_BRICKS)),
+            "fancier_chiseled_tuff_bricks",
+            true
+    );
 
     public static final Block CHARCOAL_BLOCK = register(
             new Block(AbstractBlock.Settings.copy(Blocks.COAL_BLOCK)),

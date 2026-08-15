@@ -25,20 +25,25 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 
     @Override
     public void generate(RecipeExporter exporter) {
-        offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.SALT_BLOCK, ModItems.SALT);
-        offerShapelessRecipe(exporter, ModItems.SALT, ModBlocks.SALT_BLOCK, "salt", 4);
+        createStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.FANCY_CHISELED_TUFF_BRICKS, Blocks.CHISELED_TUFF_BRICKS, 1);
+        createStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.FANCY_CHISELED_TUFF_BRICKS, Blocks.TUFF, 1);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FANCY_CHISELED_TUFF_BRICKS, 5)
+                .pattern(" B ")
+                .pattern("BBB")
+                .pattern(" B ")
+                .input('B', Blocks.CHISELED_TUFF_BRICKS)
+                .criterion(hasItem(Blocks.CHISELED_TUFF_BRICKS), conditionsFromItem(Blocks.CHISELED_TUFF_BRICKS))
+                .offerTo(exporter);
 
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.CHARCOAL, 9)
-                .input(ModBlocks.CHARCOAL_BLOCK)
-                .criterion(hasItem(ModBlocks.CHARCOAL_BLOCK), conditionsFromItem(ModBlocks.CHARCOAL_BLOCK))
-                .offerTo(exporter, RecipeProvider.getItemPath(Items.CHARCOAL) + "_from_" + RecipeProvider.getItemPath(ModBlocks.CHARCOAL_BLOCK));
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, ModBlocks.CHARCOAL_BLOCK, 1)
-                .pattern("CCC")
-                .pattern("CCC")
-                .pattern("CCC")
-                .input('C', Items.CHARCOAL)
-                .criterion(hasItem(Items.CHARCOAL), conditionsFromItem(Items.CHARCOAL))
+        createStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.FANCIER_CHISELED_TUFF_BRICKS, Blocks.CHISELED_TUFF_BRICKS, 1);
+        createStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, ModBlocks.FANCIER_CHISELED_TUFF_BRICKS, Blocks.TUFF, 1);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, ModBlocks.FANCIER_CHISELED_TUFF_BRICKS, 3)
+                .pattern("B")
+                .pattern("B")
+                .pattern("B")
+                .input('B', Blocks.CHISELED_TUFF_BRICKS)
+                .criterion(hasItem(Blocks.CHISELED_TUFF_BRICKS), conditionsFromItem(Blocks.CHISELED_TUFF_BRICKS))
                 .offerTo(exporter);
     }
 

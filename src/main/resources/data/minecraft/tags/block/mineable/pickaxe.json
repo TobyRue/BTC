@@ -67,6 +67,8 @@
     "btc:salt_block",
     "btc:salt_bud",
     "btc:salt_crystal",
-    "btc:salt_cluster"
+    "btc:salt_cluster",
+    "btc:fancy_chiseled_tuff_bricks",
+    "btc:fancier_chiseled_tuff_bricks"
   ]
 }

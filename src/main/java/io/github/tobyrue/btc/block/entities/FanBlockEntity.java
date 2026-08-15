@@ -98,7 +98,7 @@ public class FanBlockEntity extends BlockEntity implements BlockEntityTicker<Fan
             Vec3d fanFaceCenter = pos.toCenterPos().add(direction.multiply(0.5));
 
             for (Entity entity : WaxedCopperFanBlock.getEntitiesInCone(state, world, pos, BASE_RADIUS, FAR_RADIUS, DEPTH * percentSpeed)) {
-                if ((entity instanceof PlayerEntity player && !(player.isCreative() || player.isSpectator())) || (entity instanceof Entity && !(entity instanceof PlayerEntity))) {
+                if ((entity instanceof PlayerEntity player && !((player.isCreative() && player.getAbilities().flying) || player.isSpectator())) || (entity instanceof Entity && !(entity instanceof PlayerEntity))) {
                     Vec3d currentVel = entity.getVelocity();
                     double speedInDirection = currentVel.dotProduct(direction);
                     boolean canApply = isPulling ? speedInDirection > -maxSpeed : speedInDirection < maxSpeed;
