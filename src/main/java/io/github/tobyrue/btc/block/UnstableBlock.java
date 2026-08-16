@@ -41,7 +41,7 @@ public class UnstableBlock extends Block {
             breakBlock(world, pos, state);
         }
     }
-    
+
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
