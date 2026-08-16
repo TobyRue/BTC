@@ -33,6 +33,7 @@
     "RecipeBookOptionsMixin",
     "ServerPlayerEntityMixin",
     "SlotAccessor",
+    "TridentEntityMixin",
     "TuffGolemSpawnMixin"
   ],
   "client": [
