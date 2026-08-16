@@ -170,9 +170,18 @@ public class ObsidianChestBlock extends BlockWithEntity implements ModBlockEntit
 
     @Override
     protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (state.get(WATERLOGGED)) {
+
+        FluidState currentFluidState = world.getFluidState(pos);
+        FluidState currentFluidStateUp = world.getFluidState(pos.up());
+        boolean isWaterlogged = state.get(Properties.WATERLOGGED);
+
+        if (!isWaterlogged && ((currentFluidState.getFluid() == Fluids.WATER || currentFluidState.getFluid() == Fluids.FLOWING_WATER) || (currentFluidStateUp.getFluid() == Fluids.WATER || currentFluidStateUp.getFluid() == Fluids.FLOWING_WATER))) {
+            state = state.with(Properties.WATERLOGGED, true);
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        } else if (isWaterlogged) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
+
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
@@ -208,4 +217,5 @@ public class ObsidianChestBlock extends BlockWithEntity implements ModBlockEntit
         DOUBLE_EAST_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 16.0, 14.0, 15.0);
         SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
     }
+
 }

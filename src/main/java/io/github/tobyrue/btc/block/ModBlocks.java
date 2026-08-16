@@ -18,6 +18,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -116,6 +117,14 @@ public class ModBlocks {
     public static final Block GUNPOWDER_DUST = register(
             new GunpowderDustBlock(AbstractBlock.Settings.create().mapColor(MapColor.CLEAR).breakInstantly().noCollision().pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.SAND)),
             "gunpowder_dust",
+            false
+    );
+
+    public static final Block NAUTILUS_SHELL = register(
+            new WaterloggableVoxelShapeBlock(AbstractBlock.Settings.create().mapColor(MapColor.CLEAR).breakInstantly().noCollision().offset(AbstractBlock.OffsetType.XZ).pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.BONE).dynamicBounds(), (state) ->  VoxelShapes.union(
+                    VoxelShapes.cuboid(0.25, 0, 0.25, 0.75, 0.0625, 0.75)
+            ), true),
+            "nautilus_shell",
             false
     );
 

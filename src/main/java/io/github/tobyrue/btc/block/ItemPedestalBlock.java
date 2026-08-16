@@ -35,6 +35,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -151,5 +152,21 @@ public class ItemPedestalBlock extends Block implements ModBlockEntityProvider<I
             }
         }
         world.setBlockState(pos, state.with(Properties.POWERED, IDungeonWire.isReceivingDungeonWirePower(state, world, pos, Direction.DOWN)));
+    }
+    @Override
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+
+        FluidState currentFluidState = world.getFluidState(pos);
+        FluidState currentFluidStateUp = world.getFluidState(pos.up());
+        boolean isWaterlogged = state.get(Properties.WATERLOGGED);
+
+        if (!isWaterlogged && ((currentFluidState.getFluid() == Fluids.WATER || currentFluidState.getFluid() == Fluids.FLOWING_WATER) || (currentFluidStateUp.getFluid() == Fluids.WATER || currentFluidStateUp.getFluid() == Fluids.FLOWING_WATER))) {
+            state = state.with(Properties.WATERLOGGED, true);
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        } else if (isWaterlogged) {
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        }
+
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 }

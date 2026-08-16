@@ -148,4 +148,5 @@ public class SaltCrystalBlock extends Block implements Waterloggable {
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES_BY_LEVEL[this.level - 1].get(state.get(FACING));
     }
+
 }

@@ -1,0 +1,38 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "btc:block/nautilus_shell",
+        "y": 0
+      },
+      {
+        "model": "btc:block/nautilus_shell_angled",
+        "y": 0
+      },
+      {
+        "model": "btc:block/nautilus_shell",
+        "y": 90
+      },
+      {
+        "model": "btc:block/nautilus_shell_angled",
+        "y": 90
+      },
+      {
+        "model": "btc:block/nautilus_shell",
+        "y": 180
+      },
+      {
+        "model": "btc:block/nautilus_shell_angled",
+        "y": 180
+      },
+      {
+        "model": "btc:block/nautilus_shell",
+        "y": 270
+      },
+      {
+        "model": "btc:block/nautilus_shell_angled",
+        "y": 270
+      }
+    ]
+  }
+}

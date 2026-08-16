@@ -43,6 +43,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -215,9 +216,15 @@ public class BTC implements ModInitializer, TerraBlenderApi {
             ItemStack stack = player.getStackInHand(hand);
 
             if (stack.isOf(Items.GUNPOWDER) && BTCConfig.placableGunpowder && !(world.getBlockState(hitResult.getBlockPos()).getBlock() instanceof GunpowderBarrelBlock)) {
-                BlockPos pos = hitResult.getBlockPos().offset(hitResult.getSide());
+                BlockPos pos;
 
-                if (world.getBlockState(pos).isAir()) {
+                if (world.getBlockState(hitResult.getBlockPos()).isReplaceable()) {
+                    pos = hitResult.getBlockPos();
+                } else {
+                    pos = hitResult.getBlockPos().offset(hitResult.getSide());
+                }
+
+                if (world.getBlockState(pos).isReplaceable()) {
                     BlockState state = ModBlocks.GUNPOWDER_DUST.getDefaultState();
 
                     if (state.canPlaceAt(world, pos)) {
@@ -231,6 +238,35 @@ public class BTC implements ModInitializer, TerraBlenderApi {
                             if (!player.getAbilities().creativeMode) {
                                 stack.decrement(1);
                             }
+                        }
+                        return ActionResult.success(world.isClient);
+                    }
+                }
+            } else if (stack.isOf(Items.NAUTILUS_SHELL) && BTCConfig.placableNautilusShell) {
+                BlockPos pos;
+
+                if (world.getBlockState(hitResult.getBlockPos()).isReplaceable()) {
+                    pos = hitResult.getBlockPos();
+                } else {
+                    pos = hitResult.getBlockPos().offset(hitResult.getSide());
+                }
+
+                if (world.getBlockState(pos).isReplaceable()) {
+                    BlockState state;
+
+                    if (world.getBlockState(pos).isOf(Blocks.WATER)) {
+                        state = ModBlocks.NAUTILUS_SHELL.getDefaultState().with(Properties.WATERLOGGED, true);
+                    } else {
+                        state = ModBlocks.NAUTILUS_SHELL.getDefaultState();
+                    }
+
+                    if (state.getBlock() instanceof VoxelShapedBlock voxelShapedBlock && voxelShapedBlock.canPlace(state, world, pos)) {
+                        if (!world.isClient) {
+
+                            world.setBlockState(pos, state, Block.NOTIFY_ALL);
+
+                            world.playSound(null, pos, SoundEvents.BLOCK_BONE_BLOCK_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                            stack.decrementUnlessCreative(1, player);
                         }
                         return ActionResult.success(world.isClient);
                     }
