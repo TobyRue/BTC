@@ -41,18 +41,12 @@ public class UnstableBlock extends Block {
             breakBlock(world, pos, state);
         }
     }
-
-    @Override
-    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
-        breakBlock(world, pos, state);
-        super.scheduledTick(state, world, pos, random);
-    }
+    
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (!world.isClient) {
             if (world.isReceivingRedstonePower(pos)) {
-                world.scheduleBlockTick(pos, this, 2);
                 breakBlock(world, pos, state);
             }
         }
