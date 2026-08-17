@@ -38,6 +38,7 @@ public class DungeonDoorBlock extends Block {
         WIRED("wired"),
         LOCKED("locked"),
         TRIAL("trial"),
+        OMINOUS("ominous"),
         BOSS("boss"),
         GOLEM("golem");
 
@@ -84,7 +85,11 @@ public class DungeonDoorBlock extends Block {
                 openConnectedDoors(world, pos, true, 4000);
                 return ItemActionResult.SUCCESS;
             }
-        } else if (stack.isOf(Items.TRIAL_KEY) && state.get(TYPE) == DoorType.TRIAL && !state.get(OPEN)) {
+        } else if ((stack.isOf(Items.TRIAL_KEY) || stack.isOf(Items.OMINOUS_TRIAL_KEY)) && state.get(TYPE) == DoorType.TRIAL && !state.get(OPEN)) {
+            stack.decrementUnlessCreative(1, player);
+            openConnectedDoors(world, pos, true, 4000);
+            return ItemActionResult.SUCCESS;
+        } else if (stack.isOf(Items.OMINOUS_TRIAL_KEY) && state.get(TYPE) == DoorType.OMINOUS && !state.get(OPEN)) {
             stack.decrementUnlessCreative(1, player);
             openConnectedDoors(world, pos, true, 4000);
             return ItemActionResult.SUCCESS;
@@ -123,7 +128,7 @@ public class DungeonDoorBlock extends Block {
         int staysLocked = 0;
         Set<BlockPos> doors = findDoors(world, pos);
         for (BlockPos offsetPos : doors) {
-            if (world.getBlockState(offsetPos).getBlock() instanceof DungeonDoorBlock && (world.getBlockState(offsetPos).get(TYPE) == DoorType.GOLEM || world.getBlockState(offsetPos).get(TYPE) == DoorType.BOSS || world.getBlockState(offsetPos).get(TYPE) == DoorType.TRIAL)) {
+            if (world.getBlockState(offsetPos).getBlock() instanceof DungeonDoorBlock && (world.getBlockState(offsetPos).get(TYPE) == DoorType.GOLEM || world.getBlockState(offsetPos).get(TYPE) == DoorType.BOSS || world.getBlockState(offsetPos).get(TYPE) == DoorType.TRIAL || world.getBlockState(offsetPos).get(TYPE) == DoorType.OMINOUS)) {
                 staysLocked += 1;
             }
         }
@@ -162,25 +167,45 @@ public class DungeonDoorBlock extends Block {
                         boolean match =
                                 (neighborState.get(TYPE) == originState.get(TYPE))
                                 ||
-                                (((neighborState.get(TYPE) == DoorType.TRIAL) ||
+                                (((neighborState.get(TYPE) == DoorType.TRIAL) || (neighborState.get(TYPE) == DoorType.OMINOUS) ||
                                         (neighborState.get(TYPE) == DoorType.GOLEM) || (neighborState.get(TYPE) == DoorType.BOSS)) &&
                                         (originState.get(TYPE) == DoorType.LOCKED))
                                 ||
-                                (((originState.get(TYPE) == DoorType.TRIAL) ||
+                                (((originState.get(TYPE) == DoorType.TRIAL) || (originState.get(TYPE) == DoorType.OMINOUS) ||
                                         (originState.get(TYPE) == DoorType.GOLEM) || (originState.get(TYPE) == DoorType.BOSS)) &&
                                         (neighborState.get(TYPE) == DoorType.LOCKED))
+
                                 ||
+
                                 ((neighborState.get(TYPE) == DoorType.TRIAL) && (originState.get(TYPE) == DoorType.GOLEM))
                                 ||
                                 ((neighborState.get(TYPE) == DoorType.TRIAL) && (originState.get(TYPE) == DoorType.BOSS))
                                 ||
+                                ((neighborState.get(TYPE) == DoorType.TRIAL) && (originState.get(TYPE) == DoorType.OMINOUS))
+
+                                ||
+
+                                ((neighborState.get(TYPE) == DoorType.OMINOUS) && (originState.get(TYPE) == DoorType.TRIAL))
+                                ||
+                                ((neighborState.get(TYPE) == DoorType.OMINOUS) && (originState.get(TYPE) == DoorType.GOLEM))
+                                ||
+                                ((neighborState.get(TYPE) == DoorType.OMINOUS) && (originState.get(TYPE) == DoorType.BOSS))
+
+                                ||
+
                                 ((neighborState.get(TYPE) == DoorType.GOLEM) && (originState.get(TYPE) == DoorType.TRIAL))
                                 ||
                                 ((neighborState.get(TYPE) == DoorType.GOLEM) && (originState.get(TYPE) == DoorType.BOSS))
                                 ||
+                                ((neighborState.get(TYPE) == DoorType.GOLEM) && (originState.get(TYPE) == DoorType.OMINOUS))
+
+                                ||
+
                                 ((neighborState.get(TYPE) == DoorType.BOSS) && (originState.get(TYPE) == DoorType.GOLEM))
                                 ||
-                                ((neighborState.get(TYPE) == DoorType.BOSS) && (originState.get(TYPE) == DoorType.TRIAL));
+                                ((neighborState.get(TYPE) == DoorType.BOSS) && (originState.get(TYPE) == DoorType.TRIAL))
+                                ||
+                                ((neighborState.get(TYPE) == DoorType.BOSS) && (originState.get(TYPE) == DoorType.OMINOUS));
 
                         if (match) {
                             queue.add(new Pair<>(neighborPos, distance + 1));

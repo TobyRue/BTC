@@ -5,7 +5,9 @@ import io.github.tobyrue.btc.util.SpellScrollHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.TrialSpawnerBlock;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -48,14 +50,13 @@ public class SaltBlock extends Block {
     }
 
     @Override
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
+        return false;
+    }
+
+    @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-//        if (placer instanceof ServerPlayerEntity player) {
-//            for (var dropStack : SpellScrollHelper.exportAndRemoveAllSpells(player)) {
-//                player.getInventory().offerOrDrop(dropStack);
-//            }
-//        }
-
         if (state.get(ABSORBED_LIGHT) == 0) {
             int lightLevel = world.getLightLevel(LightType.BLOCK, pos);
             world.setBlockState(pos, state.with(ABSORBED_LIGHT, lightLevel));
