@@ -459,7 +459,13 @@ public class BTCClient implements ClientModInitializer {
         });
 
 
-
+        ModelPredicateProviderRegistry.register(ModItems.HEROIC_SWORD, Identifier.ofVanilla("blocking"),
+                (stack, world, entity, seed) -> {
+                    if (entity != null && entity.isUsingItem() && entity.getActiveItem() == stack) {
+                        return 1;
+                    }
+                    return 0;
+                });
         ModelPredicateProviderRegistry.register(ModItems.UNLOCK_SCROLL, Identifier.ofVanilla("texture"),
                 (stack, world, entity, seed) -> {
                     if (stack.getItem() instanceof UnlockScrollItem item && stack.contains(ModComponents.UNLOCK_SPELL_COMPONENT)) {

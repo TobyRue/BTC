@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
+import io.github.tobyrue.btc.block.entities.PedestalBlockEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
 import net.minecraft.block.Blocks;
@@ -8,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -18,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
 
 public class BonfireBlockEntityRenderer implements BlockEntityRenderer<BonfireBlockEntity> {
-    private static ItemStack stack = new ItemStack(ModItems.STAFF, 1);
+    private static ItemStack stack = new ItemStack(ModItems.HEROIC_SWORD, 1);
 
     public BonfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {}
 
@@ -54,6 +56,7 @@ public class BonfireBlockEntityRenderer implements BlockEntityRenderer<BonfireBl
 
                 matrices.pop();
 
+
                 if (entity.getWorld().random.nextFloat() < 0.15f) {
                     entity.getWorld().addParticle(
                             net.minecraft.particle.ParticleTypes.FLAME,
@@ -65,8 +68,19 @@ public class BonfireBlockEntityRenderer implements BlockEntityRenderer<BonfireBl
                 }
             }
         }
-
+        //TODO Check that this works
+        renderItem(entity, stack, matrices, vertexConsumers, light);
     }
+
+    public void renderItem(BonfireBlockEntity blockEntity, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        matrices.push();
+        matrices.translate(0.365, 0.8, 0.5);
+        matrices.scale(1.5f, 1.5f, 1.5f);
+        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(135));
+        MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformationMode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, blockEntity.getWorld(), 0);
+        matrices.pop();
+    }
+
     private void spawnPrivateParticles(BonfireBlockEntity entity) {
         if (entity.getWorld().random.nextFloat() < 0.2f) {
             double px = entity.getPos().getX() + 0.5 + (entity.getWorld().random.nextDouble() - 0.5) * 0.4;

@@ -98,6 +98,10 @@ public class ModItems {
             new ScopedCrossbow(new Item.Settings().maxCount(1)),
             "scoped_crossbow"
     );
+    public static final Item HEROIC_SWORD = register(
+            new HeroicSwordItem(new Item.Settings().maxCount(1)),
+            "heroic_sword"
+    );
     public static final Item SPELLSTONE = register(
             new SpellstoneItem(new Item.Settings().maxCount(1 )),
             "spellstone"
