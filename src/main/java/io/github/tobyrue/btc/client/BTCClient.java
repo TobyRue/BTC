@@ -80,6 +80,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Environment(EnvType.CLIENT)
@@ -491,6 +492,44 @@ public class BTCClient implements ClientModInitializer {
         });
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            if (tintIndex == 1 && stack.getItem() instanceof HeroicSwordItem) {
+                if (stack.contains(ModComponents.OWNER_UUID)) {
+                    try {
+                        String uuidString = stack.get(ModComponents.OWNER_UUID);
+                        if (uuidString != null) {
+                            UUID uuid = UUID.fromString(uuidString);
+
+                            if (uuid.toString().equalsIgnoreCase("8ee2ded6-a51a-4a06-bfff-e726a76f70de")) {
+                                return 0xFF29C1AD;
+                            }
+
+                            if (uuid.toString().equalsIgnoreCase("70034074-4014-4a02-b20f-f8327a87aee0")) {
+                                return 0xFFEA171A;
+                            }
+
+                            int hash = uuid.hashCode();
+                            int r = (hash & 0xFF0000) >> 16;
+                            int g = (hash & 0x00FF00) >> 8;
+                            int b = (hash & 0x0000FF);
+
+                            r = Math.max(r, 60);
+                            g = Math.max(g, 60);
+                            b = Math.max(b, 60);
+
+                            int finalColor = 0xFF000000 | (r << 16) | (g << 8) | b;
+                            System.out.println("Generated Color: #" + Integer.toHexString(finalColor).toUpperCase());
+                            return finalColor;
+                        }
+                    } catch (IllegalArgumentException | NullPointerException ignored) {
+                    }
+                }
+
+                return 0xFF29C1AD;
+            }
+
+            return 0xFFFFFFFF;
+        }, ModItems.HEROIC_SWORD);
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
             if (tintIndex != 1) return 0xFFFFFFFF;
             if (!(stack.getItem() instanceof UnlockScrollItem)) return 0xFFFFFFFF;
 
@@ -544,7 +583,7 @@ public class BTCClient implements ClientModInitializer {
                 }
             }
 
-            return 0xFFFFFFFF; // base always visible
+            return 0xFFFFFFFF;
         }, ModItems.SPELLSTONE);
 
 

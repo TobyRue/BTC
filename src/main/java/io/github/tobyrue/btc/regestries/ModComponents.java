@@ -19,9 +19,11 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Direction;
 
 import java.util.List;
@@ -152,6 +154,14 @@ public class ModComponents {
             BTC.identifierOf("key_uuid"),
             ComponentType.<Text>builder().codec(TextCodecs.STRINGIFIED_CODEC).build()
     );
+    public static final ComponentType<String> OWNER_UUID =
+            Registry.register(
+                    Registries.DATA_COMPONENT_TYPE,
+                    BTC.identifierOf("owner_uuid"),
+                    ComponentType.<String>builder()
+                            .codec(Codec.STRING)
+                            .build()
+            );
     public static final ComponentType<Text> PLAYER_NAME = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             BTC.identifierOf("player_name"),

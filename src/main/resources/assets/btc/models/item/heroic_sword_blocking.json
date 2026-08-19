@@ -1,9 +1,9 @@
 {
-	"format_version": "1.21.11",
-	"credit": "Made with Blockbench",
 	"parent": "minecraft:item/handheld",
 	"textures": {
-		"layer0": "btc:item/heroic_sword"
+		"layer0": "btc:item/heroic_sword",
+		"layer1": "btc:item/heroic_sword_gem",
+		"layer2": "btc:item/heroic_sword_gem_glint"
 	},
 	"display": {
 		"firstperson_righthand": {
@@ -12,9 +12,9 @@
 			"scale": [1.5, 1.5, 1.5]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, -180, -5],
-			"translation": [5, 5, -11],
-			"scale": [1.25, 1.25, 1.25]
+			"rotation": [-10, -10, 14],
+			"translation": [1, -3.5, -11],
+			"scale": [1.5, 1.5, 1.5]
 		}
 	}
 }

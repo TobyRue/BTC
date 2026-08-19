@@ -1,7 +1,9 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "btc:item/heroic_sword"
+    "layer0": "btc:item/heroic_sword",
+    "layer1": "btc:item/heroic_sword_gem",
+    "layer2": "btc:item/heroic_sword_gem_glint"
   },
   "overrides": [
     {
