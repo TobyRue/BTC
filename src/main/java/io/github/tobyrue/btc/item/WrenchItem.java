@@ -70,10 +70,10 @@ public class WrenchItem extends Item {
         return TypedActionResult.success(stack);
     }
 
-    @Environment(EnvType.CLIENT)
-    private void openMenu(ItemStack stack) {
-        BTCClient.openWrenchMenu(stack);
-    }
+//    @Environment(EnvType.CLIENT)
+//    private void openMenu(ItemStack stack) {
+//        BTCClient.openWrenchMenu(stack);
+//    }
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {

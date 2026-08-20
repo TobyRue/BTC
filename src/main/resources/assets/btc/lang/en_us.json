@@ -492,6 +492,7 @@
   "item.btc.spell.cooldown": "Cooldown: %d Seconds",
   "item.btc.spell.hold": "Cancel: %d seconds",
 
+  "item.btc.spells": "Spells",
   "item.btc.spell.book.set": "Spell Book set to: %s",
   "item.btc.spell.book.water_blast": "Water Blast",
   "item.btc.spell.book.fireball": "Fireball",

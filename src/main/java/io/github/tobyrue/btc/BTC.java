@@ -196,7 +196,7 @@ public class BTC implements ModInitializer, TerraBlenderApi {
                         String ownerName = owner != null ? owner.getName().getString() : player.getName().getString();
                         stack.set(ModComponents.STORED_OWNER_NAME, ownerName);
 
-                        player.sendMessage(Text.translatable("item.btc.pet_totem.action.bind"), true);
+                        player.sendMessage(Text.translatable("item.btc.pet_charm.action.bind"), true);
 
                         for(int i = 0; i < 7; ++i) {
                             double d0 = mob.getRandom().nextGaussian() * 0.02D;
