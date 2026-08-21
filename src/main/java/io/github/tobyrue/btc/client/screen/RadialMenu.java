@@ -35,7 +35,6 @@ public class RadialMenu extends Screen {
 
     public RadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key, RadialIdentifiers radialIdentifiers) {
         super(title);
-        // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
         this.end = Math.min(spells.size(), end);
@@ -54,7 +53,6 @@ public class RadialMenu extends Screen {
 
     public RadialMenu(Text title, List<Value> spells, int start, int end, KeyBinding key) {
         super(title);
-        // only keep first 6 if longer
         this.spells = spells;
         this.start = start;
         this.end = Math.min(spells.size(), end);
@@ -104,7 +102,6 @@ public class RadialMenu extends Screen {
             if (hovered >= 0 && hovered + start < spells.size()) {
                 Value value = spells.get(start + hovered);
                 client.player.networkHandler.sendCommand(value.commandHover());
-                System.out.println("Key release hover command: " + value.commandHover());
             }
             close();
             return true;

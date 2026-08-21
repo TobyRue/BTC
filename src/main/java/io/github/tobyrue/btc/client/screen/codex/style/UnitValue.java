@@ -8,16 +8,24 @@ import java.util.regex.Pattern;
 public interface UnitValue {
     @FunctionalInterface
     interface DistanceValue extends UnitValue {
-        Pattern PATTERN = Pattern.compile("^(\\d+(?:\\.\\d*)?([a-z_]*))$", Pattern.CASE_INSENSITIVE);
+        Pattern PATTERN = Pattern.compile("^(\\d+(?:\\.\\d*)?)(%|[a-z_]*)$", Pattern.CASE_INSENSITIVE);
+
         static DistanceValue parse(final String text) throws XMLException {
             var matcher = PATTERN.matcher(text.strip().toLowerCase(Locale.ROOT));
+
+            if (!matcher.matches()) {
+                throw new XMLException("Invalid distance unit format: " + text);
+            }
+
             var f = Float.parseFloat(matcher.group(1));
-            return switch (matcher.group(2)) {
+            var unit = matcher.group(2);
+
+            return switch (unit) {
                 case "px", "" -> px((int) f);
                 case "%" -> percent(f);
                 case "bgp" -> bgp(f);
                 case "em", "u" -> em(f);
-                default -> throw new XMLException(String.format("Unknown unit '%s'", matcher.group(2)));
+                default -> throw new XMLException(String.format("Unknown unit '%s'", unit));
             };
         }
 
@@ -26,7 +34,7 @@ public interface UnitValue {
         }
 
         static DistanceValue percent(float percent) {
-            return (dimensionMax, scale, baseValue) -> (int) (percent * 100 * dimensionMax);
+            return (dimensionMax, scale, baseValue) -> (int) ((percent / 100.0f) * dimensionMax);
         }
 
         static DistanceValue bgp(float bgp) {

@@ -96,16 +96,16 @@
 //
 ////
 ////        System.out.println("Current spell: "+ getElement(player.getStackInHand(hand)) + " Client: " + world.isClient);
-////        try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
-////            player.sendMessage(Codex.Text.parse(reader));
-////            SpellScreenTest.string = this.string;
-////        } catch (Throwable t) {
-////            t.printStackTrace();
-////            player.sendMessage(Text.literal(String.format("[%s]: %s", t.getClass().getSimpleName(), t.getMessage())).formatted(Formatting.RED));
-////        }
-////        MinecraftClient.getInstance().execute(() -> {
-////            MinecraftClient.getInstance().setScreen(new SpellScreenTest());
-////        });
+//        try (var reader = new FileReader("C:\\Users\\tobin\\IdeaProjects\\BTC\\test.xml")) {
+//            player.sendMessage(Codex.Text.parse(reader));
+//            SpellScreenTest.string = this.string;
+//        } catch (Throwable t) {
+//            t.printStackTrace();
+//            player.sendMessage(Text.literal(String.format("[%s]: %s", t.getClass().getSimpleName(), t.getMessage())).formatted(Formatting.RED));
+//        }
+//        MinecraftClient.getInstance().execute(() -> {
+//            MinecraftClient.getInstance().setScreen(new SpellScreenTest());
+//        });
 //        return TypedActionResult.success(player.getStackInHand(hand));
 //    }
 //

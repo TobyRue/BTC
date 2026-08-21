@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import io.github.tobyrue.btc.util.AdvancementUtils;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -10,12 +11,12 @@ import java.util.regex.Pattern;
 
 public class AdvancementParser {
     public interface Expression {
-        boolean evaluate(ServerPlayerEntity player);
+        boolean evaluate(PlayerEntity player);
     }
     private record AdvancementExpression(Identifier advancement) implements Expression {
         @Override
-        public boolean evaluate(ServerPlayerEntity player) {
-            return player.getAdvancementTracker().getProgress(player.server.getAdvancementLoader().get(advancement)).isDone();
+        public boolean evaluate(PlayerEntity player) {
+            return AdvancementUtils.hasAdvancement(player, advancement.getNamespace(), advancement.getPath());
         }
 
         @Override
@@ -25,7 +26,7 @@ public class AdvancementParser {
     }
     private record NotExpression(Expression e) implements Expression {
         @Override
-        public boolean evaluate(ServerPlayerEntity player) {
+        public boolean evaluate(PlayerEntity player) {
             return !e.evaluate(player);
         }
         @Override
@@ -35,7 +36,7 @@ public class AdvancementParser {
     }
     private record AndExpression(Expression lhs, Expression rhs) implements Expression {
         @Override
-        public boolean evaluate(ServerPlayerEntity player) {
+        public boolean evaluate(PlayerEntity player) {
             return lhs.evaluate(player) && rhs.evaluate(player);
         }
         @Override
@@ -45,7 +46,7 @@ public class AdvancementParser {
     }
     private record OrExpression(Expression lhs, Expression rhs) implements Expression {
         @Override
-        public boolean evaluate(ServerPlayerEntity player) {
+        public boolean evaluate(PlayerEntity player) {
             return lhs.evaluate(player) || rhs.evaluate(player);
         }
         @Override
@@ -55,7 +56,7 @@ public class AdvancementParser {
     }
     private record LiteralExpression(boolean b) implements Expression {
         @Override
-        public boolean evaluate(ServerPlayerEntity player) {
+        public boolean evaluate(PlayerEntity player) {
             return b;
         }
         @Override

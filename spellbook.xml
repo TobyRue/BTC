@@ -1,0 +1,23 @@
+<codex>
+    <page id="main">
+        <line align="center" size="">--- <t key="title.codex"/> ---</line>
+        <if predicate="btc:adventure/get_blaze_storm_scroll"><line>- <a href="#fire_spells"><t key="spell.type.fire"/></a></line></if>
+        <unless predicate="btc:adventure/get_blaze_storm_scroll"><line><t key="nothing_here"/></line></unless>
+    </page>
+    <page id="fire_spells">
+        <line align="center">--- <t key="title.fire"/> ---</line>
+        <hr/>
+        <if predicate="btc:adventure/get_fireball_scroll"><line>- <a onclick="/selectspell btc:fireball"><t key="spell.type.attack.fireball"/></a></line></if>
+        <line>- <a href="#credits"><t key="credit.button"/></a></line>
+        <line>- <a onclick="*hello world"><t key="credit.button"/></a></line>
+        <unless predicate="btc:adventure/get_fireball_scroll"><line><t key="nothing_here"/></line></unless>
+    </page>
+    <page id="ddddd">
+        <line>ddddd</line>
+    </page>
+    <page id="credits">
+        <line align="center">All Hail <font color="0xFF00FF">SianaBeeblebrox</font></line>
+    </page>
+
+</codex>
+<!--<b>(Bold) <i>(Italicized) <u>(Underline) <s>(Strike-Through) <obf>(Obfuscated) <img height="50%" width="50%" src="btc:textures/book/"/>(Image - Different type of line) -->

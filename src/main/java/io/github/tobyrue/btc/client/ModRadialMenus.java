@@ -2,7 +2,9 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.radial_menus.RadialMenu;
+import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
 import io.github.tobyrue.btc.item.SpellBookItem;
+import io.github.tobyrue.btc.item.TestItem;
 import io.github.tobyrue.btc.item.WrenchItem;
 import io.github.tobyrue.btc.player_data.PlayerSpellData;
 import io.github.tobyrue.btc.player_data.SpellPersistentState;
@@ -47,6 +49,9 @@ public class ModRadialMenus {
                         } else if (item instanceof WrenchItem) {
                             openWrenchMenu(stack);
                         }
+//                        else if (item instanceof TestItem) {
+//                            MinecraftClient.getInstance().setScreen(new CodexScreen());
+//                        }
                     }
                 }
             }
