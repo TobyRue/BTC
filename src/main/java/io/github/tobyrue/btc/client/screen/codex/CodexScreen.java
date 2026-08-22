@@ -2,9 +2,13 @@ package io.github.tobyrue.btc.client.screen.codex;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.util.Vec2i;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.PageTurnWidget;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -14,6 +18,7 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class CodexScreen extends Screen {
     public static final Identifier BOOK_TEXTURE = BTC.identifierOf("textures/gui/book_text_area.png");
     private final Codex codex;
@@ -22,10 +27,12 @@ public class CodexScreen extends Screen {
     private static final int IMAGE_HEIGHT = 160;
 
     private static final int PAGE_WIDTH = 92;
-    private static final int PAGE_HEIGHT = 118;
-    private static final int LEFT_PAGE_X = 20;
-    private static final int RIGHT_PAGE_X = 144;
-    private static final int PAGE_Y = 16;
+    private static final int PAGE_HEIGHT = 124;
+
+    private static final int LEFT_PAGE_OFFSET_X = 22;
+    private static final int LEFT_PAGE_OFFSET_Y = 16;
+    private static final int RIGHT_PAGE_OFFSET_X = 142;
+    private static final int RIGHT_PAGE_OFFSET_Y = 16;
 
     private int currentPageIndex = 0;
     private PageTurnWidget nextPageButton;
@@ -53,15 +60,19 @@ public class CodexScreen extends Screen {
         updatePageButtons();
     }
 
+    private PlayerEntity getPlayer() {
+        return MinecraftClient.getInstance().player;
+    }
+
     private void updatePageButtons() {
         if (codex == null) return;
-        int maxPages = codex.getPages().size();
+        int maxPages = codex.getPages().size(getPlayer());
         this.nextPageButton.visible = (currentPageIndex + 2) < maxPages;
         this.previousPageButton.visible = currentPageIndex > 0;
     }
 
     private void goToNextPage() {
-        if (codex != null && (currentPageIndex + 2) < codex.getPages().size()) {
+        if (codex != null && (currentPageIndex + 2) < codex.getPages().size(getPlayer())) {
             currentPageIndex += 2;
             updatePageButtons();
         }
@@ -76,9 +87,12 @@ public class CodexScreen extends Screen {
 
     public void goToPageById(String pageId) {
         if (codex == null) return;
+        PlayerEntity player = getPlayer();
         var pages = codex.getPages();
-        for (int i = 0; i < pages.size(); i++) {
-            Codex.Page p = pages.getPage(i + 1);
+        int visibleCount = pages.size(player);
+
+        for (int i = 0; i < visibleCount; i++) {
+            Codex.Page p = pages.getPage(i + 1, player);
             if (p != null && pageId.equalsIgnoreCase(p.id())) {
                 this.currentPageIndex = (i % 2 == 0) ? i : i - 1;
                 updatePageButtons();
@@ -101,24 +115,27 @@ public class CodexScreen extends Screen {
 
         RenderHelper h = getRenderHelper(context);
         Vec2i origin = getOrigin();
+        PlayerEntity player = getPlayer();
 
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, 100);
 
-        Codex.Page leftPage = codex.getPages().getPage(currentPageIndex + 1);
+        Codex.Page leftPage = codex.getPages().getPage(currentPageIndex + 1, player);
         if (leftPage != null) {
-            int leftX = origin.x + h.scaled(LEFT_PAGE_X);
-            int startY = origin.y + h.scaled(PAGE_Y);
+            int leftX = origin.x + h.scaled(LEFT_PAGE_OFFSET_X);
+            int startY = origin.y + h.scaled(LEFT_PAGE_OFFSET_Y);
             int maxWidth = h.scaled(PAGE_WIDTH);
-            renderPageContent(context, leftPage, leftX, startY, maxWidth);
+            int maxHeight = h.scaled(PAGE_HEIGHT);
+            renderPageContent(context, leftPage, leftX, startY, maxWidth, maxHeight);
         }
 
-        Codex.Page rightPage = codex.getPages().getPage(currentPageIndex + 2);
+        Codex.Page rightPage = codex.getPages().getPage(currentPageIndex + 2, player);
         if (rightPage != null) {
-            int rightX = origin.x + h.scaled(RIGHT_PAGE_X);
-            int startY = origin.y + h.scaled(PAGE_Y);
+            int rightX = origin.x + h.scaled(RIGHT_PAGE_OFFSET_X);
+            int startY = origin.y + h.scaled(RIGHT_PAGE_OFFSET_Y);
             int maxWidth = h.scaled(PAGE_WIDTH);
-            renderPageContent(context, rightPage, rightX, startY, maxWidth);
+            int maxHeight = h.scaled(PAGE_HEIGHT);
+            renderPageContent(context, rightPage, rightX, startY, maxWidth, maxHeight);
         }
 
         Style hoveredStyle = getStyleAt(mouseX, mouseY);
@@ -140,59 +157,124 @@ public class CodexScreen extends Screen {
         context.getMatrices().pop();
     }
 
-    private void renderPageContent(DrawContext context, Codex.Page page, int startX, int startY, int maxWidth) {
-        renderBlockCollection(context, page.children(), startX, startY, maxWidth);
+    private void renderPageContent(DrawContext context, Codex.Page page, int startX, int startY, int maxWidth, int maxHeight) {
+        renderBlockCollection(context, page.children(), startX, startY, maxWidth, startY + maxHeight);
     }
 
-    private int renderBlockCollection(DrawContext context, Iterable<Codex.BlockContent> blocks, int startX, int currentY, int maxWidth) {
+    private int renderBlockCollection(DrawContext context, Iterable<Codex.BlockContent> blocks, int startX, int currentY, int maxWidth, int maxYLimit) {
         RenderHelper h = getRenderHelper(context);
+        PlayerEntity player = getPlayer();
 
         for (Codex.BlockContent block : blocks) {
+            if (currentY >= maxYLimit) {
+                break;
+            }
+
             if (block instanceof Codex.ConditionalContent conditional) {
-                if (!conditional.isRequirementMet(null)) {
+                if (!conditional.isRequirementMet(player)) {
                     continue;
                 }
             }
 
             if (block instanceof Codex.Page.Line line) {
+                float textScale = parseScale(line.size());
+                int scaledFontHeight = Math.round(this.textRenderer.fontHeight * textScale);
+
+                if (line.getMargins() != null && line.getMargins().top() != null) {
+                    currentY += line.getMargins().top().getPxDistance(maxWidth, (float) h.scale(), scaledFontHeight);
+                }
+
                 Text fullText = line.toText();
-                List<OrderedText> wrappedLines = this.textRenderer.wrapLines(fullText, maxWidth);
+                int availableWidthUnscaled = Math.round(maxWidth / textScale);
+                List<OrderedText> wrappedLines = this.textRenderer.wrapLines(fullText, availableWidthUnscaled);
                 Codex.Alignment align = resolveAlignment(line.align());
 
                 for (OrderedText wrappedLine : wrappedLines) {
-                    int lineWidth = this.textRenderer.getWidth(wrappedLine);
-                    int drawX = calculateAlignedX(align, startX, maxWidth, lineWidth);
+                    if (currentY + scaledFontHeight > maxYLimit) {
+                        break;
+                    }
+
+                    int lineUnscaledWidth = this.textRenderer.getWidth(wrappedLine);
+                    int lineScaledWidth = Math.round(lineUnscaledWidth * textScale);
+                    int drawX = calculateAlignedX(align, startX, maxWidth, lineScaledWidth);
 
                     clickableSegments.add(new RenderedTextSegment(
-                            drawX, currentY, lineWidth, this.textRenderer.fontHeight, wrappedLine
+                            drawX, currentY, lineScaledWidth, scaledFontHeight, wrappedLine
                     ));
 
-                    context.drawText(this.textRenderer, wrappedLine, drawX, currentY, 0xFF000000, false);
-                    currentY += this.textRenderer.fontHeight + 1;
+                    context.getMatrices().push();
+                    context.getMatrices().translate(drawX, currentY, 0);
+                    context.getMatrices().scale(textScale, textScale, 1.0f);
+
+                    context.drawText(this.textRenderer, wrappedLine, 0, 0, 0xFF000000, false);
+
+                    context.getMatrices().pop();
+
+                    currentY += scaledFontHeight + Math.round(1 * textScale);
                 }
 
                 if (line.getMargins() != null && line.getMargins().bottom() != null) {
-                    int fontHeight = this.textRenderer.fontHeight;
-                    currentY += line.getMargins().bottom().getPxDistance(maxWidth, (float) h.scale(), fontHeight);
+                    currentY += line.getMargins().bottom().getPxDistance(maxWidth, (float) h.scale(), scaledFontHeight);
                 }
 
             } else if (block instanceof Codex.Page.HorizontalLine) {
                 int lineY = currentY + 4;
-                context.fill(startX, lineY, startX + maxWidth, lineY + 1, 0xFF888888);
+                if (lineY <= maxYLimit) {
+                    context.fill(startX, lineY, startX + maxWidth, lineY + 1, 0xFF888888);
+                }
                 currentY += 9;
 
             } else if (block instanceof Codex.Page.BreakLine) {
                 currentY += this.textRenderer.fontHeight;
 
             } else if (block instanceof Codex.Page.IfCondition ifCond) {
-                currentY = renderBlockCollection(context, ifCond.children(), startX, currentY, maxWidth);
+                currentY = renderBlockCollection(context, ifCond.children(), startX, currentY, maxWidth, maxYLimit);
 
             } else if (block instanceof Codex.Page.UnlessCondition unlessCond) {
-                currentY = renderBlockCollection(context, unlessCond.children(), startX, currentY, maxWidth);
+                currentY = renderBlockCollection(context, unlessCond.children(), startX, currentY, maxWidth, maxYLimit);
+            } else if (block instanceof Codex.Page.ImageContent img) {
+                if (img.getSrc() != null) {
+                    int imgWidth = img.getWidth();
+                    int imgHeight = img.getHeight();
+
+                    if (img.getMargins() != null && img.getMargins().top() != null) {
+                        currentY += img.getMargins().top().getPxDistance(maxWidth, (float) h.scale(), imgHeight);
+                    }
+
+                    if (currentY + imgHeight <= maxYLimit) {
+                        int drawX = calculateAlignedX(img.getAlign(), startX, maxWidth, imgWidth);
+
+                        context.drawTexture(
+                                Identifier.of(img.getSrc()),
+                                drawX, currentY,
+                                img.getU(), img.getV(),
+                                imgWidth, imgHeight,
+                                img.getTextureWidth(), img.getTextureHeight()
+                        );
+
+                        currentY += imgHeight;
+                    }
+
+                    if (img.getMargins() != null && img.getMargins().bottom() != null) {
+                        currentY += img.getMargins().bottom().getPxDistance(maxWidth, (float) h.scale(), imgHeight);
+                    }
+                }
             }
         }
 
         return currentY;
+    }
+
+    private float parseScale(String size) {
+        if (size == null || size.isBlank()) {
+            return 1.0f;
+        }
+        try {
+            String clean = size.toLowerCase().replace("x", "").replace("pt", "").trim();
+            return Float.parseFloat(clean);
+        } catch (NumberFormatException e) {
+            return 1.0f;
+        }
     }
 
     @Override
@@ -216,7 +298,10 @@ public class CodexScreen extends Screen {
         for (RenderedTextSegment segment : clickableSegments) {
             if (mouseX >= segment.x && mouseX <= segment.x + segment.width &&
                     mouseY >= segment.y && mouseY <= segment.y + segment.height) {
-                int relativeX = (int) (mouseX - segment.x);
+
+                float textScale = (float) segment.height / (float) this.textRenderer.fontHeight;
+                int relativeX = (int) ((mouseX - segment.x) / textScale);
+
                 return this.textRenderer.getTextHandler().getStyleAt(segment.line, relativeX);
             }
         }

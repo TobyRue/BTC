@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.client.radial_menus.RadialMenu;
-import io.github.tobyrue.btc.client.screen.codex.CodexScreen;
 import io.github.tobyrue.btc.item.SpellBookItem;
 import io.github.tobyrue.btc.item.TestItem;
 import io.github.tobyrue.btc.item.WrenchItem;

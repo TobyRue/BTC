@@ -1,19 +1,37 @@
 <codex>
     <page id="main">
-        <line align="center" size="">--- <t key="title.codex"/> ---</line>
+        <line margin="0u" align="center" size="1.5">--- <t key="title.codex"/> ---</line>
         <if predicate="btc:adventure/get_blaze_storm_scroll"><line>- <a href="#fire_spells"><t key="spell.type.fire"/></a></line></if>
         <unless predicate="btc:adventure/get_blaze_storm_scroll"><line><t key="nothing_here"/></line></unless>
+        <img src="btc:textures/gui/btc_title.png" width="100" height="57" align="center" textureWidth="100" textureHeight="57" />
+<!--        <if predicate="btc:adventure/get_blaze_storm_scroll">-->
+<!--            <line>- <a href="#fire_spells"><t key="spell.type.fire"/></a></line>-->
+<!--            <img src="btc:textures/block/charcoal_block.png" width="16" height="16" align="center" textureWidth="16" textureHeight="16" />-->
+<!--        </if>-->
     </page>
-    <page id="fire_spells">
+    <page id="fire_spells" requires="btc:adventure/get_blaze_storm_scroll">
         <line align="center">--- <t key="title.fire"/> ---</line>
         <hr/>
         <if predicate="btc:adventure/get_fireball_scroll"><line>- <a onclick="/selectspell btc:fireball"><t key="spell.type.attack.fireball"/></a></line></if>
         <line>- <a href="#credits"><t key="credit.button"/></a></line>
-        <line>- <a onclick="*hello world"><t key="credit.button"/></a></line>
+        <line>- <a onclick="^hello world" hoverEvent="entity:"><t key="copy"/></a></line>
         <unless predicate="btc:adventure/get_fireball_scroll"><line><t key="nothing_here"/></line></unless>
     </page>
     <page id="ddddd">
-        <line>ddddd</line>
+        <line margin="0.25u">[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]</line>
+    </page>
+    <page id="___">
+        <line>[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]</line>
     </page>
     <page id="credits">
         <line align="center">All Hail <font color="0xFF00FF">SianaBeeblebrox</font></line>
