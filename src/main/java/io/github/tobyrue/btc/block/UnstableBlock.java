@@ -54,7 +54,8 @@ public class UnstableBlock extends Block {
 
 
     private void breakBlock(World world, BlockPos pos, BlockState state) {
-        if (!world.isClient()) {
+        BlockState downState = world.getBlockState(pos.down());
+        if (!world.isClient() && (downState.isAir() || !downState.getFluidState().isEmpty())) {
             world.breakBlock(pos, false);
             world.setBlockState(pos, turnsInto.getDefaultState());
             world.updateNeighbors(pos, state.getBlock());

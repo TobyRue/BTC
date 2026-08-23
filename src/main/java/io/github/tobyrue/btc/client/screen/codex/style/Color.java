@@ -15,7 +15,6 @@ public record Color(int rgb) {
                 return new Color(-1);
             }
 
-            // Handle hex strings: "#RRGGBB" or "0xRRGGBB"
             if (trimmed.startsWith("0x")) {
                 return new Color(switch (trimmed.length() - 2) {
                     case 3 -> {
@@ -28,7 +27,6 @@ public record Color(int rgb) {
                 });
             } else if (trimmed.startsWith("rgb(") && trimmed.endsWith(")")) {
 
-                // Handle RGB strings: "R,G,B"
                 String[] parts = trimmed.substring(4, trimmed.length() - 1).split(",");
                 if (parts.length == 3) {
                     int r = Integer.parseInt(parts[0].trim());
@@ -55,6 +53,10 @@ public record Color(int rgb) {
 
     public TextColor asTextColor() {
         return this.isValid() ? TextColor.fromRgb(this.rgb) : null;
+    }
+
+    public int toInt() {
+        return this.rgb;
     }
 
     @Override

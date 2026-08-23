@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -251,7 +250,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
     @XML.Name("page")
     public record Page(
-            @XML.Children(allow = {Line.class, ImageContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,            @XML.Attribute(fallBack = "true") AdvancementParser.Expression requires,
+            @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,
+            @XML.Attribute(fallBack = "true") AdvancementParser.Expression requires,
             @XML.Attribute(fallBack = "false") Boolean hidden,
             @XML.Attribute(fallBack = "") String id
     ) implements XMLNode, ConditionalContent, RenderContent {
@@ -268,27 +268,116 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         @XML.Name("img")
         public record ImageContent(
                 @XML.Attribute(fallBack = "") String src,
-                @XML.Attribute(fallBack = "16") Integer width,
-                @XML.Attribute(fallBack = "16") Integer height,
+                @XML.Attribute(fallBack = "-1") Integer width,
+                @XML.Attribute(fallBack = "-1") Integer height,
+                @XML.Attribute(fallBack = "1.0") Float scale,
+                @XML.Attribute(fallBack = "0") Integer offsetX,
+                @XML.Attribute(fallBack = "0") Integer offsetY,
+                @XML.Attribute(fallBack = "0") Integer layer,
+                @XML.Attribute(fallBack = "inline") String display,
                 @XML.Attribute(fallBack = "0") Integer u,
                 @XML.Attribute(fallBack = "0") Integer v,
-                @XML.Attribute(fallBack = "256") Integer textureWidth,
-                @XML.Attribute(fallBack = "256") Integer textureHeight,
+                @XML.Attribute(fallBack = "16") Integer textureWidth,
+                @XML.Attribute(fallBack = "16") Integer textureHeight,
                 @XML.Attribute(fallBack = "center") Alignment align,
                 @XML.Attribute(fallBack = "0u, 0u, 0u, 0u") Margins margin,
                 @XML.Attribute(fallBack = "static") Position position
         ) implements BlockContent {
             @Override public Margins getMargins() { return margin; }
             @Override public Position getPosition() { return position; }
-            @Override public int getHeight() { return height != null ? height : 0; }
-            @Override public int getWidth() { return width != null ? width : 0; }
+            @Override public int getHeight() { return Math.round(((height != null && height != -1) ? height : getTextureHeight()) * getScale()); }
+            @Override public int getWidth() { return Math.round(((width != null && width != -1) ? width : getTextureWidth()) * getScale()); }
+
+            public float getScale() { return scale != null && scale > 0 ? scale : 1.0f; }
+            public int getOffsetX() { return offsetX != null ? offsetX : 0; }
+            public int getOffsetY() { return offsetY != null ? offsetY : 0; }
+            public int getLayer() { return layer != null ? layer : 0; }
+            public boolean isInline() { return "inline".equalsIgnoreCase(display); }
 
             public Alignment getAlign() { return align; }
-            public String getSrc() { return src; }
+            public String getSrc() { return src != null ? src.trim() : ""; }
             public int getU() { return u != null ? u : 0; }
             public int getV() { return v != null ? v : 0; }
-            public int getTextureWidth() { return textureWidth != null ? textureWidth : 256; }
-            public int getTextureHeight() { return textureHeight != null ? textureHeight : 256; }
+            public int getTextureWidth() { return Math.round((textureWidth != null ? textureWidth : 256) * getScale()); }
+            public int getTextureHeight() { return Math.round((textureHeight != null ? textureHeight : 256) * getScale()); }
+
+            @Override
+            public void render(PlayerEntity player, int x, int y, int width, int height) {}
+        }
+
+        @XML.Name("video")
+        public record VideoContent(
+                @XML.Attribute(fallBack = "") String srcs,
+                @XML.Attribute(fallBack = "-1") Integer width,
+                @XML.Attribute(fallBack = "-1") Integer height,
+                @XML.Attribute(fallBack = "1.0") Float scale,
+                @XML.Attribute(fallBack = "0") Integer offsetX,
+                @XML.Attribute(fallBack = "0") Integer offsetY,
+                @XML.Attribute(fallBack = "0") Integer layer,
+                @XML.Attribute(fallBack = "inline") String display, // "inline" or "block"
+                @XML.Attribute(fallBack = "0") Integer u,
+                @XML.Attribute(fallBack = "0") Integer v,
+                @XML.Attribute(fallBack = "16") Integer textureWidth,
+                @XML.Attribute(fallBack = "16") Integer textureHeight,
+                @XML.Attribute(fallBack = "1") Integer frames,
+                @XML.Attribute(fallBack = "0") Integer trimFrames,
+                @XML.Attribute(fallBack = "4") Integer frameTicks,
+                @XML.Attribute(fallBack = "") String frameOrder,
+                @XML.Attribute(fallBack = "true") Boolean interpolate,
+                @XML.Attribute(fallBack = "center") Alignment align,
+                @XML.Attribute(fallBack = "0u, 0u, 0u, 0u") Margins margin,
+                @XML.Attribute(fallBack = "static") Position position
+        ) implements BlockContent {
+            @Override public Margins getMargins() { return margin; }
+            @Override public Position getPosition() { return position; }
+            @Override public int getHeight() { return Math.round(((height != null && height != -1) ? height : getTextureHeight()) * getScale()); }
+            @Override public int getWidth() { return Math.round(((width != null && width != -1) ? width : getTextureWidth()) * getScale()); }
+
+            public float getScale() { return scale != null && scale > 0 ? scale : 1.0f; }
+            public int getOffsetX() { return offsetX != null ? offsetX : 0; }
+            public int getOffsetY() { return offsetY != null ? offsetY : 0; }
+            public int getLayer() { return layer != null ? layer : 0; }
+            public boolean isInline() { return "inline".equalsIgnoreCase(display); }
+
+            public Alignment getAlign() { return align; }
+            public String getSrcs() { return srcs; }
+
+            public String[] getParsedSources() {
+                if (srcs != null && !srcs.isBlank()) {
+                    String[] parts = srcs.split(",");
+                    List<String> list = new ArrayList<>();
+                    for (String p : parts) {
+                        if (!p.isBlank()) list.add(p.trim());
+                    }
+                    if (!list.isEmpty()) return list.toArray(new String[0]);
+                }
+                return new String[0];
+            }
+
+            public int getU() { return u != null ? u : 0; }
+            public int getV() { return v != null ? v : 0; }
+            public int getTextureWidth() { return Math.round((textureWidth != null ? textureWidth : 256) * getScale()); }
+            public int getTextureHeight() { return Math.round((textureHeight != null ? textureHeight : 256) * getScale()); }
+            public int getFrames() { return frames != null && frames > 0 ? frames : 1; }
+            public int getTrimFrames() { return trimFrames != null && trimFrames >= 0 ? trimFrames : 0; }
+            public int getFrameTicks() { return frameTicks != null && frameTicks > 0 ? frameTicks : 1; }
+            public boolean isInterpolated() { return interpolate != null && interpolate; }
+
+            public int[] getParsedFrameOrder() {
+                if (frameOrder == null || frameOrder.isBlank()) {
+                    return new int[0];
+                }
+                try {
+                    String[] parts = frameOrder.replaceAll("[\\[\\]\\s]", "").split(",");
+                    int[] order = new int[parts.length];
+                    for (int i = 0; i < parts.length; i++) {
+                        order[i] = Integer.parseInt(parts[i]);
+                    }
+                    return order;
+                } catch (Exception e) {
+                    return new int[0];
+                }
+            }
 
             @Override
             public void render(PlayerEntity player, int x, int y, int width, int height) {}
@@ -296,7 +385,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @XML.Name("if")
         public record IfCondition(
-                @XML.Children(allow = {Line.class, ImageContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,                @XML.Attribute(fallBack = "true") AdvancementParser.Expression predicate
+                @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,                @XML.Attribute(fallBack = "true") AdvancementParser.Expression predicate
         ) implements BlockContent, ConditionalContent {
             @Override
             public boolean isRequirementMet(PlayerEntity player) {
@@ -312,7 +401,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @XML.Name("unless")
         public record UnlessCondition(
-                @XML.Children(allow = {Line.class, ImageContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,                @XML.Attribute(fallBack = "false") AdvancementParser.Expression predicate
+                @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,                @XML.Attribute(fallBack = "false") AdvancementParser.Expression predicate
         ) implements BlockContent, ConditionalContent {
             @Override
             public boolean isRequirementMet(PlayerEntity player) {
@@ -327,7 +416,10 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
 
         @XML.Name("hr")
-        public record HorizontalLine() implements BlockContent {
+        public record HorizontalLine(
+                @XML.Attribute(fallBack = "0") Integer inset,
+                @XML.Attribute(fallBack = "0x2D2D2D") Color color
+        ) implements BlockContent {
             @Override public Margins getMargins() { return null; }
             @Override public Position getPosition() { return Position.STATIC; }
             @Override public int getHeight() { return 0; }
@@ -456,7 +548,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         public record TranslatedText(@XML.Attribute(fallBack = "") String key) implements TextContent {
             @Override
             public net.minecraft.text.Text toText() {
-                return net.minecraft.text.Text.translatable("item.btc.spell.codex." + key);
+                return net.minecraft.text.Text.translatable(key);
             }
         }
 
@@ -532,7 +624,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     Identifier id = Identifier.of(entityId);
                     EntityType<?> entityType = net.minecraft.registry.Registries.ENTITY_TYPE.get(id);
 
-                    HoverEvent.EntityContent entityContent = new HoverEvent.EntityContent(entityType, UUID.randomUUID(), (net.minecraft.text.Text) null);
+                    HoverEvent.EntityContent entityContent = new HoverEvent.EntityContent(entityType, UUID.fromString("0-0-0-0-0"), (net.minecraft.text.Text) null);
                     he = new HoverEvent(HoverEvent.Action.SHOW_ENTITY, entityContent);
                 } else if (hoverEvent.startsWith("text:")) {
                     he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, net.minecraft.text.Text.translatable(hoverEvent.substring(5).strip()));
