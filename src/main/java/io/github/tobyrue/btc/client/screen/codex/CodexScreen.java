@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.client.screen.codex;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.client.screen.codex.style.Margins;
 import io.github.tobyrue.btc.util.Vec2i;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -69,6 +70,7 @@ public class CodexScreen extends Screen {
     }
 
     private void updatePageButtons() {
+        this.setFocused(null);
         if (codex == null) return;
         int maxPages = codex.getPages().size(getPlayer());
         this.nextPageButton.visible = (currentPageIndex + 2) < maxPages;
@@ -196,15 +198,46 @@ public class CodexScreen extends Screen {
         RenderHelper h = getRenderHelper(context);
         PlayerEntity player = getPlayer();
 
-        for (Codex.BlockContent block : blocks) {
+        List<Codex.BlockContent> blockList = new ArrayList<>();
+        for (Codex.BlockContent b : blocks) {
+            blockList.add(b);
+        }
+
+        int i = 0;
+        while (i < blockList.size()) {
             if (cursor.currentY >= maxYLimit) {
                 break;
             }
 
+            Codex.BlockContent block = blockList.get(i);
+
             if (block instanceof Codex.ConditionalContent conditional) {
                 if (!conditional.isRequirementMet(player)) {
+                    i++;
                     continue;
                 }
+            }
+
+            if (isEligibleForGroup(block)) {
+                List<Codex.BlockContent> group = new ArrayList<>();
+
+                while (i < blockList.size()) {
+                    Codex.BlockContent candidate = blockList.get(i);
+                    if (candidate instanceof Codex.ConditionalContent cond && !cond.isRequirementMet(player)) {
+                        i++;
+                        continue;
+                    }
+
+                    if (isEligibleForGroup(candidate)) {
+                        group.add(candidate);
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+
+                layoutMediaGroup(context, group, startX, cursor, maxWidth, maxYLimit, queue, h);
+                continue;
             }
 
             if (block instanceof Codex.Page.Line line) {
@@ -276,158 +309,363 @@ public class CodexScreen extends Screen {
                 renderBlockCollection(context, unlessCond.children(), startX, cursor, maxWidth, maxYLimit, queue);
 
             } else if (block instanceof Codex.Page.ImageContent img) {
-                String src = img.getSrc();
-                if (!src.isBlank()) {
-                    int imgWidth = img.getWidth();
-                    int imgHeight = img.getHeight();
+                renderSingleImage(context, img, startX, cursor, maxWidth, maxYLimit, queue);
 
-                    if (!img.isInline() && cursor.currentX != startX) {
-                        cursor.nextLine(startX);
+            } else if (block instanceof Codex.Page.VideoContent vid) {
+                renderSingleVideo(context, vid, startX, cursor, maxWidth, maxYLimit, queue);
+            }
+
+            i++;
+        }
+    }
+
+    private boolean isEligibleForGroup(Codex.BlockContent block) {
+        if (block instanceof Codex.Page.ImageContent img) {
+            return img.isInline() && img.getOffsetX() == 0 && img.getOffsetY() == 0;
+        } else if (block instanceof Codex.Page.VideoContent vid) {
+            return vid.isInline() && vid.getOffsetX() == 0 && vid.getOffsetY() == 0;
+        }
+        return false;
+    }
+
+    private Codex.Alignment getMediaAlignment(Codex.BlockContent block) {
+        if (block instanceof Codex.Page.ImageContent img) return img.getAlign();
+        if (block instanceof Codex.Page.VideoContent vid) return vid.getAlign();
+        return Codex.Alignment.LEFT;
+    }
+
+    private void layoutMediaGroup(DrawContext context, List<Codex.BlockContent> group, int startX, LayoutCursor cursor, int maxWidth, int maxYLimit, List<RenderCommand> queue, RenderHelper h) {
+        if (cursor.currentX != startX) {
+            cursor.nextLine(startX);
+        }
+
+        List<List<Codex.BlockContent>> lines = new ArrayList<>();
+        List<Codex.BlockContent> currentLine = new ArrayList<>();
+        int currentLineWidth = 0;
+
+        for (Codex.BlockContent item : group) {
+            int itemW = getItemWidthWithMargins(item, maxWidth, h);
+
+            if (!currentLine.isEmpty() && currentLineWidth + itemW > maxWidth) {
+                lines.add(currentLine);
+                currentLine = new ArrayList<>();
+                currentLineWidth = 0;
+            }
+
+            currentLine.add(item);
+            currentLineWidth += itemW;
+        }
+
+        if (!currentLine.isEmpty()) {
+            lines.add(currentLine);
+        }
+
+        for (List<Codex.BlockContent> line : lines) {
+            if (cursor.currentY >= maxYLimit) break;
+
+            int maxLineHeight = 0;
+            boolean allCentered = true;
+            boolean allRight = true;
+            int totalLineWidth = 0;
+
+            for (Codex.BlockContent item : line) {
+                maxLineHeight = Math.max(maxLineHeight, getItemHeightWithMargins(item, maxWidth, h));
+                Codex.Alignment align = resolveAlignment(getMediaAlignment(item));
+                if (align != Codex.Alignment.CENTER) allCentered = false;
+                if (align != Codex.Alignment.RIGHT) allRight = false;
+                totalLineWidth += getItemWidthWithMargins(item, maxWidth, h);
+            }
+
+            if (allCentered) {
+                int startOffset = startX + (maxWidth - totalLineWidth) / 2;
+                int currentX = startOffset;
+                for (Codex.BlockContent item : line) {
+                    int marginLeft = getMarginLeft(item, maxWidth, h);
+                    int marginTop = getMarginTop(item, maxWidth, h);
+                    int itemX = currentX + marginLeft;
+                    int itemY = cursor.currentY + marginTop;
+
+                    if (item instanceof Codex.Page.ImageContent img) {
+                        enqueueImage(context, img, itemX, itemY, maxYLimit, queue);
+                    } else if (item instanceof Codex.Page.VideoContent vid) {
+                        enqueueVideo(context, vid, itemX, itemY, maxYLimit, queue);
                     }
+                    currentX += getItemWidthWithMargins(item, maxWidth, h);
+                }
+            } else if (allRight) {
+                int currentX = startX + maxWidth - totalLineWidth;
+                for (Codex.BlockContent item : line) {
+                    int marginLeft = getMarginLeft(item, maxWidth, h);
+                    int marginTop = getMarginTop(item, maxWidth, h);
+                    int itemX = currentX + marginLeft;
+                    int itemY = cursor.currentY + marginTop;
 
-                    if (cursor.currentX + imgWidth > startX + maxWidth && cursor.currentX > startX) {
-                        cursor.nextLine(startX);
+                    if (item instanceof Codex.Page.ImageContent img) {
+                        enqueueImage(context, img, itemX, itemY, maxYLimit, queue);
+                    } else if (item instanceof Codex.Page.VideoContent vid) {
+                        enqueueVideo(context, vid, itemX, itemY, maxYLimit, queue);
                     }
+                    currentX += getItemWidthWithMargins(item, maxWidth, h);
+                }
+            } else {
+                int leftOccupied = 0;
+                int rightOccupied = 0;
 
-                    int renderX = calculateAlignedX(img.getAlign(), cursor.currentX, maxWidth, imgWidth) + img.getOffsetX();
-                    int renderY = cursor.currentY + img.getOffsetY();
-
-                    if (renderY + imgHeight <= maxYLimit) {
-                        Identifier textureId = Identifier.of(src);
-
-                        queue.add(new RenderCommand(img.getLayer(), () -> {
-                            RenderSystem.enableBlend();
-                            RenderSystem.defaultBlendFunc();
-                            context.drawTexture(
-                                    textureId,
-                                    renderX, renderY,
-                                    img.getU(), img.getV(),
-                                    imgWidth, imgHeight,
-                                    img.getTextureWidth(), img.getTextureHeight()
-                            );
-                            RenderSystem.disableBlend();
-                        }));
-
-                        cursor.maxLineHeight = Math.max(cursor.maxLineHeight, imgHeight);
-
-                        if (img.isInline()) {
-                            cursor.currentX += imgWidth + 2;
-                        } else {
-                            cursor.currentY += imgHeight;
-                            cursor.currentX = startX;
-                            cursor.maxLineHeight = 0;
-                        }
+                for (Codex.BlockContent item : line) {
+                    Codex.Alignment itemAlign = resolveAlignment(getMediaAlignment(item));
+                    if (itemAlign == Codex.Alignment.LEFT) {
+                        leftOccupied += getItemWidthWithMargins(item, maxWidth, h);
+                    } else if (itemAlign == Codex.Alignment.RIGHT) {
+                        rightOccupied += getItemWidthWithMargins(item, maxWidth, h);
                     }
                 }
 
-            } else if (block instanceof Codex.Page.VideoContent vid) {
-                String[] sources = vid.getParsedSources();
-                if (sources.length > 0) {
-                    int imgWidth = vid.getWidth();
-                    int imgHeight = vid.getHeight();
+                int currentLeftX = startX;
+                int currentRightX = startX + maxWidth - rightOccupied;
 
-                    if (!vid.isInline() && cursor.currentX != startX) {
-                        cursor.nextLine(startX);
+                for (Codex.BlockContent item : line) {
+                    Codex.Alignment itemAlign = resolveAlignment(getMediaAlignment(item));
+                    int itemW = getItemWidthWithMargins(item, maxWidth, h);
+
+                    int marginTop = getMarginTop(item, maxWidth, h);
+                    int marginLeft = getMarginLeft(item, maxWidth, h);
+
+                    int itemX;
+                    if (itemAlign == Codex.Alignment.RIGHT) {
+                        itemX = currentRightX + marginLeft;
+                        currentRightX += itemW;
+                    } else if (itemAlign == Codex.Alignment.CENTER) {
+                        itemX = startX + (maxWidth - itemW) / 2 + marginLeft;
+                    } else {
+                        itemX = currentLeftX + marginLeft;
+                        currentLeftX += itemW;
                     }
 
-                    if (cursor.currentX + imgWidth > startX + maxWidth && cursor.currentX > startX) {
-                        cursor.nextLine(startX);
-                    }
+                    int itemY = cursor.currentY + marginTop;
 
-                    int renderX = calculateAlignedX(vid.getAlign(), cursor.currentX, maxWidth, imgWidth) + vid.getOffsetX();
-                    int renderY = cursor.currentY + vid.getOffsetY();
-
-                    if (renderY + imgHeight <= maxYLimit) {
-                        int framesPerTexture = vid.getFrames();
-                        int[] customOrder = vid.getParsedFrameOrder();
-                        int rawTotalFrames = customOrder.length > 0 ? customOrder.length : (framesPerTexture * sources.length);
-                        int totalFrames = Math.max(1, rawTotalFrames - vid.getTrimFrames());
-
-                        queue.add(new RenderCommand(vid.getLayer(), () -> {
-                            RenderSystem.enableBlend();
-                            RenderSystem.defaultBlendFunc();
-
-                            if (totalFrames > 1) {
-                                long clientTicks = MinecraftClient.getInstance().inGameHud.getTicks();
-                                float renderTickCounter = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-
-                                float timeInTicks = clientTicks + renderTickCounter;
-                                int frameTicks = Math.max(1, vid.getFrameTicks());
-
-                                float totalProgress = timeInTicks / (float) frameTicks;
-                                int currentStep = ((int) Math.floor(totalProgress)) % totalFrames;
-                                float frameProgress = totalProgress - (float) Math.floor(totalProgress);
-
-                                int nextStep = (currentStep + 1) % totalFrames;
-
-                                int globalFrameA = customOrder.length > 0 ? customOrder[currentStep] : currentStep;
-                                int globalFrameB = customOrder.length > 0 ? customOrder[nextStep] : nextStep;
-
-                                int srcIndexA = Math.min(globalFrameA / framesPerTexture, sources.length - 1);
-                                int localFrameA = globalFrameA % framesPerTexture;
-                                Identifier textureA = Identifier.of(sources[srcIndexA]);
-                                int vA = vid.getV() + (localFrameA * imgHeight);
-
-                                int srcIndexB = Math.min(globalFrameB / framesPerTexture, sources.length - 1);
-                                int localFrameB = globalFrameB % framesPerTexture;
-                                Identifier textureB = Identifier.of(sources[srcIndexB]);
-                                int vB = vid.getV() + (localFrameB * imgHeight);
-
-                                if (vid.isInterpolated()) {
-                                    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                                    context.drawTexture(
-                                            textureA,
-                                            renderX, renderY,
-                                            vid.getU(), vA,
-                                            imgWidth, imgHeight,
-                                            vid.getTextureWidth(), vid.getTextureHeight()
-                                    );
-
-                                    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, frameProgress);
-                                    context.drawTexture(
-                                            textureB,
-                                            renderX, renderY,
-                                            vid.getU(), vB,
-                                            imgWidth, imgHeight,
-                                            vid.getTextureWidth(), vid.getTextureHeight()
-                                    );
-
-                                    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                                } else {
-                                    context.drawTexture(
-                                            textureA,
-                                            renderX, renderY,
-                                            vid.getU(), vA,
-                                            imgWidth, imgHeight,
-                                            vid.getTextureWidth(), vid.getTextureHeight()
-                                    );
-                                }
-                            } else {
-                                Identifier textureId = Identifier.of(sources[0]);
-                                context.drawTexture(
-                                        textureId,
-                                        renderX, renderY,
-                                        vid.getU(), vid.getV(),
-                                        imgWidth, imgHeight,
-                                        vid.getTextureWidth(), vid.getTextureHeight()
-                                );
-                            }
-
-                            RenderSystem.disableBlend();
-                        }));
-
-                        cursor.maxLineHeight = Math.max(cursor.maxLineHeight, imgHeight);
-
-                        if (vid.isInline()) {
-                            cursor.currentX += imgWidth + 2;
-                        } else {
-                            cursor.currentY += imgHeight;
-                            cursor.currentX = startX;
-                            cursor.maxLineHeight = 0;
-                        }
+                    if (item instanceof Codex.Page.ImageContent img) {
+                        enqueueImage(context, img, itemX, itemY, maxYLimit, queue);
+                    } else if (item instanceof Codex.Page.VideoContent vid) {
+                        enqueueVideo(context, vid, itemX, itemY, maxYLimit, queue);
                     }
                 }
             }
+
+            cursor.currentY += maxLineHeight;
+            cursor.currentX = startX;
+            cursor.maxLineHeight = 0;
+        }
+    }
+
+    private int getItemWidthWithMargins(Codex.BlockContent item, int maxWidth, RenderHelper h) {
+        if (item instanceof Codex.Page.ImageContent img) {
+            return img.getWidth() + getMarginLeft(img, maxWidth, h) + getMarginRight(img, maxWidth, h);
+        } else if (item instanceof Codex.Page.VideoContent vid) {
+            return vid.getWidth() + getMarginLeft(vid, maxWidth, h) + getMarginRight(vid, maxWidth, h);
+        }
+        return 0;
+    }
+
+    private int getItemHeightWithMargins(Codex.BlockContent item, int maxWidth, RenderHelper h) {
+        if (item instanceof Codex.Page.ImageContent img) {
+            return img.getHeight() + getMarginTop(img, maxWidth, h) + getMarginBottom(img, maxWidth, h);
+        } else if (item instanceof Codex.Page.VideoContent vid) {
+            return vid.getHeight() + getMarginTop(vid, maxWidth, h) + getMarginBottom(vid, maxWidth, h);
+        }
+        return 0;
+    }
+
+    private int getMarginTop(Codex.BlockContent item, int maxWidth, RenderHelper h) {
+        Margins m = (item instanceof Codex.Page.ImageContent img) ? img.getMargins() : ((Codex.Page.VideoContent) item).getMargins();
+        return (m != null && m.top() != null) ? m.top().getPxDistance(maxWidth, (float) h.scale(), 0) : 0;
+    }
+
+    private int getMarginBottom(Codex.BlockContent item, int maxWidth, RenderHelper h) {
+        Margins m = (item instanceof Codex.Page.ImageContent img) ? img.getMargins() : ((Codex.Page.VideoContent) item).getMargins();
+        return (m != null && m.bottom() != null) ? m.bottom().getPxDistance(maxWidth, (float) h.scale(), 0) : 0;
+    }
+
+    private int getMarginLeft(Codex.BlockContent item, int maxWidth, RenderHelper h) {
+        Margins m = (item instanceof Codex.Page.ImageContent img) ? img.getMargins() : ((Codex.Page.VideoContent) item).getMargins();
+        return (m != null && m.left() != null) ? m.left().getPxDistance(maxWidth, (float) h.scale(), 0) : 0;
+    }
+
+    private int getMarginRight(Codex.BlockContent item, int maxWidth, RenderHelper h) {
+        Margins m = (item instanceof Codex.Page.ImageContent img) ? img.getMargins() : ((Codex.Page.VideoContent) item).getMargins();
+        return (m != null && m.right() != null) ? m.right().getPxDistance(maxWidth, (float) h.scale(), 0) : 0;
+    }
+
+    private void renderSingleImage(DrawContext context, Codex.Page.ImageContent img, int startX, LayoutCursor cursor, int maxWidth, int maxYLimit, List<RenderCommand> queue) {
+        RenderHelper h = getRenderHelper(context);
+        int marginTop = getMarginTop(img, maxWidth, h);
+        int marginBottom = getMarginBottom(img, maxWidth, h);
+        int marginLeft = getMarginLeft(img, maxWidth, h);
+        int marginRight = getMarginRight(img, maxWidth, h);
+
+        int imgWidth = img.getWidth();
+        int imgHeight = img.getHeight();
+
+        if (!img.isInline() && cursor.currentX != startX) {
+            cursor.nextLine(startX);
+        }
+
+        int renderX = calculateAlignedX(img.getAlign(), startX, maxWidth, imgWidth + marginLeft + marginRight) + marginLeft + img.getOffsetX();
+        int renderY = cursor.currentY + marginTop + img.getOffsetY();
+
+        enqueueImage(context, img, renderX, renderY, maxYLimit, queue);
+
+        int totalHeight = imgHeight + marginTop + marginBottom;
+        cursor.maxLineHeight = Math.max(cursor.maxLineHeight, totalHeight);
+
+        if (img.isInline()) {
+            cursor.currentX += imgWidth + marginLeft + marginRight + 2;
+        } else {
+            cursor.currentY += totalHeight;
+            cursor.currentX = startX;
+            cursor.maxLineHeight = 0;
+        }
+    }
+
+    private void enqueueImage(DrawContext context, Codex.Page.ImageContent img, int renderX, int renderY, int maxYLimit, List<RenderCommand> queue) {
+        String src = img.getSrc();
+        if (src.isBlank()) return;
+
+        int imgWidth = img.getWidth();
+        int imgHeight = img.getHeight();
+
+        if (renderY + imgHeight <= maxYLimit) {
+            Identifier textureId = Identifier.of(src);
+            queue.add(new RenderCommand(img.getLayer(), () -> {
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                context.drawTexture(
+                        textureId,
+                        renderX, renderY,
+                        img.getU(), img.getV(),
+                        imgWidth, imgHeight,
+                        img.getTextureWidth(), img.getTextureHeight()
+                );
+                RenderSystem.disableBlend();
+            }));
+        }
+    }
+
+    private void renderSingleVideo(DrawContext context, Codex.Page.VideoContent vid, int startX, LayoutCursor cursor, int maxWidth, int maxYLimit, List<RenderCommand> queue) {
+        RenderHelper h = getRenderHelper(context);
+        int marginTop = getMarginTop(vid, maxWidth, h);
+        int marginBottom = getMarginBottom(vid, maxWidth, h);
+        int marginLeft = getMarginLeft(vid, maxWidth, h);
+        int marginRight = getMarginRight(vid, maxWidth, h);
+
+        int imgWidth = vid.getWidth();
+        int imgHeight = vid.getHeight();
+
+        if (!vid.isInline() && cursor.currentX != startX) {
+            cursor.nextLine(startX);
+        }
+
+        int renderX = calculateAlignedX(vid.getAlign(), startX, maxWidth, imgWidth + marginLeft + marginRight) + marginLeft + vid.getOffsetX();
+        int renderY = cursor.currentY + marginTop + vid.getOffsetY();
+
+        enqueueVideo(context, vid, renderX, renderY, maxYLimit, queue);
+
+        int totalHeight = imgHeight + marginTop + marginBottom;
+        cursor.maxLineHeight = Math.max(cursor.maxLineHeight, totalHeight);
+
+        if (vid.isInline()) {
+            cursor.currentX += imgWidth + marginLeft + marginRight + 2;
+        } else {
+            cursor.currentY += totalHeight;
+            cursor.currentX = startX;
+            cursor.maxLineHeight = 0;
+        }
+    }
+
+    private void enqueueVideo(DrawContext context, Codex.Page.VideoContent vid, int renderX, int renderY, int maxYLimit, List<RenderCommand> queue) {
+        String[] sources = vid.getParsedSources();
+        if (sources.length == 0) return;
+
+        int imgWidth = vid.getWidth();
+        int imgHeight = vid.getHeight();
+
+        if (renderY + imgHeight <= maxYLimit) {
+            int framesPerTexture = vid.getFrames();
+            int[] customOrder = vid.getParsedFrameOrder();
+            int rawTotalFrames = customOrder.length > 0 ? customOrder.length : (framesPerTexture * sources.length);
+            int totalFrames = Math.max(1, rawTotalFrames - vid.getTrimFrames());
+
+            queue.add(new RenderCommand(vid.getLayer(), () -> {
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+
+                if (totalFrames > 1) {
+                    long clientTicks = MinecraftClient.getInstance().inGameHud.getTicks();
+                    float renderTickCounter = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+
+                    float timeInTicks = clientTicks + renderTickCounter;
+                    int frameTicks = Math.max(1, vid.getFrameTicks());
+
+                    float totalProgress = timeInTicks / (float) frameTicks;
+                    int currentStep = ((int) Math.floor(totalProgress)) % totalFrames;
+                    float frameProgress = totalProgress - (float) Math.floor(totalProgress);
+
+                    int nextStep = (currentStep + 1) % totalFrames;
+
+                    int globalFrameA = customOrder.length > 0 ? customOrder[currentStep] : currentStep;
+                    int globalFrameB = customOrder.length > 0 ? customOrder[nextStep] : nextStep;
+
+                    int srcIndexA = Math.min(globalFrameA / framesPerTexture, sources.length - 1);
+                    int localFrameA = globalFrameA % framesPerTexture;
+                    Identifier textureA = Identifier.of(sources[srcIndexA]);
+                    int vA = vid.getV() + (localFrameA * imgHeight);
+
+                    int srcIndexB = Math.min(globalFrameB / framesPerTexture, sources.length - 1);
+                    int localFrameB = globalFrameB % framesPerTexture;
+                    Identifier textureB = Identifier.of(sources[srcIndexB]);
+                    int vB = vid.getV() + (localFrameB * imgHeight);
+
+                    if (vid.isInterpolated()) {
+                        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+                        context.drawTexture(
+                                textureA,
+                                renderX, renderY,
+                                vid.getU(), vA,
+                                imgWidth, imgHeight,
+                                vid.getTextureWidth(), vid.getTextureHeight()
+                        );
+
+                        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, frameProgress);
+                        context.drawTexture(
+                                textureB,
+                                renderX, renderY,
+                                vid.getU(), vB,
+                                imgWidth, imgHeight,
+                                vid.getTextureWidth(), vid.getTextureHeight()
+                        );
+
+                        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+                    } else {
+                        context.drawTexture(
+                                textureA,
+                                renderX, renderY,
+                                vid.getU(), vA,
+                                imgWidth, imgHeight,
+                                vid.getTextureWidth(), vid.getTextureHeight()
+                        );
+                    }
+                } else {
+                    Identifier textureId = Identifier.of(sources[0]);
+                    context.drawTexture(
+                            textureId,
+                            renderX, renderY,
+                            vid.getU(), vid.getV(),
+                            imgWidth, imgHeight,
+                            vid.getTextureWidth(), vid.getTextureHeight()
+                    );
+                }
+
+                RenderSystem.disableBlend();
+            }));
         }
     }
 
