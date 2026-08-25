@@ -1,258 +1,815 @@
 <codex>
-    <page id="main">
-        <line margin="0.5u, 0u, 0.25u, 0u" align="center" size="1.5"><font color="0xFFAA00">-- <t key="btc.codex.title"/> --</font></line>
-        <line margin="0u, 0u, 0.5u, 0u" align="center" size="0.85"><font color="0x555555">Arcane Testing Manual</font></line>
-        <hr inset="5" color="0xFFAA00"/>
+    <page id="toc">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFFD700"><t key="codex.toc.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFFD700"/>
 
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#pyromancy_1" hoverEvent="text:codex.toc.jump"><fmt color="0xFF5555"><t key="codex.pyromancy_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#pyromancy_2" hoverEvent="text:codex.toc.jump"><fmt color="0xFF5555"><t key="codex.pyromancy_2.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#hydromancy_1" hoverEvent="text:codex.toc.jump"><fmt color="0x55FFFF"><t key="codex.hydromancy_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#hydromancy_2" hoverEvent="text:codex.toc.jump"><fmt color="0x55FFFF"><t key="codex.hydromancy_2.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#hydromancy_3" hoverEvent="text:codex.toc.jump"><fmt color="0x55FFFF"><t key="codex.hydromancy_3.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#hydromancy_4" hoverEvent="text:codex.toc.jump"><fmt color="0x55FFFF"><t key="codex.hydromancy_4.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#aeromancy_1" hoverEvent="text:codex.toc.jump"><fmt color="0xFFFF55"><t key="codex.aeromancy_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#aeromancy_2" hoverEvent="text:codex.toc.jump"><fmt color="0xFFFF55"><t key="codex.aeromancy_2.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#aeromancy_3" hoverEvent="text:codex.toc.jump"><fmt color="0xFFFF55"><t key="codex.aeromancy_3.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#aeromancy_4" hoverEvent="text:codex.toc.jump"><fmt color="0xFFFF55"><t key="codex.aeromancy_4.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#geomancy_1" hoverEvent="text:codex.toc.jump"><fmt color="0x55FF55"><t key="codex.geomancy_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#geomancy_2" hoverEvent="text:codex.toc.jump"><fmt color="0x55FF55"><t key="codex.geomancy_2.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#dark_magic_1" hoverEvent="text:codex.toc.jump"><fmt color="0xAA0000"><t key="codex.dark_magic_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#ender_1" hoverEvent="text:codex.toc.jump"><fmt color="0xAA00AA"><t key="codex.ender_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#ender_2" hoverEvent="text:codex.toc.jump"><fmt color="0xAA00AA"><t key="codex.ender_2.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#ender_3" hoverEvent="text:codex.toc.jump"><fmt color="0xAA00AA"><t key="codex.ender_3.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#ender_4" hoverEvent="text:codex.toc.jump"><fmt color="0xAA00AA"><t key="codex.ender_4.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#arcane_1" hoverEvent="text:codex.toc.jump"><fmt color="0x5555FF"><t key="codex.arcane_1.title" /></fmt></a>
+        </line>
+        <line size="0.8" align="left" margin="0.5u, 0u, 0.5u, 0u">
+            <a href="#credits" hoverEvent="text:codex.toc.jump"><fmt color="0xAAAAAA"><t key="codex.credits.title" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="pyromancy_1">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFF5555"><t key="codex.pyromancy_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFF5555"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:fire_charge" onclick="/cast spell.btc.fireball.weak">
+                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.fireball.weak" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.fireball.weak.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_fireball_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u">
+                <fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt>
+            </line>
+        </if>
+        <unless predicate="btc:adventure/get_fireball_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u">
+                <fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt>
+            </line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:blaze_powder" onclick="/cast spell.btc.fire_storm.concentrated">
+                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.fire_storm.concentrated" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.fire_storm.concentrated.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_concentrated_fire_storm_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_concentrated_fire_storm_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="pyromancy_2">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFF5555"><t key="codex.pyromancy_2.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFF5555"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:blaze_rod" onclick="/cast spell.btc.blaze_storm">
+                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.blaze_storm" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.blaze_storm.description" /></fmt>
+        </line>
         <if predicate="btc:adventure/get_blaze_storm_scroll">
-            <line margin="0.25u, 0u, 0u, 0u">- <a href="#fire_spells"><t key="spell.type.fire"/></a></line>
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
         </if>
         <unless predicate="btc:adventure/get_blaze_storm_scroll">
-            <line margin="0.25u, 0u, 0u, 0u">- <a href="#media_showroom">Media And Alignment Showcase</a></line>
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
         </unless>
-        <line>- <a href="#layering_test">Layering And Offsets</a></line>
-        <line>- <a href="#credits"><t key="credit.button"/></a></line>
 
-        <hr inset="2"/>
-
-        <video srcs="btc:textures/block/wire_overlay.png"
-               align="center"
-               width="16"
-               height="16"
-               textureWidth="16"
-               textureHeight="64"
-               frames="4"
-               frameTicks="16"
-               interpolate="true"
-               display="inline"
-               scale="1.0"
-               margin="0u, 2u, 0u, 2u"
-               frameOrder="0, 1, 2, 3, 2, 1"
-        />
-        <video srcs="btc:textures/gui/bad_apple_old/bad_apple.png"
-               align="center"
-               width="50"
-               height="50"
-               textureWidth="50"
-               textureHeight="2650"
-               frames="53"
-               frameTicks="1"
-               interpolate="true"
-               display="inline"
-               margin="0u, 2u, 0u, 2u"
-        />
-        <video srcs="btc:textures/block/wire_overlay.png"
-               align="center"
-               width="16"
-               height="16"
-               textureWidth="16"
-               textureHeight="64"
-               frames="4"
-               frameTicks="16"
-               interpolate="true"
-               display="inline"
-               scale="1.0"
-               margin="0u, 2u, 0u, 2u"
-               frameOrder="3, 2, 1, 0, 1, 2"
-        />
-    </page>
-
-    <page id="media_showroom">
-        <line align="center" size="1.2"><font color="0x55FF55">Inline Grouping Test</font></line>
-        <hr inset="10"/>
-
-        <line size="0.8" margin="0.25u, 0u, 0.25u, 0u">Right-aligned touching group:</line>
-
-        <video srcs="btc:textures/block/wire_overlay.png"
-               align="left"
-               width="16" height="16"
-               textureWidth="16" textureHeight="64"
-               frames="4" frameTicks="10"
-               interpolate="true"
-               display="inline"
-               margin="0u, 1u, 0u, 0u"/>
-
-        <img src="btc:textures/block/charcoal_block.png"
-             width="16" height="16"
-             textureWidth="16" textureHeight="16"
-             display="inline" align="right"
-             margin="0u, 1u, 0u, 0u"/>
-
-
-        <img src="btc:textures/block/charcoal_block.png"
-             width="16" height="16"
-             textureWidth="16" textureHeight="16"
-             display="inline" align="right"/>
-
-
-        <line size="0.8" margin="0.5u, 0u, 0.25u, 0u">Large Animated Video:</line>
-        <video srcs="btc:textures/gui/bad_apple/ba1.png, btc:textures/gui/bad_apple/ba2.png, btc:textures/gui/bad_apple/ba3.png, btc:textures/gui/bad_apple/ba4.png, btc:textures/gui/bad_apple/ba5.png, btc:textures/gui/bad_apple/ba6.png, btc:textures/gui/bad_apple/ba7.png"
-               align="center"
-               width="32"
-               height="32"
-               textureWidth="32"
-               textureHeight="16000"
-               frames="500"
-               frameTicks="1"
-               trimFrames="401"
-               interpolate="true"
-               display="block"
-               scale="1.5"
-               margin="0.25u, 0u, 0.25u, 0u"
-        />
-    </page>
-
-    <page id="layering_test">
-        <line align="center" size="1.2"><font color="0x5555FF">Layers And Manual Offsets</font></line>
-        <hr inset="8"/>
-
-        <line size="0.8">Base image + Animated overlay (Offset And Layered):</line>
-
-        <img src="btc:textures/block/charcoal_block.png"
-             width="16" height="16"
-             textureWidth="16" textureHeight="16"
-             scale="2"
-             display="inline" align="center"
-             layer="0"/>
-
-        <video srcs="btc:textures/block/wire_overlay.png"
-               align="center"
-               width="16" height="16"
-               textureWidth="16" textureHeight="64"
-               scale="2"
-               frames="4" frameTicks="8"
-               interpolate="true"
-               display="inline"
-               layer="1"
-               offsetX="0" offsetY="-32"
-        />
-        <video srcs="minecraft:textures/block/magma.png"
-               align="center"
-               width="16" height="16"
-               textureWidth="16" textureHeight="48"
-               scale="2"
-               frames="3" frameTicks="16"
-               interpolate="true"
-               display="inline"
-               frameOrder="0,1,2,1"
-               layer="1"
-        />
-        <line margin="1u, 0u, 0u, 0u" align="center">- <a href="#main">Return to Main</a> -</line>
-    </page>
-
-    <page id="fire_spells" requires="btc:adventure/get_fireball_scroll">
-        <line align="center">--- <t key="title.fire"/> ---</line>
-
-        <!-- Pushed via manual offsetX (-16), bypassing auto-grouping -->
-        <img src="btc:textures/block/charcoal_block.png" width="16" height="16" textureWidth="16" textureHeight="16" display="inline" align="left"/>
-        <img src="btc:textures/block/charcoal_block.png" width="16" height="16" textureWidth="16" textureHeight="16" display="inline" align="right" offsetX="-16"/>
-
-        <hr inset="3"/>
-        <if predicate="btc:adventure/get_fireball_scroll">
-            <line>- <a onclick="/selectspell btc:fireball"><t key="spell.type.attack.fireball"/></a></line>
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:lava_bucket" onclick="/cast spell.btc.flame_burst">
+                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.flame_burst" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.flame_burst.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_flame_burst_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
         </if>
-        <line>- <a href="#credits"><t key="credit.button"/></a></line>
-        <line>- <a onclick="^hello world" hoverEvent="entity:"><t key="copy"/></a></line>
-
-        <unless predicate="btc:adventure/get_fireball_scroll">
-            <line><t key="nothing_here"/></line>
+        <unless predicate="btc:adventure/get_flame_burst_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
         </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
     </page>
 
-    <page id="ddddd">
-        <line margin="0.25u">[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]</line>
+    <page id="hydromancy_1">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x55FFFF"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:ice" onclick="/cast spell.btc.potion.frost_walker">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.potion.frost_walker" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.potion.frost_walker.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_frost_walker_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_frost_walker_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:packed_ice" onclick="/cast spell.btc.ice_block">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.ice_block" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.ice_block.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_ice_block_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_ice_block_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
     </page>
 
-    <page id="___">
-        <line>[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]</line>
+    <page id="hydromancy_2">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_2.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x55FFFF"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:water_bucket" onclick="/cast spell.btc.water_wave">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.water_wave" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.water_wave.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_water_wave_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_water_wave_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:heart_of_the_sea" onclick="/cast spell.btc.water_blast">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.water_blast" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.water_blast.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_water_blast_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_water_blast_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="hydromancy_3">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_3.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x55FFFF"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:prismarine_crystals" onclick="/cast spell.btc.geyser_step">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.geyser_step" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.geyser_step.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_geyser_step_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_geyser_step_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:lingering_potion" onclick="/cast spell.btc.mist_veil">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.mist_veil" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.mist_veil.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_mist_veil_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_mist_veil_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="hydromancy_4">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_4.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x55FFFF"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:trident" onclick="/cast spell.btc.riptide">
+                <fmt style="bold" color="0x00AAAA"><t key="spell.btc.riptide" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.riptide.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_riptide_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_riptide_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="aeromancy_1">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFFFF55"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:wind_charge" onclick="/cast spell.btc.wind_charge">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.wind_charge" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.wind_charge.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_wind_charge_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_wind_charge_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:breeze_rod" onclick="/cast spell.btc.cluster_wind_charge">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.cluster_wind_charge" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.cluster_wind_shot.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_cluster_wind_shot_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_cluster_wind_shot_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="aeromancy_2">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_2.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFFFF55"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:feather" onclick="/cast spell.btc.storm_push">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.storm_push" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.storm_push.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_storm_push_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_storm_push_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:phantom_membrane" onclick="/cast spell.btc.tempests_call">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.tempests_call" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.tempests_call.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_tempests_call_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_tempests_call_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="aeromancy_3">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_3.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFFFF55"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:elytra" onclick="/cast spell.btc.wind_tornado">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.wind_tornado" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.wind_tornado.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_wind_tornado_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_wind_tornado_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:firework_rocket" onclick="/cast spell.btc.localized_storm_push">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.localized_storm_push" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.localized_storm_push.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_localized_storm_push_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_localized_storm_push_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="aeromancy_4">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_4.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFFFF55"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:lightning_rod" onclick="/cast spell.btc.lightning_strike">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.lightning_strike" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.lightning_strike.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_lightning_strike_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_lightning_strike_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:copper_ingot" onclick="/cast spell.btc.storm_surge">
+                <fmt style="bold" color="0xAAAA00"><t key="spell.btc.storm_surge" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.storm_surge.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_storm_surge_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_storm_surge_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="geomancy_1">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0x55FF55"><t key="codex.geomancy_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x55FF55"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:pointed_dripstone" onclick="/cast spell.btc.earth_spike_line">
+                <fmt style="bold" color="0x00AA00"><t key="spell.btc.earth_spike_line" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.earth_spike_line.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_earth_spike_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_earth_spike_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="entity:minecraft:creeper" onclick="/cast spell.btc.creeper_wall_block">
+                <fmt style="bold" color="0x00AA00"><t key="spell.btc.creeper_wall_block" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.creeper_wall_block.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_creeper_wall_block_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_creeper_wall_block_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="geomancy_2">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0x55FF55"><t key="codex.geomancy_2.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x55FF55"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="entity:minecraft:creeper" onclick="/cast spell.btc.creeper_wall_circle">
+                <fmt style="bold" color="0x00AA00"><t key="spell.btc.creeper_wall_circle" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.creeper_wall_circle.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_creeper_wall_circle_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_creeper_wall_circle_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:tnt" onclick="/cast spell.btc.creeper_wall_explosive_trap">
+                <fmt style="bold" color="0x00AA00"><t key="spell.btc.creeper_wall_explosive_trap" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.creeper_wall_explosive_trap.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_creeper_wall_explosive_trap_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_creeper_wall_explosive_trap_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="dark_magic_1">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xAA0000"><t key="codex.dark_magic_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xAA0000"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="entity:minecraft:zombie" onclick="/cast spell.btc.raise_undead">
+                <fmt style="bold" color="0x555555"><t key="spell.btc.raise_undead" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.raise_undead.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_raise_undead_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_raise_undead_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:spider_eye" onclick="/cast spell.btc.potion_area_effect.poison">
+                <fmt style="bold" color="0x55FF55"><t key="spell.btc.potion_area_effect.poison" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.potion_area_effect.poison.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_poison_area_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_poison_area_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="ender_1">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xAA00AA"><t key="codex.ender_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xAA00AA"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:ender_pearl" onclick="/cast spell.btc.ender_pearl">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.ender_pearl" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.ender_pearl.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_ender_pearl_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_ender_pearl_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:ender_chest" onclick="/cast spell.btc.ender_chest">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.ender_chest" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.ender_chest.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_ender_chest_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_ender_chest_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="ender_2">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xAA00AA"><t key="codex.ender_2.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xAA00AA"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:dragon_head" onclick="/cast spell.btc.dragon_fireball">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.dragon_fireball" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.dragon_fireball.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_dragon_fireball_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_dragon_fireball_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:dragon_breath" onclick="/cast spell.btc.dragons_breath">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.dragons_breath" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.dragons_breath.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_dragons_breath_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_dragons_breath_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="ender_3">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xAA00AA"><t key="codex.ender_3.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xAA00AA"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:ghast_tear" onclick="/cast spell.btc.life_steal">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.life_steal" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.life_steal.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_life_steal_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_life_steal_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="entity:minecraft:shulker" onclick="/cast spell.btc.shulker_bullet">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.shulker_bullet" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.shulker_bullet.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_shulker_bullet_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_shulker_bullet_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="ender_4">
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xAA00AA"><t key="codex.ender_4.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xAA00AA"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:obsidian" onclick="/cast spell.btc.shadow_step">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.shadow_step" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.shadow_step.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_shadow_step_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_shadow_step_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 1u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:sculk" onclick="/cast spell.btc.potion.dragon_scales">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.potion.dragon_scales" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.potion.dragon_scales.description" /></fmt>
+        </line>
+        <if predicate="btc:adventure/get_dragon_scales_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:adventure/get_dragon_scales_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
+    </page>
+
+    <page id="arcane_1">
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0x5555FF"><t key="codex.arcane_1.title" /></fmt>
+        </line>
+        <hr inset="12" color="0x5555FF"/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:minecraft:amethyst_shard" onclick="/cast spell.btc.purge_bolt">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.purge_bolt" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.purge_bolt.description" /></fmt>
+        </line>
+        <br/>
+
+        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
+            <a hoverEvent="item:btc:unlock_scroll" onclick="/cast spell.btc.dissolution">
+                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.dissolution" /></fmt>
+            </a>
+        </line>
+        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
+            <fmt color="0x555555"><t key="spell.btc.dissolution.description" /></fmt>
+        </line>
+        <if predicate="btc:spells/dissolution_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0x55FF55"><t key="codex.status.unlocked" /></fmt></line>
+        </if>
+        <unless predicate="btc:spells/dissolution_scroll">
+            <line size="0.65" align="right" margin="0u, 0u, 0u, 0u"><fmt style="italic" color="0xAAAAAA"><t key="codex.status.locked" /></fmt></line>
+        </unless>
+
+        <line size="0.65" align="center" margin="1u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
     </page>
 
     <page id="credits">
-        <line align="center" margin="2u, 0u, 0.5u, 0u">All Hail <font color="0xFF00FF">SianaBeeblebrox</font></line>
-        <hr inset="12"/>
-        <line align="center" margin="1u, 0u, 0u, 0u">- <a href="#main">Back to Cover</a> -</line>
+        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+            <fmt style="bold" color="0xFFD700"><t key="codex.credits.title" /></fmt>
+        </line>
+        <hr inset="12" color="0xFFD700"/>
+
+        <line size="0.8" align="center" margin="1u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xFFFFFF"><t key="codex.credits.author" /></fmt>
+        </line>
+        <line size="0.7" align="center" margin="0u, 0u, 1u, 0u">
+            <a href="https://github.com/tobyrue" hoverEvent="text:codex.credits.github_hover">
+                <fmt color="0x55FFFF">TobyRue / TobinOakenshield</fmt>
+            </a>
+        </line>
+
+        <line size="0.8" align="center" margin="1u, 0u, 0u, 0u">
+            <fmt style="bold" color="0xFFFFFF"><t key="codex.credits.thanks" /></fmt>
+        </line>
+        <line size="0.7" align="center" margin="0u, 0u, 1u, 0u">
+            <fmt color="0xAAAAAA"><t key="codex.credits.thanks_description" /></fmt>
+        </line>
+
+        <line size="0.65" align="center" margin="1.5u, 0u, 0u, 0u">
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+        </line>
     </page>
 </codex>
-<!--<codex>-->
-<!--    <page id="main">-->
-<!--        <line margin="0u" align="center" size="1.5">And#45;And#45;<t key="btc.codex.title"/>And#45;And#45;</line>-->
-<!--        <if predicate="btc:adventure/get_blaze_storm_scroll"><line>- <a href="#fire_spells"><t key="spell.type.fire"/></a></line></if>-->
-<!--        <unless predicate="btc:adventure/get_blaze_storm_scroll"><hr/></unless>-->
-
-<!--        <video srcs="btc:textures/gui/bad_apple_old/bad_apple.png"-->
-<!--               align="left"-->
-<!--               width="50"-->
-<!--               height="50"-->
-<!--               textureWidth="50"-->
-<!--               textureHeight="2650"-->
-<!--               frames="53"-->
-<!--               frameTicks="1"-->
-<!--               interpolate="true"-->
-<!--               display="inline"-->
-<!--        />-->
-
-<!--        <video srcs="btc:textures/gui/bad_apple/ba1.png, btc:textures/gui/bad_apple/ba2.png, btc:textures/gui/bad_apple/ba3.png, btc:textures/gui/bad_apple/ba4.png, btc:textures/gui/bad_apple/ba5.png, btc:textures/gui/bad_apple/ba6.png, btc:textures/gui/bad_apple/ba7.png"-->
-<!--               align="left"-->
-<!--               width="32"-->
-<!--               height="32"-->
-<!--               textureWidth="32"-->
-<!--               textureHeight="16000"-->
-<!--               frames="500"-->
-<!--               frameTicks="1"-->
-<!--               trimFrames="401"-->
-<!--               interpolate="true"-->
-<!--               display="inline"-->
-<!--               scale="1.5"-->
-<!--        />-->
-<!--        <video srcs="btc:textures/block/wire_overlay.png"-->
-<!--               align="left"-->
-<!--               width="16"-->
-<!--               height="16"-->
-<!--               textureWidth="16"-->
-<!--               textureHeight="64"-->
-<!--               frames="4"-->
-<!--               frameTicks="16"-->
-<!--               interpolate="true"-->
-<!--               display="inline"-->
-<!--               scale="2"-->
-<!--               frameOrder="0, 1, 2, 3, 2, 1"-->
-<!--        />-->
-
-<!--    </page>-->
-<!--    <page id="fire_spells" requires="btc:adventure/get_fireball_scroll">-->
-<!--        <line align="center">-And#45;And#45; <t key="title.fire"/> -And#45;And#45;</line>-->
-<!--        <img src="btc:textures/block/charcoal_block.png" textureWidth="16" textureHeight="16" display="inline" align="left"/>-->
-<!--        <img src="btc:textures/block/charcoal_block.png" textureWidth="16" textureHeight="16" display="inline" align="right" offsetX="-16"/>-->
-<!--        <hr inset="3"/>-->
-<!--        <if predicate="btc:adventure/get_fireball_scroll"><line>- <a onclick="/selectspell btc:fireball"><t key="spell.type.attack.fireball"/></a></line></if>-->
-<!--        <line>- <a href="#credits"><t key="credit.button"/></a></line>-->
-<!--        <line>- <a onclick="^hello world" hoverEvent="entity:"><t key="copy"/></a></line>-->
-<!--        <unless predicate="btc:adventure/get_fireball_scroll"><line><t key="nothing_here"/></line></unless>-->
-<!--    </page>-->
-<!--    <page id="ddddd">-->
-<!--        <line margin="0.25u">[]...[]</line>-->
-<!--    </page>-->
-<!--    <page id="___">-->
-<!--        <line>[]...[]</line>-->
-<!--    </page>-->
-<!--    <page id="credits">-->
-<!--        <line align="center">All Hail <font color="0xFF00FF">SianaBeeblebrox</font></line>-->
-<!--    </page>-->
-
-<!--</codex>-->

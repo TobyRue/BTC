@@ -1,0 +1,258 @@
+<codex>
+    <page id="main">
+        <line margin="0.5u, 0u, 0.25u, 0u" align="center" size="1.5"><font color="0xFFAA00">-- <t key="btc.codex.title"/> --</font></line>
+        <line margin="0u, 0u, 0.5u, 0u" align="center" size="0.85"><font color="0x555555">Arcane Testing Manual</font></line>
+        <hr inset="5" color="0xFFAA00"/>
+
+        <if predicate="btc:adventure/get_blaze_storm_scroll">
+            <line margin="0.25u, 0u, 0u, 0u">- <a href="#fire_spells"><t key="spell.type.fire"/></a></line>
+        </if>
+        <unless predicate="btc:adventure/get_blaze_storm_scroll">
+            <line margin="0.25u, 0u, 0u, 0u">- <a href="#media_showroom">Media And Alignment Showcase</a></line>
+        </unless>
+        <line>- <a href="#layering_test">Layering And Offsets</a></line>
+        <line>- <a href="#credits"><t key="credit.button"/></a></line>
+
+        <hr inset="2"/>
+
+        <video srcs="btc:textures/block/wire_overlay.png"
+               align="center"
+               width="16"
+               height="16"
+               textureWidth="16"
+               textureHeight="64"
+               frames="4"
+               frameTicks="16"
+               interpolate="true"
+               display="inline"
+               scale="1.0"
+               margin="0u, 2u, 0u, 2u"
+               frameOrder="0, 1, 2, 3, 2, 1"
+        />
+        <video srcs="btc:textures/gui/bad_apple_old/bad_apple.png"
+               align="center"
+               width="50"
+               height="50"
+               textureWidth="50"
+               textureHeight="2650"
+               frames="53"
+               frameTicks="1"
+               interpolate="true"
+               display="inline"
+               margin="0u, 2u, 0u, 2u"
+        />
+        <video srcs="btc:textures/block/wire_overlay.png"
+               align="center"
+               width="16"
+               height="16"
+               textureWidth="16"
+               textureHeight="64"
+               frames="4"
+               frameTicks="16"
+               interpolate="true"
+               display="inline"
+               scale="1.0"
+               margin="0u, 2u, 0u, 2u"
+               frameOrder="3, 2, 1, 0, 1, 2"
+        />
+    </page>
+
+    <page id="media_showroom">
+        <line align="center" size="1.2"><font color="0x55FF55">Inline Grouping Test</font></line>
+        <hr inset="10"/>
+
+        <line size="0.8" margin="0.25u, 0u, 0.25u, 0u">Right-aligned touching group:</line>
+
+        <video srcs="btc:textures/block/wire_overlay.png"
+               align="left"
+               width="16" height="16"
+               textureWidth="16" textureHeight="64"
+               frames="4" frameTicks="10"
+               interpolate="true"
+               display="inline"
+               margin="0u, 1u, 0u, 0u"/>
+
+        <img src="btc:textures/block/charcoal_block.png"
+             width="16" height="16"
+             textureWidth="16" textureHeight="16"
+             display="inline" align="right"
+             margin="0u, 1u, 0u, 0u"/>
+
+
+        <img src="btc:textures/block/charcoal_block.png"
+             width="16" height="16"
+             textureWidth="16" textureHeight="16"
+             display="inline" align="right"/>
+
+
+        <line size="0.8" margin="0.5u, 0u, 0.25u, 0u">Large Animated Video:</line>
+        <video srcs="btc:textures/gui/bad_apple/ba1.png, btc:textures/gui/bad_apple/ba2.png, btc:textures/gui/bad_apple/ba3.png, btc:textures/gui/bad_apple/ba4.png, btc:textures/gui/bad_apple/ba5.png, btc:textures/gui/bad_apple/ba6.png, btc:textures/gui/bad_apple/ba7.png"
+               align="center"
+               width="32"
+               height="32"
+               textureWidth="32"
+               textureHeight="16000"
+               frames="500"
+               frameTicks="1"
+               trimFrames="401"
+               interpolate="true"
+               display="block"
+               scale="1.5"
+               margin="0.25u, 0u, 0.25u, 0u"
+        />
+    </page>
+
+    <page id="layering_test">
+        <line align="center" size="1.2"><font color="0x5555FF">Layers And Manual Offsets</font></line>
+        <hr inset="8"/>
+
+        <line size="0.8">Base image + Animated overlay (Offset And Layered):</line>
+
+        <img src="btc:textures/block/charcoal_block.png"
+             width="16" height="16"
+             textureWidth="16" textureHeight="16"
+             scale="2"
+             display="inline" align="center"
+             layer="0"/>
+
+        <video srcs="btc:textures/block/wire_overlay.png"
+               align="center"
+               width="16" height="16"
+               textureWidth="16" textureHeight="64"
+               scale="2"
+               frames="4" frameTicks="8"
+               interpolate="true"
+               display="inline"
+               layer="1"
+               offsetX="0" offsetY="-32"
+        />
+        <video srcs="minecraft:textures/block/magma.png"
+               align="center"
+               width="16" height="16"
+               textureWidth="16" textureHeight="48"
+               scale="2"
+               frames="3" frameTicks="16"
+               interpolate="true"
+               display="inline"
+               frameOrder="0,1,2,1"
+               layer="1"
+        />
+        <line margin="1u, 0u, 0u, 0u" align="center">- <a href="#main">Return to Main</a> -</line>
+    </page>
+
+    <page id="fire_spells" requires="btc:adventure/get_fireball_scroll">
+        <line align="center">--- <t key="title.fire"/> ---</line>
+
+        <!-- Pushed via manual offsetX (-16), bypassing auto-grouping -->
+        <img src="btc:textures/block/charcoal_block.png" width="16" height="16" textureWidth="16" textureHeight="16" display="inline" align="left"/>
+        <img src="btc:textures/block/charcoal_block.png" width="16" height="16" textureWidth="16" textureHeight="16" display="inline" align="right" offsetX="-16"/>
+
+        <hr inset="3"/>
+        <if predicate="btc:adventure/get_fireball_scroll">
+            <line>- <a onclick="/selectspell btc:fireball"><t key="spell.type.attack.fireball"/></a></line>
+        </if>
+        <line>- <a href="#credits"><t key="credit.button"/></a></line>
+        <line>- <a onclick="^hello world" hoverEvent="entity:"><t key="copy"/></a></line>
+
+        <unless predicate="btc:adventure/get_fireball_scroll">
+            <line><t key="nothing_here"/></line>
+        </unless>
+    </page>
+
+    <page id="ddddd">
+        <line margin="0.25u">[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]</line>
+    </page>
+
+    <page id="___">
+        <line>[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]</line>
+    </page>
+
+    <page id="credits">
+        <line align="center" margin="2u, 0u, 0.5u, 0u">All Hail <font color="0xFF00FF">SianaBeeblebrox</font></line>
+        <hr inset="12"/>
+        <line align="center" margin="1u, 0u, 0u, 0u">- <a href="#main">Back to Cover</a> -</line>
+    </page>
+</codex>
+<!--<codex>-->
+<!--    <page id="main">-->
+<!--        <line margin="0u" align="center" size="1.5">And#45;And#45;<t key="btc.codex.title"/>And#45;And#45;</line>-->
+<!--        <if predicate="btc:adventure/get_blaze_storm_scroll"><line>- <a href="#fire_spells"><t key="spell.type.fire"/></a></line></if>-->
+<!--        <unless predicate="btc:adventure/get_blaze_storm_scroll"><hr/></unless>-->
+
+<!--        <video srcs="btc:textures/gui/bad_apple_old/bad_apple.png"-->
+<!--               align="left"-->
+<!--               width="50"-->
+<!--               height="50"-->
+<!--               textureWidth="50"-->
+<!--               textureHeight="2650"-->
+<!--               frames="53"-->
+<!--               frameTicks="1"-->
+<!--               interpolate="true"-->
+<!--               display="inline"-->
+<!--        />-->
+
+<!--        <video srcs="btc:textures/gui/bad_apple/ba1.png, btc:textures/gui/bad_apple/ba2.png, btc:textures/gui/bad_apple/ba3.png, btc:textures/gui/bad_apple/ba4.png, btc:textures/gui/bad_apple/ba5.png, btc:textures/gui/bad_apple/ba6.png, btc:textures/gui/bad_apple/ba7.png"-->
+<!--               align="left"-->
+<!--               width="32"-->
+<!--               height="32"-->
+<!--               textureWidth="32"-->
+<!--               textureHeight="16000"-->
+<!--               frames="500"-->
+<!--               frameTicks="1"-->
+<!--               trimFrames="401"-->
+<!--               interpolate="true"-->
+<!--               display="inline"-->
+<!--               scale="1.5"-->
+<!--        />-->
+<!--        <video srcs="btc:textures/block/wire_overlay.png"-->
+<!--               align="left"-->
+<!--               width="16"-->
+<!--               height="16"-->
+<!--               textureWidth="16"-->
+<!--               textureHeight="64"-->
+<!--               frames="4"-->
+<!--               frameTicks="16"-->
+<!--               interpolate="true"-->
+<!--               display="inline"-->
+<!--               scale="2"-->
+<!--               frameOrder="0, 1, 2, 3, 2, 1"-->
+<!--        />-->
+
+<!--    </page>-->
+<!--    <page id="fire_spells" requires="btc:adventure/get_fireball_scroll">-->
+<!--        <line align="center">-And#45;And#45; <t key="title.fire"/> -And#45;And#45;</line>-->
+<!--        <img src="btc:textures/block/charcoal_block.png" textureWidth="16" textureHeight="16" display="inline" align="left"/>-->
+<!--        <img src="btc:textures/block/charcoal_block.png" textureWidth="16" textureHeight="16" display="inline" align="right" offsetX="-16"/>-->
+<!--        <hr inset="3"/>-->
+<!--        <if predicate="btc:adventure/get_fireball_scroll"><line>- <a onclick="/selectspell btc:fireball"><t key="spell.type.attack.fireball"/></a></line></if>-->
+<!--        <line>- <a href="#credits"><t key="credit.button"/></a></line>-->
+<!--        <line>- <a onclick="^hello world" hoverEvent="entity:"><t key="copy"/></a></line>-->
+<!--        <unless predicate="btc:adventure/get_fireball_scroll"><line><t key="nothing_here"/></line></unless>-->
+<!--    </page>-->
+<!--    <page id="ddddd">-->
+<!--        <line margin="0.25u">[]...[]</line>-->
+<!--    </page>-->
+<!--    <page id="___">-->
+<!--        <line>[]...[]</line>-->
+<!--    </page>-->
+<!--    <page id="credits">-->
+<!--        <line align="center">All Hail <font color="0xFF00FF">SianaBeeblebrox</font></line>-->
+<!--    </page>-->
+
+<!--</codex>-->

@@ -734,5 +734,38 @@
 
   "biome.btc.salt_caves": "Salt Caves",
 
-  "btc.codex.title": "Codex"
+  "btc.codex.title": "Codex",
+
+
+
+  "codex.toc.title": "Spellbook Index",
+  "codex.toc.jump": "Click to jump to page",
+  "codex.status.unlocked": "Unlocked",
+  "codex.status.locked": "Locked",
+  "codex.nav.back_to_toc": "Back to Table of Contents",
+
+  "codex.pyromancy_1.title": "Pyromancy I",
+  "codex.pyromancy_2.title": "Pyromancy II",
+  "codex.hydromancy_1.title": "Hydromancy I",
+  "codex.hydromancy_2.title": "Hydromancy II",
+  "codex.hydromancy_3.title": "Hydromancy III",
+  "codex.hydromancy_4.title": "Hydromancy IV",
+  "codex.aeromancy_1.title": "Aeromancy I",
+  "codex.aeromancy_2.title": "Aeromancy II",
+  "codex.aeromancy_3.title": "Aeromancy III",
+  "codex.aeromancy_4.title": "Aeromancy IV",
+  "codex.geomancy_1.title": "Geomancy I",
+  "codex.geomancy_2.title": "Geomancy II",
+  "codex.dark_magic_1.title": "Dark Magic",
+  "codex.ender_1.title": "Ender Magic I",
+  "codex.ender_2.title": "Ender Magic II",
+  "codex.ender_3.title": "Ender Magic III",
+  "codex.ender_4.title": "Ender Magic IV",
+  "codex.arcane_1.title": "Arcane Magic",
+  "codex.credits.title": "Credits",
+
+  "codex.credits.author": "Created By",
+  "codex.credits.github_hover": "Open GitHub Profile",
+  "codex.credits.thanks": "Special Thanks",
+  "codex.credits.thanks_description": "Thank you for playing!"
 }
