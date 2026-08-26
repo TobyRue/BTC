@@ -795,12 +795,21 @@
         <line size="0.8" align="center" margin="1u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFFFFF"><t key="codex.credits.author" /></fmt>
         </line>
-        <line size="0.7" align="center" margin="0u, 0u, 1u, 0u">
+        <line size="0.7" align="center" margin="0.5u, 0u, 0.5u, 0u">
+            <fmt color="0x55FFFF">TobyRue / TobinOakenshield</fmt>
+        </line>
+        <line size="0.7" align="center" margin="0, 0u, 0.5u, 0u">
             <a href="https://github.com/tobyrue" hoverEvent="text:codex.credits.github_hover">
-                <fmt color="0x55FFFF">TobyRue / TobinOakenshield</fmt>
+                <fmt color="0x55FFFF">GitHub</fmt>
             </a>
         </line>
-
+        <img src="btc:textures/gui/github.png" textureWidth="16" textureHeight="16" align="center" scale="0.55" offsetY="-12" offsetX="-21" display="inline"/>
+        <line size="0.7" align="center" margin="0, 0u, 0.5u, 0u">
+            <a href="https://modrinth.com/mod/btc" hoverEvent="text:codex.credits.modrinth_hover">
+                <fmt color="0x55FFFF">Modrinth</fmt>
+            </a>
+        </line>
+        <img src="btc:textures/gui/modrinth.png" textureWidth="152" textureHeight="152" scale="0.075" align="center" offsetY="-13" offsetX="-21"/>
         <line size="0.8" align="center" margin="1u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFFFFF"><t key="codex.credits.thanks" /></fmt>
         </line>
@@ -809,7 +818,7 @@
         </line>
 
         <line size="0.65" align="center" margin="1.5u, 0u, 0u, 0u">
-            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc" /></fmt></a>
+            <a href="#toc"><fmt style="underline" color="0x888888"><t key="codex.nav.back_to_toc"/></fmt></a>
         </line>
     </page>
 </codex>

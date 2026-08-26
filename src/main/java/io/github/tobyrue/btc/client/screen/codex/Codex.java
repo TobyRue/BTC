@@ -285,8 +285,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         ) implements BlockContent {
             @Override public Margins getMargins() { return margin; }
             @Override public Position getPosition() { return position; }
-            @Override public int getHeight() { return Math.round(((height != null && height != -1) ? height : getTextureHeight()) * getScale()); }
-            @Override public int getWidth() { return Math.round(((width != null && width != -1) ? width : getTextureWidth()) * getScale()); }
+            @Override public int getHeight() { return Math.round(((height != null && height != -1) ? height * getScale() : getTextureHeight())); }
+            @Override public int getWidth() { return Math.round(((width != null && width != -1) ? width * getScale() : getTextureWidth())); }
 
             public float getScale() { return scale != null && scale > 0 ? scale : 1.0f; }
             public int getOffsetX() { return offsetX != null ? offsetX : 0; }
@@ -330,8 +330,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         ) implements BlockContent {
             @Override public Margins getMargins() { return margin; }
             @Override public Position getPosition() { return position; }
-            @Override public int getHeight() { return Math.round(((height != null && height != -1) ? height : getTextureHeight()) * getScale()); }
-            @Override public int getWidth() { return Math.round(((width != null && width != -1) ? width : getTextureWidth()) * getScale()); }
+            @Override public int getHeight() { return Math.round(((height != null && height != -1) ? height * getScale() : getTextureHeight())); }
+            @Override public int getWidth() { return Math.round(((width != null && width != -1) ? width * getScale() : getTextureWidth())); }
 
             public float getScale() { return scale != null && scale > 0 ? scale : 1.0f; }
             public int getOffsetX() { return offsetX != null ? offsetX : 0; }

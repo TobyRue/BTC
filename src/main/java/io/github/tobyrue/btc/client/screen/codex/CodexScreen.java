@@ -514,8 +514,12 @@ public class CodexScreen extends Screen {
 
         enqueueImage(context, img, renderX, renderY, maxYLimit, queue);
 
-        int totalHeight = imgHeight + marginTop + marginBottom;
-        cursor.maxLineHeight = Math.max(cursor.maxLineHeight, totalHeight);
+        boolean hasYOffset = img.getOffsetY() != 0;
+        int totalHeight = hasYOffset ? 0 : (imgHeight + marginTop + marginBottom);
+
+        if (!hasYOffset) {
+            cursor.maxLineHeight = Math.max(cursor.maxLineHeight, totalHeight);
+        }
 
         if (img.isInline()) {
             cursor.currentX += imgWidth + marginLeft + marginRight + 2;
@@ -569,8 +573,12 @@ public class CodexScreen extends Screen {
 
         enqueueVideo(context, vid, renderX, renderY, maxYLimit, queue);
 
-        int totalHeight = imgHeight + marginTop + marginBottom;
-        cursor.maxLineHeight = Math.max(cursor.maxLineHeight, totalHeight);
+        boolean hasYOffset = vid.getOffsetY() != 0;
+        int totalHeight = hasYOffset ? 0 : (imgHeight + marginTop + marginBottom);
+
+        if (!hasYOffset) {
+            cursor.maxLineHeight = Math.max(cursor.maxLineHeight, totalHeight);
+        }
 
         if (vid.isInline()) {
             cursor.currentX += imgWidth + marginLeft + marginRight + 2;
