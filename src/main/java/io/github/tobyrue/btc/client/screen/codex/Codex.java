@@ -1,15 +1,21 @@
 package io.github.tobyrue.btc.client.screen.codex;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.tobyrue.btc.AdvancementParser;
 import io.github.tobyrue.btc.client.screen.codex.style.Color;
 import io.github.tobyrue.btc.client.screen.codex.style.Margins;
 import io.github.tobyrue.btc.client.screen.codex.style.UnitValue;
 import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.xml.*;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -123,9 +129,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             pages.forEach(this.allPages::add);
         }
 
-        /**
-         * Gets a page by its String ID, verifying player requirements and hidden state.
-         */
         public Page getPage(String id, @Nullable PlayerEntity player) {
             Page page = this.allPages.stream()
                     .filter(p -> p.id().equalsIgnoreCase(id))
@@ -140,10 +143,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             return getPage(id, null);
         }
 
-        /**
-         * Gets a page by index (1-based), filtering out hidden pages or pages
-         * where the player does not meet requirements.
-         */
         public Page getPage(int index, @Nullable PlayerEntity player) {
             if (index < 1) return null;
             return this.allPages.stream()
@@ -157,9 +156,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             return getPage(index, null);
         }
 
-        /**
-         * Calculates total pages visible to the given player.
-         */
         public int size(@Nullable PlayerEntity player) {
             return (int) this.allPages.stream()
                     .filter(p -> !p.hidden() && p.isRequirementMet(player))
@@ -261,9 +257,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         }
 
         @Override
-        public void render(final PlayerEntity player, final int x, final int y, final int width, final int height) {
-            // Render stuff here later
-        }
+        public void render(final PlayerEntity player, final int x, final int y, final int width, final int height) {}
 
         @XML.Name("img")
         public record ImageContent(
@@ -314,7 +308,7 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 @XML.Attribute(fallBack = "0") Integer offsetX,
                 @XML.Attribute(fallBack = "0") Integer offsetY,
                 @XML.Attribute(fallBack = "0") Integer layer,
-                @XML.Attribute(fallBack = "inline") String display, // "inline" or "block"
+                @XML.Attribute(fallBack = "inline") String display,
                 @XML.Attribute(fallBack = "0") Integer u,
                 @XML.Attribute(fallBack = "0") Integer v,
                 @XML.Attribute(fallBack = "16") Integer textureWidth,
@@ -385,7 +379,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @XML.Name("if")
         public record IfCondition(
-                @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,                @XML.Attribute(fallBack = "true") AdvancementParser.Expression predicate
+                @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,
+                @XML.Attribute(fallBack = "true") AdvancementParser.Expression predicate
         ) implements BlockContent, ConditionalContent {
             @Override
             public boolean isRequirementMet(PlayerEntity player) {
@@ -401,7 +396,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
 
         @XML.Name("unless")
         public record UnlessCondition(
-                @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,                @XML.Attribute(fallBack = "false") AdvancementParser.Expression predicate
+                @XML.Children(allow = {Line.class, ImageContent.class, VideoContent.class, IfCondition.class, UnlessCondition.class, HorizontalLine.class, BreakLine.class}) XMLNodeCollection<BlockContent> children,
+                @XML.Attribute(fallBack = "false") AdvancementParser.Expression predicate
         ) implements BlockContent, ConditionalContent {
             @Override
             public boolean isRequirementMet(PlayerEntity player) {
@@ -586,6 +582,35 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 @XML.Attribute(fallBack = "") String hoverEvent,
                 @XML.Attribute(fallBack = "blue, underline") Formatting[] style
         ) implements TextContent {
+
+            private ItemStack parseItemStack(String itemSpec, @Nullable PlayerEntity player) {
+                if (player == null) {
+                    return parseFallbackItemStack(itemSpec);
+                }
+
+                try {
+                    StringReader reader = new StringReader(itemSpec);
+                    RegistryWrapper.WrapperLookup registries = player.getWorld().getRegistryManager();
+
+                    ItemStringReader itemParser = new ItemStringReader(registries);
+                    ItemStringReader.ItemResult result = itemParser.consume(reader);
+                    ItemStack stack = new ItemStack(result.item());
+                    stack.applyChanges(result.components());
+                    return stack;
+                } catch (Exception ignored) {
+                    return parseFallbackItemStack(itemSpec);
+                }
+            }
+
+            private ItemStack parseFallbackItemStack(String itemSpec) {
+                String itemId = itemSpec;
+                if (itemSpec.contains("[")) {
+                    itemId = itemSpec.substring(0, itemSpec.indexOf('[')).strip();
+                }
+                Identifier id = Identifier.of(itemId);
+                Item item = Registries.ITEM.get(id);
+                return new ItemStack(item);
+            }
             @Override
             public net.minecraft.text.Text toText() {
                 final ClickEvent ce;
@@ -611,18 +636,16 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 } else {
                     ce = null;
                 }
-                if (hoverEvent.startsWith("item:")) {
-                    String itemId = hoverEvent.substring(5).strip();
-                    Identifier id = Identifier.of(itemId);
-                    Item item = net.minecraft.registry.Registries.ITEM.get(id);
 
-                    ItemStack stack = new ItemStack(item);
+                if (hoverEvent.startsWith("item:")) {
+                    String itemSpec = hoverEvent.substring(5).strip();
+                    ItemStack stack = parseItemStack(itemSpec, MinecraftClient.getInstance().player);
                     HoverEvent.ItemStackContent itemContent = new HoverEvent.ItemStackContent(stack);
                     he = new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemContent);
                 } else if (hoverEvent.startsWith("entity:")) {
                     String entityId = hoverEvent.substring(7).strip();
                     Identifier id = Identifier.of(entityId);
-                    EntityType<?> entityType = net.minecraft.registry.Registries.ENTITY_TYPE.get(id);
+                    EntityType<?> entityType = Registries.ENTITY_TYPE.get(id);
 
                     HoverEvent.EntityContent entityContent = new HoverEvent.EntityContent(entityType, UUID.fromString("0-0-0-0-0"), (net.minecraft.text.Text) null);
                     he = new HoverEvent(HoverEvent.Action.SHOW_ENTITY, entityContent);
@@ -636,13 +659,11 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             }
         }
     }
+
     public static class CodexUtils {
 
         public record AnchorData(String text, String href, String onclick, String title) {}
 
-        /**
-         * Collects all Anchor elements across all pages in the Codex.
-         */
         public static List<AnchorData> collectAnchors(Codex codex) {
             List<AnchorData> anchors = new ArrayList<>();
             for (Codex.Page page : codex.children()) {

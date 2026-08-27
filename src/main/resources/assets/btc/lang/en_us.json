@@ -510,6 +510,7 @@
   "item.btc.spell.earth.poison": "Poison AOE",
 
   "item.btc.spell.fire.set": "Blaze Staff set to: %s",
+  "item.btc.spell.fire.fireball": "Fireball",
   "item.btc.spell.fire.weak_fireball": "Weak Fireball",
   "item.btc.spell.fire.strong_fireball": "Strong Fireball",
   "item.btc.spell.fire.concentrated_fire_storm": "Concentrated Fire Storm",
@@ -667,6 +668,7 @@
   "spell.btc.fireball.weak": "Weak Fireball",
   "spell.btc.fireball.strong": "Strong Fireball",
   "spell.btc.fire_storm.normal": "Fire Storm",
+  "spell.btc.fire_storm": "Fire Storm",
   "spell.btc.fire_storm.strong": "Strong Fire Storm",
   "spell.btc.fire_storm.concentrated": "Concentrated Fire Storm",
   "spell.btc.blaze_storm": "Blaze Storm",

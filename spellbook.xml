@@ -1,6 +1,7 @@
 <codex>
     <page id="toc">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFFD700"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFD700"><t key="codex.toc.title" /></fmt>
         </line>
         <hr inset="12" color="0xFFD700"/>
@@ -65,14 +66,15 @@
     </page>
 
     <page id="pyromancy_1">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFF5555"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFF5555"><t key="codex.pyromancy_1.title" /></fmt>
         </line>
         <hr inset="12" color="0xFF5555"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:fire_charge" onclick="/cast spell.btc.fireball.weak">
-                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.fireball.weak" /></fmt>
+            <a hoverEvent="item:btc:unlock_scroll[minecraft:item_name=Fireball,btc:unlock_spell={advancement:'btc:adventure/get_fireball_scroll',texture_int:0,id:'btc:fireball',args:'{level:1, cooldown:80}'}]" onclick="/cast spell.btc.fireball.weak">
+                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.fireball" /></fmt>
             </a>
         </line>
         <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
@@ -90,8 +92,8 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:blaze_powder" onclick="/cast spell.btc.fire_storm.concentrated">
-                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.fire_storm.concentrated" /></fmt>
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_fire_storm_scroll',texture_int:0,id:'btc:fire_storm',args:'{castTime:40, maxRadius:16.0d, cooldown:500}'}]" onclick="/cast spell.btc.fire_storm.concentrated">
+                <fmt style="bold" color="0xFFAA00"><t key="spell.btc.fire_storm" /></fmt>
             </a>
         </line>
         <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
@@ -110,13 +112,14 @@
     </page>
 
     <page id="pyromancy_2">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFF5555"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFF5555"><t key="codex.pyromancy_2.title" /></fmt>
         </line>
         <hr inset="12" color="0xFF5555"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:blaze_rod" onclick="/cast spell.btc.blaze_storm">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_blaze_storm_scroll',texture_int:0,id:'btc:blaze_storm',args:'{deviation:0.5d, amount:20, cooldown:600}'}]" onclick="/cast spell.btc.blaze_storm">
                 <fmt style="bold" color="0xFFAA00"><t key="spell.btc.blaze_storm" /></fmt>
             </a>
         </line>
@@ -131,7 +134,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:lava_bucket" onclick="/cast spell.btc.flame_burst">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_flame_burst_scroll',texture_int:0,id:'btc:flame_burst',args:'{rate:1, range:10.0d, angle:25.0d, damage:3.0d, castTime:200, intervalTicks:1, cooldown:800}'}]" onclick="/cast spell.btc.flame_burst">
                 <fmt style="bold" color="0xFFAA00"><t key="spell.btc.flame_burst" /></fmt>
             </a>
         </line>
@@ -151,13 +154,14 @@
     </page>
 
     <page id="hydromancy_1">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0x55FFFF"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_1.title" /></fmt>
         </line>
         <hr inset="12" color="0x55FFFF"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:ice" onclick="/cast spell.btc.potion.frost_walker">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_frost_walker_scroll',texture_int:4,id:'btc:potion',args:'{amplifier:0, cooldown:1600, cooldown_name:&quot;btc:frost_walker_potion_effect&quot;, duration:1200, effect:&quot;btc:frost_walker&quot;, name:&quot;frost_walker&quot;}'}]" onclick="/cast spell.btc.potion.frost_walker">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.potion.frost_walker" /></fmt>
             </a>
         </line>
@@ -172,7 +176,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:packed_ice" onclick="/cast spell.btc.ice_block">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_ice_block_scroll',texture_int:0,id:'btc:ice_block',args:'{aimingForgiveness:0.3d, range:24.0d, duration:200, amplifier:4, durationM:200, amplifierM:1, cooldown:600}'}]" onclick="/cast spell.btc.ice_block">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.ice_block" /></fmt>
             </a>
         </line>
@@ -192,13 +196,14 @@
     </page>
 
     <page id="hydromancy_2">
+        <hr inset="12" color="0x55FFFF"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_2.title" /></fmt>
         </line>
         <hr inset="12" color="0x55FFFF"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:water_bucket" onclick="/cast spell.btc.water_wave">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_water_wave_scroll',texture_int:0,id:'btc:water_wave',args:'{maxRadius:8.0d, castTime:40, amplifier:1, maxDuration:600, cooldown:600}'}]" onclick="/cast spell.btc.water_wave">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.water_wave" /></fmt>
             </a>
         </line>
@@ -213,7 +218,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:heart_of_the_sea" onclick="/cast spell.btc.water_blast">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_water_blast_scroll',texture_int:0,id:'btc:water_blast',args:'{noGravity:false, cooldown:200}'}]" onclick="/cast spell.btc.water_blast">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.water_blast" /></fmt>
             </a>
         </line>
@@ -233,13 +238,14 @@
     </page>
 
     <page id="hydromancy_3">
+        <hr inset="12" color="0x55FFFF"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_3.title" /></fmt>
         </line>
         <hr inset="12" color="0x55FFFF"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:prismarine_crystals" onclick="/cast spell.btc.geyser_step">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_geyser_step_scroll',texture_int:0,id:'btc:geyser_step',args:'{aimingForgiveness:0.3d, range:24.0d, canTarget:true, onSelf:true, cooldown:100}'}]" onclick="/cast spell.btc.geyser_step">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.geyser_step" /></fmt>
             </a>
         </line>
@@ -254,7 +260,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:lingering_potion" onclick="/cast spell.btc.mist_veil">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_mist_veil_scroll',texture_int:0,id:'btc:mist_veil',args:'{radius:5.0d, durationTicks:160, cooldown:600}'}]" onclick="/cast spell.btc.mist_veil">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.mist_veil" /></fmt>
             </a>
         </line>
@@ -274,13 +280,14 @@
     </page>
 
     <page id="hydromancy_4">
+        <hr inset="12" color="0x55FFFF"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x55FFFF"><t key="codex.hydromancy_4.title" /></fmt>
         </line>
         <hr inset="12" color="0x55FFFF"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:trident" onclick="/cast spell.btc.riptide">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_riptide_scroll',texture_int:0,id:'btc:riptide',args:'{duration:20, damage:2.0f, speed:2.0d, cooldown:100}'}]" onclick="/cast spell.btc.riptide">
                 <fmt style="bold" color="0x00AAAA"><t key="spell.btc.riptide" /></fmt>
             </a>
         </line>
@@ -300,13 +307,14 @@
     </page>
 
     <page id="aeromancy_1">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFFFF55"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_1.title" /></fmt>
         </line>
         <hr inset="12" color="0xFFFF55"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:wind_charge" onclick="/cast spell.btc.wind_charge">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_wind_charge_scroll',texture_int:0,id:'btc:wind_charge',args:'{cooldown:20}'}]" onclick="/cast spell.btc.wind_charge">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.wind_charge" /></fmt>
             </a>
         </line>
@@ -321,7 +329,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:breeze_rod" onclick="/cast spell.btc.cluster_wind_charge">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_cluster_wind_charge_scroll',texture_int:0,id:'btc:cluster_wind_charge',args:'{count:8, spreadFactor:0.2d, cooldown:80}'}]" onclick="/cast spell.btc.cluster_wind_charge">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.cluster_wind_charge" /></fmt>
             </a>
         </line>
@@ -341,13 +349,14 @@
     </page>
 
     <page id="aeromancy_2">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFFFF55"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_2.title" /></fmt>
         </line>
         <hr inset="12" color="0xFFFF55"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:feather" onclick="/cast spell.btc.storm_push">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_storm_push_scroll',texture_int:0,id:'btc:storm_push',args:'{shoot_radius:15.0d, shoot_strength:5d, cooldown:240}'}]" onclick="/cast spell.btc.storm_push">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.storm_push" /></fmt>
             </a>
         </line>
@@ -362,7 +371,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:phantom_membrane" onclick="/cast spell.btc.tempests_call">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_tempests_call_scroll',texture_int:0,id:'btc:tempests_call',args:'{pull_radius:25.0d, pull_strength:3.0d, cooldown:160}'}]" onclick="/cast spell.btc.tempests_call">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.tempests_call" /></fmt>
             </a>
         </line>
@@ -382,13 +391,14 @@
     </page>
 
     <page id="aeromancy_3">
+        <hr inset="12" color="0xFFFF55"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_3.title" /></fmt>
         </line>
         <hr inset="12" color="0xFFFF55"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:elytra" onclick="/cast spell.btc.wind_tornado">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_wind_tornado_scroll',texture_int:0,id:'btc:wind_tornado',args:'{cooldown:400}'}]" onclick="/cast spell.btc.wind_tornado">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.wind_tornado" /></fmt>
             </a>
         </line>
@@ -403,7 +413,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:firework_rocket" onclick="/cast spell.btc.localized_storm_push">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_localized_storm_push_scroll',texture_int:0,id:'btc:localized_storm_push',args:'{shootStrength:7d, verticalMultiplier:2.2d, aimingForgiveness:0.3d, range:24.0d, cooldown:400}'}]" onclick="/cast spell.btc.localized_storm_push">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.localized_storm_push" /></fmt>
             </a>
         </line>
@@ -423,13 +433,14 @@
     </page>
 
     <page id="aeromancy_4">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFFFF55"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFFF55"><t key="codex.aeromancy_4.title" /></fmt>
         </line>
         <hr inset="12" color="0xFFFF55"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:lightning_rod" onclick="/cast spell.btc.lightning_strike">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_lightning_strike_scroll',texture_int:0,id:'btc:lightning_strike',args:'{range:24.0d, aimingForgiveness:0.3d, cooldown:200}'}]" onclick="/cast spell.btc.lightning_strike">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.lightning_strike" /></fmt>
             </a>
         </line>
@@ -444,7 +455,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:copper_ingot" onclick="/cast spell.btc.storm_surge">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_storm_surge_scroll',texture_int:0,id:'btc:storm_surge',args:'{targetCount:5, range:20.0d, onlyHostile:false, cooldown:400}'}]" onclick="/cast spell.btc.storm_surge">
                 <fmt style="bold" color="0xAAAA00"><t key="spell.btc.storm_surge" /></fmt>
             </a>
         </line>
@@ -464,13 +475,14 @@
     </page>
 
     <page id="geomancy_1">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0x55FF55"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x55FF55"><t key="codex.geomancy_1.title" /></fmt>
         </line>
         <hr inset="12" color="0x55FF55"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:pointed_dripstone" onclick="/cast spell.btc.earth_spike_line">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_earth_spike_line_scroll',texture_int:3,id:'btc:earth_spike_line',args:'{spikeCount:8, yRange:12, cooldown:200}'}]" onclick="/cast spell.btc.earth_spike_line">
                 <fmt style="bold" color="0x00AA00"><t key="spell.btc.earth_spike_line" /></fmt>
             </a>
         </line>
@@ -485,7 +497,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="entity:minecraft:creeper" onclick="/cast spell.btc.creeper_wall_block">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_creeper_wall_block_scroll',texture_int:0,id:'btc:creeper_wall_block',args:'{count:5, aimingForgiveness:0.3d, range:24, offsetTowardsPlayer:2.0d, includeFluids:true, cooldown:200}'}]" onclick="/cast spell.btc.creeper_wall_block">
                 <fmt style="bold" color="0x00AA00"><t key="spell.btc.creeper_wall_block" /></fmt>
             </a>
         </line>
@@ -505,13 +517,14 @@
     </page>
 
     <page id="geomancy_2">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0x55FF55"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x55FF55"><t key="codex.geomancy_2.title" /></fmt>
         </line>
         <hr inset="12" color="0x55FF55"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="entity:minecraft:creeper" onclick="/cast spell.btc.creeper_wall_circle">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_creeper_wall_circle_scroll',texture_int:0,id:'btc:creeper_wall_circle',args:'{spikes:20, radius:3d, cooldown:1200}'}]" onclick="/cast spell.btc.creeper_wall_circle">
                 <fmt style="bold" color="0x00AA00"><t key="spell.btc.creeper_wall_circle" /></fmt>
             </a>
         </line>
@@ -526,7 +539,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:tnt" onclick="/cast spell.btc.creeper_wall_explosive_trap">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_creeper_wall_explosive_trap_scroll',texture_int:0,id:'btc:creeper_wall_explosive_trap',args:'{aimingForgiveness:0.3d, radius:2d, range:16d, yRange:10, count:17}'}]" onclick="/cast spell.btc.creeper_wall_explosive_trap">
                 <fmt style="bold" color="0x00AA00"><t key="spell.btc.creeper_wall_explosive_trap" /></fmt>
             </a>
         </line>
@@ -546,14 +559,15 @@
     </page>
 
     <page id="dark_magic_1">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xAA0000"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xAA0000"><t key="codex.dark_magic_1.title" /></fmt>
         </line>
         <hr inset="12" color="0xAA0000"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="entity:minecraft:zombie" onclick="/cast spell.btc.raise_undead">
-                <fmt style="bold" color="0x555555"><t key="spell.btc.raise_undead" /></fmt>
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_raise_undead_scroll',texture_int:0,id:'btc:raise_undead',args:'{count:10, cooldown:400}'}]" onclick="/cast spell.btc.raise_undead">
+                <fmt style="bold" color="0x555555"><t key="spell.btc.raise_undead"/></fmt>
             </a>
         </line>
         <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
@@ -567,7 +581,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:spider_eye" onclick="/cast spell.btc.potion_area_effect.poison">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_poison_area_scroll',texture_int:0,id:'btc:potion_area_effect',args:'{amplifier:3, cooldown:800, cooldown_name:&quot;btc:poison_area_effect&quot;, duration:80, effect:&quot;minecraft:poison&quot;, name:&quot;poison&quot;, onlyHostile:false, includeUser:false}'}]" onclick="/cast spell.btc.potion_area_effect.poison">
                 <fmt style="bold" color="0x55FF55"><t key="spell.btc.potion_area_effect.poison" /></fmt>
             </a>
         </line>
@@ -587,13 +601,14 @@
     </page>
 
     <page id="ender_1">
+        <hr inset="12" color="0xAA00AA"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xAA00AA"><t key="codex.ender_1.title" /></fmt>
         </line>
         <hr inset="12" color="0xAA00AA"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:ender_pearl" onclick="/cast spell.btc.ender_pearl">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_ender_pearl_scroll',texture_int:0,id:'btc:ender_pearl',args:'{cooldown:60}'}]" onclick="/cast spell.btc.ender_pearl">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.ender_pearl" /></fmt>
             </a>
         </line>
@@ -608,7 +623,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:ender_chest" onclick="/cast spell.btc.ender_chest">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_ender_chest_scroll',texture_int:0,id:'btc:ender_chest',args:'{cooldown:160}'}]" onclick="/cast spell.btc.ender_chest">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.ender_chest" /></fmt>
             </a>
         </line>
@@ -628,13 +643,14 @@
     </page>
 
     <page id="ender_2">
+        <hr inset="12" color="0xAA00AA"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xAA00AA"><t key="codex.ender_2.title" /></fmt>
         </line>
         <hr inset="12" color="0xAA00AA"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:dragon_head" onclick="/cast spell.btc.dragon_fireball">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_dragon_fireball_scroll',texture_int:2,id:'btc:dragon_fireball',args:'{cooldown:800}'}]" onclick="/cast spell.btc.dragon_fireball">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.dragon_fireball" /></fmt>
             </a>
         </line>
@@ -649,7 +665,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:dragon_breath" onclick="/cast spell.btc.dragons_breath">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_dragons_breath_scroll',texture_int:0,id:'btc:dragons_breath',args:'{rate:4, range:8.0d, angle:20.0d, damage:4.0d, cooldown:800, castTime:200, intervalTicks:1}'}]" onclick="/cast spell.btc.dragons_breath">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.dragons_breath" /></fmt>
             </a>
         </line>
@@ -669,13 +685,14 @@
     </page>
 
     <page id="ender_3">
+        <hr inset="12" color="0xAA00AA"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xAA00AA"><t key="codex.ender_3.title" /></fmt>
         </line>
         <hr inset="12" color="0xAA00AA"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:ghast_tear" onclick="/cast spell.btc.life_steal">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_life_steal_scroll',texture_int:0,id:'btc:life_steal',args:'{radius:10.0d, cooldown:30}'}]" onclick="/cast spell.btc.life_steal">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.life_steal" /></fmt>
             </a>
         </line>
@@ -690,7 +707,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="entity:minecraft:shulker" onclick="/cast spell.btc.shulker_bullet">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_shulker_bullet_scroll',texture_int:0,id:'btc:shulker_bullet',args:'{aimingForgiveness:0.3d, range:24.0d, radius:24.0d, cooldown:200}'}]" onclick="/cast spell.btc.shulker_bullet">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.shulker_bullet" /></fmt>
             </a>
         </line>
@@ -710,13 +727,14 @@
     </page>
 
     <page id="ender_4">
+        <hr inset="12" color="0xAA00AA"/>
         <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xAA00AA"><t key="codex.ender_4.title" /></fmt>
         </line>
         <hr inset="12" color="0xAA00AA"/>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:obsidian" onclick="/cast spell.btc.shadow_step">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_shadow_step_scroll',texture_int:0,id:'btc:shadow_step',args:'{range:24.0d, aimingForgiveness:0.3d, teleportDistance:2.5d, invisDuration:140, cooldown:300}'}]" onclick="/cast spell.btc.shadow_step">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.shadow_step" /></fmt>
             </a>
         </line>
@@ -731,7 +749,7 @@
         </unless>
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:sculk" onclick="/cast spell.btc.potion.dragon_scales">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_dragon_scales_scroll',texture_int:0,id:'btc:potion',args:'{amplifier:0, cooldown:1200, cooldown_name:&quot;btc:dragon_scales&quot;, duration:400, effect:&quot;btc:dragon_scales&quot;, name:&quot;dragon_scales&quot; }'}]" onclick="/cast spell.btc.potion.dragon_scales">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.potion.dragon_scales" /></fmt>
             </a>
         </line>
@@ -751,23 +769,23 @@
     </page>
 
     <page id="arcane_1">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0x5555FF"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0x5555FF"><t key="codex.arcane_1.title" /></fmt>
         </line>
         <hr inset="12" color="0x5555FF"/>
+<!--        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">-->
+<!--            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_purge_bolt_scroll',texture_int:0,id:'btc:purge_bolt',args:'{}'}]" onclick="/cast spell.btc.purge_bolt">-->
+<!--                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.purge_bolt" /></fmt>-->
+<!--            </a>-->
+<!--        </line>-->
+<!--        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">-->
+<!--            <fmt color="0x555555"><t key="spell.btc.purge_bolt.description" /></fmt>-->
+<!--        </line>-->
+<!--        <br/>-->
 
         <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:minecraft:amethyst_shard" onclick="/cast spell.btc.purge_bolt">
-                <fmt style="bold" color="0xFF55FF"><t key="spell.btc.purge_bolt" /></fmt>
-            </a>
-        </line>
-        <line size="0.7" align="left" margin="0u, 0u, 1u, 0u">
-            <fmt color="0x555555"><t key="spell.btc.purge_bolt.description" /></fmt>
-        </line>
-        <br/>
-
-        <line size="0.9" align="left" margin="1u, 0u, 0u, 0u">
-            <a hoverEvent="item:btc:unlock_scroll" onclick="/cast spell.btc.dissolution">
+            <a hoverEvent="item:btc:unlock_scroll[btc:unlock_spell={advancement:'btc:adventure/get_dissolution_scroll',texture_int:0,id:'btc:dissolution',args:'{castTime:200, cooldown:1800, moveableDistance:12}'}]" onclick="/cast spell.btc.dissolution">
                 <fmt style="bold" color="0xFF55FF"><t key="spell.btc.dissolution" /></fmt>
             </a>
         </line>
@@ -787,7 +805,8 @@
     </page>
 
     <page id="credits">
-        <line size="1.1" align="center" margin="0u, 0u, 1.1u, 0u">
+        <hr inset="12" color="0xFFD700"/>
+        <line size="1.1" align="center" margin="0u, 0u, 0u, 0u">
             <fmt style="bold" color="0xFFD700"><t key="codex.credits.title" /></fmt>
         </line>
         <hr inset="12" color="0xFFD700"/>
