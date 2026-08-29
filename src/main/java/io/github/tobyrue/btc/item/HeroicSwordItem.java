@@ -1,18 +1,21 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.regestries.ModComponents;
+import net.fabricmc.fabric.api.item.v1.EnchantingContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ToolComponent;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -66,5 +69,15 @@ public class HeroicSwordItem extends Item {
         ItemStack itemStack = user.getStackInHand(hand);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(itemStack);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return 22;
     }
 }

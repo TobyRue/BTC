@@ -190,7 +190,7 @@ public class MobDetectorBlockEntity extends BlockEntity implements BlockEntityTi
         }
 
 
-        boolean shouldBePowered = entities.isEmpty();
+        boolean shouldBePowered = !entities.isEmpty();
 
 
         for (Entity entity : entities) {

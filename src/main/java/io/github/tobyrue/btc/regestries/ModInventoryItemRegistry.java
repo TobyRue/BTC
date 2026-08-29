@@ -67,6 +67,7 @@ public class ModInventoryItemRegistry {
             content.addAfter(Items.WIND_CHARGE, ModItems.WATER_BLAST, ModItems.SEA_MINE);
             content.addAfter(Items.CROSSBOW, ModItems.SCOPED_CROSSBOW);
             content.addAfter(Items.TOTEM_OF_UNDYING, ModItems.PET_CHARM);
+            content.addAfter(Items.NETHERITE_SWORD, ModItems.HEROIC_SWORD);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {

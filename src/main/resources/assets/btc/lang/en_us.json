@@ -237,6 +237,7 @@
   "entity.btc.super_happy_kill_ball": "Super Happy Kill Ball",
   "entity.btc.key_golem": "Key Golem",
   "entity.btc.mine": "Mine",
+  "entity.btc.trial_cube": "Trial Cube",
 
   "subtitles.entity.btc.copper_golem.copper_arm_move": "Copper Golem presses button",
   "subtitles.entity.btc.copper_golem.copper_head_spin": "Copper Golem wakes up",

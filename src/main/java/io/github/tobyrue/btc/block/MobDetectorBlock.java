@@ -5,6 +5,7 @@ import io.github.tobyrue.btc.entity.custom.TrialCubeEntity;
 import io.github.tobyrue.btc.item.SelectorItem;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.regestries.ModComponents;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -25,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class MobDetectorBlock extends Block implements ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, CornerStorage {
+public class MobDetectorBlock extends Block implements IDungeonWire, ModBlockEntityProvider<MobDetectorBlockEntity>, ModTickBlockEntityProvider<MobDetectorBlockEntity>, CornerStorage {
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     /*
@@ -34,6 +35,11 @@ public class MobDetectorBlock extends Block implements ModBlockEntityProvider<Mo
      */
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
     public static final EnumProperty<DetectorType> TYPE = EnumProperty.of("detector_type", DetectorType.class);
+
+    @Override
+    public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        return state.getBlock() instanceof MobDetectorBlock && state.get(Properties.POWERED);
+    }
 
     public enum DetectorType implements StringIdentifiable {
         TRIAL_CUBE("trial_cube") {
