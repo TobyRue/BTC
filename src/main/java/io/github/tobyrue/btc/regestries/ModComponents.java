@@ -29,8 +29,19 @@ import net.minecraft.util.math.Direction;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 public class ModComponents {
+
+
+    public static final ComponentType<String> TRANSLATABLE_NAME = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            BTC.identifierOf("translatable_name"),
+            ComponentType.<String>builder()
+                    .codec(Codec.STRING)
+                    .build()
+    );
+
     @Deprecated
     public static final ComponentType<Direction> WRENCH_DIRECTION = Registry.register(
             Registries.DATA_COMPONENT_TYPE,

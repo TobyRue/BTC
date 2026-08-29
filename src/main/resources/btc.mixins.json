@@ -21,6 +21,7 @@
     "ExplosionMixin",
     "FireballEntityAccessor",
     "HoneycombItemMixin",
+    "ItemStackMixin",
     "LivingEntityMixin",
     "NaturalRegenerationMixin",
     "PaperMixin",

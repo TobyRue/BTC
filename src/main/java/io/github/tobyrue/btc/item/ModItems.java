@@ -27,6 +27,7 @@ public class ModItems {
     }
     public static final Item TOXIC_SLUDGE_BUCKET = Registry.register(Registries.ITEM, BTC.identifierOf("toxic_sludge_bucket"), new BucketItem(ModFluids.TOXIC_SLUDGE_SOURCE, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1)));
 
+
     public static final Item SALT = register(
             new Item(new Item.Settings()),
             "salt"
@@ -90,10 +91,10 @@ public class ModItems {
             new Item(new Item.Settings()),
             "empty_scroll"
     );
-    public static final Item TEST = register(
-            new TestItem(new Item.Settings()),
-            "test_screen"
-    );
+//    public static final Item TEST = register(
+//            new TestItem(new Item.Settings()),
+//            "test_screen"
+//    );
     public static final Item SCOPED_CROSSBOW = register(
             new ScopedCrossbow(new Item.Settings().maxCount(1)),
             "scoped_crossbow"

@@ -665,6 +665,7 @@
 
   "spell.btc._": "Use This For The Template For Spell Translations",
   "spell.btc.": "",
+  "spell.btc.fireball": "Fireball",
   "spell.btc.fireball.weak": "Weak Fireball",
   "spell.btc.fireball.strong": "Strong Fireball",
   "spell.btc.fire_storm.normal": "Fire Storm",
@@ -768,6 +769,7 @@
 
   "codex.credits.author": "Created By",
   "codex.credits.github_hover": "Open GitHub Profile",
+  "codex.credits.modrinth_hover": "Open Modrinth Page",
   "codex.credits.thanks": "Special Thanks",
   "codex.credits.thanks_description": "Thank you for playing!"
 }
