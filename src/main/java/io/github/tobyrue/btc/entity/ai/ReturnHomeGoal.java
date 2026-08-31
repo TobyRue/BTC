@@ -23,11 +23,18 @@ public class ReturnHomeGoal extends Goal {
 
     @Override
     public void start() {
-        this.mob.getNavigation().startMovingTo(mob.getWorldHomePos().getX(), mob.getWorldHomePos().getY(), mob.getWorldHomePos().getZ(), this.speed);
+        if (mob.getWorldHomePos() != null) {
+            this.mob.getNavigation().startMovingTo(
+                    mob.getWorldHomePos().getX() + 0.5,
+                    mob.getWorldHomePos().getY(),
+                    mob.getWorldHomePos().getZ() + 0.5,
+                    this.speed
+            );
+        }
     }
 
     @Override
     public boolean shouldContinue() {
-        return !mob.getNavigation().isIdle() && mob.squaredDistanceTo(Vec3d.ofBottomCenter(mob.getWorldHomePos())) > 1.0;
+        return mob.getWorldHomePos() != null && !mob.getNavigation().isIdle() && mob.squaredDistanceTo(Vec3d.ofBottomCenter(mob.getWorldHomePos())) > 1.0;
     }
 }

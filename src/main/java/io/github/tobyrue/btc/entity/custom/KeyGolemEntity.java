@@ -1,8 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
 import io.github.tobyrue.btc.entity.ai.ReturnHomeGoal;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -48,17 +46,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     private int idleTimer = 0;
     private int animationTimer = 0;
     private static final int IDLE_PLAYS = 2;
-    private boolean mountDel = false;
-
-    private int offsetX, offsetY, offsetZ;
-
-    public BlockPos getWorldHomePos() {
-        return worldHomePos;
-    }
-
-    public void setWorldHomePos(BlockPos worldHomePos) {
-        this.worldHomePos = worldHomePos;
-    }
 
     private BlockPos worldHomePos;
     private boolean homeInitialized = false;
@@ -78,6 +65,15 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         super(entityType, world);
     }
 
+    public BlockPos getWorldHomePos() {
+        return worldHomePos;
+    }
+
+    public void setWorldHomePos(BlockPos worldHomePos) {
+        this.worldHomePos = worldHomePos;
+        this.homeInitialized = (worldHomePos != null);
+    }
+
     public static DefaultAttributeContainer.Builder createKeyGolemAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 10f)
@@ -92,6 +88,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         this.goalSelector.add(1, new ReturnHomeGoal(this, 1.2));
     }
 
+    @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(IS_PANICKED, false);
@@ -100,7 +97,16 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         builder.add(PLAYER, Optional.empty());
     }
 
-
+    @Override
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+        if (spawnReason == SpawnReason.STRUCTURE || spawnReason == SpawnReason.CHUNK_GENERATION) {
+            this.worldHomePos = null;
+            this.homeInitialized = false;
+        } else if (this.worldHomePos == null) {
+            setWorldHomePos(this.getBlockPos());
+        }
+        return super.initialize(world, difficulty, spawnReason, entityData);
+    }
 
     public boolean isPanicked() {
         return this.dataTracker.get(IS_PANICKED);
@@ -109,6 +115,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     public void setIsPanicked(boolean isPanicked) {
         this.dataTracker.set(IS_PANICKED, isPanicked);
     }
+
     public boolean wasPickedUp() {
         return this.dataTracker.get(WAS_PICKED_UP);
     }
@@ -133,9 +140,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         this.dataTracker.set(PLAYER, uuid);
     }
 
-
-
-
     private void stopActions() {
         idleAnimationState.stop();
         playerDie1AnimationState.stop();
@@ -148,7 +152,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     @Override
     public boolean mountOnto(ServerPlayerEntity player) {
         setPlayerUUID(Optional.ofNullable(player.getUuid()));
-        mountDel = true;
         return super.mountOnto(player);
     }
 
@@ -197,7 +200,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         animationTimer = currentAnim.canBeStopped ? 0 : currentAnim.duration;
     }
 
-
     public boolean didMove() {
         return this.getVelocity().lengthSquared() > 0.02 || (lastPos != null && currentPos != null && !lastPos.equals(currentPos));
     }
@@ -205,21 +207,9 @@ public class KeyGolemEntity extends TameableShoulderEntity {
     @Override
     public void tick() {
         super.tick();
-
-        if (worldHomePos != null) {
-            this.offsetX = this.getBlockPos().getX() - worldHomePos.getX();
-            this.offsetY = this.getBlockPos().getY() - worldHomePos.getY();
-            this.offsetZ = this.getBlockPos().getZ() - worldHomePos.getZ();
+        if (!this.getWorld().isClient() && !this.homeInitialized) {
+            setWorldHomePos(this.getBlockPos());
         }
-
-        if (!homeInitialized && !mountDel) {
-            this.worldHomePos = this.getBlockPos().add(-offsetX, -offsetY, -offsetZ);
-            homeInitialized = true;
-        } else if (!homeInitialized && mountDel) {
-            homeInitialized = true;
-            mountDel = false;
-        }
-
         baseAnimationState.startIfNotRunning(this.age);
 
         this.lastPos = currentPos;
@@ -229,7 +219,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         if (this.isPanicked() != (this.getMaxHealth() == this.getHealth())) {
             this.setIsPanicked(!this.isPanicked());
         }
-
 
         if (animationTimer > 0) {
             animationTimer--;
@@ -257,8 +246,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         }
     }
 
-
-
     public void onPlayerDeath(PlayerEntity player, DamageSource source) {
         if (this.getPlayerUUID().isEmpty()) return;
         if (!player.getUuid().equals(this.getPlayerUUID().get())) return;
@@ -276,7 +263,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
 
     @Override
     public boolean canUsePortals(boolean allowVehicles) {
-        //TODO
         return false;
     }
 
@@ -296,8 +282,6 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         return false;
     }
 
-
-
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
@@ -306,60 +290,42 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         nbt.putInt("Disappointed", this.getIsDisappointed());
         this.getPlayerUUID().ifPresent(uuid -> nbt.putUuid("PlayerUUID", uuid));
 
-        if (this.mountDel && this.worldHomePos != null) {
-            this.offsetX = this.getBlockPos().getX() - worldHomePos.getX();
-            this.offsetY = this.getBlockPos().getY() - worldHomePos.getY();
-            this.offsetZ = this.getBlockPos().getZ() - worldHomePos.getZ();
-        }
-
-        if (this.worldHomePos != null) {
+        if (this.homeInitialized && this.worldHomePos != null) {
             nbt.putInt("HomeX", this.worldHomePos.getX());
             nbt.putInt("HomeY", this.worldHomePos.getY());
             nbt.putInt("HomeZ", this.worldHomePos.getZ());
+            nbt.putBoolean("HasHome", true);
+        } else {
+            nbt.putBoolean("HasHome", false);
         }
-
-        nbt.putInt("RelX", this.offsetX);
-        nbt.putInt("RelY", this.offsetY);
-        nbt.putInt("RelZ", this.offsetZ);
-        nbt.putBoolean("HasHome", this.homeInitialized);
-        nbt.putBoolean("MountDel", this.mountDel);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        if (nbt.contains("Panicked")) {
-            this.setIsPanicked(nbt.getBoolean("Panicked"));
-        }
-        if (nbt.contains("WasPickedUp")) {
-            this.setWasPickedUp(nbt.getBoolean("WasPickedUp"));
-        }
-        if (nbt.contains("Disappointed")) {
-            this.setIsDisappointed(nbt.getInt("Disappointed"));
-        }
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("Panicked")) this.setIsPanicked(nbt.getBoolean("Panicked"));
+        if (nbt.contains("WasPickedUp")) this.setWasPickedUp(nbt.getBoolean("WasPickedUp"));
+        if (nbt.contains("Disappointed")) this.setIsDisappointed(nbt.getInt("Disappointed"));
+
         if (nbt.containsUuid("PlayerUUID")) {
             this.setPlayerUUID(Optional.of(nbt.getUuid("PlayerUUID")));
         } else {
             this.setPlayerUUID(Optional.empty());
         }
-        if (nbt.contains("HasHome")) {
-            this.mountDel = nbt.getBoolean("MountDel");
 
-            if (nbt.contains("HomeX")) {
-                this.worldHomePos = new BlockPos(nbt.getInt("HomeX"), nbt.getInt("HomeY"), nbt.getInt("HomeZ"));
-            }
-
-            this.offsetX = nbt.getInt("RelX");
-            this.offsetY = nbt.getInt("RelY");
-            this.offsetZ = nbt.getInt("RelZ");
-
+        if (nbt.getBoolean("HasHome")) {
+            this.worldHomePos = new BlockPos(nbt.getInt("HomeX"), nbt.getInt("HomeY"), nbt.getInt("HomeZ"));
+            this.homeInitialized = true;
+        } else {
+            this.worldHomePos = null;
             this.homeInitialized = false;
         }
     }
+
     public enum ActionAnim {
         NONE(true, false, false, false, 0, null),
-        IDLE(true, false,  false, true, 10 * 20, null),
-        SLEEP(true, false, true, true, (int) (9.25 * 20), null),
+        IDLE(true, false, false, true, 10 * 20, null),
+        SLEEP(true, false, true, false, 1 * 20, IDLE),
         WAKE_UP(false, false, true, false, 1 * 20, IDLE),
         FALL_ASLEEP(false, false, false, false, 3 * 20, SLEEP),
         PLAYER_DEATH_1(false, true, true, false, 30, IDLE),
@@ -371,6 +337,7 @@ public class KeyGolemEntity extends TameableShoulderEntity {
         final boolean repeats;
         final int duration;
         @Nullable final ActionAnim next;
+
         ActionAnim(boolean canBeStopped, boolean canOveride, boolean playsOverMovement, boolean repeats, int duration, @Nullable ActionAnim next) {
             this.canBeStopped = canBeStopped;
             this.canOveride = canOveride;
@@ -380,5 +347,4 @@ public class KeyGolemEntity extends TameableShoulderEntity {
             this.next = next;
         }
     }
-
 }
