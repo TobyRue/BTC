@@ -1,0 +1,1 @@
+execute positioned ~ ~-0.5 ~ run summon btc:key_golem ^ ^ ^0

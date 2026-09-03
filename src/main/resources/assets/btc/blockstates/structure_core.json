@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "btc:block/structure_core",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "btc:block/structure_core",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "btc:block/structure_core"
+    },
+    "facing=south": {
+      "model": "btc:block/structure_core",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "btc:block/structure_core",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "btc:block/structure_core",
+      "y": 270
+    }
+  }
+}

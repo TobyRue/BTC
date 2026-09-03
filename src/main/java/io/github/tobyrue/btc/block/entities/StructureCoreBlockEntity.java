@@ -2,8 +2,6 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.TrialCoreBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FacingBlock;
-import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -13,8 +11,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -25,18 +21,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class TrialCoreBlockEntity extends BlockEntity {
+public class StructureCoreBlockEntity extends BlockEntity {
+
+
     private final List<Identifier> functions = new ArrayList<>();
+
+
+    private String note = "";
+    private int dataSetCount = 0;
     private final Random random = new Random();
 
-    public TrialCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.TRIAL_CORE_BLOCK_ENTITY, pos, state);
+    public StructureCoreBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.STRUCTURE_CORE_BLOCK_ENTITY, pos, state);
+    }
+
+    public List<Identifier> getFunctions() {
+        return functions;
     }
 
     public void addFunction(Identifier id) {
         functions.add(id);
         markDirty();
     }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+
 
     public void runRandomFunction(ServerWorld world, BlockPos pos) {
         if (functions.isEmpty()) return;
@@ -81,6 +97,8 @@ public class TrialCoreBlockEntity extends BlockEntity {
             list.add(NbtString.of(id.toString()));
         }
         nbt.put("Functions", list);
+        nbt.putString("Note", note);
+        nbt.putInt("DataSetCount", dataSetCount);
     }
 
     @Override
@@ -91,7 +109,18 @@ public class TrialCoreBlockEntity extends BlockEntity {
         for (int i = 0; i < list.size(); i++) {
             functions.add(Identifier.of(list.getString(i)));
         }
+        if (nbt.contains("Note")) {
+            this.note = nbt.getString("Note");
+        }
+        if (nbt.contains("DataSetCount")) {
+            this.dataSetCount = nbt.getInt("DataSetCount");
+        }
+
+        if (this.world instanceof ServerWorld serverWorld && !this.functions.isEmpty() && this.dataSetCount == 1) {
+            serverWorld.scheduleBlockTick(this.pos, this.getCachedState().getBlock(), 1);
+        }
+        if (this.dataSetCount == 0) {
+            this.dataSetCount = 1;
+        }
     }
-
-
 }

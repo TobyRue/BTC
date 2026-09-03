@@ -241,6 +241,12 @@ public class ModBlocks {
             true
     );
 
+    public static final Block STRUCTURE_CORE = register(
+            new StructureCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.CHIME)),
+            "structure_core",
+            true
+    );
+
     public static final Block BONFIRE = register(
             new BonfireBlock(AbstractBlock.Settings.create().mapColor(MapColor.OAK_TAN).strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.WOOD).instrument(NoteBlockInstrument.BASS)),
             "bonfire",
