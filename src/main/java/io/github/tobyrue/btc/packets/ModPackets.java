@@ -28,6 +28,7 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(SetElementPayload.ID, SetElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(QuickElementPayload.ID, QuickElementPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(AdvancementPayload.ID, AdvancementPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(StructureCoreUpdatePayload.ID, StructureCoreUpdatePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BonfireSyncPayload.ID, BonfireSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ServerAdvancementResponsePayload.ID, ServerAdvancementResponsePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(MobDetectorSyncPayload.ID, MobDetectorSyncPayload.CODEC);
@@ -38,6 +39,8 @@ public class ModPackets {
 
         PayloadTypeRegistry.playS2C().register(S2CPacketBus.ID, S2CPacketBus.CODEC);
         PayloadTypeRegistry.playC2S().register(C2SPacketBus.ID, C2SPacketBus.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(StructureCoreUpdatePayload.ID, StructureCoreUpdatePayload::receive);
 
         ServerPlayNetworking.registerGlobalReceiver(
                 C2SPacketBus.ID, (payload, context) -> {

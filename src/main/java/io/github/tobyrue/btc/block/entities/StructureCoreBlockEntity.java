@@ -1,12 +1,15 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.TrialCoreBlock;
+import io.github.tobyrue.xml.util.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunctionManager;
@@ -20,6 +23,8 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StructureCoreBlockEntity extends BlockEntity {
 
@@ -28,6 +33,15 @@ public class StructureCoreBlockEntity extends BlockEntity {
 
 
     private String note = "";
+
+    public int getDataSetCount() {
+        return dataSetCount;
+    }
+
+    public void setDataSetCount(int dataSetCount) {
+        this.dataSetCount = dataSetCount;
+    }
+
     private int dataSetCount = 0;
     private final Random random = new Random();
 
@@ -88,6 +102,41 @@ public class StructureCoreBlockEntity extends BlockEntity {
             manager.execute(function, source);
         });
     }
+    public void parseAndSetData(String input) {
+        this.functions.clear();
+        this.note = "";
+
+        if (input.contains("#")) {
+            int commentIdx = input.indexOf('#');
+            this.note = input.substring(commentIdx + 1).trim();
+            input = input.substring(0, commentIdx);
+        }
+
+        Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            String insideBrackets = matcher.group(1);
+            String[] entries = insideBrackets.split(",");
+
+            for (String entry : entries) {
+                String trimmed = entry.trim();
+                if (!trimmed.isEmpty()) {
+                    Identifier id = Identifier.tryParse(trimmed);
+                    if (id != null) {
+                        this.functions.add(id);
+                    }
+                }
+            }
+        }
+
+        this.dataSetCount = 1;
+        markDirty();
+
+        if (this.world != null && !this.world.isClient) {
+            this.world.updateListeners(this.pos, getCachedState(), getCachedState(), Block.NOTIFY_LISTENERS);
+        }
+    }
 
     @Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
@@ -122,5 +171,15 @@ public class StructureCoreBlockEntity extends BlockEntity {
         if (this.dataSetCount == 0) {
             this.dataSetCount = 1;
         }
+    }
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntityUpdateS2CPacket toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 }

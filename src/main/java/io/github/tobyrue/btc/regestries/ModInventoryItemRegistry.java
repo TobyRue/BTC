@@ -30,6 +30,7 @@ public class ModInventoryItemRegistry {
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.OPERATOR).register(content -> {
+            content.addAfter(Items.STRUCTURE_BLOCK, ModBlocks.STRUCTURE_CORE);
             content.addAfter(Items.LIGHT, ModItems.SPELLSTONE);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
