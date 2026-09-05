@@ -4,20 +4,17 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.StructureCoreBlockEntity;
 import io.github.tobyrue.btc.client.screen.StructureCoreScreen;
-import io.github.tobyrue.btc.wires.IDungeonWire;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
@@ -40,13 +37,18 @@ public class StructureCoreBlock extends Block implements ModBlockEntityProvider<
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient) {
-            if (world.getBlockEntity(pos) instanceof StructureCoreBlockEntity core) {
-                core.setDataSetCount(0);
-                MinecraftClient.getInstance().setScreen(new StructureCoreScreen(core));
-            }
+        if (world.isClient && player.isCreativeLevelTwoOp()) {
+            openClientScreen(world, pos);
         }
         return ActionResult.SUCCESS;
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void openClientScreen(World world, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof StructureCoreBlockEntity core) {
+            core.setDataSetCount(0);
+            MinecraftClient.getInstance().setScreen(new StructureCoreScreen(core));
+        }
     }
 
     @Override

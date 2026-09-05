@@ -5,6 +5,7 @@ import io.github.tobyrue.xml.util.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -48,6 +49,7 @@ public class StructureCoreBlockEntity extends BlockEntity {
     public StructureCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STRUCTURE_CORE_BLOCK_ENTITY, pos, state);
     }
+
 
     public List<Identifier> getFunctions() {
         return functions;
