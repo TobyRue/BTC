@@ -101,7 +101,11 @@ public class ModBlocks {
             "ominous_beacon",
             true
     );
-
+    public static final Block OMINOUS_REFLECTOR = register(
+            new OminousReflectorBlock(AbstractBlock.Settings.create().mapColor(MapColor.LAPIS_BLUE).nonOpaque().requiresTool().strength(6.5F, 6.0F).sounds(BlockSoundGroup.VAULT).luminance((state) -> 14)),
+            "ominous_reflector",
+            true
+    );
     public static final Block GUNPOWDER_BARREL = register(
             new GunpowderBarrelBlock(AbstractBlock.Settings.create().mapColor(MapColor.SPRUCE_BROWN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD).instrument(NoteBlockInstrument.BASS)),
             "gunpowder_barrel",

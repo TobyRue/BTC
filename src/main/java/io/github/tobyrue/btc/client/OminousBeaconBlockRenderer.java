@@ -1,19 +1,22 @@
 package io.github.tobyrue.btc.client;
 
-import io.github.tobyrue.btc.block.OminousBeaconBlock;
-import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import io.github.tobyrue.btc.BTC;
-import net.minecraft.block.entity.BeaconBlockEntity;
+import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
+import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity.BeamSegmentPath;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBeaconBlockEntity> {
@@ -24,45 +27,54 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
 
     @Override
     public void render(OminousBeaconBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (entity.getBeamLength() <= 0) return;
-
-        List<BeaconBlockEntity.BeamSegment> list = entity.getBeamSegments();
-        if (list.isEmpty()) return;
+        List<BeamSegmentPath> paths = entity.getBeamPaths();
+        if (paths.isEmpty()) return;
 
         long time = entity.getWorld().getTime();
 
-        matrices.push();
-        matrices.translate(0.5, 0.5, 0.5);
+        for (BeamSegmentPath path : paths) {
+            matrices.push();
 
-        if (entity.getWorld().getBlockState(entity.getPos()).getBlock() instanceof OminousBeaconBlock) {
-            Direction facing = entity.getWorld().getBlockState(entity.getPos()).get(OminousBeaconBlock.FACING);
+            double xOffset = path.getStartPos().getX() - entity.getPos().getX();
+            double yOffset = path.getStartPos().getY() - entity.getPos().getY();
+            double zOffset = path.getStartPos().getZ() - entity.getPos().getZ();
 
+            matrices.translate(xOffset, yOffset, zOffset);
+
+            Direction facing = path.getDirection();
             switch (facing) {
-                case DOWN -> matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
-                case NORTH -> matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0f));
-                case SOUTH -> matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
-                case WEST -> matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
-                case EAST -> matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0f));
+                case DOWN -> {
+                    matrices.translate(0.5, 0.5, 0.5);
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
+                    matrices.translate(-0.5, -0.5, -0.5);
+                }
+                case NORTH -> {
+                    matrices.translate(0.5, 0.5, 0.5);
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0f));
+                    matrices.translate(-0.5, -0.5, -0.5);
+                }
+                case SOUTH -> {
+                    matrices.translate(0.5, 0.5, 0.5);
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
+                    matrices.translate(-0.5, -0.5, -0.5);
+                }
+                case WEST -> {
+                    matrices.translate(0.5, 0.5, 0.5);
+                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
+                    matrices.translate(-0.5, -0.5, -0.5);
+                }
+                case EAST -> {
+                    matrices.translate(0.5, 0.5, 0.5);
+                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0f));
+                    matrices.translate(-0.5, -0.5, -0.5);
+                }
                 case UP -> { }
             }
+
+            renderBeam(matrices, vertexConsumers, tickDelta, time, 0, path.getLength(), path.getSegment().getColor());
+
+            matrices.pop();
         }
-
-        matrices.translate(-0.5, 0.0, -0.5);
-
-        int currentHeightOffset = 0;
-        for (int m = 0; m < list.size(); ++m) {
-            BeaconBlockEntity.BeamSegment beamSegment = list.get(m);
-            int segmentHeight = entity.getBeamLength();
-
-            renderBeam(matrices, vertexConsumers, tickDelta, time, currentHeightOffset, segmentHeight, beamSegment.getColor());
-            currentHeightOffset += segmentHeight;
-
-            if (currentHeightOffset >= entity.getBeamLength()) {
-                break;
-            }
-        }
-
-        matrices.pop();
     }
 
     private static void renderBeam(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta, long worldTime, int yOffset, int maxY, int color) {
