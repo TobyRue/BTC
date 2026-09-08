@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "btc:block/ominous_reflector",
+      "x": 0,
+      "y": 0
+    },
+    "facing=east": {
+      "model": "btc:block/ominous_reflector",
+      "x": 0,
+      "y": 90
+    },
+    "facing=south": {
+      "model": "btc:block/ominous_reflector",
+      "x": 0,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "btc:block/ominous_reflector",
+      "x": 0,
+      "y": 270
+    },
+    "facing=up": {
+      "model": "btc:block/ominous_reflector",
+      "x": 270,
+      "y": 0
+    },
+    "facing=down": {
+      "model": "btc:block/ominous_reflector",
+      "x": 90,
+      "y": 0
+    }
+  }
+}

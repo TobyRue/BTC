@@ -1,5 +1,7 @@
 {
   "block.btc.ominous_beacon": "Ominous Beacon",
+  "block.btc.ominous_reflector": "Ominous Reflector",
+  "block.btc.ominous_splitter": "Ominous Splitter",
   "block.btc.pedestal": "Trial Pedestal",
   "block.btc.dungeon_wire": "Dungeon Wire",
   "block.btc.copper_wire": "Copper Wire",

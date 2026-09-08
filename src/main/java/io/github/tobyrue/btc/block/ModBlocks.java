@@ -102,8 +102,13 @@ public class ModBlocks {
             true
     );
     public static final Block OMINOUS_REFLECTOR = register(
-            new OminousReflectorBlock(AbstractBlock.Settings.create().mapColor(MapColor.LAPIS_BLUE).nonOpaque().requiresTool().strength(6.5F, 6.0F).sounds(BlockSoundGroup.VAULT).luminance((state) -> 14)),
+            new OminousBeamChangerBlock(AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).nonOpaque().requiresTool().strength(6.5F, 6.0F).sounds(BlockSoundGroup.COPPER)),
             "ominous_reflector",
+            true
+    );
+    public static final Block OMINOUS_SPLITTER = register(
+            new OminousBeamChangerBlock(AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).nonOpaque().requiresTool().strength(6.5F, 6.0F).sounds(BlockSoundGroup.COPPER)),
+            "ominous_splitter",
             true
     );
     public static final Block GUNPOWDER_BARREL = register(

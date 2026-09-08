@@ -33,6 +33,8 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
         long time = entity.getWorld().getTime();
 
         for (BeamSegmentPath path : paths) {
+            if (path.getLength() <= 0) continue;
+
             matrices.push();
 
             double xOffset = path.getStartPos().getX() - entity.getPos().getX();
@@ -71,7 +73,7 @@ public class OminousBeaconBlockRenderer implements BlockEntityRenderer<OminousBe
                 case UP -> { }
             }
 
-            renderBeam(matrices, vertexConsumers, tickDelta, time, 0, path.getLength(), path.getSegment().getColor());
+            renderBeam(matrices, vertexConsumers, tickDelta, time, 1, path.getLength(), path.getSegment().getColor());
 
             matrices.pop();
         }

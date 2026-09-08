@@ -1,6 +1,8 @@
 {
   "values": [
     "minecraft:bedrock",
-    "minecraft:tinted_glass"
+    "minecraft:tinted_glass",
+    "minecraft:piston",
+    "minecraft:sticky_piston"
   ]
 }

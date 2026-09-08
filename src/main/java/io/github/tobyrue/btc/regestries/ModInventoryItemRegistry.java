@@ -49,7 +49,7 @@ public class ModInventoryItemRegistry {
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
-            content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON);
+            content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON, ModBlocks.OMINOUS_REFLECTOR, ModBlocks.OMINOUS_SPLITTER);
             content.addAfter(Blocks.ENCHANTING_TABLE, ModBlocks.DUNGEON_WIRE,
                     ModBlocks.PEDESTAL, ModBlocks.ITEM_PEDESTAL,
                     ModBlocks.KEY_ACCEPTOR, ModBlocks.POTION_PILLAR, ModBlocks.ANCIENT_POTION_PILLAR,
