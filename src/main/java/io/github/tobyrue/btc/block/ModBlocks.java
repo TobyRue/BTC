@@ -59,6 +59,7 @@ public class ModBlocks {
             true
     );
 
+
     public static final Block REINFORCED_DUNGEON_TILE_STAIRS = register(
             new StairsBlock(REINFORCED_DUNGEON_TILES.getDefaultState(), AbstractBlock.Settings.copy(REINFORCED_DUNGEON_TILES)),
             "reinforced_dungeon_tile_stairs",
@@ -76,7 +77,11 @@ public class ModBlocks {
             "reinforced_dungeon_grate",
             true
     );
-
+    public static final Block REINFORCED_DUNGEON_PLATE = register(
+            new BlockPlateBlock(AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.METAL).instrument(NoteBlockInstrument.BASEDRUM)),
+            "reinforced_dungeon_plate",
+            true
+    );
 
     public static final Block KILL_BALL_RECEPTOR = register(
             new KillBallReceptorBlock(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.SNARE)),
@@ -122,6 +127,7 @@ public class ModBlocks {
             "bellow",
             true
     );
+
 
     public static final Block GUNPOWDER_DUST = register(
             new GunpowderDustBlock(AbstractBlock.Settings.create().mapColor(MapColor.CLEAR).breakInstantly().noCollision().pistonBehavior(PistonBehavior.DESTROY).sounds(BlockSoundGroup.SAND)),

@@ -1,17 +1,16 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.DungeonDoorBlock;
-import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.block.OminousBeaconBlock;
+import io.github.tobyrue.btc.block.*;
 import  io.github.tobyrue.btc.block.OminousBeaconBlock.BeaconMode;
-import io.github.tobyrue.btc.block.OminousBeamChangerBlock;
 import io.github.tobyrue.btc.entity.custom.TrialCubeEntity;
 import io.github.tobyrue.btc.regestries.ModDamageTypes;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -122,8 +121,12 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             BlockPos currentPos = startPos.offset(dir, l);
             BlockState currentState = world.getBlockState(currentPos);
 
-            if (currentState.isIn(BTC.STOPS_OMINOUS_BEACON) ||
-                    (currentState.getBlock() instanceof DungeonDoorBlock door && !currentState.get(DungeonDoorBlock.OPEN))) {
+            if (shouldBeamRenderInAndStop(world, currentPos, currentState, dir)) {
+                beamLength = l;
+                break;
+            }
+
+            if (shouldBlockBeam(world, currentPos, currentState, dir)) {
                 beamLength = l - 1;
                 break;
             }
@@ -200,9 +203,10 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
         for (int l = 1; l <= length; l++) {
             BlockPos offsetPos = startPos.offset(dir, l);
             BlockState offsetState = world.getBlockState(offsetPos);
-            if (offsetState.getOpacity(world, offsetPos) < 15 || offsetState.isIn(BTC.OMINOUS_BEACON_IGNORES)) {
+
+            if (offsetState.getOpacity(world, offsetPos) < 15 || shouldIgnoreBeamEffects(world, offsetPos, offsetState, dir)) {
                 continue;
-            } else if (!offsetState.isIn(BTC.STOPS_OMINOUS_BEACON)) {
+            } else if (!shouldBlockBeam(world, offsetPos, offsetState, dir)) {
                 world.breakBlock(offsetPos, true);
             }
         }
@@ -220,6 +224,66 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
     public void tick(World world, BlockPos pos, BlockState state, OminousBeaconBlockEntity blockEntity) {
         blockEntity.updateBeam(world, pos, state);
     }
+
+
+    public static boolean shouldBlockBeam(World world, BlockPos pos, BlockState state, Direction beamDir) {
+        if (state.isIn(BTC.OMINOUS_BEAM_RENDERS_IN_AND_STOPS)) {
+            return true;
+        }
+
+        if (state.isIn(BTC.STOPS_OMINOUS_BEACON)) {
+            return true;
+        }
+
+        if (state.getBlock() instanceof DungeonDoorBlock door && !state.get(DungeonDoorBlock.OPEN)) {
+            return true;
+        }
+
+         if (state.getBlock() instanceof SlabBlock && beamDir.getAxis().isVertical()) {
+             return true;
+         }
+
+        if (state.isOf(ModBlocks.REINFORCED_DUNGEON_PLATE) && BlockPlateBlock.hasDirection(state, beamDir.getOpposite())) {
+            return true;
+        }
+        if (state.getBlock() instanceof SlabBlock && state.get(SlabBlock.TYPE) == SlabType.DOUBLE) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public static boolean shouldIgnoreBeamEffects(World world, BlockPos pos, BlockState state, Direction beamDir) {
+        if (state.isIn(BTC.OMINOUS_BEACON_IGNORES)) {
+            return true;
+        }
+        if (state.getBlock() instanceof BlockPlateBlock && (!BlockPlateBlock.hasDirection(state, beamDir.getOpposite()) && !BlockPlateBlock.hasDirection(state, beamDir))) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean shouldBeamRenderInAndStop(World world, BlockPos pos, BlockState state, Direction beamDir) {
+        if (state.isIn(BTC.OMINOUS_BEAM_RENDERS_IN_AND_STOPS)) {
+            return true;
+        }
+
+        if (state.getBlock() instanceof SlabBlock && ((beamDir == Direction.DOWN && state.get(SlabBlock.TYPE) == SlabType.BOTTOM) || (beamDir == Direction.UP && state.get(SlabBlock.TYPE) == SlabType.TOP))) {
+            return true;
+        }
+
+        if (state.isOf(ModBlocks.REINFORCED_DUNGEON_PLATE)) {
+            System.out.println("Dir: " + beamDir);
+            System.out.println("Has Opp Dir: " + BlockPlateBlock.hasDirection(state, beamDir));
+        }
+        if (state.isOf(ModBlocks.REINFORCED_DUNGEON_PLATE) && BlockPlateBlock.hasDirection(state, beamDir) && !BlockPlateBlock.hasDirection(state, beamDir.getOpposite())) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {

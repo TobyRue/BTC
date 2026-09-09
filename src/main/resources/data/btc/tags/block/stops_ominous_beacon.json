@@ -11,8 +11,13 @@
     "minecraft:crying_obsidian",
     "minecraft:respawn_anchor",
     "btc:reinforced_dungeon_block",
+    "btc:charged_reinforced_dungeon_block",
     "btc:reinforced_dungeon_tiles",
+    "btc:reinforced_dungeon_tile_slab",
+    "btc:reinforced_dungeon_tile_stairs",
     "btc:trial_core",
-    "btc:dungeon_wire"
+    "btc:dungeon_wire",
+    "#btc:pillar",
+    "#btc:pilaster"
   ]
 }

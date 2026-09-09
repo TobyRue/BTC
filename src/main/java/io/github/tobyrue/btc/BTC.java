@@ -70,6 +70,7 @@ public class BTC implements ModInitializer, TerraBlenderApi {
     public static final TagKey<Block> PANE = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "pane"));
     public static final TagKey<Block> STOPS_OMINOUS_BEACON = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "stops_ominous_beacon"));
     public static final TagKey<Block> OMINOUS_BEACON_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "ominous_beacon_ignores"));
+    public static final TagKey<Block> OMINOUS_BEAM_RENDERS_IN_AND_STOPS = TagKey.of(RegistryKeys.BLOCK, Identifier.of(MOD_ID, "ominous_beam_renders_in_and_stops"));
     public static final TagKey<Block> FAN_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "fan_ignores"));
     public static final TagKey<EntityType<?>> PET_CHARM_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "pet_charm_whitelist"));
     public static final TagKey<EntityType<?>> UNSTABLE_BLOCK_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "unstable_block_whitelist"));

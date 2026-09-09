@@ -1,0 +1,7 @@
+{
+    "parent": "btc:block/block_plate",
+    "textures": {
+      "texture": "btc:block/reinforced_dungeon_plate",
+      "particle": "btc:block/reinforced_dungeon_plate"
+    }
+}
