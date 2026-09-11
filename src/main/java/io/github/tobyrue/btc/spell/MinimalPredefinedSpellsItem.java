@@ -58,11 +58,9 @@ public abstract class MinimalPredefinedSpellsItem extends SpellItem {
                 List<Identifier> advancements = minimal.getSpellAdvancements(stack, world, player);
 
                 for (Identifier id : advancements) {
-                    System.out.println("Item " + stack.getItem() + " requires advancement: " + id);
                     if (world != null) {
                         boolean has = AdvancementUtils.hasAdvancement(player, id.getNamespace(), id.getPath());
                         if (has) {
-                            System.out.println("Player has advancement " + id + " -> unlock spells");
                         }
                     }
                 }

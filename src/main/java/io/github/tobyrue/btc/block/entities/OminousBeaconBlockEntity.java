@@ -273,10 +273,6 @@ public class OminousBeaconBlockEntity extends BlockEntity implements BlockEntity
             return true;
         }
 
-        if (state.isOf(ModBlocks.REINFORCED_DUNGEON_PLATE)) {
-            System.out.println("Dir: " + beamDir);
-            System.out.println("Has Opp Dir: " + BlockPlateBlock.hasDirection(state, beamDir));
-        }
         if (state.isOf(ModBlocks.REINFORCED_DUNGEON_PLATE) && BlockPlateBlock.hasDirection(state, beamDir) && !BlockPlateBlock.hasDirection(state, beamDir.getOpposite())) {
             return true;
         }

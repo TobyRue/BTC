@@ -401,7 +401,6 @@ public class BTCClient implements ClientModInitializer {
                             b = Math.max(b, 60);
 
                             int finalColor = 0xFF000000 | (r << 16) | (g << 8) | b;
-                            System.out.println("Generated Color: #" + Integer.toHexString(finalColor).toUpperCase());
                             return finalColor;
                         }
                     } catch (IllegalArgumentException | NullPointerException ignored) {

@@ -56,7 +56,6 @@ public class OxidizedFanBlock extends WaxedCopperFanBlock implements Oxidizable,
                 if (oldBe instanceof FanBlockEntity) {
                     var registryLookup = world.getRegistryManager();
                     NbtCompound nbt = oldBe.createNbt(registryLookup);
-                    System.out.println("Saving Depth: " + nbt.getDouble("Depth") + " from " + state.getBlock());
                     world.setBlockState(pos, degraded);
                     BlockEntity newBe = world.getBlockEntity(pos);
 
@@ -64,7 +63,6 @@ public class OxidizedFanBlock extends WaxedCopperFanBlock implements Oxidizable,
                         newBe.readNbt(nbt, registryLookup);
                         newBe.markDirty();
                         world.updateListeners(pos, state, degraded, 3);
-                        System.out.println("Loaded Depth into: " + world.getBlockState(pos).getBlock());
                     }
                 }
             });

@@ -278,7 +278,6 @@ public final class BitString implements Cloneable {
         assert BitString.valueOf("0111001").or(BitString.valueOf("0100110")).equals(BitString.valueOf("0111111"));
         assert BitString.valueOf("0111001").xor(BitString.valueOf("0100110")).equals(BitString.valueOf("0011111"));
 
-        System.out.println("Ok");
 
         var x = BitString.valueOf("0b100_00000010");
 

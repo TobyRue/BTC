@@ -75,10 +75,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 }
                 String path = requires.substring(colonIndex + 1);
 
-                System.out.println("Namespace detected: " + namespace);
-                System.out.println("Path detected: " + path);
-                System.out.println("Is inverted: " + isInvertedAdvancementPage());
-
                 return Identifier.of(namespace, path);
             } else {
                 return null;
@@ -94,11 +90,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
         public boolean isRequirementMet(ServerPlayerEntity player) {
             String reqStr = getRequires();
             if (reqStr == null || reqStr.isEmpty()) {
-                System.out.println("[Codex] No requirements — returning true.");
                 return true;
             }
 
-            System.out.println("[Codex] Requirement string: " + reqStr);
 
             List<Boolean> values = new ArrayList<>();
             List<String> operators = new ArrayList<>();
@@ -107,10 +101,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 char c = reqStr.charAt(i);
                 if (c == '*') {
                     operators.add("*");
-                    System.out.println("[Codex] Found AND operator '*'");
                 } else if (c == '+') {
                     operators.add("+");
-                    System.out.println("[Codex] Found OR operator '+'");
                 }
             }
 
@@ -123,26 +115,21 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 boolean inverted = part.startsWith("!");
                 if (inverted) {
                     part = part.substring(1);
-                    System.out.println("[Codex] Inversion detected for: " + part);
                 }
 
                 int colonIndex = part.indexOf(':');
                 if (colonIndex == -1) {
                     part = "minecraft:" + part;
                     colonIndex = part.indexOf(':');
-                    System.out.println("[Codex] No namespace — defaulted to minecraft: " + part);
                 }
 
                 String namespace = part.substring(0, colonIndex);
                 String path = part.substring(colonIndex + 1);
 
-                System.out.println("[Codex] Checking advancement: " + namespace + ":" + path);
-
                 Identifier id;
                 try {
                     id = Identifier.of(namespace, path);
                 } catch (Exception e) {
-                    System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
                     values.add(false);
                     continue;
                 }
@@ -150,18 +137,13 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 var advancement = player.server.getAdvancementLoader().get(id);
                 boolean hasAdvancement = advancement != null && player.getAdvancementTracker().getProgress(advancement).isDone();
 
-                System.out.println("[Codex] " + id + " advancement is " + (hasAdvancement ? "complete" : "incomplete"));
 
                 if (inverted) {
                     hasAdvancement = !hasAdvancement;
-                    System.out.println("[Codex] Inverted result: " + hasAdvancement);
                 }
 
                 values.add(hasAdvancement);
             }
-
-            System.out.println("[Codex] Values collected: " + values);
-            System.out.println("[Codex] Operators collected: " + operators);
 
             while (values.size() > 1) {
                 String op = operators.remove(0);
@@ -171,19 +153,15 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                 boolean result;
                 if (op.equals("*")) {
                     result = left && right;
-                    System.out.println("[Codex] Evaluating: " + left + " AND " + right + " = " + result);
                 } else if (op.equals("+")) {
                     result = left || right;
-                    System.out.println("[Codex] Evaluating: " + left + " OR " + right + " = " + result);
                 } else {
                     throw new IllegalStateException("[Codex] Unknown operator: " + op);
                 }
 
                 values.add(0, result);
-                System.out.println("[Codex] Intermediate values: " + values);
             }
 
-            System.out.println("[Codex] Final requirement result: " + values.get(0));
             return values.get(0);
         }
 
@@ -229,9 +207,6 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     }
                     String path = requires.substring(colonIndex + 1);
 
-                    System.out.println("Namespace detected: " + namespace);
-                    System.out.println("Path detected: " + path);
-                    System.out.println("Is inverted: " + isInvertedAdvancementLine());
 
                     return Identifier.of(namespace, path);
                 } else {
@@ -251,11 +226,9 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
             public boolean isRequirementMet(ServerPlayerEntity player) {
                 String reqStr = getRequires();
                 if (reqStr == null || reqStr.isEmpty()) {
-                    System.out.println("[Codex] No requirements — returning true.");
                     return true;
                 }
 
-                System.out.println("[Codex] Requirement string: " + reqStr);
 
                 List<Boolean> values = new ArrayList<>();
                 List<String> operators = new ArrayList<>();
@@ -264,10 +237,8 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     char c = reqStr.charAt(i);
                     if (c == '*') {
                         operators.add("*");
-                        System.out.println("[Codex] Found AND operator '*'");
                     } else if (c == '+') {
                         operators.add("+");
-                        System.out.println("[Codex] Found OR operator '+'");
                     }
                 }
 
@@ -280,26 +251,21 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     boolean inverted = part.startsWith("!");
                     if (inverted) {
                         part = part.substring(1);
-                        System.out.println("[Codex] Inversion detected for: " + part);
                     }
 
                     int colonIndex = part.indexOf(':');
                     if (colonIndex == -1) {
                         part = "minecraft:" + part;
                         colonIndex = part.indexOf(':');
-                        System.out.println("[Codex] No namespace — defaulted to minecraft: " + part);
                     }
 
                     String namespace = part.substring(0, colonIndex);
                     String path = part.substring(colonIndex + 1);
 
-                    System.out.println("[Codex] Checking advancement: " + namespace + ":" + path);
-
                     Identifier id;
                     try {
                         id = Identifier.of(namespace, path);
                     } catch (Exception e) {
-                        System.err.println("[ERROR] Invalid advancement ID: " + part + " (" + e.getMessage() + ")");
                         values.add(false);
                         continue;
                     }
@@ -307,18 +273,14 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     var advancement = player.server.getAdvancementLoader().get(id);
                     boolean hasAdvancement = advancement != null && player.getAdvancementTracker().getProgress(advancement).isDone();
 
-                    System.out.println("[Codex] " + id + " advancement is " + (hasAdvancement ? "complete" : "incomplete"));
 
                     if (inverted) {
                         hasAdvancement = !hasAdvancement;
-                        System.out.println("[Codex] Inverted result: " + hasAdvancement);
                     }
 
                     values.add(hasAdvancement);
                 }
 
-                System.out.println("[Codex] Values collected: " + values);
-                System.out.println("[Codex] Operators collected: " + operators);
 
                 while (values.size() > 1) {
                     String op = operators.remove(0);
@@ -328,19 +290,15 @@ public record Codex(@XML.Children(allow = {Page.class}) XMLNodeCollection<Page> 
                     boolean result;
                     if (op.equals("*")) {
                         result = left && right;
-                        System.out.println("[Codex] Evaluating: " + left + " AND " + right + " = " + result);
                     } else if (op.equals("+")) {
                         result = left || right;
-                        System.out.println("[Codex] Evaluating: " + left + " OR " + right + " = " + result);
                     } else {
                         throw new IllegalStateException("[Codex] Unknown operator: " + op);
                     }
 
                     values.add(0, result);
-                    System.out.println("[Codex] Intermediate values: " + values);
                 }
 
-                System.out.println("[Codex] Final requirement result: " + values.get(0));
                 return values.get(0);
             }
 

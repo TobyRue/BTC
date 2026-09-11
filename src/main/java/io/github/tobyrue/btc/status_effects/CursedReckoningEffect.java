@@ -34,7 +34,6 @@ public class CursedReckoningEffect extends StatusEffect {
                 STORED_START.put(entity, entity.getHealth());
             }
             STORED_DAMAGE.put(entity, STORED_DAMAGE.getOrDefault(entity, 0f) + amount);
-            System.out.println("Damage: " + amount);
             entity.setHealth(Math.min(entity.getMaxHealth(), STORED_START.get(entity)));
         }
     }

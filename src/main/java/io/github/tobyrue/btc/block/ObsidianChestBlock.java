@@ -89,9 +89,7 @@ public class ObsidianChestBlock extends BlockWithEntity implements ModBlockEntit
 
             if (be.getLootTableId() != null && !be.hasPlayerLooted(playerUuid)) {
                 generateLootForPlayer(world, be, player, playerChestInv);
-                System.out.println("Hi");
                 be.markPlayerLooted(playerUuid);
-                System.out.println("Hi: " + be.hasPlayerLooted(playerUuid));
                 if (!world.isClient) {
                     world.addSyncedBlockEvent(pos, be.getCachedState().getBlock(), 2, 1);
                 }
