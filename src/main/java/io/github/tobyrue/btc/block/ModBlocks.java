@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.block.fluids.ToxicSludgeBlock;
+import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.circuit.FPGABlock;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
@@ -15,6 +16,8 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -757,7 +760,12 @@ public class ModBlocks {
             "chiseled_deepslate_pillar",
             true
     );
-
+    public static final Block CORN_STALK = register(
+            new TwoTallCropBlock(RegistryKey.of(RegistryKeys.ITEM, BTC.identifierOf("corn")),
+                    AbstractBlock.Settings.create().offset(AbstractBlock.OffsetType.XZ).burnable().pistonBehavior(PistonBehavior.DESTROY).dynamicBounds().ticksRandomly()),
+            "corn_stalk",
+            false
+    );
 
 
 //    public static final Block _PILASTER = register(

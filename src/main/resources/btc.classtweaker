@@ -9,6 +9,7 @@ accessible method net/minecraft/block/entity/BlockEntity writeNbt (Lnet/minecraf
 accessible class net/minecraft/recipe/book/RecipeBookOptions$CategoryOption
 accessible method net/minecraft/recipe/book/RecipeBookOptions$CategoryOption <init> (ZZ)V
 accessible field net/minecraft/world/gen/carver/CaveCarverConfig floorLevel Lnet/minecraft/util/math/floatprovider/FloatProvider;
+accessible method net/minecraft/block/CropBlock getAvailableMoisture (Lnet/minecraft/block/Block;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F
 
 extend-enum net/minecraft/recipe/book/RecipeBookCategory BTC_SCROLL_TABLE
 extend-enum net/minecraft/client/recipebook/RecipeBookGroup BTC_SCROLL_TABLE_SEARCH

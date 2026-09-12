@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/stem_growth7",
+  "textures": {
+    "stem": "btc:block/corn_stalk"
+  }
+}
