@@ -11,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -25,27 +26,68 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class TwoTallCropBlock extends PlantBlock implements Fertilizable {
-    public static final MapCodec<TwoTallCropBlock> CODEC =
-            RecordCodecBuilder.mapCodec((instance) -> instance.group(
-                            RegistryKey.createCodec(RegistryKeys.ITEM).fieldOf("seed")
-                                    .forGetter((block) -> block.pickBlockItem), createSettingsCodec())
-                    .apply(instance, TwoTallCropBlock::new));
+    public static final MapCodec<TwoTallCropBlock> CODEC = RecordCodecBuilder.mapCodec((instance) ->
+            instance.group(
+                    RegistryKey.createCodec(RegistryKeys.ITEM).fieldOf("seed").forGetter((block) -> block.pickBlockItem),
+                    createSettingsCodec(),
+                    Vec3d.CODEC.fieldOf("slow_rate").forGetter((block) -> block.slowRate)
+            ).apply(instance, TwoTallCropBlock::new)
+    );
 
     private final RegistryKey<Item> pickBlockItem;
+    private final Vec3d slowRate;
     public static final IntProperty AGE = IntProperty.of("age", 0, 9);
     public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
+    private static final VoxelShape[] LOWER_SHAPES = new VoxelShape[]{
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0),   // Age 0 (height 3)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 7.0, 14.0),   // Age 1 (height 7)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 11.0, 14.0),  // Age 2 (height 11)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0),  // Age 3 (height 15)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),  // Age 4 (height 16)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),  // Age 5 (height 16)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),  // Age 6 (height 16)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),  // Age 7 (height 16)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),  // Age 8 (height 16)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0)   // Age 9 (height 16)
+    };
 
-    public TwoTallCropBlock(RegistryKey<Item> pickBlockItem, AbstractBlock.Settings settings) {
+    private static final VoxelShape[] UPPER_SHAPES = new VoxelShape[]{
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0),   // Age 0 (height 3)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 7.0, 14.0),   // Age 1 (height 7)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 11.0, 14.0),  // Age 2 (height 11)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0),  // Age 3 (height 15)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0),   // Age 4 (height 3)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 7.0, 14.0),   // Age 5 (height 7)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 11.0, 14.0),  // Age 6 (height 11)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 15.0, 14.0),  // Age 7 (height 15)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),  // Age 8 (height 16)
+            Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0)   // Age 9 (height 16)
+    };
+
+    public TwoTallCropBlock(RegistryKey<Item> pickBlockItem, AbstractBlock.Settings settings, Vec3d slowRate) {
         super(settings);
         this.pickBlockItem = pickBlockItem;
+        this.slowRate = slowRate;
         this.setDefaultState(this.stateManager.getDefaultState().with(AGE, 0).with(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        int age = state.get(AGE);
+        Vec3d vec3d = state.getModelOffset(world, pos);
+        if (state.get(HALF) == DoubleBlockHalf.LOWER) {
+            return LOWER_SHAPES[age].offset(vec3d.x, vec3d.y, vec3d.z);
+        }
+        return UPPER_SHAPES[age].offset(vec3d.x, vec3d.y, vec3d.z);
     }
 
     @Override
@@ -150,6 +192,7 @@ public class TwoTallCropBlock extends PlantBlock implements Fertilizable {
         if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             world.breakBlock(pos, true, entity);
         }
+        entity.slowMovement(state, this.slowRate);
 
         super.onEntityCollision(state, world, pos, entity);
     }
@@ -185,11 +228,12 @@ public class TwoTallCropBlock extends PlantBlock implements Fertilizable {
         if (!world.isClient) {
             if (player.isCreative()) {
                 onBreakInCreative(world, pos, state, player);
-            } else if (state.get(AGE) == 9) {
-                Registry<Item> registry = world.getRegistryManager().get(RegistryKeys.ITEM);
-                Optional<Item> optionalItem = registry.getOrEmpty(this.pickBlockItem);
-                optionalItem.ifPresent(item -> dropStack(world, pos, item.getDefaultStack()));
             }
+//            else if (state.get(AGE) == 9) {
+//                Registry<Item> registry = world.getRegistryManager().get(RegistryKeys.ITEM);
+//                Optional<Item> optionalItem = registry.getOrEmpty(this.pickBlockItem);
+//                optionalItem.ifPresent(item -> dropStack(world, pos, item.getDefaultStack()));
+//            }
         }
         return super.onBreak(world, pos, state, player);
     }

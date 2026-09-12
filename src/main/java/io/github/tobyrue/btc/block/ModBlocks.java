@@ -21,6 +21,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.HashSet;
@@ -762,7 +763,10 @@ public class ModBlocks {
     );
     public static final Block CORN_STALK = register(
             new TwoTallCropBlock(RegistryKey.of(RegistryKeys.ITEM, BTC.identifierOf("corn")),
-                    AbstractBlock.Settings.create().offset(AbstractBlock.OffsetType.XZ).burnable().pistonBehavior(PistonBehavior.DESTROY).dynamicBounds().ticksRandomly()),
+                    AbstractBlock.Settings.create().offset(AbstractBlock.OffsetType.XZ).burnable()
+                            .pistonBehavior(PistonBehavior.DESTROY).dynamicBounds().ticksRandomly().noCollision(),
+                    new Vec3d(0.7, 0.9, 0.7)
+            ),
             "corn_stalk",
             false
     );

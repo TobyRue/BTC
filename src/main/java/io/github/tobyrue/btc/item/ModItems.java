@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.*;
+import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.WrenchType;
@@ -29,7 +30,7 @@ public class ModItems {
 
 
     public static final Item CORN = register(
-            new Item(new Item.Settings()),
+            new AliasedBlockItem(ModBlocks.CORN_STALK, new Item.Settings()),
             "corn"
     );
     public static final Item SALT = register(
