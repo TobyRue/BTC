@@ -6,6 +6,7 @@ import io.github.tobyrue.btc.worldgen.ModConfiguredFeatures;
 import io.github.tobyrue.btc.worldgen.ModWorldPlacedFeatures;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryKeys;
 

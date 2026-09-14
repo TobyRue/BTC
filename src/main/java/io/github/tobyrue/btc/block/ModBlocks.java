@@ -51,6 +51,12 @@ public class ModBlocks {
             new ToxicSludgeBlock(ModFluids.TOXIC_SLUDGE_SOURCE, Block.Settings.copy(Blocks.WATER))
     );
 
+    public static final Block BUTTER = register(
+            new ButterBlock(AbstractBlock.Settings.create().slipperiness(0.989f)),
+            "butter",
+            false
+    );
+
     public static final Block REINFORCED_DUNGEON_TILES = register(
             new Block(AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.METAL).instrument(NoteBlockInstrument.BASEDRUM)),
             "reinforced_dungeon_tiles",

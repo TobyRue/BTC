@@ -74,6 +74,7 @@ public class BTC implements ModInitializer, TerraBlenderApi {
     public static final TagKey<Block> FAN_IGNORES = TagKey.of(RegistryKeys.BLOCK,  Identifier.of(MOD_ID, "fan_ignores"));
     public static final TagKey<EntityType<?>> PET_CHARM_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "pet_charm_whitelist"));
     public static final TagKey<EntityType<?>> UNSTABLE_BLOCK_WHITELIST = TagKey.of(RegistryKeys.ENTITY_TYPE,  Identifier.of(MOD_ID, "unstable_block_whitelist"));
+    public static final TagKey<Block> PISTONS_CAN_MOVE_BLOCK_ENTITY = TagKey.of(RegistryKeys.BLOCK, identifierOf("pistons_can_move_block_entity"));
 
     public static final StructureProcessorType<BookshelfProcessor> BOOKSHELF_PROCESSOR =
             Registry.register(Registries.STRUCTURE_PROCESSOR, Identifier.of("btc", "bookshelf_processor"), () -> BookshelfProcessor.CODEC);
@@ -310,7 +311,6 @@ public class BTC implements ModInitializer, TerraBlenderApi {
 
 
 
-    public static final TagKey<Block> PISTONS_CAN_MOVE_BLOCK_ENTITY;
 
 
     public static void HandleBlockEntityShenanigans(BlockEntity input, BlockEntity output, World world) {
@@ -321,9 +321,6 @@ public class BTC implements ModInitializer, TerraBlenderApi {
         }
     }
 
-    static {
-        PISTONS_CAN_MOVE_BLOCK_ENTITY = TagKey.of(RegistryKeys.BLOCK, identifierOf("pistons_can_move_block_entity"));
-    }
 
 
     @Override

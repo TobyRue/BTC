@@ -81,6 +81,8 @@
   "block.btc.salt_bud": "Salt Bud",
   "block.btc.salt_crystal": "Salt Crystal",
   "block.btc.salt_cluster": "Salt Cluster",
+  "block.btc.corn_stalk": "Corn Stalk",
+  "block.btc.butter": "Butter",
 
   "container.btc.spell_inventory": "Spell Inventory",
   "hud.btc.cancel.crouch": "Crouch",
@@ -184,6 +186,8 @@
   "item.btc.sea_mine": "Sea Mine",
   "item.btc.salt": "Salt",
   "item.btc.rage_pepper": "Rage Pepper",
+  "item.btc.butter": "Butter",
+  "item.btc.corn": "Corn",
 
   "item.btc.pet_charm": "Pet Charm",
   "item.btc.pet_charm.action.bind": "Pet Bound",

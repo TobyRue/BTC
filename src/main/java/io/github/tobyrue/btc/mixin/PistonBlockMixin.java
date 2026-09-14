@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.dataholders.PistonBlockEntityPatch;
+import io.github.tobyrue.btc.dataholders.PistonPushManager;
+import io.github.tobyrue.btc.util.PistonReactable;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
@@ -42,6 +44,9 @@ public abstract class PistonBlockMixin extends FacingBlock {
             cancellable = true
     )
     private static void moveTileEntities(BlockState state, World world, BlockPos pos, Direction direction, boolean canBreak, Direction pistonDir, CallbackInfoReturnable<Boolean> cir) {
+        if (state.getBlock() instanceof PistonReactable pistonReactable && !pistonReactable.canBePushed(state)) {
+            cir.setReturnValue(false);
+        }
         cir.setReturnValue(state.isIn(BTC.PISTONS_CAN_MOVE_BLOCK_ENTITY) || cir.getReturnValue());
     }
 
@@ -75,10 +80,8 @@ public abstract class PistonBlockMixin extends FacingBlock {
             Map<BlockPos, BlockState> map = Maps.newHashMap();
             List<BlockPos> list = pistonHandler.getMovedBlocks();
             List<BlockState> list2 = Lists.newArrayList();
-            Iterator var11 = list.iterator();
 
-            while(var11.hasNext()) {
-                BlockPos blockPos2 = (BlockPos)var11.next();
+            for (BlockPos blockPos2 : list) {
                 BlockState blockState = world.getBlockState(blockPos2);
                 list2.add(blockState);
                 map.put(blockPos2, blockState);
@@ -92,7 +95,7 @@ public abstract class PistonBlockMixin extends FacingBlock {
             BlockState blockState4;
             BlockEntity blockEntity;
             for(int j = list3.size() - 1; j >= 0; --j) {
-                BlockPos blockPos3 = (BlockPos)list3.get(j);
+                BlockPos blockPos3 = list3.get(j);
                 blockState4 = world.getBlockState(blockPos3);
                 blockEntity = blockState4.hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
                 dropStacks(blockState4, world, blockPos3, blockEntity);
@@ -110,8 +113,8 @@ public abstract class PistonBlockMixin extends FacingBlock {
             int j;
             BlockPos blockPos3;
             for(j = 0; j < list.size(); ++j) {
-                blockPos3 = (BlockPos)list.get(j);
-                blockEntity = ((BlockState)list2.get(j)).hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
+                blockPos3 = list.get(j);
+                blockEntity = list2.get(j).hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
                 if (blockEntity != null) {
                     heldBlockEntities.put(j, blockEntity);
                     world.removeBlockEntity(blockPos3);
@@ -120,17 +123,29 @@ public abstract class PistonBlockMixin extends FacingBlock {
             }
 
             BlockState blockState2;
-            for(j = list.size() - 1; j >= 0; --j) {
-                blockPos3 = (BlockPos)list.get(j);
-                blockState2 = world.getBlockState(blockPos3);
-                blockPos3 = blockPos3.offset(direction);
-                map.remove(blockPos3);
-                BlockState blockState3 = (BlockState)Blocks.MOVING_PISTON.getDefaultState().with(FACING, dir);
-                world.setBlockState(blockPos3, blockState3, 68);
-                PistonBlockEntity pushedBlocks = new PistonBlockEntity(blockPos3, blockState3, (BlockState)list2.get(j), dir, retract, false);
+            for (j = list.size() - 1; j >= 0; --j) {
+                BlockPos originalFromPos = list.get(j).toImmutable();
+                BlockPos targetToPos = originalFromPos.offset(direction).toImmutable();
+
+                blockState2 = world.getBlockState(originalFromPos);
+                map.remove(targetToPos);
+
+                BlockEntity targetEntity = heldBlockEntities.get(j);
+
+                BlockState resultingState = PistonPushManager.onBlockMovedByPiston(
+                        world,
+                        originalFromPos,
+                        targetToPos,
+                        list2.get(j),
+                        targetEntity
+                );
+
+                BlockState blockState3 = Blocks.MOVING_PISTON.getDefaultState().with(FACING, dir);
+                world.setBlockState(targetToPos, blockState3, 68);
+                PistonBlockEntity pushedBlocks = new PistonBlockEntity(targetToPos, blockState3, resultingState, dir, retract, false);
                 if (!heldBlockEntities.isEmpty() && heldBlockEntities.containsKey(j) && pushedBlocks instanceof PistonBlockEntityPatch) {
-                    PistonBlockEntityPatch p = (PistonBlockEntityPatch)pushedBlocks;
-                    p.setBlockEntity((BlockEntity)heldBlockEntities.get(j));
+                    PistonBlockEntityPatch p = (PistonBlockEntityPatch) pushedBlocks;
+                    p.setBlockEntity(heldBlockEntities.get(j));
                 }
 
                 world.addBlockEntity(pushedBlocks);
@@ -139,8 +154,8 @@ public abstract class PistonBlockMixin extends FacingBlock {
 
             if (retract) {
                 PistonType pistonType = this.sticky ? PistonType.STICKY : PistonType.DEFAULT;
-                blockState4 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, dir)).with(PistonHeadBlock.TYPE, pistonType);
-                blockState2 = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, dir)).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
+                blockState4 = Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, dir).with(PistonHeadBlock.TYPE, pistonType);
+                blockState2 = Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, dir).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
                 map.remove(blockPos);
                 world.setBlockState(blockPos, blockState2, 68);
                 world.addBlockEntity(PistonExtensionBlock.createBlockEntityPiston(blockPos, blockState2, blockState4, dir, true, true));
@@ -159,8 +174,8 @@ public abstract class PistonBlockMixin extends FacingBlock {
             BlockPos blockPos5;
             while(var32.hasNext()) {
                 Entry<BlockPos, BlockState> entry = (Entry)var32.next();
-                blockPos5 = (BlockPos)entry.getKey();
-                BlockState blockState6 = (BlockState)entry.getValue();
+                blockPos5 = entry.getKey();
+                BlockState blockState6 = entry.getValue();
                 blockState6.prepare(world, blockPos5, 2);
                 blockState5.updateNeighbors(world, blockPos5, 2);
                 blockState5.prepare(world, blockPos5, 2);
@@ -171,13 +186,13 @@ public abstract class PistonBlockMixin extends FacingBlock {
             int k;
             for(k = list3.size() - 1; k >= 0; --k) {
                 blockState2 = blockStates[i++];
-                blockPos5 = (BlockPos)list3.get(k);
+                blockPos5 = list3.get(k);
                 blockState2.prepare(world, blockPos5, 2);
                 world.updateNeighborsAlways(blockPos5, blockState2.getBlock());
             }
 
             for(k = list.size() - 1; k >= 0; --k) {
-                world.updateNeighborsAlways((BlockPos)list.get(k), blockStates[i++].getBlock());
+                world.updateNeighborsAlways(list.get(k), blockStates[i++].getBlock());
             }
 
             if (retract) {

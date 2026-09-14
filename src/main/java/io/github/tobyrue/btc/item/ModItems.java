@@ -28,9 +28,12 @@ public class ModItems {
     }
     public static final Item TOXIC_SLUDGE_BUCKET = Registry.register(Registries.ITEM, BTC.identifierOf("toxic_sludge_bucket"), new BucketItem(ModFluids.TOXIC_SLUDGE_SOURCE, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1)));
 
-
+    public static final Item BUTTER = register(
+            new ButterBucket(new Item.Settings()),
+            "butter"
+    );
     public static final Item CORN = register(
-            new AliasedBlockItem(ModBlocks.CORN_STALK, new Item.Settings()),
+            new AliasedTranslatedBlockItem(ModBlocks.CORN_STALK, new Item.Settings(), BTC.identifierOf("corn")),
             "corn"
     );
     public static final Item SALT = register(

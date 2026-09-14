@@ -1,5 +1,6 @@
 package io.github.tobyrue.btc.block;
 
+import io.github.tobyrue.btc.util.PistonReactable;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +30,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class GunpowderBarrelBlock extends Block {
+public class GunpowderBarrelBlock extends Block implements PistonReactable {
     public static final IntProperty LEVEL =  IntProperty.of("level", 1, 8);
     public static final IntProperty FUSE = IntProperty.of("fuse", 0, 10);
     public static final BooleanProperty BURNING = BooleanProperty.of("burning");
@@ -173,5 +174,26 @@ public class GunpowderBarrelBlock extends Block {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(LEVEL, FUSE, BURNING, FACING);
+    }
+
+    @Override
+    public boolean canBePushed(BlockState state) {
+        return !state.get(BURNING);
+    }
+
+    @Override
+    public int getRequiredPushes(BlockState state) {
+        return 10;
+    }
+
+    @Override
+    public long getMaxTickDelay(BlockState state) {
+        return 40L;
+    }
+
+    @Override
+    public BlockState onPistonReaction(World world, BlockPos pos, BlockState state, int pushCount) {
+        ignite(world, state, pos);
+        return state.with(BURNING, true);
     }
 }
