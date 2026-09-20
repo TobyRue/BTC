@@ -1,12 +1,11 @@
 package io.github.tobyrue.btc.item;
 
 import io.github.tobyrue.btc.block.ModBlocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.StackReference;
-import net.minecraft.item.*;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ClickType;
 
 public class ButterBucket extends Item {
     public ButterBucket(Settings settings) {
@@ -18,25 +17,37 @@ public class ButterBucket extends Item {
         var pos = context.getBlockPos();
         var dir = context.getSide();
         var world = context.getWorld();
-        var offset = world.getBlockState(pos.offset(dir));
-        var offsetAndDown = world.getBlockState(pos.offset(dir).down());
-        ActionResult actionResult = super.useOnBlock(context);
+        var offsetPos = pos.offset(dir);
+        var offset = world.getBlockState(offsetPos);
+        var offsetAndDown = world.getBlockState(offsetPos.down());
+        var player = context.getPlayer();
 
-        if (context.getPlayer() != null) {
-            if (offsetAndDown.hasSolidTopSurface(world, pos.offset(dir).down(), context.getPlayer()) && (offset.isAir() || offset.isReplaceable())) {
-                world.setBlockState(pos.offset(dir), ModBlocks.BUTTER.getDefaultState());
-                if (actionResult.isAccepted()) {
-                    context.getPlayer().setStackInHand(context.getHand(), BucketItem.getEmptiedStack(context.getStack(), context.getPlayer()));
-                }
-                return ActionResult.CONSUME;
+        if (player != null) {
+            boolean placed = false;
+            var targetPos = pos;
+
+            if (offsetAndDown.hasSolidTopSurface(world, offsetPos.down(), player) && (offset.isAir() || offset.isReplaceable())) {
+                targetPos = offsetPos;
+                placed = true;
             } else if (world.getBlockState(pos).isReplaceable()) {
-                world.setBlockState(pos, ModBlocks.BUTTER.getDefaultState());
-                if (actionResult.isAccepted()) {
-                    context.getPlayer().setStackInHand(context.getHand(), BucketItem.getEmptiedStack(context.getStack(), context.getPlayer()));
+                targetPos = pos;
+                placed = true;
+            }
+
+            if (placed) {
+                if (!world.isClient()) {
+                    world.setBlockState(targetPos, ModBlocks.BUTTER.getDefaultState());
+
+                    if (!player.getAbilities().creativeMode) {
+                        context.getPlayer().setStackInHand(
+                                context.getHand(),
+                                BucketItem.getEmptiedStack(context.getStack(), player)
+                        );
+                    }
                 }
-                return ActionResult.CONSUME;
+                return ActionResult.SUCCESS;
             }
         }
-        return ActionResult.CONSUME;
+        return ActionResult.PASS;
     }
 }

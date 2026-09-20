@@ -3,13 +3,14 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.block.fluids.ToxicSludgeBlock;
-import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.circuit.FPGABlock;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
@@ -52,7 +53,7 @@ public class ModBlocks {
     );
 
     public static final Block BUTTER = register(
-            new ButterBlock(AbstractBlock.Settings.create().slipperiness(0.989f)),
+            new EffectLayerBlock(AbstractBlock.Settings.create().slipperiness(0.989f), new StatusEffectInstance(ModStatusEffects.ACCELERATION, 20, 1, true, true)),
             "butter",
             false
     );

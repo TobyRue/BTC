@@ -1,14 +1,12 @@
 package io.github.tobyrue.btc.regestries;
 
 import io.github.tobyrue.btc.BTC;
-import io.github.tobyrue.btc.block.PotionPillar;
 import io.github.tobyrue.btc.status_effects.*;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 
 public class ModStatusEffects {
     public static final RegistryEntry<StatusEffect> BUILDER_BLUNDER;
@@ -21,6 +19,7 @@ public class ModStatusEffects {
     public static final RegistryEntry<StatusEffect> CURSED_RECKONING;
     public static final RegistryEntry<StatusEffect> FRAGILITY;
     public static final RegistryEntry<StatusEffect> UNWARPING;
+    public static final RegistryEntry<StatusEffect> ACCELERATION;
 
     static {
         BUILDER_BLUNDER = ModStatusEffects.register("builder_blunder", new BuilderBlunderEffect());
@@ -33,6 +32,7 @@ public class ModStatusEffects {
         CURSED_RECKONING = ModStatusEffects.register("cursed_reckoning", new CursedReckoningEffect());
         FRAGILITY = ModStatusEffects.register("fragility", new FragilityEffect());
         UNWARPING = ModStatusEffects.register("unwarping", new DummyStatusEffect(StatusEffectCategory.HARMFUL, 0x994786));
+        ACCELERATION = ModStatusEffects.register("acceleration", new AccelerationEffect());
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
