@@ -1,24 +1,24 @@
 package io.github.tobyrue.btc.spells;
 
 import io.github.tobyrue.btc.BTC;
+import io.github.tobyrue.btc.entity.ai.ProtectOwnerGoal;
+import io.github.tobyrue.btc.entity.ai.SummonTargetGoal;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.spell.ChanneledSpell;
 import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.UpgradableSpell;
+import io.github.tobyrue.btc.util.SummonableEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.HuskEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.StrayEntity;
-import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.ai.goal.BowAttackGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.mob.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.scoreboard.ServerScoreboard;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -35,11 +35,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.WeakHashMap;
+import java.util.UUID;
 
 public class RaiseUndeadSpell extends ChanneledSpell implements UpgradableSpell {
-
-    private static final WeakHashMap<LivingEntity, Boolean> STORED_TEAM = new WeakHashMap<>();
 
     private static final List<EntityType<? extends LivingEntity>> UNDEAD_TYPES = List.of(
             EntityType.ZOMBIE,
@@ -66,66 +64,50 @@ public class RaiseUndeadSpell extends ChanneledSpell implements UpgradableSpell 
         var user = ctx.user();
         var world = ctx.world();
 
-        if (!(world instanceof ServerWorld serverWorld)) return;
+        if (!(world instanceof ServerWorld serverWorld) || user == null) return;
+
+        killAllSummonsForOwner(serverWorld, user.getUuid());
 
         Random random = world.random;
         int count = args.getInt("count", 10);
 
-        ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
-
-        var et = scoreboard.getTeams().stream().filter(t -> t.getName().endsWith("_undead_team_BTC_RAISE_UNDEAD_SPELL")).toList();
-
-        String teamName = user.getUuidAsString() + "_undead_team_BTC_RAISE_UNDEAD";
-
-        Team knownTeam = user.getScoreboardTeam();
-
-        if (!et.isEmpty()) {
-            for (var t: et) {
-                killAllEntitiesOnTeam(serverWorld, knownTeam);
-                scoreboard.removeTeam(t);
-            }
-        }
-
-        if (knownTeam == null) {
-            knownTeam = scoreboard.addTeam(teamName);
-            knownTeam.setDisplayName(Text.literal(user.getName().getString() + " Undead"));
-            knownTeam.setColor(net.minecraft.util.Formatting.DARK_GREEN);
-            STORED_TEAM.put(ctx.user(), true);
-        } else {
-            STORED_TEAM.put(ctx.user(), false);
-        }
-
-        scoreboard.addScoreHolderToTeam(user.getNameForScoreboard(), knownTeam);
         world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.2F);
-        List<LivingEntity> summoned = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             EntityType<? extends LivingEntity> type = UNDEAD_TYPES.get(random.nextInt(UNDEAD_TYPES.size()));
-            LivingEntity undead = type.create(world);
-            if (undead == null) continue;
+            LivingEntity entity = type.create(world);
+            if (!(entity instanceof MobEntity undead)) continue;
 
             Vec3d pos = user.getPos().add(
-                    (random.nextDouble() - 0.5) * 8.0,
+                    (random.nextDouble() - 0.5) * 5.0,
                     0,
-                    (random.nextDouble() - 0.5) * 8.0
+                    (random.nextDouble() - 0.5) * 5.0
             );
-            undead.refreshPositionAndAngles(pos.x, findSpawnableGround(world, user.getBlockPos(), 24) == null ? pos.getY() : findSpawnableGround(world, user.getBlockPos(), 24).getY() + 2, pos.z, random.nextFloat() * 360F, 0);
 
-            scoreboard.addScoreHolderToTeam(undead.getNameForScoreboard(), knownTeam);
+            BlockPos ground = findSpawnableGround(world, user.getBlockPos(), 24);
+            double spawnY = ground == null ? pos.getY() : ground.getY() + 1;
+
+            undead.refreshPositionAndAngles(pos.x, spawnY, pos.z, random.nextFloat() * 360F, 0);
+
+            ((SummonableEntity) undead).btc$setOwnerUuid(user.getUuid());
+
+            undead.targetSelector.clear(g -> true);
 
             if (undead instanceof SkeletonEntity || undead instanceof StrayEntity) {
-                ItemStack bow = new ItemStack(Items.BOW);
-                undead.equipStack(EquipmentSlot.MAINHAND, bow);
-            } else if (undead instanceof ZombieEntity || undead instanceof HuskEntity) {
-                ItemStack sword = new ItemStack(Items.STONE_SWORD);
-                undead.equipStack(EquipmentSlot.MAINHAND, sword);
+                undead.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                AbstractSkeletonEntity skeleton = (AbstractSkeletonEntity) undead;
+                undead.goalSelector.add(2, new BowAttackGoal<>(skeleton, 1.0D, 20, 15.0F));
+            } else if (undead instanceof ZombieEntity pathAwareEntity) {
+                undead.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+                undead.goalSelector.add(2, new MeleeAttackGoal(pathAwareEntity, 1.25D, false));
             }
 
-            ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
-            undead.equipStack(EquipmentSlot.HEAD, helmet);
+            undead.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+
+            undead.goalSelector.add(1, new ProtectOwnerGoal(undead, 1.25D));
+            undead.targetSelector.add(1, new SummonTargetGoal(undead));
 
             world.spawnEntity(undead);
-            summoned.add(undead);
 
             serverWorld.spawnParticles(
                     ParticleTypes.SOUL,
@@ -140,28 +122,21 @@ public class RaiseUndeadSpell extends ChanneledSpell implements UpgradableSpell 
         var user = ctx.user();
         var world = ctx.world();
 
-        if (world instanceof ServerWorld serverWorld) {
-            Team knownTeam = user.getScoreboardTeam();
-
-            if (knownTeam != null) {
-                killAllEntitiesOnTeam(serverWorld, knownTeam);
-                if (STORED_TEAM.get(ctx.user())) {
-
-                    ServerScoreboard scoreboard = serverWorld.getServer().getScoreboard();
-
-                    scoreboard.removeTeam(knownTeam);
-                }
-            }
+        if (world instanceof ServerWorld serverWorld && user != null) {
+            killAllSummonsForOwner(serverWorld, user.getUuid());
         }
         super.runEnd(ctx, args, tick);
     }
 
-    public void killAllEntitiesOnTeam(ServerWorld serverWorld, Team knownTeam) {
-        if (knownTeam == null) return;
-
+    public static void killAllSummonsForOwner(ServerWorld serverWorld, UUID ownerUuid) {
         Box worldBox = new Box(-3.0E7, -3.0E7, -3.0E7, 3.0E7, 3.0E7, 3.0E7);
 
-        serverWorld.getEntitiesByClass(LivingEntity.class, worldBox, e -> e.getScoreboardTeam() != null && e.getScoreboardTeam().getName().equals(knownTeam.getName()) && (e instanceof ZombieEntity || e instanceof StrayEntity || e instanceof SkeletonEntity || e instanceof HuskEntity)).forEach(LivingEntity::kill);
+        serverWorld.getEntitiesByClass(MobEntity.class, worldBox, e -> {
+            if (e instanceof SummonableEntity summonable) {
+                return ownerUuid.equals(summonable.btc$getOwnerUuid());
+            }
+            return false;
+        }).forEach(LivingEntity::kill);
     }
 
     @Nullable
@@ -171,12 +146,10 @@ public class RaiseUndeadSpell extends ChanneledSpell implements UpgradableSpell 
 
         for (int y = topY; y >= bottomY; y--) {
             BlockPos pos = new BlockPos(centerPos.getX(), y, centerPos.getZ());
-
             if (world.getBlockState(pos).isSolidBlock(world, pos) && !world.getBlockState(pos.up()).isSolidBlock(world, pos.up()) && !world.getBlockState(pos.up()).isOf(Blocks.CHEST)) {
                 return pos;
             }
         }
-
         return null;
     }
 

@@ -432,6 +432,11 @@ public abstract class ChanneledSpell extends Spell {
         }
     }
 
+    public void onEnd(final SpellContext ctx, final GrabBag args, final int tick) {
+        this.runEnd(ctx, args, tick);
+    }
+
+
     protected void runEnd(final SpellContext ctx, final GrabBag args, final int tick) {
         if (ctx.user() instanceof ServerPlayerEntity serverPlayer) {
             ServerPlayNetworking.send(serverPlayer, new ChannelHudPayload(

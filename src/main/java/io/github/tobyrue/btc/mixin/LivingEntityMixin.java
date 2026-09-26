@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.mixin;
 
 import io.github.tobyrue.btc.Ticker;
+import io.github.tobyrue.btc.util.LivingEntityMixinAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -22,10 +23,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin implements Ticker.TickerTarget {
+public abstract class LivingEntityMixin implements Ticker.TickerTarget, LivingEntityMixinAccessor {
 
     @Shadow public abstract boolean isExperienceDroppingDisabled();
 
@@ -35,6 +35,12 @@ public abstract class LivingEntityMixin implements Ticker.TickerTarget {
 
     @Unique
     final List<Ticker> tickers = new ArrayList<>();
+
+    @Override
+    public List<Ticker> btc$getTickers() {
+        return this.tickers;
+    }
+
     @Unique
     private boolean btc$DropsItems = true;
 
