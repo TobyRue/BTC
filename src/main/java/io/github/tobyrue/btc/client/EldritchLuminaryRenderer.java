@@ -44,6 +44,7 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
             case PYROMANCER -> TEXTURE_PYRO;
             case STORM_WARDEN -> TEXTURE_STORM;
             case SHADOW_SUMMONER -> TEXTURE_SHADOW;
+            case SUPPORT -> TEXTURE;
         };
     }
 

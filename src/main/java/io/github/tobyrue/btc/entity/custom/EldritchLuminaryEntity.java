@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.entity.custom;
 
 
 import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
+import io.github.tobyrue.btc.entity.ai.brain.EldritchLuminaryBrain;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModRegistries;
@@ -12,6 +13,7 @@ import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellDataStore;
 import io.github.tobyrue.btc.spell.SpellHost;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -58,12 +60,15 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> ARCHETYPE_ID = DataTracker.registerData(EldritchLuminaryEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
+    private final EldritchLuminaryBrain brain;
+
     public enum LuminaryArchetype implements StringIdentifiable {
         EMPTY(0, "empty"),
         ALL(1, "all"),
         PYROMANCER(2, "pyromancer"),
         STORM_WARDEN(3, "storm_warden"),
-        SHADOW_SUMMONER(4, "shadow_summoner");
+        SHADOW_SUMMONER(4, "shadow_summoner"),
+        SUPPORT(5, "support");
 
         private final int id;
         private final String name;
@@ -122,19 +127,46 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(5, new WanderAroundGoal(this, 1D));
-        this.goalSelector.add(6, new TemptGoal(this, 1.3D, Ingredient.ofItems(ModItems.STAFF, ModItems.DRAGON_STAFF, ModItems.FIRE_STAFF, ModItems.WIND_STAFF, ModItems.RUBY_TRIAL_KEY), false));
-        this.goalSelector.add(1, new EldritchLuminaryStrafeGoal(this, 0.8, 16.0F));
-        this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (entity) -> {
-            return Math.abs(entity.getY() - this.getY()) <= 4.0;
-        }));
-        this.targetSelector.add(0, new TrackTargetGoal(this, true, false) {
-            @Override
-            public boolean canStart() {
-                return true;
-            }
-        });
+
+        this.goalSelector.add(
+                0,
+                new SwimGoal(this)
+        );
+
+        this.goalSelector.add(
+                1,
+                new EldritchLuminaryStrafeGoal(
+                        this,
+                        0.8D,
+                        16.0F
+                )
+        );
+
+        this.goalSelector.add(
+                5,
+                new WanderAroundGoal(
+                        this,
+                        1.0D
+                )
+        );
+
+        this.goalSelector.add(
+                6,
+                new TemptGoal(
+                        this,
+                        1.3D,
+                        Ingredient.ofItems(
+                                ModItems.STAFF,
+                                ModItems.DRAGON_STAFF,
+                                ModItems.FIRE_STAFF,
+                                ModItems.WIND_STAFF,
+                                ModItems.RUBY_TRIAL_KEY
+                        ),
+                        false
+                )
+        );
+
+
     }
 
     protected void initDataTracker(DataTracker.Builder builder) {
@@ -162,45 +194,161 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
 
-    public EldritchLuminaryEntity(EntityType<? extends HostileEntity> entityType, World world) {
+
+    public boolean isCastingSpell() {
+        return activeCastingSpell != null;
+    }
+
+    public float getSpellWeight(
+            Spell.InstancedSpell instance
+    ) {
+
+        if (instance == null || instance.spell() == null) {
+            return 0.0F;
+        }
+
+        NbtCompound nbt =
+                this.dataTracker.get(SPELLS);
+
+        if (nbt == null) {
+            return 0.0F;
+        }
+
+        Identifier id =
+                ModRegistries.SPELL.getId(
+                        instance.spell()
+                );
+
+        if (id == null || !nbt.contains(id.toString())) {
+            return 0.0F;
+        }
+
+        NbtCompound spellData =
+                nbt.getCompound(id.toString());
+
+        return spellData.contains("weight")
+                ? spellData.getFloat("weight")
+                : 1.0F;
+    }
+
+    @Nullable
+    public Identifier getSpellId(
+            Spell.InstancedSpell instance
+    ) {
+        if (instance == null || instance.spell() == null) {
+            return null;
+        }
+
+        return ModRegistries.SPELL.getId(
+                instance.spell()
+        );
+    }
+
+    public EldritchLuminaryEntity(
+            EntityType<? extends HostileEntity> entityType,
+            World world
+    ) {
         super(entityType, world);
+
         this.experiencePoints = 20;
+
         this.mirrorCopyOffsets = new Vec3d[2][4];
+
         for (int i = 0; i < 4; ++i) {
             this.mirrorCopyOffsets[0][i] = Vec3d.ZERO;
             this.mirrorCopyOffsets[1][i] = Vec3d.ZERO;
         }
+
+        this.brain = new EldritchLuminaryBrain(this);
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
+    public boolean damage(
+            DamageSource source,
+            float amount
+    ) {
+
         if (source.isOf(DamageTypes.INDIRECT_MAGIC)) {
             return false;
         }
-        Entity attacker = source.getAttacker();
-        if (attacker != null) {
-            Vec3d bossLook = this.getRotationVec(1.0F).multiply(1, 0, 1).normalize();
-            Vec3d toAttacker = attacker.getPos().subtract(this.getPos()).multiply(1, 0, 1).normalize();
-            double dot = bossLook.dotProduct(toAttacker);
 
-            if (dot < -0.5) {
-                this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.HOSTILE, 1.5f, 0.5f);
-                return super.damage(source, amount * 2.0f);
+        Entity attacker =
+                source.getAttacker();
+
+
+        brain.onDamaged(source);
+
+        if (attacker != null) {
+
+            Vec3d bossLook =
+                    this.getRotationVec(1.0F)
+                            .multiply(1, 0, 1);
+
+            if (bossLook.lengthSquared() > 0.0001D) {
+
+                bossLook = bossLook.normalize();
+
+                Vec3d toAttacker =
+                        attacker.getPos()
+                                .subtract(this.getPos())
+                                .multiply(1, 0, 1);
+
+                if (toAttacker.lengthSquared() > 0.0001D) {
+
+                    toAttacker = toAttacker.normalize();
+
+                    double dot =
+                            bossLook.dotProduct(toAttacker);
+
+                    if (dot < -0.5D) {
+
+                        this.getWorld().playSound(
+                                null,
+                                this.getBlockPos(),
+                                SoundEvents.ENTITY_PLAYER_ATTACK_CRIT,
+                                SoundCategory.HOSTILE,
+                                1.5F,
+                                0.5F
+                        );
+
+                        return super.damage(
+                                source,
+                                amount * 2.0F
+                        );
+                    }
+                }
             }
         }
-        if (activeCastingSpell != null) {
-            var spell = activeCastingSpell.spell().getSpellType();
 
-            if ((spell == SpellTypes.FIRE && source.isOf(DamageTypes.FREEZE)) ||
-                    (spell == SpellTypes.WATER && source.isOf(DamageTypes.ON_FIRE))) {
+        if (activeCastingSpell != null) {
+
+            var spell =
+                    activeCastingSpell.spell().getSpellType();
+
+            if ((spell == SpellTypes.FIRE
+                    && source.isOf(DamageTypes.FREEZE))
+                    ||
+                    (spell == SpellTypes.WATER
+                            && source.isOf(DamageTypes.ON_FIRE))) {
 
                 this.setGlobalCastDelay(100);
+
                 this.activeCastingSpell = null;
-                return super.damage(source, amount * 2.0f);
+
+                this.setCastTime(0);
+                this.setSpellEmpty();
+
+                return super.damage(
+                        source,
+                        amount * 2.0F
+                );
             }
         }
 
-        return super.damage(source, amount);
+        return super.damage(
+                source,
+                amount
+        );
     }
 
     private void setupAnimationStates() {
@@ -293,6 +441,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         super.tick();
 
         if (!this.getWorld().isClient) {
+            brain.tick();
             if (this.isInsideWall()) {
 
                 this.chorusTeleport();
@@ -331,20 +480,71 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             setGlobalCastDelay(getGlobalCastDelay() - 1);
         }
 
-        if (this.target != null) {
+        boolean canPerformSpellAction =
+                this.target != null
+                        || brain.shouldActWithoutPlayer();
+
+        if (canPerformSpellAction) {
+
             if (getGlobalCastDelay() <= 0) {
 
-                if (activeCastingSpell == null && getCastTime() <= 0) {
-                    activeCastingSpell = chooseRandomCurrentSpell();
-                    setCastTime(1);
-                } else if (activeCastingSpell != null && getCastTime() < castTime) {
-                    setCastTime(getCastTime() + 1);
-                } else if (activeCastingSpell != null && getCastTime() >= castTime) {
-                    this.lookAtEntity(target, 90, 90);
-                    castCurrentSpellAt(this.target);
+                if (activeCastingSpell == null
+                        && getCastTime() <= 0) {
+
+                    activeCastingSpell =
+                            brain.chooseSpell();
+
+                    if (activeCastingSpell != null
+                            && activeCastingSpell.spell()
+                            != ModSpells.EMPTY) {
+
+                        setCurrentSpellInstance(
+                                activeCastingSpell.spell(),
+                                activeCastingSpell.args()
+                        );
+
+                        setCastTime(1);
+                    }
+
+                } else if (
+                        activeCastingSpell != null
+                                && getCastTime() < castTime
+                ) {
+
+                    setCastTime(
+                            getCastTime() + 1
+                    );
+
+                } else if (
+                        activeCastingSpell != null
+                                && getCastTime() >= castTime
+                ) {
+
+                    if (target != null) {
+
+                        this.lookAtEntity(
+                                target,
+                                90,
+                                90
+                        );
+
+                        castCurrentSpellAt(
+                                target
+                        );
+
+                    } else {
+
+                        castCurrentSpellAt();
+                    }
+
+                    brain.onSpellCast(
+                            activeCastingSpell
+                    );
 
                     activeCastingSpell = null;
+
                     setCastTime(0);
+
                     setSpellEmpty();
                 }
             }
@@ -389,20 +589,37 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
         if (getAllSpellInstances().isEmpty()) {
             if (this.getArchetype() == LuminaryArchetype.EMPTY) {
-                int randomId = 2 + this.random.nextInt(3);
-                this.setArchetype(LuminaryArchetype.fromId(randomId));
+
+                int randomId =
+                        2 + this.random.nextInt(4);
+
+                this.setArchetype(
+                        LuminaryArchetype.fromId(randomId)
+                );
             }
 
             this.addUniversalSpells();
 
             switch (this.getArchetype()) {
-                case PYROMANCER -> applyPyromancer();
-                case STORM_WARDEN -> applyStormWarden();
-                case SHADOW_SUMMONER -> applyShadowSummoner();
+
+                case PYROMANCER ->
+                        applyPyromancer();
+
+                case STORM_WARDEN ->
+                        applyStormWarden();
+
+                case SHADOW_SUMMONER ->
+                        applyShadowSummoner();
+
+                case SUPPORT ->
+                        applySupport();
+
                 default -> {
+
                     applyPyromancer();
                     applyStormWarden();
                     applyShadowSummoner();
+                    applySupport();
                 }
             }
         }
@@ -414,7 +631,118 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             ((SpellHost<LivingEntity>) this).tickCooldowns(this);
         }
     }
+    private void applySupport() {
+        this.addUniversalSpells();
 
+
+        this.addSpell(
+                new Spell.InstancedSpell(
+                        ModSpells.LUMINARY_EMPOWER,
+                        GrabBag.fromMap(
+                                new HashMap<>() {{
+                                    put("radius", 18.0D);
+                                    put("duration", 140);
+                                    put("amplifier", 0);
+                                    put("maxTargets", 4);
+                                    put("cooldown", getSpellWaitAmount(18));
+                                    put("globalCooldown", 80);
+                                }}
+                        )
+                ),
+                0,
+                32,
+                -1,
+                -1,
+                -1,
+                -1,
+                3.0F
+        );
+
+
+        this.addSpell(
+                new Spell.InstancedSpell(
+                        ModSpells.TRIGGERED_POTION,
+                        GrabBag.fromMap(
+                                new HashMap<>() {{
+                                    put("effect", "minecraft:regeneration");
+                                    put("percentHealth", 0.60);
+                                    put("duration", 160);
+                                    put("amplifier", 1);
+                                    put("cooldown", getSpellWaitAmount(30));
+                                    put("globalCooldown", 60);
+                                }}
+                        )
+                ),
+                0,
+                32,
+                60,
+                -1,
+                -1,
+                -1,
+                2.5F
+        );
+
+
+        this.addSpell(
+                new Spell.InstancedSpell(
+                        ModSpells.LOCALIZED_STORM_PUSH,
+                        GrabBag.fromMap(
+                                new HashMap<>() {{
+                                    put("shootStrength", 2.0D);
+                                    put("verticalMultiplier", 1.5D);
+                                    put("cooldown", getSpellWaitAmount(4));
+                                    put("globalCooldown", 40);
+                                }}
+                        )
+                ),
+                0,
+                10,
+                -1,
+                -1,
+                -1,
+                -1,
+                2.0F
+        );
+
+
+        this.addSpell(
+                new Spell.InstancedSpell(
+                        ModSpells.ICE_BLOCK,
+                        GrabBag.fromMap(
+                                new HashMap<>() {{
+                                    put("cooldown", getSpellWaitAmount(12));
+                                    put("globalCooldown", 90);
+                                }}
+                        )
+                ),
+                8,
+                24,
+                -1,
+                -1,
+                -1,
+                -1,
+                1.2F
+        );
+
+        this.addSpell(
+                new Spell.InstancedSpell(
+                        ModSpells.SHADOW_STEP,
+                        GrabBag.fromMap(
+                                new HashMap<>() {{
+                                    put("cooldown", getSpellWaitAmount(8));
+                                    put("globalCooldown", 50);
+                                }}
+                        )
+                ),
+                0,
+                14,
+                -1,
+                -1,
+                -1,
+                -1,
+                1.0F
+        );
+    }
     private void applyPyromancer() {
         this.addSpell(new Spell.InstancedSpell(ModSpells.FIREBALL, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(1));
@@ -529,7 +857,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }})), 0, 20, 80, -1, -1, -1, 1.6f);
 
         this.addSpell(new Spell.InstancedSpell(ModSpells.SHADOW_STEP, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(5)); // FAST cooldown
+            put("cooldown", getSpellWaitAmount(5));
             put("globalCooldown", 30);
         }})), 0, 16, -1, -1, -1, -1, 1.5f);
 
@@ -900,16 +1228,62 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
 
     @Nullable
     public Spell.InstancedSpell getSpellInstance(int index) {
-        NbtCompound nbt = this.dataTracker.get(SPELLS);
-        if (nbt == null || nbt.isEmpty()) return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
+        NbtCompound nbt =
+                this.dataTracker.get(SPELLS);
 
-        String spellId = nbt.getKeys().stream().skip(index).findFirst().orElse(null);
-        if (spellId == null) return new Spell.InstancedSpell(ModSpells.EMPTY, GrabBag.empty());
+        if (nbt == null || nbt.isEmpty()) {
+            return new Spell.InstancedSpell(
+                    ModSpells.EMPTY,
+                    GrabBag.empty()
+            );
+        }
+        String spellId =
+                nbt.getKeys()
+                        .stream()
+                        .skip(index)
+                        .findFirst()
+                        .orElse(null);
+        if (spellId == null) {
+            return new Spell.InstancedSpell(
+                    ModSpells.EMPTY,
+                    GrabBag.empty()
+            );
+        }
+        Spell spell =
+                ModRegistries.SPELL.get(
+                        Identifier.tryParse(spellId)
+                );
 
-        Spell spell = ModRegistries.SPELL.get(Identifier.tryParse(spellId));
-        GrabBag args = GrabBag.fromNBT(nbt.getCompound(spellId));
+        if (spell == null) {
+            return new Spell.InstancedSpell(
+                    ModSpells.EMPTY,
+                    GrabBag.empty()
+            );
+        }
+        NbtCompound spellData =
+                nbt.getCompound(spellId);
 
-        return new Spell.InstancedSpell(spell, args);
+        GrabBag args;
+        if (spellData.contains(
+                "args",
+                NbtElement.COMPOUND_TYPE
+        )) {
+            args =
+                    GrabBag.fromNBT(
+                            spellData.getCompound("args")
+                    );
+
+        } else {
+            args =
+                    GrabBag.fromNBT(
+                            spellData
+                    );
+        }
+
+        return new Spell.InstancedSpell(
+                spell,
+                args
+        );
     }
 
     public List<Spell.InstancedSpell> getAllSpellInstances() {
