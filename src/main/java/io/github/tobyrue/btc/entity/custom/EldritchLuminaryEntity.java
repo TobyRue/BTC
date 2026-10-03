@@ -1,7 +1,6 @@
 package io.github.tobyrue.btc.entity.custom;
 
 
-import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
 import io.github.tobyrue.btc.entity.ai.brain.EldritchLuminaryBrain;
 import io.github.tobyrue.btc.enums.SpellTypes;
 import io.github.tobyrue.btc.item.ModItems;
@@ -12,6 +11,7 @@ import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
 import io.github.tobyrue.btc.spell.SpellDataStore;
 import io.github.tobyrue.btc.spell.SpellHost;
+import io.github.tobyrue.btc.entity.ai.EldritchLuminaryStrafeGoal;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.goal.*;
@@ -102,6 +102,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         }
     }
 
+    public EldritchLuminaryBrain getLuminaryBrain() {
+        return brain;
+    }
+
     public void setArchetype(LuminaryArchetype archetype) {
         this.dataTracker.set(ARCHETYPE_ID, archetype.getId());
     }
@@ -141,7 +145,12 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                         16.0F
                 )
         );
-
+        this.targetSelector.add(0, new TrackTargetGoal(this, true, false) {
+            @Override
+            public boolean canStart() {
+                return true;
+            }
+        });
         this.goalSelector.add(
                 5,
                 new WanderAroundGoal(
@@ -436,23 +445,80 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             }
         }
     }
+
+
+    private void forceLookAtTarget() {
+        LivingEntity target = this.target;
+
+        if (target == null || !target.isAlive()) {
+            return;
+        }
+
+        Vec3d origin = this.getPos().add(
+                0.0D,
+                this.getStandingEyeHeight(),
+                0.0D
+        );
+
+        Vec3d targetPos = target.getPos().add(
+                0.0D,
+                target.getStandingEyeHeight() * 0.55D,
+                0.0D
+        );
+
+        Vec3d delta = targetPos.subtract(origin);
+
+        double horizontalDistance =
+                Math.sqrt(delta.x * delta.x + delta.z * delta.z);
+
+        if (horizontalDistance < 0.0001D) {
+            horizontalDistance = 0.0001D;
+        }
+
+        float yaw = (float) (
+                MathHelper.atan2(delta.z, delta.x)
+                        * (180.0D / Math.PI)
+                        - 90.0D
+        );
+
+        float pitch = (float) -(
+                MathHelper.atan2(
+                        delta.y,
+                        horizontalDistance
+                ) * (180.0D / Math.PI)
+        );
+
+        this.setYaw(yaw);
+        this.setPitch(pitch);
+        this.setHeadYaw(yaw);
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        if (!this.getWorld().isClient) {
+        if (!this.getWorld().isClient()) {
             brain.tick();
-            if (this.isInsideWall()) {
 
+            forceLookAtTarget();
+
+            if (this.isInsideWall()) {
                 this.chorusTeleport();
 
-                ((ServerWorld)this.getWorld()).spawnParticles(
+                ((ServerWorld) this.getWorld()).spawnParticles(
                         ParticleTypes.PORTAL,
-                        this.getX(), this.getY() + 1, this.getZ(),
-                        20, 0.5, 0.5, 0.5, 0.1
+                        this.getX(),
+                        this.getY() + 1,
+                        this.getZ(),
+                        20,
+                        0.5,
+                        0.5,
+                        0.5,
+                        0.1
                 );
             }
         }
+
         if (this.getWorld().isClient()) {
             if (getIllusionTime() > 0 && getIllusionTime() <= illusionTime) {
                 setIllusionTime(getIllusionTime() + 1);
@@ -460,7 +526,6 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                 setIllusionTime(0);
             }
         }
-
 
         SpellDataStore data = getSpellDataStore(this);
         Spell.InstancedSpell current = this.getCurrentSpellInstance();
@@ -504,12 +569,16 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                         );
 
                         setCastTime(1);
+
+                        forceLookAtTarget();
                     }
 
                 } else if (
                         activeCastingSpell != null
                                 && getCastTime() < castTime
                 ) {
+
+                    forceLookAtTarget();
 
                     setCastTime(
                             getCastTime() + 1
@@ -520,20 +589,11 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                                 && getCastTime() >= castTime
                 ) {
 
+                    forceLookAtTarget();
+
                     if (target != null) {
-
-                        this.lookAtEntity(
-                                target,
-                                90,
-                                90
-                        );
-
-                        castCurrentSpellAt(
-                                target
-                        );
-
+                        castCurrentSpellAt(target);
                     } else {
-
                         castCurrentSpellAt();
                     }
 
@@ -544,8 +604,9 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
                     activeCastingSpell = null;
 
                     setCastTime(0);
-
                     setSpellEmpty();
+
+                    forceLookAtTarget();
                 }
             }
         } else {
@@ -841,7 +902,7 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             put("damage", 1.0d);
             put("globalCooldown", 50);
         }})), 0, 32, -1, -1, -1, -1, 2.0f);
-        this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD, GrabBag.fromMap(new HashMap<>() {{
+        this.addSpell(new Spell.InstancedSpell(ModSpells.RAISE_UNDEAD_INSTANT, GrabBag.fromMap(new HashMap<>() {{
             put("cooldown", getSpellWaitAmount(15));
             put("globalCooldown", 60);
         }})), 0, 32, -1, -1, -1, -1, 1.8f);
@@ -903,10 +964,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
             put("cooldown", getSpellWaitAmount(30));
             put("globalCooldown", 40);
         }})), 0, 15, 35, -1, -1, -1, 1.5f);
-        this.addSpell(new Spell.InstancedSpell(ModSpells.TELEPORT_FREEZE, GrabBag.fromMap(new HashMap<>() {{
-            put("cooldown", getSpellWaitAmount(24));
-            put("globalCooldown", 40);
-        }})), 0, 64, -1, 60, -1, -1, 1.5f);
+//        this.addSpell(new Spell.InstancedSpell(ModSpells.TELEPORT_FREEZE, GrabBag.fromMap(new HashMap<>() {{
+//            put("cooldown", getSpellWaitAmount(24));
+//            put("globalCooldown", 40);
+//        }})), 0, 64, -1, 60, -1, -1, 1.5f);
     }
 
     private int getSpellWaitAmount(int amount) {
@@ -923,35 +984,120 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
     }
 
     private void castCurrentSpellAt(LivingEntity target) {
-        SpellDataStore data = getSpellDataStore(this);
-        Spell spell = data.getSpell();
-        GrabBag args = data.getArgs();
+        SpellDataStore data =
+                getSpellDataStore(this);
 
-        if (spell == null) return;
+        Spell spell =
+                data.getSpell();
 
-        setGlobalCastDelay(args.getInt("globalCooldown"));
+        GrabBag args =
+                data.getArgs();
 
-        Vec3d origin = this.getPos().add(0, this.getStandingEyeHeight(), 0);
-        Vec3d direction = target.getPos().add(0, target.getStandingEyeHeight() / 2, 0).subtract(origin).normalize();
+        if (spell == null || target == null) {
+            return;
+        }
 
-        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, direction, data, this, target);
-        spell.tryUse(ctx, args);
+        setGlobalCastDelay(
+                args.getInt(
+                        "globalCooldown",
+                        0
+                )
+        );
+
+        forceLookAtTarget();
+
+        Vec3d origin =
+                this.getPos().add(
+                        0.0D,
+                        this.getStandingEyeHeight(),
+                        0.0D
+                );
+
+        Vec3d direction;
+
+        if (spell == ModSpells.FIREBALL) {
+            Vec3d aimPoint =
+                    this.brain.getAimPoint(
+                            new Spell.InstancedSpell(
+                                    spell,
+                                    args
+                            ),
+                            target
+                    );
+
+            Vec3d difference =
+                    aimPoint.subtract(origin);
+
+            direction =
+                    difference.lengthSquared() > 0.0001D
+                            ? difference.normalize()
+                            : this.getRotationVector();
+        } else {
+            direction =
+                    this.getRotationVector();
+        }
+
+        Spell.SpellContext ctx =
+                new Spell.SpellContext(
+                        this.getWorld(),
+                        origin,
+                        direction,
+                        data,
+                        this,
+                        target
+                );
+
+        spell.tryUse(
+                ctx,
+                args
+        );
     }
     private void castCurrentSpellAt() {
-        SpellDataStore data = getSpellDataStore(this);
-        Spell spell = data.getSpell();
-        GrabBag args = data.getArgs();
+        SpellDataStore data =
+                getSpellDataStore(this);
 
-        if (spell == null) return;
+        Spell spell =
+                data.getSpell();
 
-        setGlobalCastDelay(args.getInt("globalCooldown"));
+        GrabBag args =
+                data.getArgs();
 
-        Vec3d origin = this.getPos().add(0, this.getStandingEyeHeight(), 0);
+        if (spell == null) {
+            return;
+        }
 
-        Spell.SpellContext ctx = new Spell.SpellContext(this.getWorld(), origin, this.getCameraPosVec(1.0f), data, this, Spell.getTargetEntity(this.getWorld(), this.getPos(), this.getCameraPosVec(1.0f), data.getArgs(), this.getTarget(), 32.0, 0.5, 24.0));
-        spell.tryUse(ctx, args);
+        setGlobalCastDelay(
+                args.getInt(
+                        "globalCooldown",
+                        0
+                )
+        );
+
+        Vec3d origin =
+                this.getPos().add(
+                        0.0D,
+                        this.getStandingEyeHeight(),
+                        0.0D
+                );
+
+        Vec3d direction =
+                this.getRotationVector();
+
+        Spell.SpellContext ctx =
+                new Spell.SpellContext(
+                        this.getWorld(),
+                        origin,
+                        direction,
+                        data,
+                        this,
+                        null
+                );
+
+        spell.tryUse(
+                ctx,
+                args
+        );
     }
-
     public Spell.InstancedSpell getCurrentSpellInstance() {
         String spellIdString = this.dataTracker.get(CURRENT_SPELL);
         if (spellIdString == null || spellIdString.isEmpty()) {
@@ -991,6 +1137,10 @@ public class EldritchLuminaryEntity extends HostileEntity implements Angerable, 
         if (id == null || !nbt.contains(id.toString())) return false;
 
         double distance = this.target != null ? this.distanceTo(this.target) : 0.0;
+
+        if (spellInstance.spell() == ModSpells.LUMINARY_EMPOWER) {
+            distance = 0.0D;
+        }
         double selfHealthPercent = (this.getHealth() / this.getMaxHealth()) * 100.0;
         double targetHealthPercent = (this.target != null && this.target.getMaxHealth() > 0)
                 ? (this.target.getHealth() / this.target.getMaxHealth()) * 100.0

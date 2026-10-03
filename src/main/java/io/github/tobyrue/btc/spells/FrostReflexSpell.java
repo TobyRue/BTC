@@ -55,14 +55,10 @@ public class FrostReflexSpell extends TriggeredSpell implements UpgradableSpell 
         LivingEntity attacker = ctx.user().getAttacker();
 
         int duration = ctx.data().getArgs().getInt("debuffDuration", 300);
-        int slownessAmp = ctx.data().getArgs().getInt("slownessAmp", 4);
-        int weaknessAmp = ctx.data().getArgs().getInt("weaknessAmp", 1);
-        int fatigueAmp = ctx.data().getArgs().getInt("fatigueAmp", 3);
+        int slownessAmp = ctx.data().getArgs().getInt("slownessAmp", 2);
 
         if (attacker != null) {
             attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, duration, slownessAmp));
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, duration, weaknessAmp));
-            attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, duration, fatigueAmp));
 
             world.spawnParticles(
                     ParticleTypes.SNOWFLAKE,
@@ -84,24 +80,6 @@ public class FrostReflexSpell extends TriggeredSpell implements UpgradableSpell 
     @Override
     protected boolean isDisturbed(SpellContext ctx, int tick, LivingEntity current) {
         return false;
-    }
-
-    @Override
-    protected void useChanneled(SpellContext ctx, GrabBag args, int tick, Start start) {
-        super.useChanneled(ctx, args, tick, start);
-
-        LivingEntity current = ctx.user();
-        if (current != null && current.getWorld() instanceof ServerWorld serverWorld) {
-            double angle = tick * 0.2;
-            double x = current.getX() + Math.cos(angle) * 0.8;
-            double z = current.getZ() + Math.sin(angle) * 0.8;
-
-            serverWorld.spawnParticles(
-                    ParticleTypes.INSTANT_EFFECT,
-                    x, current.getY() + 0.5, z,
-                    1, 0.0, 0.0, 0.0, 0.0
-            );
-        }
     }
 
     @Override

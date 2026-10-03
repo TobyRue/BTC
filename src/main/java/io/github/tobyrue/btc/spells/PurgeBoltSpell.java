@@ -34,8 +34,8 @@ public class PurgeBoltSpell extends Spell implements UpgradableSpell {
         LivingEntity user = ctx.user();
         if (user == null) return;
 
-        double speed = args.getDouble("speed", 0.7d); // ~7 blocks/sec
-        int lifetime = args.getInt("lifetime", 60);   // 3 seconds
+        double speed = args.getDouble("speed", 0.7d);
+        int lifetime = args.getInt("lifetime", 60);
         double range = args.getDouble("range", 10.0d);
         double forgiveness = args.getDouble("forgiveness", 0.3d);
 

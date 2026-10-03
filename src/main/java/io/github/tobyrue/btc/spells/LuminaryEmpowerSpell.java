@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class LuminaryEmpowerSpell extends Spell {
@@ -70,11 +71,7 @@ public class LuminaryEmpowerSpell extends Spell {
                         )
                         .stream()
                         .sorted(
-                                (a, b) ->
-                                        Double.compare(
-                                                caster.squaredDistanceTo(a),
-                                                caster.squaredDistanceTo(b)
-                                        )
+                                Comparator.comparingDouble(caster::squaredDistanceTo)
                         )
                         .limit(maxTargets)
                         .toList();

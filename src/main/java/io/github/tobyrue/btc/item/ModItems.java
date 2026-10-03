@@ -7,7 +7,9 @@ import io.github.tobyrue.btc.entity.ModEntities;
 import io.github.tobyrue.btc.enums.WrenchType;
 import io.github.tobyrue.btc.regestries.ModComponents;
 import io.github.tobyrue.btc.regestries.ModSounds;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.*;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -29,7 +31,7 @@ public class ModItems {
     public static final Item TOXIC_SLUDGE_BUCKET = Registry.register(Registries.ITEM, BTC.identifierOf("toxic_sludge_bucket"), new BucketItem(ModFluids.TOXIC_SLUDGE_SOURCE, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1)));
 
     public static final Item BUTTER = register(
-            new ButterBucket(new Item.Settings()),
+            new ButterBucket(new Item.Settings().maxCount(1)),
             "butter"
     );
     public static final Item CORN = register(

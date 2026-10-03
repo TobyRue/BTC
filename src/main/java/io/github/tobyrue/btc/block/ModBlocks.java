@@ -3,6 +3,7 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.block.fluids.ToxicSludgeBlock;
+import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.regestries.ModStatusEffects;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.circuit.FPGABlock;
@@ -53,7 +54,7 @@ public class ModBlocks {
     );
 
     public static final Block BUTTER = register(
-            new EffectLayerBlock(AbstractBlock.Settings.create().slipperiness(0.989f), new StatusEffectInstance(ModStatusEffects.ACCELERATION, 20, 1, true, true)),
+            new EffectLayerBlock(AbstractBlock.Settings.create(), new StatusEffectInstance(ModStatusEffects.ACCELERATION, 20, 1, true, true), ModItems.BUTTER),
             "butter",
             false
     );

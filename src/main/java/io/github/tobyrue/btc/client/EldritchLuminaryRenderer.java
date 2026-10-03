@@ -31,6 +31,7 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
     private static final Identifier TEXTURE_PYRO = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_pyromancer.png");
     private static final Identifier TEXTURE_STORM = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_storm.png");
     private static final Identifier TEXTURE_SHADOW = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_shadow.png");
+    private static final Identifier TEXTURE_SUPPORT = Identifier.of(BTC.MOD_ID, "textures/entity/eldritch_luminary_support.png");
 
     public EldritchLuminaryRenderer(EntityRendererFactory.Context context) {
         super(context, new EldritchLuminaryModel<>(context.getPart(ModModelLayers.ELDRITCH_LUMINARY)), 0.5f);
@@ -44,7 +45,7 @@ public class EldritchLuminaryRenderer extends MobEntityRenderer<EldritchLuminary
             case PYROMANCER -> TEXTURE_PYRO;
             case STORM_WARDEN -> TEXTURE_STORM;
             case SHADOW_SUMMONER -> TEXTURE_SHADOW;
-            case SUPPORT -> TEXTURE;
+            case SUPPORT -> TEXTURE_SUPPORT;
         };
     }
 

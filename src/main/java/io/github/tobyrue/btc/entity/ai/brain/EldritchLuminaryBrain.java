@@ -3,19 +3,28 @@ package io.github.tobyrue.btc.entity.ai.brain;
 import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
 import io.github.tobyrue.btc.regestries.ModRegistries;
 import io.github.tobyrue.btc.regestries.ModSpells;
+import io.github.tobyrue.btc.spell.ChanneledSpell;
+import io.github.tobyrue.btc.spell.GrabBag;
 import io.github.tobyrue.btc.spell.Spell;
+import io.github.tobyrue.btc.spell.SpellDataStore;
+import io.github.tobyrue.btc.spell.SpellHost;
+import io.github.tobyrue.btc.spell.SpellItem;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,24 +47,35 @@ public class EldritchLuminaryBrain {
     private int ticksSinceSpell;
 
     private int damagedRecentlyTicks;
-    private int closeRangeTicks;
-    private int targetLostTicks;
-
     private int decisionCooldown;
+    private int hardControlCooldown;
+    private int trappedPressureCooldown;
+
+
+    private int combatBreakTicks;
+    private int nextCombatBreakTick;
+
+
+    private int damagePressure;
+
+
+    private Vec3d previousVelocity = Vec3d.ZERO;
+    private Vec3d previousPreviousVelocity = Vec3d.ZERO;
+    private int stableMovementTicks;
+
+
+    private int playerCastingObservationTicks;
+    private UUID playerCastingTarget;
 
     public EldritchLuminaryBrain(EldritchLuminaryEntity mob) {
         this.mob = mob;
+
+
+        this.nextCombatBreakTick =
+                220 + mob.getRandom().nextInt(121);
     }
 
-    // ============================================================
-    // MAIN BRAIN
-    // ============================================================
-
     public void tick() {
-
-        if (decisionCooldown > 0) {
-            decisionCooldown--;
-        }
 
         if (retaliationTicks > 0) {
             retaliationTicks--;
@@ -67,42 +87,55 @@ public class EldritchLuminaryBrain {
             damagedRecentlyTicks--;
         }
 
+        if (hardControlCooldown > 0) {
+            hardControlCooldown--;
+        }
+
+        if (trappedPressureCooldown > 0) {
+            trappedPressureCooldown--;
+        }
+
         if (comboTicks > 0) {
             comboTicks--;
+        }
+
+        if (combatBreakTicks > 0) {
+            combatBreakTicks--;
+        }
+
+        if (decisionCooldown > 0) {
+            decisionCooldown--;
+        }
+
+        if (damagePressure > 0
+                && mob.getArchetype()
+                != EldritchLuminaryEntity.LuminaryArchetype.SUPPORT) {
+
+            damagePressure--;
         }
 
         ticksSinceSpell++;
 
         maintainTarget();
-
-        if (mob.getTarget() != null) {
-            double distance = mob.squaredDistanceTo(mob.getTarget());
-
-            if (distance < 16.0D) {
-                closeRangeTicks++;
-            } else {
-                closeRangeTicks = Math.max(0, closeRangeTicks - 2);
-            }
-
-            targetLostTicks = 0;
-        } else {
-            targetLostTicks++;
-            closeRangeTicks = 0;
-        }
+        updatePlayerPrediction();
+        updateCastingObservation();
+        maybeStartCombatBreak();
 
         if (decisionCooldown <= 0) {
-            updatePositioning();
-            decisionCooldown = 5;
+            decisionCooldown = 4;
         }
     }
 
-    // ============================================================
-    // DAMAGE / RETALIATION
-    // ============================================================
 
     public void onDamaged(DamageSource source) {
 
         Entity attacker = source.getAttacker();
+
+
+        damagePressure =
+                Math.min(100, damagePressure + 18);
+
+        damagedRecentlyTicks = 100;
 
         if (!(attacker instanceof LivingEntity living)) {
             return;
@@ -112,100 +145,141 @@ public class EldritchLuminaryBrain {
             return;
         }
 
-        /*
-         * Getting attacked creates a temporary high-priority
-         * retaliation target.
-         */
-        retaliationTarget = living;
-        retaliationTicks = 100;
-        damagedRecentlyTicks = 100;
 
-        /*
-         * Immediately respond if this isn't another Luminary.
-         */
+        if (living instanceof PlayerEntity player) {
+
+            preferredPlayer = player.getUuid();
+
+            retaliationTarget = player;
+            retaliationTicks = 180;
+
+            mob.setTarget(player);
+            return;
+        }
+
+        LivingEntity current = mob.getTarget();
+
+
+        if (current instanceof PlayerEntity
+                && isValidEnemy(current)) {
+
+            return;
+        }
+
+
+        retaliationTarget = living;
+        retaliationTicks = 80;
+
         mob.setTarget(living);
     }
 
-    // ============================================================
-    // TARGETING
-    // ============================================================
 
     private void maintainTarget() {
 
         LivingEntity current = mob.getTarget();
 
-        /*
-         * Retaliation has priority while the memory is active.
-         */
-        if (retaliationTarget != null
+
+        if (retaliationTarget instanceof PlayerEntity player
                 && retaliationTicks > 0
-                && isValidEnemy(retaliationTarget)
-                && mob.squaredDistanceTo(retaliationTarget) <= 48.0D * 48.0D) {
+                && isValidEnemy(player)) {
 
-            if (current != retaliationTarget) {
-                mob.setTarget(retaliationTarget);
+            if (current != player) {
+                mob.setTarget(player);
             }
 
-            return;
-        }
-
-        /*
-         * If the current target is still good, keep it.
-         *
-         * Players are always preferred over ordinary mobs when
-         * we're not actively retaliating.
-         */
-        if (current != null && isValidEnemy(current)) {
-
-            if (!(current instanceof PlayerEntity)) {
-                PlayerEntity player = findNearestPlayer();
-
-                if (player != null) {
-                    mob.setTarget(player);
-                }
-            }
-
-            return;
-        }
-
-        /*
-         * Normal priority:
-         * nearest player.
-         */
-        PlayerEntity player = findNearestPlayer();
-
-        if (player != null) {
-            mob.setTarget(player);
             preferredPlayer = player.getUuid();
             return;
         }
 
-        /*
-         * No player available. Don't randomly pick a mob.
-         *
-         * The only time a non-player gets targeted without being
-         * the attacker is through retaliation.
-         */
+
+        if (current instanceof PlayerEntity player
+                && isValidEnemy(player)
+                && mob.squaredDistanceTo(player)
+                <= 64.0D * 64.0D) {
+
+            preferredPlayer = player.getUuid();
+            return;
+        }
+
+        PlayerEntity preferred = findPreferredPlayer();
+
+        if (preferred != null) {
+            mob.setTarget(preferred);
+            return;
+        }
+
+
+        PlayerEntity nearest = findNearestPlayer();
+
+        if (nearest != null) {
+            preferredPlayer = nearest.getUuid();
+            mob.setTarget(nearest);
+            return;
+        }
+
+
+        if (retaliationTarget != null
+                && retaliationTicks > 0
+                && isValidEnemy(retaliationTarget)) {
+
+            mob.setTarget(retaliationTarget);
+            return;
+        }
+
+
+        if (current != null
+                && isValidEnemy(current)) {
+
+            return;
+        }
+
         mob.setTarget(null);
+    }
+
+    private PlayerEntity findPreferredPlayer() {
+
+        if (preferredPlayer == null) {
+            return null;
+        }
+
+        Box box =
+                mob.getBoundingBox()
+                        .expand(64.0D, 24.0D, 64.0D);
+
+        for (PlayerEntity player :
+                mob.getWorld().getEntitiesByClass(
+                        PlayerEntity.class,
+                        box,
+                        player ->
+                                player.getUuid().equals(preferredPlayer)
+                                        && isValidEnemy(player)
+                )) {
+
+            return player;
+        }
+
+        preferredPlayer = null;
+        return null;
     }
 
     private PlayerEntity findNearestPlayer() {
 
-        Box searchBox =
-                mob.getBoundingBox().expand(48.0D, 16.0D, 48.0D);
+        Box box =
+                mob.getBoundingBox()
+                        .expand(64.0D, 24.0D, 64.0D);
 
-        List<PlayerEntity> players =
-                mob.getWorld().getEntitiesByClass(
+        return mob.getWorld()
+                .getEntitiesByClass(
                         PlayerEntity.class,
-                        searchBox,
-                        player -> player.isAlive()
-                                && !player.isSpectator()
-                                && !player.isCreative()
-                                && Math.abs(player.getY() - mob.getY()) <= 16.0D
-                );
-
-        return players.stream()
-                .min(Comparator.comparingDouble(mob::squaredDistanceTo))
+                        box,
+                        this::isValidEnemy
+                )
+                .stream()
+                .min(
+                        Comparator.comparingDouble(
+                                mob::squaredDistanceTo
+                        )
+                )
                 .orElse(null);
     }
 
@@ -214,267 +288,809 @@ public class EldritchLuminaryBrain {
         if (entity == null
                 || entity == mob
                 || !entity.isAlive()) {
+
             return false;
         }
 
-        /*
-         * NEVER target another Eldritch Luminary.
-         */
+
         if (entity instanceof EldritchLuminaryEntity) {
             return false;
         }
 
-        /*
-         * Players are always valid hostile targets.
-         */
+
         if (entity instanceof PlayerEntity player) {
             return !player.isSpectator()
                     && !player.isCreative();
         }
 
-        /*
-         * Team protection applies to non-player creatures.
-         */
-        AbstractTeam myTeam = mob.getScoreboardTeam();
-        AbstractTeam targetTeam = entity.getScoreboardTeam();
+
+        AbstractTeam myTeam =
+                mob.getScoreboardTeam();
+
+        AbstractTeam targetTeam =
+                entity.getScoreboardTeam();
 
         if (myTeam != null
                 && targetTeam != null
                 && myTeam.isEqual(targetTeam)) {
+
             return false;
         }
 
         return true;
     }
 
-    // ============================================================
-    // POSITIONING
-    // ============================================================
 
-    private void updatePositioning() {
+    private void maybeStartCombatBreak() {
 
-        LivingEntity target = mob.getTarget();
 
-        if (target == null || !target.isAlive()) {
+        if (mob.getArchetype()
+                == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT) {
+
             return;
         }
 
-        /*
-         * Don't fight the navigation system while swimming.
-         */
-        if (mob.isTouchingWater()) {
+        if (combatBreakTicks > 0
+                || mob.isCastingSpell()) {
+
             return;
         }
 
-        double distanceSq = mob.squaredDistanceTo(target);
-
-        double idealMin;
-        double idealMax;
-
-        switch (mob.getArchetype()) {
-
-            case PYROMANCER -> {
-                idealMin = 9.0D;
-                idealMax = 18.0D;
-            }
-
-            case STORM_WARDEN -> {
-                idealMin = 10.0D;
-                idealMax = 20.0D;
-            }
-
-            case SHADOW_SUMMONER -> {
-                idealMin = 8.0D;
-                idealMax = 16.0D;
-            }
-
-            case SUPPORT -> {
-                idealMin = 14.0D;
-                idealMax = 24.0D;
-            }
-
-            default -> {
-                idealMin = 8.0D;
-                idealMax = 18.0D;
-            }
+        if (mob.getTarget() == null) {
+            return;
         }
 
+        boolean damageForcedBreak =
+                damagePressure >= 55
+                        && damagedRecentlyTicks > 0;
 
-        if (distanceSq < idealMin * idealMin) {
+        boolean scheduledBreak =
+                mob.age >= nextCombatBreakTick;
 
-            Vec3d away =
-                    mob.getPos()
-                            .subtract(target.getPos())
-                            .multiply(1.0D, 0.0D, 1.0D);
-
-            if (away.lengthSquared() > 0.0001D) {
-                away = away.normalize();
-
-                double x =
-                        mob.getX() + away.x * 6.0D;
-
-                double z =
-                        mob.getZ() + away.z * 6.0D;
-
-                mob.getNavigation().startMovingTo(
-                        x,
-                        mob.getY(),
-                        z,
-                        1.05D
-                );
-            }
+        if (!damageForcedBreak
+                && !scheduledBreak) {
 
             return;
         }
 
 
-        if (distanceSq > idealMax * idealMax) {
+        combatBreakTicks =
+                50 + mob.getRandom().nextInt(31);
 
-            mob.getNavigation().startMovingTo(
-                    target,
-                    0.9D
-            );
-        }
+        damagePressure = 0;
+
+
+        nextCombatBreakTick =
+                mob.age
+                        + 220
+                        + mob.getRandom().nextInt(121);
     }
 
-    // ============================================================
-    // SUPPORT
-    // ============================================================
+    public boolean isCombatBreaking() {
+        return combatBreakTicks > 0
+                && mob.getArchetype()
+                != EldritchLuminaryEntity.LuminaryArchetype.SUPPORT;
+    }
+
+    public int getCombatBreakTicks() {
+        return combatBreakTicks;
+    }
+
 
     public boolean shouldActWithoutPlayer() {
 
+        return mob.getArchetype()
+                == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT
+                && findAllyNeedingSupport() != null;
+    }
+
+
+    public boolean shouldSeekSupport() {
+
         if (mob.getArchetype()
-                != EldritchLuminaryEntity.LuminaryArchetype.SUPPORT) {
+                == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT) {
+
             return false;
         }
 
-        return findAllyNeedingSupport() != null;
+        double healthRatio =
+                mob.getHealth() / mob.getMaxHealth();
+
+        if (healthRatio > 0.35D
+                && !isCombatBreaking()) {
+
+            return false;
+        }
+
+        EldritchLuminaryEntity support =
+                findNearestSupport();
+
+        if (support == null) {
+            return false;
+        }
+
+        double supportHealth =
+                support.getHealth()
+                        / support.getMaxHealth();
+
+        return supportHealth > 0.35D
+                && mob.squaredDistanceTo(support)
+                <= 28.0D * 28.0D;
     }
 
-    public EldritchLuminaryEntity findAllyNeedingSupport() {
+    public EldritchLuminaryEntity findNearestSupport() {
 
         Box box =
-                mob.getBoundingBox().expand(18.0D);
+                mob.getBoundingBox()
+                        .expand(28.0D, 12.0D, 28.0D);
 
-        List<EldritchLuminaryEntity> allies =
-                mob.getWorld().getEntitiesByClass(
+        return mob.getWorld()
+                .getEntitiesByClass(
                         EldritchLuminaryEntity.class,
                         box,
                         entity ->
                                 entity != mob
                                         && entity.isAlive()
-                                        && entity.getHealth()
-                                        < entity.getMaxHealth() * 0.90F
-                );
-
-        return allies.stream()
-                .min(Comparator.comparingDouble(mob::squaredDistanceTo))
+                                        && entity.getArchetype()
+                                        == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT
+                )
+                .stream()
+                .min(
+                        Comparator.comparingDouble(
+                                mob::squaredDistanceTo
+                        )
+                )
                 .orElse(null);
     }
 
+
+    public EldritchLuminaryEntity findAllyNeedingSupport() {
+
+        Box box =
+                mob.getBoundingBox()
+                        .expand(22.0D, 12.0D, 22.0D);
+
+        List<EldritchLuminaryEntity> allies =
+                mob.getWorld()
+                        .getEntitiesByClass(
+                                EldritchLuminaryEntity.class,
+                                box,
+                                entity ->
+                                        entity != mob
+                                                && entity.isAlive()
+                                                && entity.getHealth()
+                                                < entity.getMaxHealth()
+                                                * 0.92F
+                        );
+
+        return allies.stream()
+                .max(
+                        Comparator.comparingDouble(
+                                this::supportNeedScore
+                        )
+                )
+                .orElse(null);
+    }
+
+    private double supportNeedScore(
+            EldritchLuminaryEntity ally
+    ) {
+
+        double ownRatio =
+                mob.getHealth() / mob.getMaxHealth();
+
+        double allyRatio =
+                ally.getHealth()
+                        / ally.getMaxHealth();
+
+
+        double score =
+                (1.0D - allyRatio) * 100.0D;
+
+
+        if (allyRatio < ownRatio) {
+            score += 30.0D;
+        }
+
+
+        if (allyRatio < 0.50D) {
+            score += 25.0D;
+        }
+
+
+        if (ally.getTarget() instanceof PlayerEntity) {
+            score += 15.0D;
+        }
+
+
+        long otherSupports =
+                mob.getWorld()
+                        .getEntitiesByClass(
+                                EldritchLuminaryEntity.class,
+                                ally.getBoundingBox().expand(18.0D),
+                                other ->
+                                        other != mob
+                                                && other != ally
+                                                && other.isAlive()
+                                                && other.getArchetype()
+                                                == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT
+                        )
+                        .size();
+
+        if (allyRatio > ownRatio - 0.10D) {
+            score -= otherSupports * 25.0D;
+        }
+
+        score -=
+                Math.sqrt(
+                        mob.squaredDistanceTo(ally)
+                ) * 0.20D;
+
+        return score;
+    }
+
+    public boolean hasNearbyLuminaryCasting() {
+
+        Box box =
+                mob.getBoundingBox()
+                        .expand(18.0D);
+
+        return mob.getWorld()
+                .getEntitiesByClass(
+                        EldritchLuminaryEntity.class,
+                        box,
+                        entity ->
+                                entity != mob
+                                        && entity.isAlive()
+                                        && entity.isCastingSpell()
+                )
+                .stream()
+                .findAny()
+                .isPresent();
+    }
+
+    public int countNearbyLuminaries() {
+
+        Box box =
+                mob.getBoundingBox()
+                        .expand(20.0D);
+
+        return mob.getWorld()
+                .getEntitiesByClass(
+                        EldritchLuminaryEntity.class,
+                        box,
+                        entity ->
+                                entity != mob
+                                        && entity.isAlive()
+                )
+                .size();
+    }
+
+    private void updatePlayerPrediction() {
+
+        LivingEntity target =
+                mob.getTarget();
+
+        if (!(target instanceof PlayerEntity player)
+                || !player.isAlive()) {
+
+            stableMovementTicks = 0;
+            previousVelocity = Vec3d.ZERO;
+            previousPreviousVelocity = Vec3d.ZERO;
+            return;
+        }
+
+        Vec3d current =
+                horizontal(
+                        player.getVelocity()
+                );
+
+        Vec3d previous =
+                horizontal(
+                        previousVelocity
+                );
+
+        Vec3d previousPrevious =
+                horizontal(
+                        previousPreviousVelocity
+                );
+
+        boolean moving =
+                current.lengthSquared() >= 0.0324D;
+
+        boolean firstStable =
+                moving
+                        && directionSimilarity(
+                        current,
+                        previous
+                ) >= 0.995D;
+
+        boolean secondStable =
+                previous.lengthSquared() >= 0.0324D
+                        && directionSimilarity(
+                        previous,
+                        previousPrevious
+                ) >= 0.995D;
+
+        double speedDelta =
+                Math.abs(
+                        current.length()
+                                - previous.length()
+                );
+
+        boolean speedStable =
+                speedDelta <= 0.035D;
+
+        boolean predictableGroundMovement =
+                player.isOnGround();
+
+        if (moving
+                && firstStable
+                && secondStable
+                && speedStable
+                && predictableGroundMovement) {
+
+            stableMovementTicks++;
+
+        } else {
+
+            stableMovementTicks = 0;
+        }
+
+        previousPreviousVelocity =
+                previousVelocity;
+
+        previousVelocity =
+                player.getVelocity();
+    }
+
+    private double directionSimilarity(
+            Vec3d a,
+            Vec3d b
+    ) {
+
+        if (a.lengthSquared() < 0.0001D
+                || b.lengthSquared() < 0.0001D) {
+
+            return 0.0D;
+        }
+
+        return a.normalize()
+                .dotProduct(
+                        b.normalize()
+                );
+    }
+
+    private Vec3d horizontal(Vec3d value) {
+        return new Vec3d(
+                value.x,
+                0.0D,
+                value.z
+        );
+    }
+
+
+    public boolean hasHighConfidencePrediction() {
+        return stableMovementTicks >= 6;
+    }
+
+
+    public Vec3d getAimPoint(
+            Spell.InstancedSpell spell,
+            LivingEntity target
+    ) {
+        Vec3d current =
+                target.getPos()
+                        .add(
+                                0.0D,
+                                target.getStandingEyeHeight() * 0.55D,
+                                0.0D
+                        );
+
+        if (spell == null
+                || spell.spell() != ModSpells.FIREBALL
+                || !hasHighConfidencePrediction()) {
+            return current;
+        }
+
+        Vec3d velocity =
+                horizontal(
+                        target.getVelocity()
+                );
+
+        if (velocity.lengthSquared() < 0.0001D) {
+            return current;
+        }
+
+        Vec3d predicted =
+                current.add(
+                        velocity.multiply(5.0D)
+                );
+
+        Vec3d offset =
+                predicted.subtract(current);
+
+        if (offset.lengthSquared() > 2.5D * 2.5D) {
+            predicted =
+                    current.add(
+                            offset.normalize()
+                                    .multiply(2.5D)
+                    );
+        }
+
+        return predicted;
+    }
+
+    private void updateCastingObservation() {
+
+        LivingEntity target =
+                mob.getTarget();
+
+        if (!(target instanceof PlayerEntity player)) {
+
+            playerCastingObservationTicks = 0;
+            playerCastingTarget = null;
+
+            return;
+        }
+
+        if (isPlayerCasting(player)) {
+
+            if (!Objects.equals(
+                    playerCastingTarget,
+                    player.getUuid()
+            )) {
+
+                playerCastingTarget =
+                        player.getUuid();
+
+                playerCastingObservationTicks = 0;
+            }
+
+            playerCastingObservationTicks =
+                    Math.min(
+                            20,
+                            playerCastingObservationTicks + 1
+                    );
+
+        } else {
+
+            playerCastingObservationTicks =
+                    Math.max(
+                            0,
+                            playerCastingObservationTicks - 2
+                    );
+
+            if (playerCastingObservationTicks == 0) {
+                playerCastingTarget = null;
+            }
+        }
+    }
+
+    public boolean isPlayerCastingWithWarning() {
+
+        return playerCastingObservationTicks >= 8
+                && mob.getTarget() instanceof PlayerEntity player
+                && Objects.equals(
+                playerCastingTarget,
+                player.getUuid()
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean isPlayerCasting(
+            PlayerEntity player
+    ) {
+
+
+        if (player instanceof SpellHost<?> host) {
+
+            SpellDataStore data =
+                    ((SpellHost<LivingEntity>) host)
+                            .getSpellDataStore(player);
+
+            if (data != null
+                    && data.getSpell()
+                    instanceof ChanneledSpell) {
+
+                return true;
+            }
+        }
+
+
+        return isSpellItemCasting(
+                player.getMainHandStack()
+        )
+                || isSpellItemCasting(
+                player.getOffHandStack()
+        );
+    }
+
+    private boolean isSpellItemCasting(
+            ItemStack stack
+    ) {
+
+        if (stack.isEmpty()
+                || !(stack.getItem()
+                instanceof SpellItem spellItem)) {
+
+            return false;
+        }
+
+        SpellDataStore data =
+                spellItem.getSpellDataStore(stack);
+
+        return data != null
+                && data.getSpell()
+                instanceof ChanneledSpell;
+    }
+
+    public boolean isTargetRestricted() {
+
+        LivingEntity target =
+                mob.getTarget();
+
+        return target != null
+                && isTargetRestricted(target);
+    }
+
+    public boolean isTargetRestricted(
+            LivingEntity target
+    ) {
+
+        BlockPos center =
+                BlockPos.ofFloored(
+                        target.getX(),
+                        target.getY(),
+                        target.getZ()
+                );
+
+        int blocked = 0;
+        int iceBlocks = 0;
+
+        for (Direction direction :
+                Direction.Type.HORIZONTAL) {
+
+            BlockPos side =
+                    center.offset(direction);
+
+            BlockState state =
+                    mob.getWorld()
+                            .getBlockState(side);
+
+            if (!state.getCollisionShape(
+                    mob.getWorld(),
+                    side
+            ).isEmpty()) {
+
+                blocked++;
+            }
+
+            if (state.isOf(Blocks.ICE)
+                    || state.isOf(Blocks.PACKED_ICE)
+                    || state.isOf(Blocks.BLUE_ICE)) {
+
+                iceBlocks++;
+            }
+        }
+
+
+        return blocked >= 3
+                || iceBlocks >= 2;
+    }
+
+
+    public boolean canUseShadowStep() {
+
+        LivingEntity target =
+                mob.getTarget();
+
+        if (target == null
+                || isTargetRestricted(target)) {
+
+            return false;
+        }
+
+        Vec3d backwards =
+                horizontal(
+                        target.getRotationVector()
+                );
+
+        if (backwards.lengthSquared()
+                < 0.0001D) {
+
+            return false;
+        }
+
+        backwards =
+                backwards.normalize();
+
+        Vec3d destination =
+                target.getPos()
+                        .subtract(
+                                backwards.multiply(2.5D)
+                        );
+
+        BlockPos foot =
+                BlockPos.ofFloored(destination);
+
+        World world =
+                mob.getWorld();
+
+        return world.getBlockState(foot)
+                .getCollisionShape(
+                        world,
+                        foot
+                )
+                .isEmpty()
+
+                && world.getBlockState(foot.up())
+                .getCollisionShape(
+                        world,
+                        foot.up()
+                )
+                .isEmpty()
+
+                && world.getBlockState(foot.down())
+                .isSolidBlock(
+                        world,
+                        foot.down()
+                );
+    }
+
+
     public Spell.InstancedSpell chooseSpell() {
+
+        if (isCombatBreaking()) {
+            return emptySpell();
+        }
 
         List<Spell.InstancedSpell> spells =
                 mob.getAllSpellInstances();
 
         if (spells.isEmpty()) {
-            return new Spell.InstancedSpell(
-                    ModSpells.EMPTY,
-                    io.github.tobyrue.btc.spell.GrabBag.empty()
-            );
+            return emptySpell();
         }
 
-        LivingEntity target = mob.getTarget();
+        LivingEntity target =
+                mob.getTarget();
 
         EldritchLuminaryEntity.LuminaryArchetype archetype =
                 mob.getArchetype();
 
-        /*
-         * Support can act without a player.
-         */
-        boolean supportAction =
+        EldritchLuminaryEntity supportAlly =
+                findAllyNeedingSupport();
+
+        boolean canActWithoutPlayer =
                 archetype
                         == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT
-                        && findAllyNeedingSupport() != null;
+                        && supportAlly != null;
+
+        if (target == null
+                && !canActWithoutPlayer) {
+
+            return emptySpell();
+        }
 
         List<ScoredSpell> candidates =
                 new ArrayList<>();
 
-        for (Spell.InstancedSpell spell : spells) {
+        for (Spell.InstancedSpell spell :
+                spells) {
 
-            if (spell == null || spell.spell() == null) {
-                continue;
-            }
+            if (spell == null
+                    || spell.spell() == null
+                    || spell.spell() == ModSpells.EMPTY) {
 
-            if (spell.spell() == ModSpells.EMPTY) {
-                continue;
-            }
-
-            /*
-             * Normal combat spells require a target.
-             *
-             * Support spells are allowed without one.
-             */
-            if (target == null && !supportAction) {
                 continue;
             }
 
             if (!mob.canUseSpell(spell)) {
-                continue;
+
+                if (!(spell.spell()
+                        == ModSpells.LUMINARY_EMPOWER
+                        && canActWithoutPlayer)) {
+
+                    continue;
+                }
             }
 
             double score =
-                    scoreSpell(spell, target, archetype);
+                    scoreSpell(
+                            spell,
+                            target,
+                            supportAlly,
+                            archetype
+                    );
 
-            if (score <= 0.0D) {
-                continue;
+            if (score > 0.0D) {
+                candidates.add(
+                        new ScoredSpell(
+                                spell,
+                                score
+                        )
+                );
             }
-
-            candidates.add(
-                    new ScoredSpell(spell, score)
-            );
         }
 
         if (candidates.isEmpty()) {
-            return new Spell.InstancedSpell(
-                    ModSpells.EMPTY,
-                    io.github.tobyrue.btc.spell.GrabBag.empty()
-            );
+            return emptySpell();
         }
 
-
         candidates.sort(
-                Comparator.comparingDouble(ScoredSpell::score)
-                        .reversed()
+                Comparator.comparingDouble(
+                        ScoredSpell::score
+                ).reversed()
         );
 
-        int count =
-                Math.min(4, candidates.size());
+        int candidateCount =
+                Math.min(
+                        4,
+                        candidates.size()
+                );
 
         double totalWeight = 0.0D;
 
-        for (int i = 0; i < count; i++) {
-            totalWeight += candidates.get(i).score();
+        for (int i = 0; i < candidateCount; i++) {
+            totalWeight +=
+                    candidates.get(i).score();
         }
 
-        double random =
-                mob.getRandom().nextDouble() * totalWeight;
+        double point =
+                mob.getRandom().nextDouble()
+                        * totalWeight;
 
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < candidateCount; i++) {
 
-            random -= candidates.get(i).score();
+            point -=
+                    candidates.get(i).score();
 
-            if (random <= 0.0D) {
+            if (point <= 0.0D) {
                 return candidates.get(i).spell();
             }
         }
 
         return candidates.getFirst().spell();
     }
+    public boolean shouldRetreat() {
+        if (mob.getArchetype() == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT) {
+            return mob.getHealth() / mob.getMaxHealth() <= 0.22F;
+        }
 
+        return isCombatBreaking()
+                || shouldSeekSupport()
+                || mob.getHealth() / mob.getMaxHealth() <= 0.25F;
+    }
+
+    public double getDesiredMinDistance() {
+        return switch (mob.getArchetype()) {
+            case PYROMANCER -> mob.getHealth() / mob.getMaxHealth() < 0.45D ? 11.0D : 9.0D;
+            case STORM_WARDEN -> 10.0D;
+            case SHADOW_SUMMONER -> 9.0D;
+            case SUPPORT -> 16.0D;
+            default -> 9.0D;
+        };
+    }
+
+    public double getDesiredMaxDistance() {
+        return switch (mob.getArchetype()) {
+            case PYROMANCER -> mob.getHealth() / mob.getMaxHealth() < 0.45D ? 21.0D : 18.0D;
+            case STORM_WARDEN -> 21.0D;
+            case SHADOW_SUMMONER -> 17.0D;
+            case SUPPORT -> 26.0D;
+            default -> 18.0D;
+        };
+    }
+
+    private record ScoredSpell(
+            Spell.InstancedSpell spell,
+            double score
+    ) {
+    }
     private double scoreSpell(
             Spell.InstancedSpell spell,
             LivingEntity target,
+            EldritchLuminaryEntity supportAlly,
             EldritchLuminaryEntity.LuminaryArchetype archetype
     ) {
 
@@ -484,249 +1100,391 @@ public class EldritchLuminaryBrain {
                         mob.getSpellWeight(spell)
                 );
 
+        double selfHealth =
+                mob.getHealth()
+                        / mob.getMaxHealth();
+
         double distance =
                 target == null
                         ? 0.0D
                         : mob.distanceTo(target);
 
-        double health =
-                mob.getHealth()
-                        / mob.getMaxHealth();
+        boolean restricted =
+                target != null
+                        && isTargetRestricted(target);
 
+        boolean playerCasting =
+                target instanceof PlayerEntity
+                        && isPlayerCastingWithWarning();
 
-        Identifier spellId =
+        boolean playerBuffed =
+                target instanceof PlayerEntity
+                        && hasImportantBeneficialEffects(
+                        (PlayerEntity) target
+                );
+
+        boolean nearbyCaster =
+                hasNearbyLuminaryCasting();
+
+        Identifier id =
                 mob.getSpellId(spell);
 
-        if (Objects.equals(spellId, lastSpell)) {
-            score *= 0.18D;
+        if (Objects.equals(
+                id,
+                lastSpell
+        )) {
+
+            score *= 0.20D;
+        }
+
+        if (Objects.equals(
+                id,
+                previousSpell
+        )) {
+
+            score *= 0.55D;
+        }
+
+        if (spell.spell() == ModSpells.DISSPELL) {
+
+            if (!playerCasting) {
+                return 0.0D;
+            }
+
+            score += 95.0D;
         }
 
 
-        if (health < 0.35D) {
+        if (spell.spell() == ModSpells.PURGE_BOLT) {
 
-            if (spell.spell() == ModSpells.LIFE_STEAL) {
-                score += 35.0D;
-            }
-
-            if (spell.spell() == ModSpells.ICE_BLOCK) {
-                score += 30.0D;
-            }
-
-            if (spell.spell() == ModSpells.SHADOW_STEP) {
-                score += 22.0D;
-            }
-
-            if (spell.spell() == ModSpells.MIST_VEIL) {
-                score += 18.0D;
-            }
-
-            if (spell.spell() == ModSpells.TRIGGERED_POTION) {
-                score += 32.0D;
+            if (!playerBuffed) {
+                score *= 0.05D;
+            } else {
+                score += 70.0D;
             }
         }
 
-        /*
-         * ========================================================
-         * VERY CLOSE
-         * ========================================================
-         */
 
-        if (distance <= 4.0D) {
+        if (spell.spell() == ModSpells.SHADOW_STEP) {
 
-            if (spell.spell() == ModSpells.STORM_PUSH
-                    || spell.spell() == ModSpells.LOCALIZED_STORM_PUSH
-                    || spell.spell() == ModSpells.WIND_TORNADO) {
+            if (!canUseShadowStep()) {
+                return 0.0D;
+            }
+        }
 
+
+        if (spell.spell()
+                == ModSpells.LUMINARY_EMPOWER) {
+
+            if (supportAlly == null) {
+                return 0.0D;
+            }
+
+            score += 65.0D;
+
+            double allyHealth =
+                    supportAlly.getHealth()
+                            / supportAlly.getMaxHealth();
+
+            if (allyHealth < 0.50D) {
                 score += 35.0D;
             }
 
-            if (spell.spell() == ModSpells.FLAME_BURST) {
-                score += 22.0D;
-            }
+            if (supportAlly.getTarget()
+                    instanceof PlayerEntity) {
 
-            if (spell.spell() == ModSpells.DRAGONS_BREATH) {
-                score += 18.0D;
-            }
-
-            if (spell.spell() == ModSpells.EARTH_SPIKE_LINE) {
-                score += 18.0D;
-            }
-
-            if (spell.spell() == ModSpells.SHADOW_STEP) {
                 score += 20.0D;
             }
         }
 
-        /*
-         * ========================================================
-         * PLAYER TOO FAR
-         * ========================================================
-         */
+        if (archetype
+                == EldritchLuminaryEntity.LuminaryArchetype.SUPPORT
+                && supportAlly != null
+                && isDamageSpell(spell)) {
 
-        if (distance >= 20.0D) {
-
-            if (spell.spell() == ModSpells.FIREBALL) {
-                score += 18.0D;
-            }
-
-            if (spell.spell() == ModSpells.DRAGON_FIREBALL) {
-                score += 25.0D;
-            }
-
-            if (spell.spell() == ModSpells.LIGHTNING_STRIKE) {
-                score += 18.0D;
-            }
-
-            if (spell.spell() == ModSpells.ABYSSAL_SHARDS) {
-                score += 12.0D;
-            }
-
-            if (spell.spell() == ModSpells.SHULKER_BULLET) {
-                score += 10.0D;
-            }
+            score *= 0.45D;
         }
 
-        /*
-         * ========================================================
-         * TARGET IS MOVING / NORMAL COMBAT
-         * ========================================================
-         */
 
-        if (target != null) {
+        if (selfHealth < 0.30D) {
 
-            Vec3d velocity =
-                    target.getVelocity();
-
-            double movementSpeed =
-                    velocity.lengthSquared();
-
-            if (movementSpeed > 0.025D) {
-
-                if (spell.spell() == ModSpells.LIGHTNING_STRIKE) {
-                    score += 10.0D;
-                }
-
-                if (spell.spell() == ModSpells.EARTH_SPIKE_LINE) {
-                    score += 10.0D;
-                }
-
-                if (spell.spell() == ModSpells.SHULKER_BULLET) {
-                    score += 8.0D;
-                }
+            if (spell.spell() == ModSpells.LIFE_STEAL) {
+                score += 45.0D;
             }
 
-            /*
-             * Stationary target = area denial opportunity.
-             */
-            if (movementSpeed < 0.005D) {
-
-                if (spell.spell() == ModSpells.EARTH_SPIKE_LINE) {
-                    score += 16.0D;
-                }
-
-                if (spell.spell() == ModSpells.FIRE_STORM) {
-                    score += 14.0D;
-                }
-
-                if (spell.spell() == ModSpells.BLAZE_STORM) {
-                    score += 12.0D;
-                }
-
-                if (spell.spell() == ModSpells.TEMPESTS_CALL) {
-                    score += 14.0D;
-                }
+            if (spell.spell() == ModSpells.TRIGGERED_POTION) {
+                score += 40.0D;
             }
-        }
 
-        /*
-         * ========================================================
-         * RETALIATION
-         * ========================================================
-         */
+            if (spell.spell() == ModSpells.ICE_BLOCK) {
+                score += 36.0D;
+            }
 
-        if (retaliationTarget != null
-                && retaliationTicks > 0
-                && target == retaliationTarget) {
-
-            score += 10.0D;
+            if (spell.spell() == ModSpells.MIST_VEIL) {
+                score += 28.0D;
+            }
 
             if (spell.spell()
                     == ModSpells.LOCALIZED_STORM_PUSH
-                    || spell.spell() == ModSpells.STORM_PUSH) {
+                    || spell.spell()
+                    == ModSpells.STORM_PUSH) {
+
+                score += 25.0D;
+            }
+        }
+
+
+        if (shouldSeekSupport()) {
+
+            if (spell.spell()
+                    == ModSpells.SHADOW_STEP
+                    && canUseShadowStep()) {
+
+                score += 8.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.LOCALIZED_STORM_PUSH
+                    || spell.spell()
+                    == ModSpells.STORM_PUSH
+                    || spell.spell()
+                    == ModSpells.WIND_TORNADO) {
+
+                score += 12.0D;
+            }
+
+            if (isDamageSpell(spell)) {
+                score *= 0.65D;
+            }
+        }
+
+
+        if (restricted) {
+
+
+            if (trappedPressureCooldown > 0
+                    && isDamageSpell(spell)) {
+
+                score *= 0.28D;
+            }
+
+
+            if (isHardControlSpell(spell)) {
+
+                if (trappedPressureCooldown > 0) {
+                    return 0.0D;
+                }
+
+                score *= 0.60D;
+            }
+
+
+            if (spell.spell()
+                    == ModSpells.SHADOW_STEP) {
+
+                return 0.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.FIREBALL
+                    || spell.spell()
+                    == ModSpells.LIGHTNING_STRIKE
+                    || spell.spell()
+                    == ModSpells.ABYSSAL_SHARDS) {
+
+                score += 8.0D;
+            }
+        }
+
+
+        if (distance <= 4.5D) {
+
+            if (spell.spell()
+                    == ModSpells.LOCALIZED_STORM_PUSH
+                    || spell.spell()
+                    == ModSpells.STORM_PUSH
+                    || spell.spell()
+                    == ModSpells.WIND_TORNADO) {
+
+                score += 34.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.FLAME_BURST
+                    || spell.spell()
+                    == ModSpells.DRAGONS_BREATH) {
+
+                score += 18.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.SHADOW_STEP
+                    && canUseShadowStep()) {
+
+                score += 16.0D;
+            }
+        }
+
+
+        if (distance >= 18.0D) {
+
+            if (spell.spell() == ModSpells.FIREBALL) {
+                score += 14.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.DRAGON_FIREBALL) {
+
+                score += 20.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.LIGHTNING_STRIKE) {
+
+                score += 14.0D;
+            }
+
+            if (spell.spell()
+                    == ModSpells.SHULKER_BULLET) {
 
                 score += 10.0D;
             }
         }
 
-        /*
-         * ========================================================
-         * ARCHETYPE PERSONALITY
-         * ========================================================
-         */
+        if (target != null) {
+            double movement =
+                    horizontal(
+                            target.getVelocity()
+                    ).lengthSquared();
+
+            if (spell.spell() == ModSpells.FIREBALL
+                    && hasHighConfidencePrediction()) {
+
+                score += 10.0D;
+            }
+        }
+
+
+        if (target != null
+                && retaliationTarget == target
+                && retaliationTicks > 0) {
+
+            score +=
+                    target instanceof PlayerEntity
+                            ? 15.0D
+                            : 8.0D;
+
+
+            if (distance <= 5.0D
+                    && (spell.spell() == ModSpells.LOCALIZED_STORM_PUSH
+                    || spell.spell() == ModSpells.STORM_PUSH)) {
+
+                score += 12.0D;
+            }
+        }
+
 
         switch (archetype) {
 
             case PYROMANCER -> {
 
-                if (spell.spell().getSpellType()
-                        == io.github.tobyrue.btc.enums.SpellTypes.FIRE) {
+                if (spell.spell()
+                        == ModSpells.FIREBALL) {
 
-                    score += 10.0D;
-                }
-
-                if (spell.spell() == ModSpells.FIREBALL) {
                     score += 8.0D;
                 }
 
-                if (spell.spell() == ModSpells.FIRE_STORM) {
+                if (spell.spell()
+                        == ModSpells.FIRE_STORM) {
+
                     score += 10.0D;
                 }
 
-                if (spell.spell() == ModSpells.DRAGONS_BREATH) {
-                    score += 7.0D;
+                if (spell.spell()
+                        == ModSpells.BLAZE_STORM) {
+
+                    score += 8.0D;
+                }
+
+                if (spell.spell()
+                        == ModSpells.DRAGONS_BREATH) {
+
+                    score += 6.0D;
+                }
+
+                if (spell.spell()
+                        == ModSpells.GEYSER_STEP) {
+
+                    score += 5.0D;
                 }
             }
 
             case STORM_WARDEN -> {
 
-                if (spell.spell() == ModSpells.LIGHTNING_STRIKE
-                        || spell.spell() == ModSpells.TEMPESTS_CALL) {
-
-                    score += 8.0D;
-                }
-
-                if (spell.spell() == ModSpells.EARTH_SPIKE_LINE
-                        || spell.spell() == ModSpells.WIND_TORNADO) {
+                if (spell.spell()
+                        == ModSpells.EARTH_SPIKE_LINE) {
 
                     score += 10.0D;
                 }
 
-                if (spell.spell() == ModSpells.FROST_REFLEX) {
-                    score += 12.0D;
+                if (spell.spell()
+                        == ModSpells.WIND_TORNADO) {
+
+                    score += 10.0D;
+                }
+
+                if (spell.spell()
+                        == ModSpells.LOCALIZED_STORM_PUSH) {
+
+                    score += 10.0D;
+                }
+
+                if (spell.spell()
+                        == ModSpells.FROST_REFLEX) {
+
+                    score += 10.0D;
+                }
+
+                if (spell.spell()
+                        == ModSpells.TEMPESTS_CALL) {
+
+                    score += 8.0D;
                 }
             }
 
             case SHADOW_SUMMONER -> {
 
-                if (spell.spell() == ModSpells.ELDRITCH_TETHER) {
+                if (spell.spell()
+                        == ModSpells.ELDRITCH_TETHER) {
+
                     score += 12.0D;
                 }
 
-                if (spell.spell() == ModSpells.ABYSSAL_SHARDS) {
-                    score += 9.0D;
+                if (spell.spell()
+                        == ModSpells.ABYSSAL_SHARDS) {
+
+                    score += 8.0D;
                 }
 
-                if (spell.spell() == ModSpells.RAISE_UNDEAD) {
+                if (spell.spell()
+                        == ModSpells.SHADOW_STEP
+                        && canUseShadowStep()) {
 
-                    if (countNearbySummons() == 0) {
-                        score += 18.0D;
-                    } else {
-                        score -= 10.0D;
-                    }
+                    score += 12.0D;
                 }
 
-                if (spell.spell() == ModSpells.SHADOW_STEP) {
-                    score += 7.0D;
+                if (spell.spell()
+                        == ModSpells.RAISE_UNDEAD
+                        && countNearbySummons() == 0) {
+
+                    score += 18.0D;
+                }
+
+                if (spell.spell()
+                        == ModSpells.PURGE_BOLT
+                        && playerBuffed) {
+
+                    score += 20.0D;
                 }
             }
 
@@ -735,26 +1493,13 @@ public class EldritchLuminaryBrain {
                 if (spell.spell()
                         == ModSpells.LUMINARY_EMPOWER) {
 
-                    EldritchLuminaryEntity ally =
-                            findAllyNeedingSupport();
-
-                    if (ally != null) {
-                        score += 45.0D;
-
-                        if (ally.getHealth()
-                                < ally.getMaxHealth() * 0.5F) {
-                            score += 15.0D;
-                        }
-                    }
+                    score += 40.0D;
                 }
 
-                if (spell.spell() == ModSpells.TRIGGERED_POTION
-                        && health < 0.55D) {
+                if (spell.spell()
+                        == ModSpells.ICE_BLOCK
+                        && selfHealth < 0.70D) {
 
-                    score += 28.0D;
-                }
-
-                if (spell.spell() == ModSpells.ICE_BLOCK) {
                     score += 10.0D;
                 }
 
@@ -762,137 +1507,243 @@ public class EldritchLuminaryBrain {
                         == ModSpells.LOCALIZED_STORM_PUSH
                         && distance < 7.0D) {
 
-                    score += 24.0D;
-                }
-
-                /*
-                 * Support should be less interested in damage
-                 * when allies need help.
-                 */
-                if (findAllyNeedingSupport() != null
-                        && isDamageSpell(spell)) {
-
-                    score *= 0.55D;
+                    score += 20.0D;
                 }
             }
 
             default -> {
-                /*
-                 * ALL gets general-purpose behavior.
-                 */
             }
         }
 
-        /*
-         * ========================================================
-         * COMBOS
-         * ========================================================
-         */
 
-        if (comboTicks > 0) {
+        if (comboTicks > 0 && lastSpell != null) {
 
-            /*
-             * Push -> punish
-             */
-            if (ModRegistries.SPELL.get(lastSpell) == ModSpells.LOCALIZED_STORM_PUSH || ModRegistries.SPELL.get(lastSpell) == ModSpells.STORM_PUSH) {
+            Spell last =
+                    ModRegistries.SPELL.get(lastSpell);
 
-                if (spell.spell() == ModSpells.FIREBALL
-                        || spell.spell() == ModSpells.LIGHTNING_STRIKE
-                        || spell.spell() == ModSpells.ABYSSAL_SHARDS) {
+
+            if (last == ModSpells.LOCALIZED_STORM_PUSH
+                    || last == ModSpells.STORM_PUSH) {
+
+                if (spell.spell()
+                        == ModSpells.FIREBALL
+                        || spell.spell()
+                        == ModSpells.LIGHTNING_STRIKE
+                        || spell.spell()
+                        == ModSpells.ABYSSAL_SHARDS) {
+
+                    score += 26.0D;
+                }
+            }
+
+
+            if (last == ModSpells.FIREBALL) {
+
+                if (spell.spell()
+                        == ModSpells.FLAME_BURST
+                        || spell.spell()
+                        == ModSpells.BLAZE_STORM
+                        || spell.spell()
+                        == ModSpells.FIRE_STORM) {
+
+                    score += 22.0D;
+                }
+            }
+
+
+            if (last == ModSpells.ICE_BLOCK
+                    || last == ModSpells.EARTH_SPIKE_LINE) {
+
+                if (spell.spell()
+                        == ModSpells.LIGHTNING_STRIKE
+                        || spell.spell()
+                        == ModSpells.FIREBALL) {
+
+                    score += 22.0D;
+                }
+            }
+
+
+            if (last == ModSpells.ELDRITCH_TETHER) {
+
+                if (spell.spell()
+                        == ModSpells.ABYSSAL_SHARDS
+                        || spell.spell()
+                        == ModSpells.SHULKER_BULLET) {
 
                     score += 28.0D;
                 }
             }
 
 
-            if (ModRegistries.SPELL.get(lastSpell) == ModSpells.FIREBALL) {
+            if (last == ModSpells.ELDRITCH_ILLUSION
+                    && spell.spell()
+                    == ModSpells.SHADOW_STEP
+                    && canUseShadowStep()) {
 
-                if (spell.spell() == ModSpells.FLAME_BURST
-                        || spell.spell() == ModSpells.BLAZE_STORM
-                        || spell.spell() == ModSpells.FIRE_STORM) {
-
-                    score += 24.0D;
-                }
+                score += 28.0D;
             }
 
-            /*
-             * Control -> punishment
-             */
-            if (ModRegistries.SPELL.get(lastSpell) == ModSpells.ICE_BLOCK
-                    || ModRegistries.SPELL.get(lastSpell) == ModSpells.EARTH_SPIKE_LINE) {
 
-                if (spell.spell() == ModSpells.LIGHTNING_STRIKE
-                        || spell.spell() == ModSpells.FIREBALL) {
-
-                    score += 24.0D;
-                }
-            }
-
-            /*
-             * Tether -> projectiles.
-             */
-            if (ModRegistries.SPELL.get(lastSpell) == ModSpells.ELDRITCH_TETHER) {
-
-                if (spell.spell() == ModSpells.ABYSSAL_SHARDS
-                        || spell.spell() == ModSpells.SHULKER_BULLET) {
-
-                    score += 30.0D;
-                }
-            }
-
-            /*
-             * Illusion -> teleport.
-             */
-            if (ModRegistries.SPELL.get(lastSpell) == ModSpells.ELDRITCH_ILLUSION
-                    && spell.spell() == ModSpells.SHADOW_STEP) {
-
-                score += 35.0D;
-            }
-
-            /*
-             * Summon -> empower.
-             */
-            if (ModRegistries.SPELL.get(lastSpell) == ModSpells.RAISE_UNDEAD
+            if (last == ModSpells.RAISE_UNDEAD
                     && spell.spell()
                     == ModSpells.LUMINARY_EMPOWER) {
 
-                score += 15.0D;
+                score += 22.0D;
+            }
+
+            if (last == ModSpells.LOCALIZED_STORM_PUSH
+                    && spell.spell()
+                    == ModSpells.DRAGONS_BREATH) {
+
+                score += 14.0D;
             }
         }
 
-        /*
-         * Don't cast support buff repeatedly.
-         */
-        if (spell.spell() == ModSpells.LUMINARY_EMPOWER) {
 
-            EldritchLuminaryEntity ally =
-                    findAllyNeedingSupport();
+        if (nearbyCaster
+                && isHighImpactSpell(spell)) {
 
-            if (ally == null) {
-                score = 0.0D;
-            }
+            score *= 0.55D;
+        }
+
+        if (countNearbyLuminaries() >= 3
+                && isHighImpactSpell(spell)) {
+
+            score *= 0.80D;
+        }
+
+
+        if (hardControlCooldown > 0
+                && isHardControlSpell(spell)) {
+
+            score = 0.0D;
         }
 
         return score;
+    }
+
+    private boolean hasImportantBeneficialEffects(
+            PlayerEntity player
+    ) {
+
+        return player.hasStatusEffect(
+                StatusEffects.REGENERATION
+        )
+                || player.hasStatusEffect(
+                StatusEffects.RESISTANCE
+        )
+                || player.hasStatusEffect(
+                StatusEffects.ABSORPTION
+        )
+                || player.hasStatusEffect(
+                StatusEffects.STRENGTH
+        )
+                || player.hasStatusEffect(
+                StatusEffects.SPEED
+        )
+                || player.hasStatusEffect(
+                StatusEffects.FIRE_RESISTANCE
+        )
+                || player.hasStatusEffect(
+                StatusEffects.HASTE
+        )
+                || player.hasStatusEffect(
+                StatusEffects.JUMP_BOOST
+        )
+                || player.hasStatusEffect(
+                StatusEffects.WATER_BREATHING
+        )
+                || player.hasStatusEffect(
+                StatusEffects.NIGHT_VISION
+        )
+                || player.hasStatusEffect(
+                StatusEffects.INVISIBILITY
+        )
+                || player.hasStatusEffect(
+                StatusEffects.SLOW_FALLING
+        )
+                || player.hasStatusEffect(
+                StatusEffects.CONDUIT_POWER
+        )
+                || player.hasStatusEffect(
+                StatusEffects.DOLPHINS_GRACE
+        )
+                || player.hasStatusEffect(
+                StatusEffects.LUCK
+        );
     }
 
     private boolean isDamageSpell(
             Spell.InstancedSpell spell
     ) {
 
-        return spell.spell() != ModSpells.LUMINARY_EMPOWER
-                && spell.spell() != ModSpells.TRIGGERED_POTION
-                && spell.spell() != ModSpells.POTION
-                && spell.spell() != ModSpells.ICE_BLOCK
-                && spell.spell() != ModSpells.MIST_VEIL;
+        return spell.spell()
+                != ModSpells.LUMINARY_EMPOWER
+
+                && spell.spell()
+                != ModSpells.TRIGGERED_POTION
+
+                && spell.spell()
+                != ModSpells.POTION
+
+                && spell.spell()
+                != ModSpells.ICE_BLOCK
+
+                && spell.spell()
+                != ModSpells.MIST_VEIL;
+    }
+
+    private boolean isHardControlSpell(
+            Spell.InstancedSpell spell
+    ) {
+
+        return spell.spell()
+                == ModSpells.STORM_PUSH
+
+                || spell.spell()
+                == ModSpells.LOCALIZED_STORM_PUSH
+
+                || spell.spell()
+                == ModSpells.WIND_TORNADO
+
+                || spell.spell()
+                == ModSpells.EARTH_SPIKE_LINE
+
+                || spell.spell()
+                == ModSpells.ICE_BLOCK;
+    }
+
+    private boolean isHighImpactSpell(
+            Spell.InstancedSpell spell
+    ) {
+
+        return spell.spell()
+                == ModSpells.FIRE_STORM
+
+                || spell.spell()
+                == ModSpells.BLAZE_STORM
+
+                || spell.spell()
+                == ModSpells.DRAGON_FIREBALL
+
+                || spell.spell()
+                == ModSpells.TEMPESTS_CALL
+
+                || spell.spell()
+                == ModSpells.CREEPER_WALL_EXPLOSIVE_TRAP
+
+                || spell.spell()
+                == ModSpells.RAISE_UNDEAD;
     }
 
     private int countNearbySummons() {
 
         Box box =
-                mob.getBoundingBox().expand(16.0D);
+                mob.getBoundingBox()
+                        .expand(16.0D);
 
-        return (int) mob.getWorld()
+        return mob.getWorld()
                 .getOtherEntities(
                         mob,
                         box,
@@ -901,23 +1752,47 @@ public class EldritchLuminaryBrain {
                                         && !(living instanceof PlayerEntity)
                                         && !(living instanceof EldritchLuminaryEntity)
                 )
-                .stream()
-                .count();
+                .size();
     }
+
 
     public void onSpellCast(
             Spell.InstancedSpell spell
     ) {
 
-        if (spell == null || spell.spell() == null) {
+        if (spell == null
+                || spell.spell() == null
+                || spell.spell() == ModSpells.EMPTY) {
+
             return;
         }
 
-        previousSpell = lastSpell;
-        lastSpell = mob.getSpellId(spell);
+        previousSpell =
+                lastSpell;
+
+        lastSpell =
+                mob.getSpellId(spell);
 
         comboTicks = 80;
         ticksSinceSpell = 0;
+
+        if (isHardControlSpell(spell)) {
+            hardControlCooldown = 38;
+        }
+
+        if (isTargetRestricted()
+                && isDamageSpell(spell)) {
+
+            trappedPressureCooldown = 55;
+        }
+    }
+
+    private Spell.InstancedSpell emptySpell() {
+
+        return new Spell.InstancedSpell(
+                ModSpells.EMPTY,
+                GrabBag.empty()
+        );
     }
 
     public Identifier getLastSpell() {
@@ -926,11 +1801,5 @@ public class EldritchLuminaryBrain {
 
     public Identifier getPreviousSpell() {
         return previousSpell;
-    }
-
-    private record ScoredSpell(
-            Spell.InstancedSpell spell,
-            double score
-    ) {
     }
 }
