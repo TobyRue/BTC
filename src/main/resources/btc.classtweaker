@@ -12,6 +12,7 @@ accessible field net/minecraft/world/gen/carver/CaveCarverConfig floorLevel Lnet
 accessible method net/minecraft/block/CropBlock getAvailableMoisture (Lnet/minecraft/block/Block;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F
 accessible field net/minecraft/entity/mob/MobEntity goalSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
 accessible field net/minecraft/entity/mob/MobEntity targetSelector Lnet/minecraft/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/block/spawner/TrialSpawnerData spawnedMobsAlive Ljava/util/Set;
 
 extend-enum net/minecraft/recipe/book/RecipeBookCategory BTC_SCROLL_TABLE
 extend-enum net/minecraft/client/recipebook/RecipeBookGroup BTC_SCROLL_TABLE_SEARCH

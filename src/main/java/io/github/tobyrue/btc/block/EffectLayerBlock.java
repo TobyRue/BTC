@@ -22,14 +22,16 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+import java.util.function.Supplier;
+
 public class EffectLayerBlock extends Block {
     private final StatusEffectInstance effect;
-    private final Item result;
+    private final Supplier<Item> resultSupplier;
 
-    public EffectLayerBlock(Settings settings, StatusEffectInstance effect, Item result) {
+    public EffectLayerBlock(Settings settings, StatusEffectInstance effect, Supplier<Item> resultSupplier) {
         super(settings);
         this.effect = effect;
-        this.result = result;
+        this.resultSupplier = resultSupplier;
     }
 
     @Override
@@ -48,9 +50,9 @@ public class EffectLayerBlock extends Block {
             livingEntity.addStatusEffect(new StatusEffectInstance(this.effect));
         }
         if (entity.shouldSpawnSprintingParticles()) {
-            double d = entity.getPos().getX() + (world.getRandom().nextDouble() - (double) 0.5F) * (double) entity.getDimensions(EntityPose.STANDING).width();
-            double e = entity.getPos().getZ() + (world.getRandom().nextDouble() - (double) 0.5F) * (double) entity.getDimensions(EntityPose.STANDING).width();
-            world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), d, entity.getPos().getY() + 0.1, e, entity.getPos().getX() * (double) -4.0F, (double) 1.5F, entity.getPos().getZ() * (double) -4.0F);
+            double d = entity.getPos().getX() + (world.getRandom().nextDouble() - 0.5D) * entity.getDimensions(EntityPose.STANDING).width();
+            double e = entity.getPos().getZ() + (world.getRandom().nextDouble() - 0.5D) * entity.getDimensions(EntityPose.STANDING).width();
+            world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), d, entity.getPos().getY() + 0.1, e, entity.getPos().getX() * -4.0D, 1.5D, entity.getPos().getZ() * -4.0D);
         }
         super.onEntityCollision(state, world, pos, entity);
     }
@@ -60,7 +62,10 @@ public class EffectLayerBlock extends Block {
         if (stack.isOf(Items.BUCKET)) {
             if (!player.isCreative()) {
                 stack.decrement(1);
-                player.getInventory().offerOrDrop(this.result.getDefaultStack());
+                Item resultItem = this.resultSupplier.get();
+                if (resultItem != null) {
+                    player.getInventory().offerOrDrop(resultItem.getDefaultStack());
+                }
             }
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
             return ItemActionResult.SUCCESS;

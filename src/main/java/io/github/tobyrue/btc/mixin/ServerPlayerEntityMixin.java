@@ -1,13 +1,11 @@
 package io.github.tobyrue.btc.mixin;
 
-import io.github.tobyrue.btc.Ticker;
 import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
 import io.github.tobyrue.btc.packets.BonfireSyncPayload;
 import io.github.tobyrue.btc.spell.*;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
 import io.github.tobyrue.btc.util.LivingEntityMixinAccessor;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -147,7 +145,7 @@ public abstract class ServerPlayerEntityMixin {
     @Inject(method = "getRespawnTarget", at = @At("HEAD"), cancellable = true)
     private void checkBonfirePriority(boolean keepInventory, TeleportTarget.PostDimensionTransition postDimensionTransition, CallbackInfoReturnable<TeleportTarget> cir) {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-        NbtCompound bonfire = ((BonfirePlayerData) player).bTC$getBonfireData();
+        NbtCompound bonfire = ((BonfirePlayerData) player).btc$getBonfireData();
 
         if (bonfire != null && bonfire.contains("pos")) {
             BlockPos bonfirePos = BlockPos.fromLong(bonfire.getLong("pos"));
@@ -171,11 +169,30 @@ public abstract class ServerPlayerEntityMixin {
 
     @Inject(method = "copyFrom", at = @At("RETURN"))
     private void copyBonfireData(ServerPlayerEntity player, boolean alive, CallbackInfo ci) {
-        NbtCompound oldData = ((BonfirePlayerData) player).bTC$getBonfireData();
+        ServerPlayerEntity me = (ServerPlayerEntity) (Object) this;
+        NbtCompound oldData = ((BonfirePlayerData) player).btc$getBonfireData();
 
-        ((BonfirePlayerData) this).bTC$setBonfireData(oldData);
+        ((BonfirePlayerData) this).btc$setBonfireData(oldData);
         BonfireSyncPayload payload = new BonfireSyncPayload(oldData);
 
         ServerPlayNetworking.send(player, payload);
+
+
+        if (oldData != null && oldData.contains("pos")) {
+            BlockPos bonfirePos = BlockPos.fromLong(oldData.getLong("pos"));
+            String dimId = oldData.getString("dim");
+            if (player.getWorld().getBlockEntity(bonfirePos) instanceof BonfireBlockEntity block) {
+                double distSq = player.getPos().squaredDistanceTo(bonfirePos.toCenterPos());
+                double configRadius = block.getRadius();
+
+                if (distSq <= (configRadius * configRadius) && player.getWorld().getRegistryKey().equals(RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimId)))) {
+                    me.getInventory().clone(player.getInventory());
+                    me.experienceLevel = player.experienceLevel;
+                    me.totalExperience = player.totalExperience;
+                    me.experienceProgress = player.experienceProgress;
+                    me.setScore(player.getScore());
+                }
+            }
+        }
     }
 }

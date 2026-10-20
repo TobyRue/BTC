@@ -39,13 +39,15 @@ public class ModBlocks {
             throw new RuntimeException("Dear Tobin, you royally fucked up. Rename the duplicate block '" + name + "' because the registry does not check these things itself.");
         }
         BLOCK_IDENTIFIERS.add(id);
+
+        Block registeredBlock = Registry.register(Registries.BLOCK, id, block);
+
         if (shouldRegisterItem) {
-            BlockItem blockItem = new BlockItem(block, new Item.Settings());
+            BlockItem blockItem = new BlockItem(registeredBlock, new Item.Settings());
             Registry.register(Registries.ITEM, id, blockItem);
         }
-        return Registry.register(Registries.BLOCK, id, block);
+        return registeredBlock;
     }
-
 
     public static final Block TOXIC_SLUDGE = Registry.register(
             Registries.BLOCK,
@@ -54,7 +56,7 @@ public class ModBlocks {
     );
 
     public static final Block BUTTER = register(
-            new EffectLayerBlock(AbstractBlock.Settings.create(), new StatusEffectInstance(ModStatusEffects.ACCELERATION, 20, 1, true, true), ModItems.BUTTER),
+            new EffectLayerBlock(AbstractBlock.Settings.create(), new StatusEffectInstance(ModStatusEffects.ACCELERATION, 20, 1, true, true), () -> ModItems.BUTTER),
             "butter",
             false
     );
@@ -265,6 +267,12 @@ public class ModBlocks {
     public static final Block TRIAL_CORE = register(
             new TrialCoreBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).instrument(NoteBlockInstrument.CHIME)),
             "trial_core",
+            true
+    );
+
+    public static final Block TRIAL_SHROUD = register(
+            new TrialShroudBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+            "trial_shroud",
             true
     );
 

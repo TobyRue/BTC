@@ -37,10 +37,13 @@ public class StructureCoreBlock extends Block implements ModBlockEntityProvider<
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient && player.isCreativeLevelTwoOp()) {
-            openClientScreen(world, pos);
+        if (player.isCreative() && player.hasPermissionLevel(2)) {
+            if (world.isClient) {
+                openClientScreen(world, pos);
+            }
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 
     @Environment(EnvType.CLIENT)

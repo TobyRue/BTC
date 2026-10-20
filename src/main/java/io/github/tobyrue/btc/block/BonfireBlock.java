@@ -1,31 +1,20 @@
 package io.github.tobyrue.btc.block;
 
 import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
-import io.github.tobyrue.btc.mixin.EntityAccessor;
+import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.packets.BonfireSyncPayload;
-import io.github.tobyrue.btc.packets.ModClientPackets;
-import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.command.FunctionCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -33,7 +22,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BonfireBlock extends Block implements BlockEntityProvider {
+public class BonfireBlock extends Block implements ModBlockEntityProvider<BonfireBlockEntity> {
 
     private static final VoxelShape SHAPE =  VoxelShapes.union(
             VoxelShapes.cuboid(0.75, 0, 0.375, 0.9375, 0.125, 0.5),
@@ -147,7 +136,7 @@ public class BonfireBlock extends Block implements BlockEntityProvider {
             NbtCompound newData = new NbtCompound();
             newData.putLong("pos", pos.asLong());
             newData.putString("dim", world.getRegistryKey().getValue().toString());
-            data.bTC$setBonfireData(newData);
+            data.btc$setBonfireData(newData);
             BonfireSyncPayload payload = new BonfireSyncPayload(newData);
 
             ServerPlayNetworking.send(serverPlayer, payload);
@@ -156,8 +145,9 @@ public class BonfireBlock extends Block implements BlockEntityProvider {
         }
         return ActionResult.SUCCESS;
     }
+
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BonfireBlockEntity(pos, state);
+    public BlockEntityType<BonfireBlockEntity> getBlockEntityType() {
+        return ModBlockEntities.BONFIRE_BLOCK_ENTITY;
     }
 }

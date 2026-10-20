@@ -37,7 +37,10 @@ public class ModBlockEntities {
     public static BlockEntityType<FancyPotBlockEntity> FANCY_BLUE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("fancy_blue_pot"), BlockEntityType.Builder.create(FancyPotBlockEntity::new, ModBlocks.FANCY_BLUE_POT).build());
     public static BlockEntityType<SpyGlassBlockEntity> SPY_GLASS_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("spy_glass_block"), BlockEntityType.Builder.create(SpyGlassBlockEntity::new, ModBlocks.SPY_GLASS_BLOCK).build());
     public static BlockEntityType<RedstoneBridgeBlockEntity> REDSTONE_BRIDGE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("redstone_bridge"), BlockEntityType.Builder.create(RedstoneBridgeBlockEntity::new, ModBlocks.REDSTONE_BRIDGE).build());
+    //TODO v
     public static BlockEntityType<ScrollTableBlockEntity> SCROLL_TABLE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("scroll_table"), BlockEntityType.Builder.create(ScrollTableBlockEntity::new, ModBlocks.SCROLL_TABLE).build());
+
+    public static BlockEntityType<TrialShroudBlockEntity> TRIAL_SHROUD_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("trial_shroud"), BlockEntityType.Builder.create(TrialShroudBlockEntity::new, ModBlocks.TRIAL_SHROUD).build());
     public static void initialize() {
     }
 }

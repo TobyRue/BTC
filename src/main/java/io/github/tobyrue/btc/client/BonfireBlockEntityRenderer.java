@@ -1,15 +1,12 @@
 package io.github.tobyrue.btc.client;
 
 import io.github.tobyrue.btc.block.entities.BonfireBlockEntity;
-import io.github.tobyrue.btc.block.entities.PedestalBlockEntity;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.util.BonfirePlayerData;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -29,7 +26,7 @@ public class BonfireBlockEntityRenderer implements BlockEntityRenderer<BonfireBl
         var localPlayer = MinecraftClient.getInstance().player;
         if (localPlayer == null) return;
 
-        NbtCompound bonfireData = ((BonfirePlayerData) localPlayer).bTC$getBonfireData();
+        NbtCompound bonfireData = ((BonfirePlayerData) localPlayer).btc$getBonfireData();
 
         if (bonfireData != null && bonfireData.contains("pos")) {
             BlockPos savedPos = BlockPos.fromLong(bonfireData.getLong("pos"));

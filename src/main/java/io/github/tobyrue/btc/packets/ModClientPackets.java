@@ -55,7 +55,7 @@ public class ModClientPackets {
             var client = context.client();
             client.execute(() -> {
                 if (client.player instanceof BonfirePlayerData data) {
-                    data.bTC$setBonfireData(nbt);
+                    data.btc$setBonfireData(nbt);
                 }
             });
         });
