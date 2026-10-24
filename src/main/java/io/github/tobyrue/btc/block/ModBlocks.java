@@ -271,7 +271,7 @@ public class ModBlocks {
     );
 
     public static final Block TRIAL_SHROUD = register(
-            new TrialShroudBlock(AbstractBlock.Settings.create().strength(1000000.0F, 3600000.0F)),
+            new TrialShroudBlock(AbstractBlock.Settings.create().nonOpaque().strength(1000000.0F, 3600000.0F)),
             "trial_shroud",
             true
     );

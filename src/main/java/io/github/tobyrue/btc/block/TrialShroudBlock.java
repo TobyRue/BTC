@@ -3,10 +3,7 @@ package io.github.tobyrue.btc.block;
 import io.github.tobyrue.btc.block.entities.*;
 import io.github.tobyrue.btc.misc.CornerStorage;
 import io.github.tobyrue.btc.regestries.ModComponents;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.block.SlabBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,6 +21,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class TrialShroudBlock extends Block implements CornerStorage, ModBlockEntityProvider<TrialShroudBlockEntity>, ModTickBlockEntityProvider<TrialShroudBlockEntity> {
@@ -34,6 +33,7 @@ public class TrialShroudBlock extends Block implements CornerStorage, ModBlockEn
      * This is used to detect if the BlockBox needs to be mirrored, this is done by returning a new distance array with the opposite axis it was mirrored on with the same numbers but negative.
      */
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
+    protected static final VoxelShape SHAPE = Block.createCuboidShape((double)0.0F, (double)0.0F, (double)0.0F, (double)16.0F, (double)1.0F, (double)16.0F);
 
 
     public TrialShroudBlock(Settings settings) {
@@ -42,7 +42,15 @@ public class TrialShroudBlock extends Block implements CornerStorage, ModBlockEn
                 this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE));
     }
 
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
+    }
 
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
+    }
+    
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
