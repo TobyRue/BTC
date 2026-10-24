@@ -1,16 +1,10 @@
 package io.github.tobyrue.btc.block;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.ItemPedestalBlockEntity;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import io.github.tobyrue.btc.wires.IOnBlockUpdate;
-import io.github.tobyrue.btc.wires.circuit.FPGABlockEntity;
-import io.github.tobyrue.rsl.BitString;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;

@@ -85,7 +85,14 @@ jar {
         rename { "${it}_${project.archives_base_name}"}
     }
 }
-
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+            srcDirs 'RHDL/src'
+        }
+    }
+}
 // configure the maven publication
 publishing {
     publications {

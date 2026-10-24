@@ -1,0 +1,3 @@
+[submodule "RHDL"]
+	path = RHDL
+	url = https://github.com/SianaBeeblebrox/RHDL

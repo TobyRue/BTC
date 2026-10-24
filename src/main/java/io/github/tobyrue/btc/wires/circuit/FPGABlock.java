@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, IDungeonWire, IWireConnectionHelper {
+public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity> /*, IDungeonWire, IWireConnectionHelper*/ {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
@@ -70,55 +70,23 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
-            if (fpga.hasBook()) {
-                if (!world.isClient) {
-                    ItemStack book = fpga.removeBook();
-                    if (!player.getInventory().insertStack(book)) {
-                        player.dropItem(book, false);
-                    }
-                }
-                return ItemActionResult.SUCCESS;
-            } else if (stack.isOf(Items.WRITABLE_BOOK) || stack.isOf(Items.WRITTEN_BOOK)) {
-                if (!world.isClient) {
-                    fpga.setBook(stack.split(1));
-                }
-                return ItemActionResult.SUCCESS;
-            }
+            return fpga.onUseWithItem(stack, state, world, pos, player, hand, hit);
         }
         return ItemActionResult.FAIL;
     }
 
     @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && fpga.hasBook()) {
-                ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), fpga.removeBook());
-            }
-            super.onStateReplaced(state, world, pos, newState, moved);
-        } else {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
-                fpga.forceLogicRecomputation();
-            }
-        }
+
     }
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        if (world.isClient) return;
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
-            fpga.updateCircuitLogic();
-        }
+
     }
 
     @Override
     protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
-            Direction checkSide = direction.getOpposite();
-            if (fpga.getConnection(checkSide, (World) world, state, pos) == WireBlock.ConnectionType.REDSTONE_OUTPUT
-                    && fpga.getOutputPowerState(checkSide)) {
-                return 15;
-            }
-        }
         return 0;
     }
 
@@ -127,7 +95,7 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
         return true;
     }
 
-    @Override
+    /*@Override
     public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
         return world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && fpga.isEmittingDungeonWirePower(state, world, pos, face);
     }
@@ -161,5 +129,7 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
             return fpga.getConnections(world, state, pos);
         }
         return Map.of();
-    }
+    }*/
+
+
 }
