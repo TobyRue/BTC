@@ -3,9 +3,6 @@ package io.github.tobyrue.btc.wires.circuit;
 import com.mojang.serialization.Codec;
 import io.github.sianabeeblebrox.rhdl.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
-import io.github.tobyrue.btc.wires.IDungeonWire;
-import io.github.tobyrue.btc.wires.WireBlock;
-import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -13,9 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
@@ -31,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWireConnectionHelper */ {
@@ -52,8 +45,17 @@ public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWir
                     map -> map
             );
 
+    private State.ValueBackedState event = null;
     private Script script;
     private ItemStack bookStack = ItemStack.EMPTY;
+
+    public enum Event {
+        INITIALIZE,
+        TICK,
+        RANDOM_TICK,
+        UPDATE;
+    }
+
 
     public FPGABlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DUNGEON_WIRE_CIRCUIT_BLOCK_ENTITY, pos, state);
@@ -63,7 +65,7 @@ public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWir
         if (player.getMainHandStack().isOf(Items.WRITABLE_BOOK) && player.isCreativeLevelTwoOp()) {
             try {
                 this.bookStack = stack;
-                this.script = RHDL.parse(extractScriptFromBook(bookStack), State::create, ScriptFunction.builtins(), Map.of());
+                this.script = RHDL.parse(extractScriptFromBook(bookStack), this::create, ScriptFunction.builtins(), Map.of());
                 System.out.println(script.evaluate());
                 System.out.println(script.getStates().entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), ((State.ValueBackedState) entry.getValue()).get())).collect(Collectors.joining("\n")));
                 return ItemActionResult.SUCCESS;
@@ -116,18 +118,29 @@ public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWir
         return Direction.fromHorizontal(horizontalOffset);
     }
 
+    private void triggerEvent(Event event) {
+        if (this.event != null && this.script != null) {
+            var eventCount = Event.values().length;
+            var mask = BitString.zero(eventCount);
+            this.event.set(BitString.zero(eventCount));
+            script.evaluate();
+            mask.set(event.ordinal());
+            this.event.set(mask);
+            script.evaluate();
+        }
+    }
 
-    static State create(final String name, final State.Type type, final Map<String, Object> layout) {
+    private State create(final String name, final State.Type type, final Map<String, Object> layout) {
         if (name.equals("event")) {
             if (type != State.Type.IN || !layout.isEmpty()) {
                 throw new ScriptException();
             }
-            return create(name, type, Map.of("size", 4));
+            return event = (State.ValueBackedState) create(name, type, Map.of("size", Event.values().length));
         } else {
             return create(name, type, layout);
         }
     }
-`
+
 
     @Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
