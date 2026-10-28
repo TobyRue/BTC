@@ -2,6 +2,8 @@ package io.github.tobyrue.btc.wires.circuit;
 
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
+import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
+import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
@@ -26,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity> /*, IDungeonWire, IWireConnectionHelper*/ {
+public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, ModTickBlockEntityProvider<FPGABlockEntity> /*, IDungeonWire, IWireConnectionHelper*/ {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);

@@ -3,31 +3,37 @@ package io.github.tobyrue.btc.wires.circuit;
 import com.mojang.serialization.Codec;
 import io.github.sianabeeblebrox.rhdl.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWireConnectionHelper */ {
+public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FPGABlockEntity> /* IDungeonWire, IWireConnectionHelper */ {
 
 
     public static final Codec<BitString> BIT_STRING_CODEC =
@@ -45,16 +51,11 @@ public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWir
                     map -> map
             );
 
+    public static final Codec<List<BitString>> BIT_STRING_LIST_CODEC = BIT_STRING_CODEC.listOf();
+
     private State.ValueBackedState event = null;
     private Script script;
     private ItemStack bookStack = ItemStack.EMPTY;
-
-    public enum Event {
-        INITIALIZE,
-        TICK,
-        RANDOM_TICK,
-        UPDATE;
-    }
 
 
     public FPGABlockEntity(BlockPos pos, BlockState state) {
@@ -62,18 +63,29 @@ public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWir
     }
 
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (player.getMainHandStack().isOf(Items.WRITABLE_BOOK) && player.isCreativeLevelTwoOp()) {
-            try {
-                this.bookStack = stack;
-                this.script = RHDL.parse(extractScriptFromBook(bookStack), this::create, ScriptFunction.builtins(), Map.of());
-                System.out.println(script.evaluate());
-                System.out.println(script.getStates().entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), ((State.ValueBackedState) entry.getValue()).get())).collect(Collectors.joining("\n")));
+        if (player.isCreativeLevelTwoOp()) {
+            if (loadScript(stack) instanceof final ScriptException scriptException) {
+                player.sendMessage(Text.literal(scriptException.getMessage()).formatted(Formatting.RED));
+                return ItemActionResult.FAIL;
+            } else {
                 return ItemActionResult.SUCCESS;
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
             }
         }
         return ItemActionResult.FAIL;
+    }
+
+    private @Nullable ScriptException loadScript(final ItemStack stack) {
+        if (stack.isOf(Items.WRITABLE_BOOK)) {
+            try {
+                this.bookStack = stack;
+                this.script = RHDL.parse(extractScriptFromBook(bookStack), State::create, ScriptFunction.builtins(), Map.of());
+                return null;
+            } catch (ScriptException throwable) {
+                throwable.printStackTrace();
+                return throwable;
+            }
+        }
+        return null;
     }
 
     private static String extractScriptFromBook(ItemStack bookStack) {
@@ -118,41 +130,61 @@ public class FPGABlockEntity extends BlockEntity /*implements IDungeonWire, IWir
         return Direction.fromHorizontal(horizontalOffset);
     }
 
-    private void triggerEvent(Event event) {
-        if (this.event != null && this.script != null) {
-            var eventCount = Event.values().length;
-            var mask = BitString.zero(eventCount);
-            this.event.set(BitString.zero(eventCount));
-            script.evaluate();
-            mask.set(event.ordinal());
-            this.event.set(mask);
-            script.evaluate();
+    @Override
+    public void tick(World world, BlockPos pos, BlockState state, FPGABlockEntity blockEntity) {
+        if (this.script != null && !world.isClient) {
+            this.script.evaluate();
         }
     }
-
-    private State create(final String name, final State.Type type, final Map<String, Object> layout) {
-        if (name.equals("event")) {
-            if (type != State.Type.IN || !layout.isEmpty()) {
-                throw new ScriptException();
-            }
-            return event = (State.ValueBackedState) create(name, type, Map.of("size", Event.values().length));
-        } else {
-            return create(name, type, layout);
-        }
-    }
-
 
     @Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-
+        if (!this.bookStack.isEmpty()) nbt.put("Stack", this.bookStack.encode(registryLookup));
+        if (script != null) {
+            var encodedStates = BIT_STRING_MAP_CODEC.encodeStart(NbtOps.INSTANCE, script.getStates().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> ((State.ValueBackedState) entry.getValue()).get(), (p, n) -> n, HashMap::new)));
+            if (encodedStates.result().isPresent()) {
+                nbt.put("States", encodedStates.result().get());
+            }
+            var encodedPreviousState = BIT_STRING_LIST_CODEC.encodeStart(NbtOps.INSTANCE, script.getPreviousState());
+            if (encodedPreviousState.result().isPresent()) {
+                nbt.put("Previous", encodedPreviousState.result().get());
+            }
+        }
     }
 
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
+        if (nbt.contains("Stack")) loadScript(ItemStack.fromNbt(registryLookup, nbt.getCompound("Stack")).orElse(ItemStack.EMPTY));
+        if (script != null) {
+            if (nbt.contains("States")) {
+                var decodeStates = BIT_STRING_MAP_CODEC.decode(NbtOps.INSTANCE, nbt.get("States"));
+                if (decodeStates.result().isPresent()) {
+                    decodeStates.result().get().getFirst().forEach((key, value) -> {
+                        try {
+                            if (script.getState(key) instanceof final State.ValueBackedState state) {
+                                state.set(value);
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    });
+                }
+            }
+            if (nbt.contains("Previous")) {
+                var decodeStates = BIT_STRING_LIST_CODEC.decode(NbtOps.INSTANCE, nbt.get("Previous"));
+                if (decodeStates.result().isPresent()) {
+                    var list = decodeStates.result().get().getFirst();
+                    if (list.size() == script.getPreviousState().size()) {
+                        script.getPreviousState().clear();
+                        script.getPreviousState().addAll(list);
+                    }
+                }
+            }
+        }
 
     }
+
 
     /*@Override public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) { return false; }
     @Override public WireBlock.ConnectionType cycleConnection(Direction face, World world, BlockState state, BlockPos pos) { return null; }
