@@ -5,6 +5,7 @@ import io.github.sianabeeblebrox.rhdl.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.component.DataComponentTypes;
@@ -16,10 +17,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -51,12 +49,26 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
                     map -> map
             );
 
+    public static final Codec<HashMap<Direction, String>> FACE_MAP_CODEC =
+            Codec.unboundedMap(
+                    Direction.CODEC,
+                    Codec.STRING
+            ).xmap(
+                    HashMap::new,
+                    map -> map
+            );
+
     public static final Codec<List<BitString>> BIT_STRING_LIST_CODEC = BIT_STRING_CODEC.listOf();
 
     private State.ValueBackedState event = null;
     private Script script;
     private ItemStack bookStack = ItemStack.EMPTY;
 
+    public void setFace(Direction direction, String state) {
+        this.faces.put(direction, state);
+    }
+
+    private HashMap<Direction, String> faces = HashMap.newHashMap(6);
 
     public FPGABlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DUNGEON_WIRE_CIRCUIT_BLOCK_ENTITY, pos, state);
@@ -66,12 +78,26 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
         if (player.isCreativeLevelTwoOp()) {
             if (loadScript(stack) instanceof final ScriptException scriptException) {
                 player.sendMessage(Text.literal(scriptException.getMessage()).formatted(Formatting.RED));
-                return ItemActionResult.FAIL;
+                return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             } else {
                 return ItemActionResult.SUCCESS;
             }
         }
-        return ItemActionResult.FAIL;
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    public List<String> getStateNames() {
+        return this.script != null ? this.script.getStates().keySet().stream().toList() : List.of();
+    }
+
+    public static State.Type getType(final State state) {
+        if (state instanceof State.ReadableState && state instanceof State.WritableState) {
+            return State.Type.STATE;
+        } else if (state instanceof State.ReadableState) {
+            return State.Type.IN;
+        } else {
+            return State.Type.OUT;
+        }
     }
 
     private @Nullable ScriptException loadScript(final ItemStack stack) {
@@ -151,6 +177,7 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
                 nbt.put("Previous", encodedPreviousState.result().get());
             }
         }
+        nbt.put("Faces", FACE_MAP_CODEC.encodeStart(NbtOps.INSTANCE, this.faces).result().get());
     }
 
     @Override
@@ -182,7 +209,11 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
                 }
             }
         }
-
+        if (nbt.contains("Faces")) {
+            this.faces = FACE_MAP_CODEC.decode(NbtOps.INSTANCE, nbt.get("Faces")).result().get().getFirst();
+        } else {
+            this.faces = HashMap.newHashMap(6);
+        }
     }
 
 

@@ -4,6 +4,7 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
+import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
@@ -32,6 +33,7 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
+    private int index = 0;
 
     public FPGABlock(Settings settings) {
         super(settings);
@@ -70,11 +72,28 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     }
 
     @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        System.out.println("Hi?");
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && player.isCreativeLevelTwoOp()) {
+            System.out.println("Hi?2");
+            if (!world.isClient) {
+                String face = fpga.getStateNames().get(index % fpga.getStateNames().size());
+                System.out.println(player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide());
+                System.out.println(face);
+                index++;
+                fpga.setFace(player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide(), face);
+            }
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.SUCCESS;
+    }
+
+    @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga) {
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && !world.isClient) {
             return fpga.onUseWithItem(stack, state, world, pos, player, hand, hit);
         }
-        return ItemActionResult.FAIL;
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Override
