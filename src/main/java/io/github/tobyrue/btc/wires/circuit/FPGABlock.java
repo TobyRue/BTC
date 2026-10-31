@@ -19,6 +19,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, ModTickBlockEntityProvider<FPGABlockEntity> /*, IDungeonWire, IWireConnectionHelper*/ {
+public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, ModTickBlockEntityProvider<FPGABlockEntity>, IDungeonWire /*, , IWireConnectionHelper*/ {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
@@ -73,16 +74,11 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        System.out.println("Hi?");
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && player.isCreativeLevelTwoOp()) {
-            System.out.println("Hi?2");
-            if (!world.isClient) {
-                String face = fpga.getStateNames().get(index % fpga.getStateNames().size());
-                System.out.println(player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide());
-                System.out.println(face);
-                index++;
-                fpga.setFace(player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide(), face);
-            }
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && player.isCreativeLevelTwoOp() && !fpga.getStateNames().isEmpty()) {
+            String face = fpga.getStateNames().get(index % fpga.getStateNames().size());
+            player.sendMessage(Text.translatable("block.btc.fpga_wire.set_face", Text.translatable("block.btc.wire.face." + (player.isSneaking() ? hit.getSide().getOpposite().asString() : hit.getSide().asString())), face), true);
+            index++;
+            fpga.setFace(player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide(), face);
             return ActionResult.SUCCESS;
         }
         return ActionResult.SUCCESS;
@@ -91,9 +87,9 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && !world.isClient) {
-            return fpga.onUseWithItem(stack, state, world, pos, player, hand, hit);
+            fpga.onUseWithItem(stack, state, world, pos, player, hand, hit);
         }
-        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -114,6 +110,22 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     @Override
     protected boolean emitsRedstonePower(BlockState state) {
         return true;
+    }
+
+    @Override
+    public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpgaBlockEntity) {
+            return fpgaBlockEntity.isEmittingDungeonWirePower(state, world, pos, face);
+        }
+        return false;
+    }
+
+    @Override
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpgaBlockEntity) {
+            return fpgaBlockEntity.getStrongRedstonePower(state, world, pos, direction);
+        }
+        return super.getStrongRedstonePower(state, world, pos, direction);
     }
 
     /*@Override

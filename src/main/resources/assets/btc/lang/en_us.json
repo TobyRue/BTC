@@ -84,6 +84,8 @@
   "block.btc.corn_stalk": "Corn Stalk",
   "block.btc.butter": "Butter",
   "block.btc.trial_shroud": "Trial Shroud",
+  "block.btc.fpga_wire": "FPGA Circuit",
+  "block.btc.fpga_wire.set_face": "Set Face '%s' to '%s'",
 
   "container.btc.spell_inventory": "Spell Inventory",
   "hud.btc.cancel.crouch": "Crouch",

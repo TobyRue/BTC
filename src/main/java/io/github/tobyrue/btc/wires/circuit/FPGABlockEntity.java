@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import io.github.sianabeeblebrox.rhdl.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
+import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -21,17 +22,16 @@ import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FPGABlockEntity> /* IDungeonWire, IWireConnectionHelper */ {
+public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FPGABlockEntity>, IDungeonWire /* , IWireConnectionHelper */ {
 
 
     public static final Codec<BitString> BIT_STRING_CODEC =
@@ -60,12 +60,25 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
 
     public static final Codec<List<BitString>> BIT_STRING_LIST_CODEC = BIT_STRING_CODEC.listOf();
 
-    private State.ValueBackedState event = null;
     private Script script;
     private ItemStack bookStack = ItemStack.EMPTY;
 
     public void setFace(Direction direction, String state) {
         this.faces.put(direction, state);
+        this.markDirty();
+    }
+
+
+    public @Nullable State getState(Direction direction) {
+        return Optional.ofNullable(faces.get(direction)).map(script::getState).orElse(null);
+    }
+
+    public @Nullable State.Type getFaceType(Direction direction) {
+        if (getState(direction) instanceof final State.ValueBackedState state) {
+            return state.getType();
+        } else {
+            return null;
+        }
     }
 
     private HashMap<Direction, String> faces = HashMap.newHashMap(6);
@@ -80,6 +93,7 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
                 player.sendMessage(Text.literal(scriptException.getMessage()).formatted(Formatting.RED));
                 return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             } else {
+                this.markDirty();
                 return ItemActionResult.SUCCESS;
             }
         }
@@ -90,18 +104,8 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
         return this.script != null ? this.script.getStates().keySet().stream().toList() : List.of();
     }
 
-    public static State.Type getType(final State state) {
-        if (state instanceof State.ReadableState && state instanceof State.WritableState) {
-            return State.Type.STATE;
-        } else if (state instanceof State.ReadableState) {
-            return State.Type.IN;
-        } else {
-            return State.Type.OUT;
-        }
-    }
-
     private @Nullable ScriptException loadScript(final ItemStack stack) {
-        if (stack.isOf(Items.WRITABLE_BOOK)) {
+        if (stack.isOf(Items.WRITABLE_BOOK) || stack.isOf(Items.WRITTEN_BOOK)) {
             try {
                 this.bookStack = stack;
                 this.script = RHDL.parse(extractScriptFromBook(bookStack), State::create, ScriptFunction.builtins(), Map.of());
@@ -153,6 +157,7 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
 
         Direction mirrored = mirror.apply(baseDir);
         int horizontalOffset = (mirrored.getHorizontal() + facing.getHorizontal()) % 4;
+        //TODO needs mark dirty?
         return Direction.fromHorizontal(horizontalOffset);
     }
 
@@ -160,8 +165,76 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
     public void tick(World world, BlockPos pos, BlockState state, FPGABlockEntity blockEntity) {
         if (this.script != null && !world.isClient) {
             this.script.evaluate();
+            for (Direction direction : Direction.values()) {
+                if (getFaceType(direction) == State.Type.IN && getState(direction) instanceof State.ValueBackedState valueState) {
+                    if (valueState.size() == 1) {
+                        valueState.set(IDungeonWire.isReceivingDungeonWirePower(state, world, pos, direction) ? BitString.one() : BitString.zero());
+                    } else if (valueState.size() == 4) {
+                        int power = world.getEmittedRedstonePower(pos.offset(direction), direction.getOpposite());
+                        final BitString value = getBitString(power);
+                        valueState.set(value);
+                    }
+                }
+            }
         }
     }
+
+    @Override
+    public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) {
+        if (this.script != null && !world.isClient) {
+            if (getFaceType(face) == State.Type.OUT && getState(face) instanceof State.ValueBackedState valueState) {
+                if (valueState.size() == 1) {
+                    return !valueState.get().isEmpty();
+                }
+            }
+        }
+        return false;
+    }
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction face) {
+        if (this.script != null) {
+            if (getFaceType(face) == State.Type.OUT && getState(face) instanceof State.ValueBackedState valueState) {
+                if (valueState.size() == 4) {
+                    return getPower(valueState.get());
+                }
+            }
+        }
+        return 0;
+    }
+
+    private static @NotNull int getPower(final BitString bitString) {
+        int value = 0;
+        if (bitString.get(0)) {
+            value |= 0b0001;
+        }
+        if (bitString.get(1)) {
+            value |= 0b0010;
+        }
+        if (bitString.get(2)) {
+            value |= 0b0100;
+        }
+        if (bitString.get(3)) {
+            value |= 0b1000;
+        }
+        return value;
+    }
+
+    private static @NotNull BitString getBitString(int power) {
+        final BitString value = new BitString(4);
+        if ((power & 0b0001) != 0) {
+            value.set(0);
+        }
+        if ((power & 0b0010) != 0) {
+            value.set(1);
+        }
+        if ((power & 0b0100) != 0) {
+            value.set(2);
+        }
+        if ((power & 0b1000) != 0) {
+            value.set(3);
+        }
+        return value;
+    }
+
 
     @Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
@@ -215,6 +288,8 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
             this.faces = HashMap.newHashMap(6);
         }
     }
+
+
 
 
     /*@Override public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) { return false; }
