@@ -3,18 +3,12 @@ package io.github.tobyrue.btc.wires.circuit;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
 import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
-import io.github.tobyrue.btc.block.entities.OminousBeaconBlockEntity;
-import io.github.tobyrue.btc.util.EnumHelper;
 import io.github.tobyrue.btc.wires.IDungeonWire;
-import io.github.tobyrue.btc.wires.WireBlock;
-import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -27,8 +21,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, ModTickBlockEntityProvider<FPGABlockEntity>, IDungeonWire /*, , IWireConnectionHelper*/ {
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
@@ -63,7 +55,7 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
 
     @Override
     public BlockEntityType<FPGABlockEntity> getBlockEntityType() {
-        return ModBlockEntities.DUNGEON_WIRE_CIRCUIT_BLOCK_ENTITY;
+        return ModBlockEntities.FPGA_BLOCK_ENTITY;
     }
 
     @Override
@@ -74,7 +66,7 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && player.isCreativeLevelTwoOp() && !fpga.getStateNames().isEmpty()) {
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && player.isCreativeLevelTwoOp() && !fpga.getStateNames().isEmpty() && !world.isClient) {
             String face = fpga.getStateNames().get(index % fpga.getStateNames().size());
             player.sendMessage(Text.translatable("block.btc.fpga_wire.set_face", Text.translatable("block.btc.wire.face." + (player.isSneaking() ? hit.getSide().getOpposite().asString() : hit.getSide().asString())), face), true);
             index++;
@@ -104,6 +96,17 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
 
     @Override
     protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpgaBlockEntity) {
+            return fpgaBlockEntity.getWeakRedstonePower(state, world, pos, direction.getOpposite());
+        }
+        return 0;
+    }
+
+    @Override
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+//        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpgaBlockEntity) {
+//            return fpgaBlockEntity.getWeakRedstonePower(state, world, pos, direction.getOpposite());
+//        }
         return 0;
     }
 
@@ -118,14 +121,6 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
             return fpgaBlockEntity.isEmittingDungeonWirePower(state, world, pos, face);
         }
         return false;
-    }
-
-    @Override
-    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpgaBlockEntity) {
-            return fpgaBlockEntity.getStrongRedstonePower(state, world, pos, direction);
-        }
-        return super.getStrongRedstonePower(state, world, pos, direction);
     }
 
     /*@Override

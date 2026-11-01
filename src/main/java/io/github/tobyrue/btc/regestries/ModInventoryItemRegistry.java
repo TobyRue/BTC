@@ -50,7 +50,7 @@ public class ModInventoryItemRegistry {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(content -> {
             content.addAfter(Blocks.BEACON, ModBlocks.OMINOUS_BEACON, ModBlocks.OMINOUS_REFLECTOR, ModBlocks.OMINOUS_SPLITTER);
-            content.addAfter(Blocks.ENCHANTING_TABLE, ModBlocks.DUNGEON_WIRE,
+            content.addAfter(Blocks.ENCHANTING_TABLE, ModBlocks.DUNGEON_WIRE, ModBlocks.FPGA_BLOCK,
                     ModBlocks.PEDESTAL, ModBlocks.ITEM_PEDESTAL,
                     ModBlocks.KEY_ACCEPTOR, ModBlocks.POTION_PILLAR, ModBlocks.ANCIENT_POTION_PILLAR,
                     ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_FLAME,
@@ -73,7 +73,7 @@ public class ModInventoryItemRegistry {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> {
             content.addAfter(Items.REDSTONE_ORE, ModBlocks.ITEM_PEDESTAL,
-                    ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_WIRE,
+                    ModBlocks.DUNGEON_DOOR, ModBlocks.DUNGEON_WIRE, ModBlocks.FPGA_BLOCK,
                     ModBlocks.POWER_PILASTER, ModBlocks.POWER_PILLAR,
                     ModBlocks.ANCIENT_POWER_PILASTER, ModBlocks.ANCIENT_POWER_PILLAR,
                     ModBlocks.DUNGEON_BUTTON, ModBlocks.DUNGEON_PRESSURE_PLATE,

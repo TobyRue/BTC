@@ -2,7 +2,6 @@ package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.BTC;
 import io.github.tobyrue.btc.block.ModBlocks;
-import io.github.tobyrue.btc.block.entities.RedstoneBridgeBlockEntity;
 import io.github.tobyrue.btc.wires.WireBlockEntity;
 import io.github.tobyrue.btc.wires.circuit.FPGABlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -20,7 +19,7 @@ public class ModBlockEntities {
     public static BlockEntityType<MobDetectorBlockEntity> MOB_DETECTOR_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("mob_detector"), BlockEntityType.Builder.create(MobDetectorBlockEntity::new, ModBlocks.MOB_DETECTOR).build());
     public static BlockEntityType<ObsidianChestBlockEntity> OBSIDIAN_CHEST_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("obsidian_chest"), BlockEntityType.Builder.create(ObsidianChestBlockEntity::new, ModBlocks.OBSIDIAN_CHEST).build());
     public static BlockEntityType<WireBlockEntity> WIRE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("dungeoun_wire_block"), BlockEntityType.Builder.create(WireBlockEntity::new, ModBlocks.DUNGEON_WIRE).build());
-    public static BlockEntityType<FPGABlockEntity> DUNGEON_WIRE_CIRCUIT_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("dungeon_wire_circuit_block"), BlockEntityType.Builder.create(FPGABlockEntity::new, ModBlocks.FPGA_BLOCK).build());
+    public static BlockEntityType<FPGABlockEntity> FPGA_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("dungeon_wire_circuit_block"), BlockEntityType.Builder.create(FPGABlockEntity::new, ModBlocks.FPGA_BLOCK).build());
     public static BlockEntityType<BonfireBlockEntity> BONFIRE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("bonfire"), BlockEntityType.Builder.create(BonfireBlockEntity::new, ModBlocks.BONFIRE).build());
     public static BlockEntityType<TrialCoreBlockEntity> TRIAL_CORE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("trial_core"), BlockEntityType.Builder.create(TrialCoreBlockEntity::new, ModBlocks.TRIAL_CORE).build());
     public static BlockEntityType<StructureCoreBlockEntity> STRUCTURE_CORE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("structure_core"), BlockEntityType.Builder.create(StructureCoreBlockEntity::new, ModBlocks.STRUCTURE_CORE).build());

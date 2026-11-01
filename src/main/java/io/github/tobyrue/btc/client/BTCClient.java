@@ -26,6 +26,7 @@ import io.github.tobyrue.btc.util.ClientOreRadar;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
 import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.WireBlockEntityRenderer;
+import io.github.tobyrue.btc.wires.circuit.FPGABlockEntityRenderer;
 import io.github.tobyrue.rtc.RTC;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -534,6 +535,7 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_BEACON, RenderLayer.getCutoutMipped());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DUNGEON_WIRE, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FPGA_BLOCK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MELTING_ICE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BELLOW, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.COPPER_TRIAL_FAN, RenderLayer.getCutout());
@@ -624,6 +626,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.POTION_PILLAR_BLOCK_ENTITY, PotionPillarBlockRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.OBSIDIAN_CHEST_BLOCK_ENTITY, ObsidianChestRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.WIRE_BLOCK_ENTITY, WireBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.FPGA_BLOCK_ENTITY, FPGABlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.BONFIRE_BLOCK_ENTITY, BonfireBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SPY_GLASS_BLOCK_ENTITY, SpyGlassBlockEntityRenderer::new);
 
