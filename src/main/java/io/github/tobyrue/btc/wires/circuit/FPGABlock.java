@@ -23,7 +23,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, ModTickBlockEntityProvider<FPGABlockEntity>, IDungeonWire /*, , IWireConnectionHelper*/ {
-    public static final BooleanProperty POWERED = BooleanProperty.of("powered");
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
     private int index = 0;
@@ -31,7 +30,6 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     public FPGABlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState()
-                .with(POWERED, false)
                 .with(FACING, Direction.NORTH)
                 .with(MIRRORED, BlockMirror.NONE));
     }
@@ -61,7 +59,7 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
-        builder.add(POWERED, FACING, MIRRORED);
+        builder.add(FACING, MIRRORED);
     }
 
     @Override
@@ -82,16 +80,6 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
             fpga.onUseWithItem(stack, state, world, pos, player, hand, hit);
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-
-    }
-
-    @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-
     }
 
     @Override

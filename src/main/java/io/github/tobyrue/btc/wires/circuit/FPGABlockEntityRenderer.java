@@ -26,7 +26,7 @@ import org.joml.Matrix4f;
 public class FPGABlockEntityRenderer implements BlockEntityRenderer<FPGABlockEntity> {
 
     private static final SpriteIdentifier[] SPRITE_IDS = new SpriteIdentifier[]{
-            new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/reinforced_dungeon_block")),// 0
+            new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/fpga_base")),// 0
             new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_overlay")),            // 1
             new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection")),         // 2
             new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, BTC.identifierOf("block/wire_connection_overlay")), // 3
@@ -65,7 +65,7 @@ public class FPGABlockEntityRenderer implements BlockEntityRenderer<FPGABlockEnt
                         int white = 0xFFFFFFFF;
 
                         int powerLevel = FPGABlockEntity.getPower(valueBackedState.get());
-                        int powerRedstoneColor = mixColors(0xFF990000, 0xFFE50000, (float) powerLevel / 16);
+                        int powerRedstoneColor = mixColors(0xFF990000, 0xFFE50000, (float) powerLevel / 16.0f);
 
                         applyFaceRotation(matrices, direction);
 
@@ -89,47 +89,14 @@ public class FPGABlockEntityRenderer implements BlockEntityRenderer<FPGABlockEnt
                                 renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[11], white, overlay, getLayer(1), direction);
                             }
                         }
-//                    for (Direction connectionDir : Direction.values()) {
-//                        if (connectionDir.getAxis() == direction.getAxis()) continue;
-//                        State adjState = entity.getState(connectionDir);
-//
-//                        matrices.push();
-//                        matrices.translate(0.5, 0.5, 0);
-//                        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(getSubRotation(direction, connectionDir)));
-//                        matrices.translate(-0.5, -0.5, 0);
-//
-//                        if (adjState instanceof State.ValueBackedState adjValueBackedState && !adjValueBackedState.getName().equals("none")) {
-//                            if (adjValueBackedState.getType() == State.Type.IN) {
-//                                if (adjValueBackedState.size() == 1) {
-//                                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[4], white, overlay, getLayer(1), direction);
-//                                } else if (adjValueBackedState.size() == 4) {
-//                                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[5], white, overlay, getLayer(1), direction);
-//                                }
-//                            } else if (adjValueBackedState.getType() == State.Type.OUT) {
-//                                if (adjValueBackedState.size() == 1) {
-//                                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[12], white, overlay, getLayer(1), direction);
-//                                } else if (adjValueBackedState.size() == 4) {
-//                                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[13], white, overlay, getLayer(1), direction);
-//                                }
-//                            }
-//                        } else if (!valueBackedState.getName().equals("none")) {
-//                            renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[9], powerWireColor, overlay, getLayer(1), direction);
-//                        }
-//
-//                        matrices.pop();
-//                    }
                     }
                 } else {
                     applyFaceRotation(matrices, direction);
-
                     renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[0], 0xFFFFFFFF, overlay, getLayer(0), direction);
-                    renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[1], 0xFF990000, overlay, getLayer(1), direction);
                 }
             } else {
                 applyFaceRotation(matrices, direction);
-
                 renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[0], 0xFFFFFFFF, overlay, getLayer(0), direction);
-                renderFace(entity, matrices, vertexConsumers, SPRITE_IDS[1], 0xFF990000, overlay, getLayer(1), direction);
             }
 
             matrices.pop();

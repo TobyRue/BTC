@@ -1,6 +1,7 @@
 package io.github.tobyrue.btc.block.entities;
 
 import io.github.tobyrue.btc.block.TrialCoreBlock;
+import io.github.tobyrue.btc.wires.circuit.FPGABlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -49,23 +50,11 @@ public class TrialCoreBlockEntity extends BlockEntity {
             Direction facing = state.contains(TrialCoreBlock.FACING) ? state.get(TrialCoreBlock.FACING) : Direction.NORTH;
 
 
-            float yaw = switch (facing) {
-                case SOUTH -> 0.0F;
-                case WEST -> 90.0F;
-                case NORTH -> 180.0F;
-                case EAST -> 270.0F;
-                default -> 0.0F;
-            };
 
-            float pitch = switch (facing) {
-                case UP -> -90.0F;
-                case DOWN -> 90.0F;
-                default -> 0.0F;
-            };
             ServerCommandSource source = world.getServer().getCommandSource()
                     .withWorld(world)
                     .withPosition(Vec3d.ofCenter(pos))
-                    .withRotation(new Vec2f(pitch, yaw))
+                    .withRotation(FPGABlockEntity.getRotation(facing))
                     .withLevel(2)
                     .withSilent();
 

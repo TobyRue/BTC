@@ -5,8 +5,10 @@ import io.github.sianabeeblebrox.rhdl.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.wires.IDungeonWire;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -17,12 +19,16 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -126,12 +132,50 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
                         new ScriptFunction("excc", (script, args) -> {
                             if (args.size() == 1 && args.getFirst() instanceof String) {
                                 return 0;
+                            } else if (args.size() == 2 && args.getFirst() instanceof String && args.get(1) instanceof String) {
+                                return 0;
                             } else {
-                                throw new ScriptException("Function 'excc' expects a single string value");
+                                throw new ScriptException("Function 'excc' expects a single/dual string value");
                             }
                         }, (script, ctx, args) -> {
                             if (this.getWorld() != null && this.getWorld().getServer() != null) {
-                                this.getWorld().getServer().getCommandManager().executeWithPrefix(this.getWorld().getServer().getCommandSource(), (String) args.getFirst());
+                                if (args.size() == 2 && args.get(1) instanceof String stateName) {
+                                    State targetState = script.getState(stateName);
+                                    if (targetState != null) {
+                                        for (Map.Entry<Direction, String> entry : faces.entrySet()) {
+                                            Direction dir = entry.getKey();
+                                            if (entry.getValue().equals(stateName)) {
+                                                System.out.println("Dir: " + dir);
+                                                float yaw = dir.asRotation();
+                                                System.out.println("Yaw: " + yaw);
+
+                                                if (this.getWorld() instanceof ServerWorld serverWorld) {
+                                                    ServerCommandSource source = serverWorld.getServer().getCommandSource()
+                                                            .withWorld(serverWorld)
+                                                            .withPosition(Vec3d.ofCenter(pos))
+                                                            .withRotation(getRotation(dir))
+                                                            .withLevel(2)
+                                                            .withSilent();
+
+                                                    serverWorld.getServer().getCommandManager().executeWithPrefix(source, (String) args.getFirst());
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if (this.getWorld() instanceof ServerWorld serverWorld) {
+                                        ServerCommandSource source = serverWorld.getServer().getCommandSource()
+                                                .withWorld(serverWorld)
+                                                .withPosition(Vec3d.ofCenter(pos))
+                                                .withRotation(new Vec2f(-90, 0))
+                                                .withLevel(2)
+                                                .withSilent();
+
+                                        serverWorld.getServer().getCommandManager().executeWithPrefix(source, (String) args.getFirst());
+                                    }
+                                }
+
+
                             }
                             return BitString.zero(0);
                         })
@@ -144,6 +188,14 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
             }
         }
         return null;
+    }
+
+    public static Vec2f getRotation(Direction facing) {
+        return switch (facing) {
+            case DOWN -> new Vec2f(90, 0);
+            case UP -> new Vec2f(-90, 0);
+            default -> new Vec2f(0, facing.asRotation());
+        };
     }
 
     private static String extractScriptFromBook(ItemStack bookStack) {
@@ -194,45 +246,44 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
             if (!world.isClient) {
                 this.script.evaluate();
             }
+
+            boolean stateChanged = false;
             for (Direction direction : Direction.values()) {
                 if (getFaceType(direction) == State.Type.IN && getState(direction) instanceof State.ValueBackedState valueState) {
                     valueState.set(BitString.zero(valueState.size()));
-                    this.markDirty();
-                    if (!world.isClient) {
-                        world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-                    }
                 }
             }
             for (Direction direction : Direction.values()) {
                 if (getFaceType(direction) == State.Type.IN && getState(direction) instanceof State.ValueBackedState valueState) {
+                    BitString newValue;
                     if (valueState.size() == 1) {
-                        valueState.set(valueState.get().or(IDungeonWire.isReceivingDungeonWirePower(state, world, pos, direction) ? BitString.one() : BitString.zero()));
-                    } else if (valueState.size() == 4) {
+                        newValue = IDungeonWire.isReceivingDungeonWirePower(state, world, pos, direction) ? BitString.one() : BitString.zero();
+                    } else {
                         int power = world.getEmittedRedstonePower(pos.offset(direction), direction.getOpposite());
-                        final BitString value = getBitString(power);
-                        valueState.set(valueState.get().or(value));
+                        newValue = getBitString(power);
                     }
-                    this.markDirty();
-                    if (!world.isClient) {
-                        world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+
+                    if (!valueState.get().equals(newValue)) {
+                        valueState.set(valueState.get().or(newValue));
+                        stateChanged = true;
                     }
                 }
-                if (getFaceType(direction) == State.Type.OUT && getState(direction) instanceof State.ValueBackedState valueState) {
-                    int currentPower = 0;
+            }
 
-                    if (valueState.size() == 1) {
-                        currentPower = !valueState.get().isEmpty() ? 15 : 0;
-                    } else if (valueState.size() == 4) {
-                        currentPower = getPower(valueState.get());
-                    }
+            if (stateChanged) {
+                this.markDirty();
+                world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+            }
+
+            for (Direction direction : Direction.values()) {
+                if (getFaceType(direction) == State.Type.OUT && getState(direction) instanceof State.ValueBackedState valueState) {
+                    int currentPower = (valueState.size() == 1) ? (!valueState.get().isEmpty() ? 15 : 0) : getPower(valueState.get());
 
                     int previousPower = lastOutputPowers.getOrDefault(direction, -1);
                     if (previousPower != currentPower) {
                         lastOutputPowers.put(direction, currentPower);
-
                         BlockPos neighborPos = pos.offset(direction);
                         world.updateNeighbor(neighborPos, state.getBlock(), pos);
-
                     }
                 }
             }
@@ -359,9 +410,7 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return createNbt(registryLookup);
-    }
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) { return createNbt(registryLookup); }
 
 
     /*@Override public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) { return false; }

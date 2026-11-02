@@ -1,6 +1,6 @@
 {
 	"parent": "minecraft:builtin/entity",
 	"textures": {
-		"particle": "btc:block/reinforced_dungeon_block"
+		"particle": "btc:block/fpga_base"
 	}
 }
