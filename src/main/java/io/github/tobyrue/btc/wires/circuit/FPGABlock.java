@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlockEntity>, ModTickBlockEntityProvider<FPGABlockEntity>, IDungeonWire /*, , IWireConnectionHelper*/ {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final EnumProperty<BlockMirror> MIRRORED = EnumProperty.of("mirrored", BlockMirror.class);
-    private int index = 0;
 
     public FPGABlock(Settings settings) {
         super(settings);
@@ -64,14 +63,10 @@ public class FPGABlock extends Block implements ModBlockEntityProvider<FPGABlock
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && player.isCreativeLevelTwoOp() && !fpga.getStateNames().isEmpty() && !world.isClient) {
-            String face = fpga.getStateNames().get(index % fpga.getStateNames().size());
-            player.sendMessage(Text.translatable("block.btc.fpga_wire.set_face", Text.translatable("block.btc.wire.face." + (player.isSneaking() ? hit.getSide().getOpposite().asString() : hit.getSide().asString())), face), true);
-            index++;
-            fpga.setFace(player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide(), face);
-            return ActionResult.SUCCESS;
+        if (world.getBlockEntity(pos) instanceof FPGABlockEntity fpga && !world.isClient) {
+            return fpga.onUse(state, world, pos, player, hit);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.FAIL;
     }
 
     @Override

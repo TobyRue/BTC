@@ -66,6 +66,7 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
             );
 
     public static final Codec<List<BitString>> BIT_STRING_LIST_CODEC = BIT_STRING_CODEC.listOf();
+    private Map<Direction, Integer> perFaceIndex = HashMap.newHashMap(6);
 
     public Script getScript() {
         return script;
@@ -102,6 +103,31 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
         super(ModBlockEntities.FPGA_BLOCK_ENTITY, pos, state);
     }
 
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (player.isCreativeLevelTwoOp() && !getBlockApplicableStateNames().isEmpty()) {
+            Direction direction = player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide();
+            perFaceIndex.putIfAbsent(direction, getBlockApplicableStateNames().isEmpty() ? 0 : 1);
+            int numb = getFaceIndex(direction) % (getBlockApplicableStateNames().size() + 1);
+            System.out.println("Numb: " + numb);
+            if (numb == 0) {
+                faces.remove(direction);
+                setFaceIndex(direction, 0);
+                player.sendMessage(Text.translatable("block.btc.fpga_wire.set_face", Text.translatable("block.btc.wire.face." + (player.isSneaking() ? hit.getSide().getOpposite().asString() : hit.getSide().asString())), "null"), true);
+                this.markDirty();
+                if (world != null) {
+                    world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+                }
+            } else {
+                String face = getBlockApplicableStateNames().get(numb - 1);
+                player.sendMessage(Text.translatable("block.btc.fpga_wire.set_face", Text.translatable("block.btc.wire.face." + (player.isSneaking() ? hit.getSide().getOpposite().asString() : hit.getSide().asString())), face), true);
+                setFace(direction, face);
+            }
+            setFaceIndex(direction, getFaceIndex(direction) + 1);
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.FAIL;
+    }
+
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.isCreativeLevelTwoOp()) {
             if (loadScript(stack) instanceof final ScriptException scriptException) {
@@ -120,6 +146,9 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
 
     public List<String> getStateNames() {
         return this.script != null ? this.script.getStates().keySet().stream().toList() : List.of();
+    }
+    public List<String> getBlockApplicableStateNames() {
+        return this.script != null ? this.script.getStates().entrySet().stream().flatMap(entry -> entry.getValue() instanceof State.ValueBackedState state && state.getType() != State.Type.STATE ? Stream.of(state.getName()) : Stream.empty()).toList(): List.of();
     }
 
     private @Nullable ScriptException loadScript(final ItemStack stack) {
@@ -411,6 +440,14 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
 
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) { return createNbt(registryLookup); }
+
+    public Integer getFaceIndex(Direction dir) {
+        return perFaceIndex.get(dir);
+    }
+
+    public void setFaceIndex(Direction dir, Integer index) {
+        this.perFaceIndex.put(dir, index);
+    }
 
 
     /*@Override public boolean isEmittingDungeonWirePower(BlockState state, World world, BlockPos pos, Direction face) { return false; }
