@@ -96,6 +96,13 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         this.markDirty();
     }
 
+    private BlockRotation getRotationBetween(Direction oldDir, Direction newDir) {
+        if (oldDir == newDir) return BlockRotation.NONE;
+        if (oldDir.rotateYClockwise() == newDir) return BlockRotation.CLOCKWISE_90;
+        if (oldDir.getOpposite() == newDir) return BlockRotation.CLOCKWISE_180;
+        return BlockRotation.COUNTERCLOCKWISE_90;
+    }
+
     @Override
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
@@ -118,6 +125,23 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
                 connections.put(dir, WireBlock.ConnectionType.valueOf(nbt.getString("connection_" + dir.getName()).toUpperCase()));
             }
         }
+        if (world != null && !world.isClient) {
+            BlockState state = this.getCachedState();
+            if (state != null) {
+                Direction currentFacing = state.get(WireBlock.FACING);
+                BlockMirror currentMirror = state.get(WireBlock.MIRRORED);
+
+                if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
+                    if (currentMirror != BlockMirror.NONE) this.mirrorConnections(currentMirror);
+                    if (currentFacing != Direction.NORTH) this.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
+
+                    BlockState newFacingState = state.with(WireBlock.FACING, Direction.NORTH).with(WireBlock.MIRRORED, BlockMirror.NONE);
+                    world.setBlockState(pos, newFacingState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
+                }
+                this.onUpdate(world, pos, state);
+            }
+        }
+
     }
 
     @Override

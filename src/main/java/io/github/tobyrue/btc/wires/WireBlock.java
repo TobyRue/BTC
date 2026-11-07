@@ -174,22 +174,14 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
     }
 
     @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        super.onStateReplaced(state, world, pos, newState, moved);
+        this.onUpdate(world, pos, state);
+    }
+
+    @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (world.isClient) return;
-
-        if (world.getBlockEntity(pos) instanceof WireBlockEntity wire) {
-            Direction currentFacing = state.get(FACING);
-            BlockMirror currentMirror = state.get(MIRRORED);
-
-            if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
-                if (currentMirror != BlockMirror.NONE) wire.mirrorConnections(currentMirror);
-                if (currentFacing != Direction.NORTH) wire.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
-
-                BlockState newState = state.with(FACING, Direction.NORTH).with(MIRRORED, BlockMirror.NONE);
-                world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
-            }
-        }
-
         this.onUpdate(world, pos, state);
     }
 

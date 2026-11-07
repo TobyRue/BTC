@@ -2,8 +2,10 @@ package io.github.tobyrue.btc.wires.circuit;
 
 import com.mojang.serialization.Codec;
 import io.github.sianabeeblebrox.rhdl.*;
+import io.github.tobyrue.btc.block.MobDetectorBlock;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.wires.IDungeonWire;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -39,7 +41,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FPGABlockEntity>, IDungeonWire /* , IWireConnectionHelper */ {
-
 
     public static final Codec<BitString> BIT_STRING_CODEC =
             Codec.STRING.xmap(
@@ -108,7 +109,6 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
             Direction direction = player.isSneaking() ? hit.getSide().getOpposite() : hit.getSide();
             perFaceIndex.putIfAbsent(direction, getBlockApplicableStateNames().isEmpty() ? 0 : 1);
             int numb = getFaceIndex(direction) % (getBlockApplicableStateNames().size() + 1);
-            System.out.println("Numb: " + numb);
             if (numb == 0) {
                 faces.remove(direction);
                 setFaceIndex(direction, 0);
@@ -244,34 +244,109 @@ public class FPGABlockEntity extends BlockEntity implements BlockEntityTicker<FP
     }
 
 
+    public void forceLogicRecomputation() {
+        if (world != null && !world.isClient) {
+            BlockState state = this.getCachedState();
+            boolean changed = false;
 
-    private Direction getRotatedDirection(int nativeSideIndex) {
-        Direction baseDir = switch (nativeSideIndex) {
-            case 1 -> Direction.NORTH;
-            case 2 -> Direction.EAST;
-            case 3 -> Direction.SOUTH;
-            case 4 -> Direction.WEST;
-            case 5 -> Direction.UP;
-            case 6 -> Direction.DOWN;
-            default -> null;
-        };
-        if (world == null || baseDir == null || baseDir == Direction.UP || baseDir == Direction.DOWN) {
-            return baseDir;
+            boolean hasFacing = state.contains(FPGABlock.FACING);
+            boolean hasMirrored = state.contains(FPGABlock.MIRRORED);
+
+            if (hasMirrored && state.get(FPGABlock.MIRRORED) != BlockMirror.NONE) {
+                BlockMirror mirror = state.get(FPGABlock.MIRRORED);
+                if (mirror == BlockMirror.LEFT_RIGHT) {
+                    String north = faces.get(Direction.NORTH);
+                    String south = faces.get(Direction.SOUTH);
+                    updateFace(Direction.NORTH, south);
+                    updateFace(Direction.SOUTH, north);
+                } else if (mirror == BlockMirror.FRONT_BACK) {
+                    String east = faces.get(Direction.EAST);
+                    String west = faces.get(Direction.WEST);
+                    updateFace(Direction.EAST, west);
+                    updateFace(Direction.WEST, east);
+                }
+
+                changed = true;
+            }
+
+            if (hasFacing) {
+                Direction currentDirection = state.get(FPGABlock.FACING);
+                if (currentDirection != Direction.NORTH && !currentDirection.getAxis().isVertical()) {
+
+                    String north = faces.get(Direction.NORTH);
+                    String east = faces.get(Direction.EAST);
+                    String south = faces.get(Direction.SOUTH);
+                    String west = faces.get(Direction.WEST);
+
+                    String newNorth, newEast, newSouth, newWest;
+
+                    switch (currentDirection) {
+                        case EAST -> {
+                            newNorth = west;
+                            newEast = north;
+                            newSouth = east;
+                            newWest = south;
+                        }
+                        case SOUTH -> {
+                            newNorth = south;
+                            newEast = west;
+                            newSouth = north;
+                            newWest = east;
+                        }
+                        case WEST -> {
+                            newNorth = east;
+                            newEast = south;
+                            newSouth = west;
+                            newWest = north;
+                        }
+                        default -> {
+                            newNorth = north;
+                            newEast = east;
+                            newSouth = south;
+                            newWest = west;
+                        }
+                    }
+
+                    updateFace(Direction.NORTH, newNorth);
+                    updateFace(Direction.EAST, newEast);
+                    updateFace(Direction.SOUTH, newSouth);
+                    updateFace(Direction.WEST, newWest);
+
+                    changed = true;
+                }
+            }
+
+
+
+
+
+            if (changed) {
+                state = state.with(FPGABlock.FACING, Direction.NORTH);
+                state = state.with(FPGABlock.MIRRORED, BlockMirror.NONE);
+                world.setBlockState(
+                        pos,
+                        state,
+                        Block.NOTIFY_LISTENERS | Block.NO_REDRAW
+                );
+                this.markDirty();
+                world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+            }
         }
-
-        BlockState state = getCachedState();
-        Direction facing = state.contains(FPGABlock.FACING) ? state.get(FPGABlock.FACING) : Direction.NORTH;
-        BlockMirror mirror = state.contains(FPGABlock.MIRRORED) ? state.get(FPGABlock.MIRRORED) : BlockMirror.NONE;
-
-        Direction mirrored = mirror.apply(baseDir);
-        int horizontalOffset = (mirrored.getHorizontal() + facing.getHorizontal()) % 4;
-        this.markDirty();
-        return Direction.fromHorizontal(horizontalOffset);
     }
+
+    private void updateFace(Direction dir, String faceName) {
+        if (faceName == null) {
+            faces.remove(dir);
+        } else {
+            faces.put(dir, faceName);
+        }
+    }
+
 
     @Override
     public void tick(World world, BlockPos pos, BlockState state, FPGABlockEntity blockEntity) {
         if (this.script != null) {
+            forceLogicRecomputation();
             if (!world.isClient) {
                 this.script.evaluate();
             }

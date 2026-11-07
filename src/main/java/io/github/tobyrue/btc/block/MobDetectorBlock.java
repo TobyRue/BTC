@@ -159,19 +159,6 @@ public class MobDetectorBlock extends Block implements IDungeonWire, ModBlockEnt
 
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        Direction facing = state.get(FACING);
-
-        boolean affectsFacing =
-                (mirror == BlockMirror.LEFT_RIGHT &&
-                        (facing == Direction.EAST || facing == Direction.WEST))
-                        || (mirror == BlockMirror.FRONT_BACK &&
-                        (facing == Direction.NORTH || facing == Direction.SOUTH));
-
-        BlockState rotated = state.rotate(mirror.getRotation(facing));
-
         return state.with(MIRRORED, mirror);
-//        return affectsFacing
-//                ? state.with(MIRRORED, mirror)
-//                : rotated;
     }
 }
