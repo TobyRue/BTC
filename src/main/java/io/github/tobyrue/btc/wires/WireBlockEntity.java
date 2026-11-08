@@ -1,13 +1,13 @@
 package io.github.tobyrue.btc.wires;
 
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
+import io.github.tobyrue.btc.wires.circuit.FPGABlockEntity;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ComparatorBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -112,6 +112,7 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
         for (Direction dir : Direction.values()) {
             nbt.putString("connection_" + dir.getName(), connections.get(dir).asString());
         }
+
     }
 
     @Override
@@ -125,23 +126,27 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
                 connections.put(dir, WireBlock.ConnectionType.valueOf(nbt.getString("connection_" + dir.getName()).toUpperCase()));
             }
         }
-        if (world != null && !world.isClient) {
-            BlockState state = this.getCachedState();
-            if (state != null) {
-                Direction currentFacing = state.get(WireBlock.FACING);
-                BlockMirror currentMirror = state.get(WireBlock.MIRRORED);
+        if (this.getWorld() != null && this.getPos() != null && this.getCachedState() != null) {
+            onUpdate(this.getWorld(), this.getPos(), this.getCachedState());
+        }
+    }
 
-                if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
-                    if (currentMirror != BlockMirror.NONE) this.mirrorConnections(currentMirror);
-                    if (currentFacing != Direction.NORTH) this.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
+    public void normalizeStructureTransform() {
+        if (world == null || world.isClient) return;
+        BlockState state = this.getCachedState();
+        if (state != null && state.contains(WireBlock.FACING) && state.contains(WireBlock.MIRRORED)) {
+            Direction currentFacing = state.get(WireBlock.FACING);
+            BlockMirror currentMirror = state.get(WireBlock.MIRRORED);
 
-                    BlockState newFacingState = state.with(WireBlock.FACING, Direction.NORTH).with(WireBlock.MIRRORED, BlockMirror.NONE);
-                    world.setBlockState(pos, newFacingState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
-                }
-                this.onUpdate(world, pos, state);
+            if (currentFacing != Direction.NORTH || currentMirror != BlockMirror.NONE) {
+                if (currentMirror != BlockMirror.NONE) this.mirrorConnections(currentMirror);
+                if (currentFacing != Direction.NORTH) this.rotateConnections(getRotationBetween(Direction.NORTH, currentFacing));
+
+                BlockState newState = state.with(WireBlock.FACING, Direction.NORTH).with(WireBlock.MIRRORED, BlockMirror.NONE);
+                world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.NO_REDRAW);
+                this.markDirty();
             }
         }
-
     }
 
     @Override
@@ -238,4 +243,5 @@ public class WireBlockEntity extends BlockEntity implements IDungeonWire, IWireD
     public boolean getScheduledPower() {
         return scheduledPower;
     }
+
 }

@@ -2,10 +2,13 @@ package io.github.tobyrue.btc.wires;
 
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.entities.ModBlockEntityProvider;
+import io.github.tobyrue.btc.block.entities.ModTickBlockEntityProvider;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireConnectionHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireDelayHelper;
 import io.github.tobyrue.btc.wires.wire_data_helper.IWireOperatorHelper;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -166,13 +169,6 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
         builder.add(MIRRORED);
     }
 
-
-    @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        this.onUpdate(world, pos, state);
-    }
-
     @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
@@ -274,7 +270,6 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
     public void onUpdate(World world, BlockPos pos, BlockState state) {
         if (world.getBlockEntity(pos) instanceof IOnBlockUpdate wire) {
             wire.onUpdate(world, pos, state);
-
         }
     }
 
@@ -291,4 +286,25 @@ public class WireBlock extends Block implements ModBlockEntityProvider<WireBlock
 //                        }).toArray(Boolean[]::new)
 //        );
 //    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        if (world.isClient) {
+            return null;
+        }
+        boolean needsNormalization = state.get(FACING) != Direction.NORTH || state.get(MIRRORED) != BlockMirror.NONE;
+
+        if (needsNormalization) {
+            return checkType(type, getBlockEntityType(), (world1, pos, state1, blockEntity) -> {
+                blockEntity.normalizeStructureTransform();
+                blockEntity.onUpdate(world1, pos, state1);
+            });
+        }
+        return null;
+    }
+
+    @Nullable
+    private static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
+        return expectedType == givenType ? (BlockEntityTicker<A>) ticker : null;
+    }
 }
