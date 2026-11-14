@@ -30,5 +30,9 @@
         "args": "{castTime:200, cooldown:1800, moveableDistance:12}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

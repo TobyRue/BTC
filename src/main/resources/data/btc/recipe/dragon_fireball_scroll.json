@@ -30,5 +30,9 @@
         "args": "{cooldown:800}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

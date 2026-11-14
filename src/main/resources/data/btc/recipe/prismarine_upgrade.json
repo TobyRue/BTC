@@ -23,5 +23,9 @@
     "c": {
       "item": "minecraft:prismarine_crystals"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

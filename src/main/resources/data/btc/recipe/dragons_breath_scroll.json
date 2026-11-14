@@ -23,5 +23,9 @@
         "args": "{rate:4, range:8.0d, angle:20.0d, damage:4.0d, cooldown:800, castTime:200, intervalTicks:1}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

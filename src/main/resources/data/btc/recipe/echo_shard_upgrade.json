@@ -23,5 +23,9 @@
     "a": {
       "item": "minecraft:amethyst_shard"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

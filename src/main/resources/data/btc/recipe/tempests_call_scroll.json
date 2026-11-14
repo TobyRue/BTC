@@ -27,5 +27,9 @@
         "args": "{pull_radius:25.0d, pull_strength:3.0d, cooldown:160}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

@@ -23,5 +23,9 @@
     "g": {
       "item": "minecraft:gold_ingot"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

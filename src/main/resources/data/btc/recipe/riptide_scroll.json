@@ -23,5 +23,9 @@
         "args": "{duration:20, damage:2.0f, speed:2.0d, cooldown:100}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

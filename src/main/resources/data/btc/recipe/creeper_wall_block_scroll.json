@@ -22,5 +22,9 @@
         "args": "{count:5, aimingForgiveness:0.3d, range:24, offsetTowardsPlayer:2.0d, includeFluids:true, cooldown:200}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

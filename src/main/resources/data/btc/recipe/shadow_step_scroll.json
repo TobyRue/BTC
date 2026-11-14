@@ -25,5 +25,9 @@
         "args": "{range:24.0d, aimingForgiveness:0.3d, teleportDistance:2.5d, invisDuration:140, cooldown:300}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

@@ -27,5 +27,9 @@
         "args": "{shoot_radius:15.0d, shoot_strength:5d, cooldown:240}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

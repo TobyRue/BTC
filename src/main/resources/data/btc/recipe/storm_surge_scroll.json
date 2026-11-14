@@ -23,5 +23,9 @@
         "args": "{targetCount:5, range:20.0d, onlyHostile:false, cooldown:400}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

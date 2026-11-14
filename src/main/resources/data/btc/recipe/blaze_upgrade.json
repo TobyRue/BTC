@@ -26,5 +26,9 @@
     "p": {
       "item": "minecraft:gunpowder"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

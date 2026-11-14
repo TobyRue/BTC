@@ -22,5 +22,9 @@
         "args": "{deviation:0.5d, amount:20, cooldown:600}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

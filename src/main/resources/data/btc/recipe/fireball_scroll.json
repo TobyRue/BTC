@@ -21,5 +21,9 @@
         "args": "{level:1, cooldown:80}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

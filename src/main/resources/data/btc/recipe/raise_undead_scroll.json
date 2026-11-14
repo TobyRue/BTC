@@ -23,5 +23,9 @@
         "args": "{count:10, cooldown:400}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

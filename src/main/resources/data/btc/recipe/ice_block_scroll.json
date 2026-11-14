@@ -23,5 +23,9 @@
         "args": "{aimingForgiveness:0.3d, range:24.0d, duration:200, amplifier:4, durationM:200, amplifierM:1, cooldown:600}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

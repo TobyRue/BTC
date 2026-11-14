@@ -24,5 +24,9 @@
         "args": "{radius:10.0d, cooldown:30}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

@@ -23,5 +23,9 @@
     "g": {
       "item": "minecraft:glowstone_dust"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

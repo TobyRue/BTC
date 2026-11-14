@@ -22,5 +22,9 @@
         "args": "{maxRadius:8.0d, castTime:40, amplifier:1, maxDuration:600, cooldown:600}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

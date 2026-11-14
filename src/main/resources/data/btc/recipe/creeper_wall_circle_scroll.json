@@ -22,5 +22,9 @@
         "args": "{spikes:20, radius:3d, cooldown:1200}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

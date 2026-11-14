@@ -21,5 +21,9 @@
         "args": "{aimingForgiveness:0.3d, range:24.0d, canTarget:true, onSelf:true, cooldown:100}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

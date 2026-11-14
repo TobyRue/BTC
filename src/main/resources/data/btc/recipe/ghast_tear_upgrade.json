@@ -23,5 +23,9 @@
     "q": {
       "item": "minecraft:quartz"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

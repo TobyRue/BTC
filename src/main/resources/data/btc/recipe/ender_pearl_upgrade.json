@@ -26,5 +26,9 @@
     "c": {
       "item": "minecraft:chorus_fruit"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

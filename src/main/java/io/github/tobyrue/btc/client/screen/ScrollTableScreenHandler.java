@@ -2,6 +2,7 @@ package io.github.tobyrue.btc.client.screen;
 
 import io.github.tobyrue.btc.client.screen.recipe_book.ScrollTableRecipeInput;
 import io.github.tobyrue.btc.item.ModItems;
+import io.github.tobyrue.btc.recipes.ScrollTableRecipe;
 import io.github.tobyrue.btc.regestries.ModRecipes;
 import io.github.tobyrue.btc.regestries.ModScreens;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,6 +20,8 @@ import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 import java.util.Optional;
@@ -42,7 +45,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         this.addSlot(new Slot(blockInventory, 1, 79, 11));
         this.addSlot(new Slot(blockInventory, 2, 104, 18));
         this.addSlot(new Slot(blockInventory, 3, 47, 43));
-        this.addSlot(new Slot(blockInventory, 4, 148, 46) {
+        this.addSlot(new Slot(blockInventory, 4, 148, 69) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.isOf(ModItems.EMPTY_SCROLL) || stack.isOf(ModItems.UNLOCK_SCROLL);
@@ -60,7 +63,45 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
             }
 
             @Override
+            public boolean canTakeItems(PlayerEntity player) {
+                ItemStack[] inputs = new ItemStack[9];
+                for (int i = 0; i < 9; i++) {
+                    inputs[i] = blockInventory.getStack(i);
+                }
+                ScrollTableRecipeInput input = new ScrollTableRecipeInput(inputs);
+                Optional<RecipeEntry<Recipe<ScrollTableRecipeInput>>> match = world.getRecipeManager()
+                        .getFirstMatch(ModRecipes.SCROLL_TABLE_RECIPE_TYPE, input, world);
+
+                if (match.isPresent()) {
+                    ScrollTableRecipe recipe = (ScrollTableRecipe) match.get().value();
+                    var expReq = recipe.getExperience();
+                    if (expReq != null) {
+                        if (expReq.type() == ScrollTableRecipe.ExperienceType.LEVELS) {
+                            return player.isCreativeLevelTwoOp() || player.experienceLevel >= expReq.amount();
+                        } else {
+                            return player.isCreativeLevelTwoOp() || player.totalExperience >= expReq.amount();
+                        }
+                    }
+                }
+                return super.canTakeItems(player);
+            }
+
+            @Override
             public void onTakeItem(PlayerEntity player, ItemStack stack) {
+                ItemStack[] inputs = new ItemStack[9];
+                for (int i = 0; i < 9; i++) {
+                    inputs[i] = blockInventory.getStack(i);
+                }
+                ScrollTableRecipeInput input = new ScrollTableRecipeInput(inputs);
+                Optional<RecipeEntry<Recipe<ScrollTableRecipeInput>>> match = world.getRecipeManager()
+                        .getFirstMatch(ModRecipes.SCROLL_TABLE_RECIPE_TYPE, input, world);
+
+                if (match.isPresent()) {
+                    ScrollTableRecipe recipe = (ScrollTableRecipe) match.get().value();
+                    if (!hasAndDeductExperience(player, recipe)) {
+                        return;
+                    }
+                }
                 for (int i = 0; i < 9; i++) {
                     ItemStack ingredient = blockInventory.getStack(i);
                     if (!ingredient.isEmpty()) {
@@ -68,17 +109,18 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
                         blockInventory.setStack(i, ingredient);
                     }
                 }
+                world.playSound(player, player.getBlockPos(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 1F, 0.1F);
                 ScrollTableScreenHandler.this.updateResult();
                 super.onTakeItem(player, stack);
             }
         });
 
-        this.addSlot(new Slot(blockInventory, 10, 148, 69) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.isOf(Items.LAPIS_LAZULI);
-            }
-        });
+//        this.addSlot(new Slot(blockInventory, 10, 148, 69) {
+//            @Override
+//            public boolean canInsert(ItemStack stack) {
+//                return stack.isOf(Items.LAPIS_LAZULI);
+//            }
+//        });
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
@@ -88,6 +130,30 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 176));
         }
+    }
+
+    private boolean hasAndDeductExperience(PlayerEntity player, ScrollTableRecipe recipe) {
+        var expReq = recipe.getExperience();
+        if (expReq == null) return true;
+
+        boolean meetsRequirement = false;
+        if (expReq.type() == ScrollTableRecipe.ExperienceType.LEVELS) {
+            if (player.isCreativeLevelTwoOp() || player.experienceLevel >= expReq.amount()) {
+                if (!player.isCreativeLevelTwoOp()) {
+                    player.addExperienceLevels(-expReq.amount());
+                }
+                meetsRequirement = true;
+            }
+        } else if (expReq.type() == ScrollTableRecipe.ExperienceType.POINTS) {
+            int pointsNeeded = expReq.amount();
+            if (player.isCreativeLevelTwoOp() || player.totalExperience >= pointsNeeded) {
+                if (!player.isCreativeLevelTwoOp()) {
+                    player.addExperience(-pointsNeeded);
+                }
+                meetsRequirement = true;
+            }
+        }
+        return meetsRequirement;
     }
 
     private void updateResult() {
@@ -132,7 +198,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
 
     @Override
     public void populateRecipeFinder(RecipeMatcher finder) {
-        for (int i = 11; i < 47; i++) {
+        for (int i = 10; i < 46; i++) {
             finder.addInput(this.getSlot(i).getStack());
         }
     }
@@ -198,17 +264,13 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
             newStack = originalStack.copy();
 
             if (slotIndex < 11) {
-                if (!this.insertItem(originalStack, 11, 47, true)) {
+                if (!this.insertItem(originalStack, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickTransfer(originalStack, newStack);
             } else {
                 if (originalStack.isOf(ModItems.UNLOCK_SCROLL) || originalStack.isOf(ModItems.EMPTY_SCROLL)) {
                     if (!this.insertItem(originalStack, 4, 5, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (originalStack.isOf(Items.LAPIS_LAZULI)) {
-                    if (!this.insertItem(originalStack, 10, 11, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else {

@@ -22,5 +22,9 @@
         "args": "{noGravity:false, cooldown:200}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

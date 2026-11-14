@@ -1,6 +1,6 @@
 package io.github.tobyrue.btc.recipes;
 
-import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tobyrue.btc.client.screen.recipe_book.ScrollTableRecipeInput;
@@ -15,21 +15,25 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
-import org.slf4j.Logger;
 
 public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
 
     private final RawShapedRecipe rawPattern;
     private final ItemStack result;
+    private final ExperienceRequirement experience;
 
-    public ScrollTableRecipe(RawShapedRecipe rawPattern, ItemStack result) {
+    public ScrollTableRecipe(RawShapedRecipe rawPattern, ItemStack result, ExperienceRequirement experience) {
         this.rawPattern = rawPattern;
         this.result = result;
+        this.experience = experience;
     }
 
+    public ExperienceRequirement getExperience() {
+        return experience;
+    }
 
     public RawShapedRecipe getRawPattern() {
         return this.rawPattern;
@@ -37,7 +41,7 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
 
     @Override
     public boolean matches(ScrollTableRecipeInput input, World world) {
-        boolean match = this.rawPattern.matches(input.asCraftingInput());
+        boolean match = this. rawPattern.matches(input.asCraftingInput());
         return match;
     }
 
@@ -90,7 +94,8 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
         public static final MapCodec<ScrollTableRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
                 instance.group(
                         RawShapedRecipe.CODEC.forGetter(ScrollTableRecipe::getRawPattern),
-                        ItemStack.VALIDATED_UNCOUNTED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
+                        ItemStack.VALIDATED_UNCOUNTED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                        ExperienceRequirement.CODEC.fieldOf("experience").forGetter(ScrollTableRecipe::getExperience)
                 ).apply(instance, ScrollTableRecipe::new)
         );
 
@@ -98,10 +103,12 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
                 (buf, recipe) -> {
                     RawShapedRecipe.PACKET_CODEC.encode(buf, recipe.rawPattern);
                     ItemStack.PACKET_CODEC.encode(buf, recipe.result);
+                    ExperienceRequirement.PACKET_CODEC.encode(buf, recipe.experience);
                 },
                 buf -> new ScrollTableRecipe(
                         RawShapedRecipe.PACKET_CODEC.decode(buf),
-                        ItemStack.PACKET_CODEC.decode(buf)
+                        ItemStack.PACKET_CODEC.decode(buf),
+                        ExperienceRequirement.PACKET_CODEC.decode(buf)
                 )
         );
 
@@ -114,5 +121,47 @@ public class ScrollTableRecipe implements Recipe<ScrollTableRecipeInput> {
         public PacketCodec<RegistryByteBuf, ScrollTableRecipe> packetCodec() {
             return PACKET_CODEC;
         }
+    }
+
+
+    public enum ExperienceType implements StringIdentifiable {
+        LEVELS("levels"),
+        POINTS("points");
+
+        private final String name;
+
+        ExperienceType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String asString() {
+            return name;
+        }
+        public static final Codec<ExperienceType> CODEC = StringIdentifiable.createCodec(ExperienceType::values);
+        public static final PacketCodec<RegistryByteBuf, ExperienceType> PACKET_CODEC = PacketCodec.of(
+                (type, buf) -> buf.writeEnumConstant(type),
+                buf -> buf.readEnumConstant(ExperienceType.class)
+        );
+
+    }
+    public record ExperienceRequirement(ExperienceType type, int amount) {
+        public static final Codec<ExperienceRequirement> CODEC = RecordCodecBuilder.create(instance ->
+                instance.group(
+                        ExperienceType.CODEC.fieldOf("type").forGetter(ExperienceRequirement::type),
+                        Codec.INT.fieldOf("amount").forGetter(ExperienceRequirement::amount)
+                ).apply(instance, ExperienceRequirement::new)
+        );
+
+        public static final PacketCodec<RegistryByteBuf, ExperienceRequirement> PACKET_CODEC = PacketCodec.ofStatic(
+                (buf, req) -> {
+                    ExperienceType.PACKET_CODEC.encode(buf, req.type());
+                    buf.writeInt(req.amount());
+                },
+                buf -> new ExperienceRequirement(
+                        ExperienceType.PACKET_CODEC.decode(buf),
+                        buf.readInt()
+                )
+        );
     }
 }

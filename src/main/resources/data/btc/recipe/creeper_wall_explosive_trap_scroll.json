@@ -23,5 +23,9 @@
         "args": "{aimingForgiveness:0.3d, radius:2d, range:16d, yRange:10, count:17}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

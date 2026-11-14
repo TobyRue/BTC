@@ -26,5 +26,9 @@
     "d": {
       "item": "minecraft:diamond"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

@@ -27,5 +27,9 @@
         "args": "{amplifier:0, cooldown:1600, cooldown_name:\"btc:frost_walker_potion_effect\", duration:1200, effect:\"btc:frost_walker\", name:\"frost_walker\" }"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

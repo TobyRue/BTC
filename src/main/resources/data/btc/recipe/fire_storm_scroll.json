@@ -27,5 +27,9 @@
         "args": "{ castTime:40, maxRadius:16.0d, cooldown:500 }"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

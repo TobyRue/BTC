@@ -31,5 +31,9 @@
         "args": "{amplifier:0, cooldown:1200, cooldown_name:\"btc:dragon_scales\", duration:400, effect:\"btc:dragon_scales\", name:\"dragon_scales\" }"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

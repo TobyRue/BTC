@@ -22,5 +22,9 @@
         "args": "{shootStrength:7d, verticalMultiplier:2.2d, aimingForgiveness:0.3d, range:24.0d, cooldown:400}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

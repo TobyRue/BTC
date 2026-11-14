@@ -27,5 +27,9 @@
         "args": "{spikeCount:8, yRange:12, cooldown:200}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

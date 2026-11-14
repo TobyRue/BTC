@@ -22,5 +22,9 @@
         "args": "{range:24.0d, aimingForgiveness:0.3d, cooldown:200}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

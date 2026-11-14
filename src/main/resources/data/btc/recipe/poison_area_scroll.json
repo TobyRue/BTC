@@ -27,5 +27,9 @@
         "args": "{amplifier:3, cooldown:800, cooldown_name:'btc:poison_area_effect', duration:80, effect:'minecraft:poison', name:'poison', onlyHostile:false, includeUser:false}"
       }
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }

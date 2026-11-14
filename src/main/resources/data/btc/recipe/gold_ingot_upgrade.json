@@ -23,5 +23,9 @@
     "s": {
       "item": "btc:salt"
     }
+  },
+  "experience": {
+    "type": "levels",
+    "amount": 2
   }
 }
