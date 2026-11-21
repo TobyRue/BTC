@@ -31,12 +31,12 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
     protected final World world;
 
     public ScrollTableScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new SimpleInventory(11));
+        this(syncId, playerInventory, new SimpleInventory(10));
     }
 
     public ScrollTableScreenHandler(int syncId, PlayerInventory playerInventory, Inventory blockInventory) {
         super(ModScreens.SCROLL_TABLE_SCREEN_HANDLER, syncId);
-        checkSize(blockInventory, 11);
+        checkSize(blockInventory, 10);
         this.inventory = blockInventory;
         blockInventory.onOpen(playerInventory.player);
         this.world = playerInventory.player.getWorld();
@@ -109,6 +109,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
                         blockInventory.setStack(i, ingredient);
                     }
                 }
+                blockInventory.markDirty();
                 world.playSound(player, player.getBlockPos(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 1F, 0.1F);
                 ScrollTableScreenHandler.this.updateResult();
                 super.onTakeItem(player, stack);
@@ -155,6 +156,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         }
         return meetsRequirement;
     }
+
 
     private void updateResult() {
         if (this.world.isClient) return;
@@ -208,6 +210,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
         for (int i = 0; i < 9; i++) {
             this.inventory.setStack(i, ItemStack.EMPTY);
         }
+        this.inventory.markDirty();
     }
 
     public void dropOrMoveIngredients(PlayerEntity player) {
@@ -221,6 +224,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
                 this.inventory.setStack(i, ItemStack.EMPTY);
             }
         }
+        this.inventory.markDirty();
         this.sendContentUpdates();
     }
 
@@ -292,6 +296,7 @@ public class ScrollTableScreenHandler extends AbstractRecipeScreenHandler<Scroll
 
             slot.onTakeItem(player, originalStack);
         }
+        this.inventory.markDirty();
         this.updateResult();
         return newStack;
     }

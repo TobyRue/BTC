@@ -2,11 +2,11 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "minecraft:block/chiseled_tuff_bricks",
-		"1": "minecraft:block/chiseled_tuff_top",
-		"2": "minecraft:block/chiseled_tuff",
-		"4": "minecraft:item/ruby",
-		"particle": "minecraft:block/chiseled_tuff_bricks"
+		"0": "block/chiseled_tuff_bricks",
+		"1": "block/chiseled_tuff_top",
+		"2": "block/chiseled_tuff",
+		"4": "item/ruby",
+		"particle": "block/chiseled_tuff_bricks"
 	},
 	"elements": [
 		{
@@ -155,7 +155,7 @@
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, 225, 0],
+			"rotation": [0, -135, 0],
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"ground": {
@@ -163,7 +163,7 @@
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"gui": {
-			"rotation": [30, 225, 0],
+			"rotation": [30, -135, 0],
 			"scale": [0.625, 0.625, 0.625]
 		},
 		"head": {

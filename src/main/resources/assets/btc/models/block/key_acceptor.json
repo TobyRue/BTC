@@ -1,10 +1,11 @@
 {
+	"format_version": "26.3",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "minecraft:block/copper_block",
-		"3": "minecraft:block/chiseled_tuff_bricks",
-		"4": "minecraft:block/chiseled_tuff_top",
-		"particle": "minecraft:block/chiseled_tuff_bricks"
+		"0": "block/copper_block",
+		"3": "block/chiseled_tuff_bricks",
+		"4": "block/chiseled_tuff_top",
+		"particle": "block/chiseled_tuff_bricks"
 	},
 	"elements": [
 		{
@@ -193,7 +194,7 @@
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, 225, 0],
+			"rotation": [0, -135, 0],
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"ground": {
@@ -201,7 +202,7 @@
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"gui": {
-			"rotation": [30, 225, 0],
+			"rotation": [30, -135, 0],
 			"scale": [0.625, 0.625, 0.625]
 		},
 		"head": {
@@ -215,6 +216,7 @@
 		{
 			"name": "key_dispenser",
 			"origin": [8, 8, 8],
+			"scope": 0,
 			"color": 0,
 			"children": [
 				0,
@@ -229,6 +231,7 @@
 				{
 					"name": "jewels",
 					"origin": [2, 6, 7],
+					"scope": 0,
 					"color": 0,
 					"children": [9, 10, 11, 12]
 				}

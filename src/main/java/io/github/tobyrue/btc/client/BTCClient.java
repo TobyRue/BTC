@@ -533,6 +533,7 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GUNPOWDER_BARREL, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SPY_GLASS_BLOCK, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_BEACON, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SCROLL_TABLE, RenderLayer.getCutoutMipped());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DUNGEON_WIRE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FPGA_BLOCK, RenderLayer.getCutout());
@@ -629,6 +630,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.FPGA_BLOCK_ENTITY, FPGABlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.BONFIRE_BLOCK_ENTITY, BonfireBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SPY_GLASS_BLOCK_ENTITY, SpyGlassBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.SCROLL_TABLE_BLOCK_ENTITY, ScrollTableBlockRenderer::new);
 
 
         BlockEntityRendererFactories.register(ModBlockEntities.COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
