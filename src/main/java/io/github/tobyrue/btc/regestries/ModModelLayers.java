@@ -31,4 +31,6 @@ public class ModModelLayers {
             new EntityModelLayer(BTC.identifierOf("fan_blades"), "main");
     public static final EntityModelLayer SPY_GLASS_BLOCK_LAYER =
             new EntityModelLayer(BTC.identifierOf("spy_glass_block"), "main");
+    public static final EntityModelLayer HUGGER =
+            new EntityModelLayer(BTC.identifierOf("hugger"), "main");
 }

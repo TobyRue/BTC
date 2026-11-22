@@ -86,7 +86,7 @@ public class RaiseUndeadSpellInstant extends ChanneledSpell implements Upgradabl
 
             undead.refreshPositionAndAngles(pos.x, spawnY, pos.z, random.nextFloat() * 360F, 0);
 
-            ((SummonableEntity) undead).btc$setOwnerUuid(user.getUuid());
+            ((SummonableEntity) undead).btc$setSpellOwnerUuid(user.getUuid());
 
             undead.targetSelector.clear(g -> true);
 
@@ -130,7 +130,7 @@ public class RaiseUndeadSpellInstant extends ChanneledSpell implements Upgradabl
 
         serverWorld.getEntitiesByClass(MobEntity.class, worldBox, e -> {
             if (e instanceof SummonableEntity summonable) {
-                return ownerUuid.equals(summonable.btc$getOwnerUuid());
+                return ownerUuid.equals(summonable.btc$getSpellOwnerUuid());
             }
             return false;
         }).forEach(LivingEntity::kill);

@@ -90,7 +90,7 @@ public class SummonTargetGoal extends Goal {
             return null;
         }
 
-        UUID ownerUuid = summonable.btc$getOwnerUuid();
+        UUID ownerUuid = summonable.btc$getSpellOwnerUuid();
 
         if (ownerUuid == null) {
             return null;
@@ -118,7 +118,7 @@ public class SummonTargetGoal extends Goal {
         }
 
         if (possibleTarget instanceof SummonableEntity targetSummonable) {
-            UUID targetOwnerUuid = targetSummonable.btc$getOwnerUuid();
+            UUID targetOwnerUuid = targetSummonable.btc$getSpellOwnerUuid();
 
             if (targetOwnerUuid != null
                     && targetOwnerUuid.equals(this.owner.getUuid())) {
@@ -147,7 +147,7 @@ public class SummonTargetGoal extends Goal {
 
 
         if (possibleTarget instanceof SummonableEntity targetSummonable) {
-            UUID targetOwnerUuid = targetSummonable.btc$getOwnerUuid();
+            UUID targetOwnerUuid = targetSummonable.btc$getSpellOwnerUuid();
 
             if (targetOwnerUuid != null) {
                 if (this.mob.getWorld() instanceof ServerWorld serverWorld) {

@@ -7,7 +7,6 @@ import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.ModBlocks;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
 import io.github.tobyrue.btc.client.screen.ChannelingHudOverlay;
-import io.github.tobyrue.btc.client.screen.RadialMenu;
 import io.github.tobyrue.btc.client.screen.ScrollTableScreen;
 import io.github.tobyrue.btc.client.screen.SpellScreenInventoryScreen;
 import io.github.tobyrue.btc.spell.*;
@@ -24,14 +23,12 @@ import io.github.tobyrue.btc.regestries.ModScreens;
 import io.github.tobyrue.btc.tooltip.UpgradeTreeTooltipData;
 import io.github.tobyrue.btc.util.ClientOreRadar;
 import io.github.tobyrue.btc.util.UnlockScrollCache;
-import io.github.tobyrue.btc.wires.WireBlock;
 import io.github.tobyrue.btc.wires.WireBlockEntityRenderer;
 import io.github.tobyrue.btc.wires.circuit.FPGABlockEntityRenderer;
 import io.github.tobyrue.rtc.RTC;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
@@ -42,7 +39,6 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.ModelPart;
@@ -50,9 +46,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GustParticle;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.InputUtil;
@@ -71,18 +64,14 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.glfw.GLFW;
-import io.github.tobyrue.btc.client.screen.RadialValues.*;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -688,6 +677,7 @@ public class BTCClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.KEY_GOLEM, KeyGolemEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.MINE, MineEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.TRIAL_CUBE, TrialCubeEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.HUGGER_ENTITY, HuggerEntityRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ELDRITCH_LUMINARY, EldritchLuminaryModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.WATER_BURST, WaterBlastEntityModel::getTexturedModelData);
@@ -702,6 +692,7 @@ public class BTCClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.TRIAL_CUBE, TrialCubeEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.FAN_BLADES_LAYER, FanBlockModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SPY_GLASS_BLOCK_LAYER, SpyGlassBlockModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.HUGGER, HuggerEntityModel::getTexturedModelData);
 
     }
 

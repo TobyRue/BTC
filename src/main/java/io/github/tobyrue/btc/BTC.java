@@ -3,12 +3,10 @@ package io.github.tobyrue.btc;
 import io.github.tobyrue.btc.block.*;
 import io.github.tobyrue.btc.block.entities.ModBlockEntities;
 import io.github.tobyrue.btc.block.fluids.ModFluids;
+import io.github.tobyrue.btc.client.HuggerEntityRenderer;
 import io.github.tobyrue.btc.config.BTCConfig;
 import io.github.tobyrue.btc.entity.ModEntities;
-import io.github.tobyrue.btc.entity.custom.CopperGolemEntity;
-import io.github.tobyrue.btc.entity.custom.EldritchLuminaryEntity;
-import io.github.tobyrue.btc.entity.custom.KeyGolemEntity;
-import io.github.tobyrue.btc.entity.custom.TuffGolemEntity;
+import io.github.tobyrue.btc.entity.custom.*;
 import io.github.tobyrue.btc.item.ModItems;
 import io.github.tobyrue.btc.packets.ModPackets;
 import io.github.tobyrue.btc.processors.ModStructureProcessors;
@@ -130,6 +128,7 @@ public class BTC implements ModInitializer, TerraBlenderApi {
         FabricDefaultAttributeRegistry.register(ModEntities.COPPER_GOLEM, CopperGolemEntity.createCopperGolemAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.KEY_GOLEM, KeyGolemEntity.createKeyGolemAttributes());
+        FabricDefaultAttributeRegistry.register(ModEntities.HUGGER_ENTITY, HuggerEntity.createHuggerEntityAttributes());
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack stack = player.getStackInHand(hand);

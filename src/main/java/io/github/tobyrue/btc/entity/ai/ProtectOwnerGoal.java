@@ -79,7 +79,7 @@ public class ProtectOwnerGoal extends Goal {
             return null;
         }
 
-        UUID ownerUuid = summonable.btc$getOwnerUuid();
+        UUID ownerUuid = summonable.btc$getSpellOwnerUuid();
 
         if (ownerUuid == null) {
             return null;
