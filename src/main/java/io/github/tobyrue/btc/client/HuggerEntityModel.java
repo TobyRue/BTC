@@ -120,7 +120,7 @@ public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityM
 				float travelPitch = (float) MathHelper.atan2(velocity.y, velocity.horizontalLength());
 
 				float targetYaw = (float) (travelYaw - Math.PI);
-				float targetPitch = (float) (travelPitch + Math.PI/2);
+				float targetPitch = (float) (travelPitch - Math.PI/2);
 
 				this.smoothYaw = MathHelper.lerp(0.2F, this.smoothYaw, targetYaw);
 				this.smoothPitch = MathHelper.lerp(0.2F, this.smoothPitch, targetPitch);
