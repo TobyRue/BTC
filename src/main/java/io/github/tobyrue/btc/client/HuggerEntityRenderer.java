@@ -22,8 +22,10 @@ import java.util.Objects;
 @Environment(EnvType.CLIENT)
 public class HuggerEntityRenderer extends MobEntityRenderer<HuggerEntity, HuggerEntityModel<HuggerEntity>> {
 
-    private static final Identifier TEXTURE =
+    private static final Identifier NORMAL =
             Identifier.of(BTC.MOD_ID, "textures/entity/hugger.png");
+    private static final Identifier ANGRY =
+            Identifier.of(BTC.MOD_ID, "textures/entity/hugger_angry.png");
 
     public HuggerEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new HuggerEntityModel<>(ctx.getPart(ModModelLayers.HUGGER)), 0.4f);
@@ -32,7 +34,7 @@ public class HuggerEntityRenderer extends MobEntityRenderer<HuggerEntity, Hugger
 
     @Override
     public Identifier getTexture(HuggerEntity entity) {
-        return TEXTURE;
+        return (entity.getTarget() != null || entity.isAttacking() || entity.hasVehicle()) ? ANGRY : NORMAL;
     }
 
 

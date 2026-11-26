@@ -39,6 +39,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.command.RideCommand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -129,7 +130,6 @@ public class BTC implements ModInitializer, TerraBlenderApi {
         FabricDefaultAttributeRegistry.register(ModEntities.TUFF_GOLEM, TuffGolemEntity.createTuffGolemAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.KEY_GOLEM, KeyGolemEntity.createKeyGolemAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.HUGGER_ENTITY, HuggerEntity.createHuggerEntityAttributes());
-
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack stack = player.getStackInHand(hand);
             BlockPos blockPos = hitResult.getBlockPos();

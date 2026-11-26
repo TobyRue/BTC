@@ -8,6 +8,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.WeakHashMap;
+
 // Made with Blockbench 5.2.2
 // Exported for Minecraft version 1.17+ for Yarn
 public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityModel<T> {
@@ -23,10 +25,12 @@ public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityM
 	private final ModelPart leg7;
 	private final ModelPart leg8;
 
-	private float smoothYaw = 0.0F;
-	private float smoothPitch = 0.0F;
-	private float smoothWindUp = 0.0F;
-
+	private static class AnimationState {
+		float smoothYaw = 0.0F;
+		float smoothPitch = 0.0F;
+		float smoothWindUp = 0.0F;
+	}
+	private final WeakHashMap<T, AnimationState> entityStates = new WeakHashMap<>();
 	public HuggerEntityModel(ModelPart root) {
 		this.hugger = root.getChild("hugger");
 		this.head = this.hugger.getChild("head");
@@ -40,11 +44,11 @@ public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityM
 		this.leg7 = this.legs.getChild("leg7");
 		this.leg8 = this.legs.getChild("leg8");
 	}
-
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData hugger = modelPartData.addChild("hugger", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+
 		ModelPartData head = hugger.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -9.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F))
 				.uv(0, 23).cuboid(-2.0F, -1.0F, -2.0F, 4.0F, 1.0F, 4.0F, new Dilation(0.0F))
 				.uv(15, 14).cuboid(4.0F, -10.0F, 3.0F, 0.0F, 2.0F, 2.0F, new Dilation(0.0F))
@@ -53,29 +57,36 @@ public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityM
 		ModelPartData legs = hugger.addChild("legs", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
 		ModelPartData leg1 = legs.addChild("leg1", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData Leg_r1 = leg1.addChild("Leg_r1", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, 0.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, -1.0F, 3.0F, -0.2618F, 0.0F, 0.0F));
+
+		ModelPartData Leg_r1 = leg1.addChild("Leg_r1", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, -1.0F, 3.0F, -2.8798F, 0.0F, -3.1416F));
 
 		ModelPartData leg2 = legs.addChild("leg2", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData Leg_r2 = leg2.addChild("Leg_r2", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, 0.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(2.5F, -1.0F, 2.5F, -0.2618F, 0.7854F, 0.0F));
+
+		ModelPartData Leg_r2 = leg2.addChild("Leg_r2", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(2.5F, -1.0F, 2.5F, -2.8798F, -0.7854F, -3.1416F));
 
 		ModelPartData leg3 = legs.addChild("leg3", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData Leg_r3 = leg3.addChild("Leg_r3", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, 0.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(-2.5F, -1.0F, 2.5F, -0.2618F, -0.7854F, 0.0F));
+
+		ModelPartData Leg_r3 = leg3.addChild("Leg_r3", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(-2.5F, -1.0F, 2.5F, -2.8798F, 0.7854F, 3.1416F));
 
 		ModelPartData leg4 = legs.addChild("leg4", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+
 		ModelPartData Leg_r4 = leg4.addChild("Leg_r4", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(0.0F, -1.0F, -3.0F, 0.2618F, 0.0F, 0.0F));
 
 		ModelPartData leg5 = legs.addChild("leg5", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData Leg_r5 = leg5.addChild("Leg_r5", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, 0.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(-3.0F, -1.0F, 0.0F, 0.0F, -1.5708F, -0.2618F));
+
+		ModelPartData Leg_r5 = leg5.addChild("Leg_r5", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(-3.0F, -1.0F, 0.0F, 0.0F, 1.5708F, -0.2618F));
 
 		ModelPartData leg6 = legs.addChild("leg6", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+
 		ModelPartData Leg_r6 = leg6.addChild("Leg_r6", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(-2.5F, -1.0F, -2.5F, 0.2618F, 0.7854F, 0.0F));
 
 		ModelPartData leg7 = legs.addChild("leg7", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+
 		ModelPartData Leg_r7 = leg7.addChild("Leg_r7", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(3.0F, -1.0F, 0.0F, 0.0F, -1.5708F, 0.2618F));
 
 		ModelPartData leg8 = legs.addChild("leg8", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-		ModelPartData Leg_r8 = leg8.addChild("Leg_r8", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(2.6F, -1.0F, -2.5F, 0.2618F, -0.7854F, 0.0F));
 
+		ModelPartData Leg_r8 = leg8.addChild("Leg_r8", ModelPartBuilder.create().uv(0, 16).cuboid(-1.0F, -2.0F, -5.0F, 2.0F, 2.0F, 5.0F, new Dilation(0.0F)), ModelTransform.of(2.6F, -1.0F, -2.5F, 0.2618F, -0.7854F, 0.0F));
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
@@ -84,13 +95,15 @@ public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityM
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(headYaw, headPitch);
 
-		float targetWindUp = entity.isWindingUp() ? 1.0F : 0.0F;
-		this.smoothWindUp = MathHelper.lerp(0.25F, this.smoothWindUp, targetWindUp);
+		AnimationState state = this.entityStates.computeIfAbsent(entity, e -> new AnimationState());
 
-		if (this.smoothWindUp > 0.01F) {
-			float squeezeAmount = (float) ((Math.PI)/4 * this.smoothWindUp);
-			float legRise = 5.0F * this.smoothWindUp;
-			float bodyRise = 2.0F * this.smoothWindUp;
+		float targetWindUp = entity.isWindingUp() ? 1.0F : 0.0F;
+		state.smoothWindUp = MathHelper.lerp(0.25F, state.smoothWindUp, targetWindUp);
+
+		if (state.smoothWindUp > 0.01F) {
+			float squeezeAmount = (float) ((Math.PI)/4 * state.smoothWindUp);
+			float legRise = 5.0F * state.smoothWindUp;
+			float bodyRise = 2.0F * state.smoothWindUp;
 
 			this.leg1.pitch -= squeezeAmount;
 			this.leg2.pitch -= squeezeAmount;
@@ -110,28 +123,25 @@ public class HuggerEntityModel<T extends HuggerEntity> extends SinglePartEntityM
 			this.leg8.pivotY -= legRise;
 			this.leg5.pivotY -= legRise;
 			this.leg7.pivotY -= legRise;
-//			this.hugger.pivotY += legRise;
 			this.head.pivotY -= bodyRise;
 		}
-		else if (!entity.isOnGround()) {
+		else if (!entity.isOnGround() && (entity.getVelocity().y > 0.02D || entity.isAttacking())) {
 			Vec3d velocity = entity.getVelocity();
-			if (velocity.lengthSquared() > 0.01) {
-				float travelYaw = (float) MathHelper.atan2(velocity.z, velocity.x);
+			if (velocity.lengthSquared() > 0.005) {
 				float travelPitch = (float) MathHelper.atan2(velocity.y, velocity.horizontalLength());
 
-				float targetYaw = (float) (travelYaw - Math.PI);
 				float targetPitch = (float) (travelPitch - Math.PI/2);
 
-				this.smoothYaw = MathHelper.lerp(0.2F, this.smoothYaw, targetYaw);
-				this.smoothPitch = MathHelper.lerp(0.2F, this.smoothPitch, targetPitch);
+				state.smoothPitch = MathHelper.lerp(0.2F, state.smoothPitch, targetPitch);
 			}
-			this.hugger.pitch = this.smoothPitch;
+			this.hugger.pitch = state.smoothPitch;
 		}
 		else {
-			this.smoothYaw = MathHelper.lerp(0.2F, this.smoothYaw, 0.0F);
-			this.smoothPitch = MathHelper.lerp(0.2F, this.smoothPitch, 0.0F);
-			this.hugger.yaw = this.smoothYaw;
-			this.hugger.pitch = this.smoothPitch;
+			state.smoothYaw = MathHelper.lerp(0.2F, state.smoothYaw, 0.0F);
+			state.smoothPitch = MathHelper.lerp(0.2F, state.smoothPitch, 0.0F);
+			this.hugger.yaw = state.smoothYaw;
+			this.hugger.pitch = state.smoothPitch;
+
 			float n = (float) -(Math.cos(limbAngle * 0.6662F * 2.0F + 0.0F) * 0.4F) * limbDistance / 2;
 			float o = (float) -(Math.cos(limbAngle * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * limbDistance / 2;
 			float p = (float) -(Math.cos(limbAngle * 0.6662F * 2.0F + (float) (Math.PI / 2)) * 0.4F) * limbDistance / 2;
