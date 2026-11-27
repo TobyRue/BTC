@@ -40,6 +40,7 @@ public class ModBlockEntities {
     public static BlockEntityType<ScrollTableBlockEntity> SCROLL_TABLE_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("scroll_table"), BlockEntityType.Builder.create(ScrollTableBlockEntity::new, ModBlocks.SCROLL_TABLE).build());
 
     public static BlockEntityType<TrialShroudBlockEntity> TRIAL_SHROUD_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("trial_shroud"), BlockEntityType.Builder.create(TrialShroudBlockEntity::new, ModBlocks.TRIAL_SHROUD).build());
+    public static BlockEntityType<HuggerEggBlockEntity> HUGGER_EGG_BLOCK_ENTITY = Registry.register(Registries.BLOCK_ENTITY_TYPE, BTC.identifierOf("hugger_egg"), BlockEntityType.Builder.create(HuggerEggBlockEntity::new, ModBlocks.HUGGER_EGG).build());
     public static void initialize() {
     }
 }

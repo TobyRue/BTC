@@ -93,6 +93,7 @@ public class BTCClient implements ClientModInitializer {
 
     public static final EntityModelLayer BOOK_LAYER = new EntityModelLayer(Identifier.of("btc", "spell_book"), "main");
 
+    public static final EntityModelLayer HUGGER_EGG_LAYER = new EntityModelLayer(Identifier.of("btc", "hugger_egg"), "main");
 
 
     static {
@@ -510,6 +511,7 @@ public class BTCClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_REFLECTOR, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.OMINOUS_SPLITTER, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TRIAL_SHROUD, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HUGGER_EGG, RenderLayer.getTranslucent());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PEDESTAL, RenderLayer.getCutoutMipped());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BRAZIER, RenderLayer.getCutoutMipped());
@@ -620,6 +622,7 @@ public class BTCClient implements ClientModInitializer {
         BlockEntityRendererFactories.register(ModBlockEntities.BONFIRE_BLOCK_ENTITY, BonfireBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SPY_GLASS_BLOCK_ENTITY, SpyGlassBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(ModBlockEntities.SCROLL_TABLE_BLOCK_ENTITY, ScrollTableBlockRenderer::new);
+        BlockEntityRendererFactories.register(ModBlockEntities.HUGGER_EGG_BLOCK_ENTITY, HuggerEggRenderer::new);
 
 
         BlockEntityRendererFactories.register(ModBlockEntities.COPPER_FAN_BLOCK_ENTITY, FanBlockEntityRenderer::new);
@@ -694,6 +697,9 @@ public class BTCClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SPY_GLASS_BLOCK_LAYER, SpyGlassBlockModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.HUGGER, HuggerEntityModel::getTexturedModelData);
 
+
+
+        EntityModelLayerRegistry.registerModelLayer(BTCClient.HUGGER_EGG_LAYER, HuggerEggRenderer::getTexturedModelData);
     }
 
 

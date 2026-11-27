@@ -4,9 +4,6 @@ import io.github.tobyrue.btc.client.screen.ScrollTableScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -63,16 +60,19 @@ public class ScrollTableBlockEntity extends BlockEntity implements ExtendedScree
     public void markDirty() {
         super.markDirty();
         if (world != null && !world.isClient) {
-            ((ServerWorld) world).getChunkManager().markForUpdate(pos);
+            world.updateListeners(pos, getCachedState(), getCachedState(), 3);
         }
     }
+
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) { return createNbt(registryLookup); }
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
+    }
 
     @Override
     public int size() {
