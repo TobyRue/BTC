@@ -110,3 +110,7 @@ publishing {
         // retrieving dependencies.
     }
 }
+
+tasks.register('updateAssets', Copy) {
+    from "src/main/resources/assets" into "run/resourcepacks/btc/assets"
+}

@@ -86,6 +86,7 @@
   "block.btc.trial_shroud": "Trial Shroud",
   "block.btc.fpga_wire": "FPGA",
   "block.btc.fpga_wire.set_face": "Set Face '%s' to '%s'",
+  "block.btc.hugger_egg": "Hugger Egg",
 
   "container.btc.spell_inventory": "Spell Inventory",
   "hud.btc.cancel.crouch": "Crouch",
@@ -249,6 +250,7 @@
   "entity.btc.key_golem": "Key Golem",
   "entity.btc.mine": "Mine",
   "entity.btc.trial_cube": "Trial Cube",
+  "entity.btc.hugger": "Hugger",
 
   "subtitles.entity.btc.copper_golem.copper_arm_move": "Copper Golem presses button",
   "subtitles.entity.btc.copper_golem.copper_head_spin": "Copper Golem wakes up",
